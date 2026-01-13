@@ -260,45 +260,62 @@ bunx shadcn@latest add dialog
 
 ## 🚀 Deployment
 
+### Quick Deploy
+
+```bash
+# Deploy to Vercel (Production)
+bun run deploy:vercel
+
+# Deploy Preview
+bun run deploy:preview
+```
+
+### Supported Platforms
+
+- ✅ **Vercel** (Recommended) - Zero-config deployment
+- ✅ **Appwrite Cloud** - Backend hosting
+- ✅ **Netlify** - Alternative hosting
+- ✅ **Cloudflare Pages** - Edge deployment
+- ✅ **Railway** - Container deployment
+
 ### Production Build
 
 ```bash
-# Build the application
-bun run build
+# Build for production
+bun run build:prod
+
+# Preview production build locally
+bun run preview
 
 # Start production server
 bun run start
 ```
 
-### Environment Variables für Production
+### 📖 Detailed Deployment Guide
 
-Stelle sicher, dass folgende Variablen gesetzt sind:
+For complete deployment instructions, see **[DEPLOYMENT.md](./DEPLOYMENT.md)**
+
+Topics covered:
+- Vercel deployment (CLI & GitHub)
+- Appwrite backend setup
+- Environment variables configuration
+- Performance optimization
+- Troubleshooting
+- Security best practices
+
+### Environment Variables
+
+Required for production:
 
 ```bash
+# Client-side (exposed to browser)
+VITE_APPWRITE_ENDPOINT=https://cloud.appwrite.io/v1
+VITE_APPWRITE_PROJECT_ID=696615c200386f6d3ba3
+
+# Server-side (secure)
+APPWRITE_API_KEY=your_api_key_here
+APPWRITE_BUCKET_ID=portfolio-images
 NODE_ENV=production
-APPWRITE_ENDPOINT=your_endpoint
-APPWRITE_API_KEY=your_api_key
-APPWRITE_PROJECT_ID=your_project_id
-APPWRITE_BUCKET_ID=your_bucket_id
-PORT=3000
-```
-
-### Asset Preloading Configuration
-
-Der Production Server unterstützt intelligentes Asset-Preloading:
-
-```bash
-# Maximum file size to preload (default: 5MB)
-ASSET_PRELOAD_MAX_SIZE=5242880
-
-# Enable verbose logging
-ASSET_PRELOAD_VERBOSE_LOGGING=true
-
-# Enable ETag support
-ASSET_PRELOAD_ENABLE_ETAG=true
-
-# Enable Gzip compression
-ASSET_PRELOAD_ENABLE_GZIP=true
 ```
 
 <!-- ═══════════════════════════════════════════════════════════════════════════════ -->

@@ -7,16 +7,20 @@
   "scripts": {
     "dev": "bun run build:blog && vite dev --port 5173",
     "start": "bun run server.ts",
-    "build": "bun run build:blog && tsr generate && tsc --noEmit && vite build --sourcemap",
+    "build": "bun run build:blog && tsr generate && tsc --noEmit && vite build",
+    "build:prod": "NODE_ENV=production bun run build:blog && tsr generate && vite build --mode production",
     "build:blog": "bun run scripts/build-blog.ts",
     "build:node": "bun run build:blog && tsr generate && FOR_SITES=true vite build",
     "serve": "vite preview",
+    "preview": "vite preview --port 4173",
     "test": "vitest run",
     "lint": "eslint",
     "format:check": "prettier --check .",
     "format": "prettier --write .",
     "generate:routes": "tsr generate",
-    "clean": "rm -rf .ouptut dist node_modules/.vite .nitro .tanstack"
+    "clean": "rm -rf .output dist node_modules/.vite .nitro .tanstack",
+    "deploy:vercel": "vercel --prod",
+    "deploy:preview": "vercel"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

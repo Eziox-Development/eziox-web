@@ -54,8 +54,7 @@
         {
           "key": "published",
           "type": "boolean",
-          "required": true,
-          "default": false
+          "required": true
         },
         {
           "key": "publishedAt",
@@ -135,12 +134,14 @@
         },
         {
           "key": "liveUrl",
-          "type": "url",
+          "type": "string",
+          "size": 500,
           "required": false
         },
         {
           "key": "githubUrl",
-          "type": "url",
+          "type": "string",
+          "size": 500,
           "required": false
         },
         {
@@ -152,8 +153,7 @@
         {
           "key": "featured",
           "type": "boolean",
-          "required": true,
-          "default": false
+          "required": true
         },
         {
           "key": "order",
@@ -190,18 +190,7 @@
         "gif",
         "webp",
         "svg",
-        "ico"
-      ],
-      "compression": "gzip",
-      "encryption": true,
-      "antivirus": true
-    },
-    {
-      "$id": "documents",
-      "name": "Documents",
-      "enabled": true,
-      "maximumFileSize": 20971520,
-      "allowedFileExtensions": [
+        "ico",
         "pdf",
         "doc",
         "docx",
