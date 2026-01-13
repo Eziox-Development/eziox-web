@@ -311,26 +311,26 @@ bun run deploy:preview
                      ▼
 ┌─────────────────────────────────────────────────────────┐
 │              Vercel Edge Network                        │
-│  ┌──────────────────────────────────────────────────┐  │
-│  │   TanStack Start SSR Application                 │  │
-│  │   - Server-Side Rendering                        │  │
-│  │   - API Routes (/rss, /sitemap)                  │  │
-│  │   - Static Assets                                │  │
-│  └──────────────────┬───────────────────────────────┘  │
+│  ┌──────────────────────────────────────────────────┐   │
+│  │   TanStack Start SSR Application                 │   │
+│  │   - Server-Side Rendering                        │   │
+│  │   - API Routes (/rss, /sitemap)                  │   │
+│  │   - Static Assets                                │   │
+│  └──────────────────┬───────────────────────────────┘   │
 └─────────────────────┼───────────────────────────────────┘
                       │
                       ▼
 ┌─────────────────────────────────────────────────────────┐
 │              Appwrite Cloud                             │
-│  ┌──────────────────────────────────────────────────┐  │
-│  │   Database: portfolio-db                         │  │
-│  │   - blog-posts collection                        │  │
-│  │   - projects collection                          │  │
-│  │                                                   │  │
-│  │   Storage: portfolio-images                      │  │
-│  │   - Blog images                                  │  │
-│  │   - Project screenshots                          │  │
-│  └──────────────────────────────────────────────────┘  │
+│  ┌──────────────────────────────────────────────────┐   │
+│  │   Database: portfolio-db                         │   │
+│  │   - blog-posts collection                        │   │
+│  │   - projects collection                          │   │
+│  │                                                  │   │
+│  │   Storage: portfolio-images                      │   │
+│  │   - Blog images                                  │   │
+│  │   - Project screenshots                          │   │
+│  └──────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────┘
 ```
 
