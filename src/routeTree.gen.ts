@@ -22,6 +22,8 @@ import { Route as AuthSignInRouteImport } from './routes/_auth/sign-in'
 import { Route as ApiSitemapRouteImport } from './routes/_api/sitemap'
 import { Route as ApiRssRouteImport } from './routes/_api/rss'
 import { Route as ApiHelloRouteImport } from './routes/_api/hello'
+import { Route as ApiSitemapXmlRouteImport } from './routes/api.sitemap.xml'
+import { Route as ApiRssXmlRouteImport } from './routes/api.rss.xml'
 import { Route as PublicTagTagRouteImport } from './routes/_public/tag/$tag'
 import { Route as PublicCategoryCategoryRouteImport } from './routes/_public/category/$category'
 import { Route as PublicBlogSlugRouteImport } from './routes/_public/blog/$slug'
@@ -89,6 +91,16 @@ const ApiHelloRoute = ApiHelloRouteImport.update({
   path: '/hello',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiSitemapXmlRoute = ApiSitemapXmlRouteImport.update({
+  id: '/api/sitemap/xml',
+  path: '/api/sitemap/xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiRssXmlRoute = ApiRssXmlRouteImport.update({
+  id: '/api/rss/xml',
+  path: '/api/rss/xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PublicTagTagRoute = PublicTagTagRouteImport.update({
   id: '/tag/$tag',
   path: '/tag/$tag',
@@ -119,6 +131,8 @@ export interface FileRoutesByFullPath {
   '/blog/$slug': typeof PublicBlogSlugRoute
   '/category/$category': typeof PublicCategoryCategoryRoute
   '/tag/$tag': typeof PublicTagTagRoute
+  '/api/rss/xml': typeof ApiRssXmlRoute
+  '/api/sitemap/xml': typeof ApiSitemapXmlRoute
 }
 export interface FileRoutesByTo {
   '/hello': typeof ApiHelloRoute
@@ -134,6 +148,8 @@ export interface FileRoutesByTo {
   '/blog/$slug': typeof PublicBlogSlugRoute
   '/category/$category': typeof PublicCategoryCategoryRoute
   '/tag/$tag': typeof PublicTagTagRoute
+  '/api/rss/xml': typeof ApiRssXmlRoute
+  '/api/sitemap/xml': typeof ApiSitemapXmlRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -153,6 +169,8 @@ export interface FileRoutesById {
   '/_public/blog/$slug': typeof PublicBlogSlugRoute
   '/_public/category/$category': typeof PublicCategoryCategoryRoute
   '/_public/tag/$tag': typeof PublicTagTagRoute
+  '/api/rss/xml': typeof ApiRssXmlRoute
+  '/api/sitemap/xml': typeof ApiSitemapXmlRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -170,6 +188,8 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/category/$category'
     | '/tag/$tag'
+    | '/api/rss/xml'
+    | '/api/sitemap/xml'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/hello'
@@ -185,6 +205,8 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/category/$category'
     | '/tag/$tag'
+    | '/api/rss/xml'
+    | '/api/sitemap/xml'
   id:
     | '__root__'
     | '/_auth'
@@ -203,6 +225,8 @@ export interface FileRouteTypes {
     | '/_public/blog/$slug'
     | '/_public/category/$category'
     | '/_public/tag/$tag'
+    | '/api/rss/xml'
+    | '/api/sitemap/xml'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -212,6 +236,8 @@ export interface RootRouteChildren {
   ApiHelloRoute: typeof ApiHelloRoute
   ApiRssRoute: typeof ApiRssRoute
   ApiSitemapRoute: typeof ApiSitemapRoute
+  ApiRssXmlRoute: typeof ApiRssXmlRoute
+  ApiSitemapXmlRoute: typeof ApiSitemapXmlRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -307,6 +333,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiHelloRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/sitemap/xml': {
+      id: '/api/sitemap/xml'
+      path: '/api/sitemap/xml'
+      fullPath: '/api/sitemap/xml'
+      preLoaderRoute: typeof ApiSitemapXmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/rss/xml': {
+      id: '/api/rss/xml'
+      path: '/api/rss/xml'
+      fullPath: '/api/rss/xml'
+      preLoaderRoute: typeof ApiRssXmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_public/tag/$tag': {
       id: '/_public/tag/$tag'
       path: '/tag/$tag'
@@ -385,6 +425,8 @@ const rootRouteChildren: RootRouteChildren = {
   ApiHelloRoute: ApiHelloRoute,
   ApiRssRoute: ApiRssRoute,
   ApiSitemapRoute: ApiSitemapRoute,
+  ApiRssXmlRoute: ApiRssXmlRoute,
+  ApiSitemapXmlRoute: ApiSitemapXmlRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
