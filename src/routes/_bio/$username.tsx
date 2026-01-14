@@ -93,8 +93,11 @@ function BioPage() {
 
   const handleLinkClick = (linkId: string, url: string) => {
     setClickedLink(linkId)
+    console.log('[Bio] Tracking click for link:', linkId)
     // Fire and forget - don't block navigation
-    trackClick({ data: { linkId } }).catch(console.error)
+    trackClick({ data: { linkId } })
+      .then(result => console.log('[Bio] Click tracked:', result))
+      .catch(error => console.error('[Bio] Failed to track click:', error))
     window.open(url, '_blank', 'noopener,noreferrer')
     setTimeout(() => setClickedLink(null), 500)
   }

@@ -250,6 +250,8 @@ export const trackLinkClickFn = createServerFn({ method: 'POST' })
   .inputValidator(z.object({ linkId: z.string().uuid() }))
   .handler(async ({ data }) => {
     try {
+      console.log('[Server] Tracking click for linkId:', data.linkId)
+      
       // Get link first to verify it exists and get userId
       const [link] = await db
         .select()
@@ -258,21 +260,26 @@ export const trackLinkClickFn = createServerFn({ method: 'POST' })
         .limit(1)
 
       if (!link) {
-        console.error('Link not found:', data.linkId)
+        console.error('[Server] Link not found:', data.linkId)
         return { success: false, error: 'Link not found' }
       }
 
+      console.log('[Server] Link found, userId:', link.userId, 'current clicks:', link.clicks)
+
       // Increment link clicks
-      await db
+      const [updatedLink] = await db
         .update(userLinks)
         .set({
           clicks: sql`COALESCE(${userLinks.clicks}, 0) + 1`,
           updatedAt: new Date(),
         })
         .where(eq(userLinks.id, data.linkId))
+        .returning()
+
+      console.log('[Server] Link clicks updated to:', updatedLink?.clicks)
 
       // Increment user's total link clicks in stats
-      await db
+      const [updatedStats] = await db
         .update(userStats)
         .set({
           totalLinkClicks: sql`COALESCE(${userStats.totalLinkClicks}, 0) + 1`,
@@ -280,10 +287,13 @@ export const trackLinkClickFn = createServerFn({ method: 'POST' })
           updatedAt: new Date(),
         })
         .where(eq(userStats.userId, link.userId))
+        .returning()
 
-      return { success: true }
+      console.log('[Server] User stats updated - totalLinkClicks:', updatedStats?.totalLinkClicks, 'score:', updatedStats?.score)
+
+      return { success: true, clicks: updatedLink?.clicks }
     } catch (error) {
-      console.error('Failed to track link click:', error)
+      console.error('[Server] Failed to track link click:', error)
       return { success: false, error: 'Failed to track click' }
     }
   })
