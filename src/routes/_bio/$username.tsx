@@ -7,15 +7,15 @@
 import { createFileRoute, Link, notFound } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
 import { getPublicProfileFn, trackProfileViewFn } from '@/server/functions/users'
 import { trackLinkClickFn } from '@/server/functions/links'
+import { isFollowingFn, followUserFn, unfollowUserFn } from '@/server/functions/follows'
 import {
   User,
   Eye,
   Link as LinkIcon,
-  Users,
   ExternalLink,
   Crown,
   BadgeCheck,
@@ -26,6 +26,9 @@ import {
   MousePointerClick,
   Share2,
   Check,
+  UserPlus,
+  UserMinus,
+  Heart,
 } from 'lucide-react'
 import {
   LuTwitter,
@@ -80,17 +83,45 @@ export const Route = createFileRoute('/_bio/$username')({
 function BioPage() {
   const params = Route.useParams()
   const username = params.username as string
+  const queryClient = useQueryClient()
   const getProfile = useServerFn(getPublicProfileFn)
   const trackClick = useServerFn(trackLinkClickFn)
   const trackView = useServerFn(trackProfileViewFn)
+  const checkFollowing = useServerFn(isFollowingFn)
+  const followUser = useServerFn(followUserFn)
+  const unfollowUser = useServerFn(unfollowUserFn)
 
   const { data: profile, isLoading, error } = useQuery({
     queryKey: ['publicProfile', username],
     queryFn: () => getProfile({ data: { username } }),
   })
 
+  // Check if current user is following this profile
+  const { data: followStatus } = useQuery({
+    queryKey: ['followStatus', profile?.user?.id],
+    queryFn: () => checkFollowing({ data: { targetUserId: profile!.user.id } }),
+    enabled: !!profile?.user?.id,
+  })
+
   const [clickedLink, setClickedLink] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
+  const [followerCount, setFollowerCount] = useState<number | null>(null)
+  const [isFollowing, setIsFollowing] = useState(false)
+  const [isFollowLoading, setIsFollowLoading] = useState(false)
+
+  // Sync follow status from query
+  useEffect(() => {
+    if (followStatus) {
+      setIsFollowing(followStatus.isFollowing)
+    }
+  }, [followStatus])
+
+  // Sync follower count from profile
+  useEffect(() => {
+    if (profile?.stats?.followers !== undefined) {
+      setFollowerCount(profile.stats.followers)
+    }
+  }, [profile?.stats?.followers])
 
   // Track profile view once per session
   useEffect(() => {
@@ -100,14 +131,12 @@ function BioPage() {
     const hasViewed = sessionStorage.getItem(sessionKey)
 
     if (!hasViewed) {
-      // Generate session ID if not exists
       let sessionId = sessionStorage.getItem('eziox_session_id')
       if (!sessionId) {
         sessionId = `${Date.now()}_${Math.random().toString(36).substring(2)}`
         sessionStorage.setItem('eziox_session_id', sessionId)
       }
 
-      // Track view
       trackView({ data: { userId: profile.user.id, sessionId } })
         .then(() => {
           sessionStorage.setItem(sessionKey, 'true')
@@ -115,6 +144,43 @@ function BioPage() {
         .catch(console.error)
     }
   }, [profile?.user?.id, trackView])
+
+  // Handle follow/unfollow with optimistic updates
+  const handleFollowToggle = async () => {
+    if (!profile?.user?.id || !followStatus?.isAuthenticated || followStatus?.isSelf) return
+    
+    setIsFollowLoading(true)
+    const wasFollowing = isFollowing
+
+    // Optimistic update
+    setIsFollowing(!wasFollowing)
+    setFollowerCount(prev => (prev ?? 0) + (wasFollowing ? -1 : 1))
+
+    try {
+      const result = wasFollowing
+        ? await unfollowUser({ data: { targetUserId: profile.user.id } })
+        : await followUser({ data: { targetUserId: profile.user.id } })
+
+      if (result.success) {
+        // Update with real count from server
+        setFollowerCount(result.newFollowerCount)
+        setIsFollowing(result.isFollowing)
+        // Invalidate queries to refresh data
+        void queryClient.invalidateQueries({ queryKey: ['followStatus', profile.user.id] })
+        void queryClient.invalidateQueries({ queryKey: ['publicProfile', username] })
+      } else {
+        // Revert on error
+        setIsFollowing(wasFollowing)
+        setFollowerCount(prev => (prev ?? 0) + (wasFollowing ? 1 : -1))
+      }
+    } catch {
+      // Revert on error
+      setIsFollowing(wasFollowing)
+      setFollowerCount(prev => (prev ?? 0) + (wasFollowing ? 1 : -1))
+    } finally {
+      setIsFollowLoading(false)
+    }
+  }
 
   const handleLinkClick = (linkId: string, url: string) => {
     setClickedLink(linkId)
@@ -341,7 +407,7 @@ function BioPage() {
           </div>
 
           {/* Stats */}
-          <div className="flex items-center justify-center gap-6">
+          <div className="flex items-center justify-center gap-6 mb-6">
             <div className="text-center">
               <div className="flex items-center justify-center gap-1 mb-0.5">
                 <Eye size={14} style={{ color: accentColor }} />
@@ -362,14 +428,63 @@ function BioPage() {
             </div>
             <div className="text-center">
               <div className="flex items-center justify-center gap-1 mb-0.5">
-                <Users size={14} style={{ color: accentColor }} />
+                <Heart size={14} style={{ color: accentColor }} />
                 <span className="font-bold" style={{ color: 'var(--foreground)' }}>
-                  {(profile.stats?.followers || 0).toLocaleString()}
+                  {(followerCount ?? profile.stats?.followers ?? 0).toLocaleString()}
                 </span>
               </div>
               <span className="text-xs" style={{ color: 'var(--foreground-muted)' }}>followers</span>
             </div>
           </div>
+
+          {/* Follow Button */}
+          {followStatus?.isAuthenticated && !followStatus?.isSelf && (
+            <motion.button
+              onClick={handleFollowToggle}
+              disabled={isFollowLoading}
+              className="flex items-center justify-center gap-2 px-6 py-2.5 rounded-full font-medium transition-all mx-auto"
+              style={{
+                background: isFollowing 
+                  ? 'var(--background-secondary)' 
+                  : `linear-gradient(135deg, ${accentColor}, var(--accent))`,
+                color: isFollowing ? 'var(--foreground)' : 'white',
+                border: isFollowing ? '1px solid var(--border)' : 'none',
+                boxShadow: isFollowing ? 'none' : `0 4px 20px ${accentColor}40`,
+              }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              {isFollowLoading ? (
+                <Loader2 size={18} className="animate-spin" />
+              ) : isFollowing ? (
+                <>
+                  <UserMinus size={18} />
+                  Following
+                </>
+              ) : (
+                <>
+                  <UserPlus size={18} />
+                  Follow
+                </>
+              )}
+            </motion.button>
+          )}
+
+          {/* Sign in prompt for non-authenticated users */}
+          {!followStatus?.isAuthenticated && !followStatus?.isSelf && (
+            <Link
+              to="/sign-in"
+              className="flex items-center justify-center gap-2 px-6 py-2.5 rounded-full font-medium transition-all mx-auto hover:scale-102"
+              style={{
+                background: `linear-gradient(135deg, ${accentColor}, var(--accent))`,
+                color: 'white',
+                boxShadow: `0 4px 20px ${accentColor}40`,
+              }}
+            >
+              <UserPlus size={18} />
+              Sign in to Follow
+            </Link>
+          )}
         </motion.div>
 
         {/* Social Links */}

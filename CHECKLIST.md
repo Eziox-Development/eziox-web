@@ -28,8 +28,9 @@
 ## 🔧 Bug Fixes Needed
 
 ### High Priority
-- [ ] **Link Click Tracking** - Verify clicks increment correctly after fix
-- [ ] **Session Persistence** - Check 7-day session expiry works
+- [x] **Link Click Tracking** - Fixed with COALESCE and proper error handling
+- [x] **Session Persistence** - 7-day expiry working correctly
+- [x] **View Tracking** - Fixed session-based deduplication (no tab-switch counting)
 
 ---
 
@@ -37,14 +38,17 @@
 
 ### Phase 1: Social Features (Priority: HIGH)
 
-#### 1. Followers System
-- [ ] Follow/Unfollow button on bio pages
-- [ ] Followers/Following counts in profile
-- [ ] Followers list page (`/profile/followers`)
-- [ ] Following list page (`/profile/following`)
-- [ ] Follow notifications
-- [ ] Update `follows` table usage
-- [ ] Increment/decrement `userStats.followers` and `userStats.following`
+#### 1. Followers System ✅
+- [x] Follow/Unfollow button on bio pages
+- [x] Followers/Following counts in profile (real-time)
+- [x] Server functions for follow/unfollow
+- [x] Optimistic UI updates
+- [x] Update `follows` table usage
+- [x] Increment/decrement `userStats.followers` and `userStats.following`
+- [x] Sign-in prompt for non-authenticated users
+- [ ] Followers list page (`/profile/followers`) - Future
+- [ ] Following list page (`/profile/following`) - Future
+- [ ] Follow notifications - Future
 
 #### 2. Referral System
 - [ ] Generate unique referral codes per user
