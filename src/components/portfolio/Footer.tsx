@@ -40,22 +40,22 @@ const iconMap: Record<string, React.ComponentType<{ size?: number }>> = {
 
 const footerLinks = {
   product: [
-    { label: 'Features', href: '/about' },
-    { label: 'Pricing', href: '/about' },
-    { label: 'Changelog', href: '/archive' },
-    { label: 'Creators', href: '/leaderboard' },
+    { label: 'Features', href: '/features' },
+    { label: 'Pricing', href: '/pricing' },
+    { label: 'Changelog', href: '/changelog' },
+    { label: 'Creators', href: '/creators' },
   ],
   resources: [
-    { label: 'Documentation', href: '/about' },
+    { label: 'Documentation', href: '/docs' },
     { label: 'Blog', href: '/blog' },
-    { label: 'Support', href: '/about' },
-    { label: 'API', href: '/about' },
+    { label: 'Support', href: '/support' },
+    { label: 'API', href: '/api' },
   ],
   company: [
     { label: 'About', href: '/about' },
-    { label: 'Careers', href: '/about' },
-    { label: 'Privacy', href: '/about' },
-    { label: 'Terms', href: '/about' },
+    { label: 'Careers', href: '/careers' },
+    { label: 'Privacy', href: '/privacy' },
+    { label: 'Terms', href: '/terms' },
   ],
 }
 

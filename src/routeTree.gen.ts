@@ -14,7 +14,7 @@ import { Route as ProtectedRouteImport } from './routes/_protected'
 import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
 import { Route as PublicLeaderboardRouteImport } from './routes/_public/leaderboard'
-import { Route as PublicArchiveRouteImport } from './routes/_public/archive'
+import { Route as PublicChangelogRouteImport } from './routes/_public/changelog'
 import { Route as PublicAboutRouteImport } from './routes/_public/about'
 import { Route as PublicUsernameRouteImport } from './routes/_public/$username'
 import { Route as ProtectedProfileRouteImport } from './routes/_protected/profile'
@@ -26,10 +26,7 @@ import { Route as ApiSitemapRouteImport } from './routes/_api/sitemap'
 import { Route as ApiRssRouteImport } from './routes/_api/rss'
 import { Route as ApiHelloRouteImport } from './routes/_api/hello'
 import { Route as PublicUUsernameRouteImport } from './routes/_public/u.$username'
-import { Route as PublicTagTagRouteImport } from './routes/_public/tag/$tag'
 import { Route as PublicSCodeRouteImport } from './routes/_public/s.$code'
-import { Route as PublicCategoryCategoryRouteImport } from './routes/_public/category/$category'
-import { Route as PublicBlogSlugRouteImport } from './routes/_public/blog/$slug'
 
 const PublicRoute = PublicRouteImport.update({
   id: '/_public',
@@ -53,9 +50,9 @@ const PublicLeaderboardRoute = PublicLeaderboardRouteImport.update({
   path: '/leaderboard',
   getParentRoute: () => PublicRoute,
 } as any)
-const PublicArchiveRoute = PublicArchiveRouteImport.update({
-  id: '/archive',
-  path: '/archive',
+const PublicChangelogRoute = PublicChangelogRouteImport.update({
+  id: '/changelog',
+  path: '/changelog',
   getParentRoute: () => PublicRoute,
 } as any)
 const PublicAboutRoute = PublicAboutRouteImport.update({
@@ -114,24 +111,9 @@ const PublicUUsernameRoute = PublicUUsernameRouteImport.update({
   path: '/u/$username',
   getParentRoute: () => PublicRoute,
 } as any)
-const PublicTagTagRoute = PublicTagTagRouteImport.update({
-  id: '/tag/$tag',
-  path: '/tag/$tag',
-  getParentRoute: () => PublicRoute,
-} as any)
 const PublicSCodeRoute = PublicSCodeRouteImport.update({
   id: '/s/$code',
   path: '/s/$code',
-  getParentRoute: () => PublicRoute,
-} as any)
-const PublicCategoryCategoryRoute = PublicCategoryCategoryRouteImport.update({
-  id: '/category/$category',
-  path: '/category/$category',
-  getParentRoute: () => PublicRoute,
-} as any)
-const PublicBlogSlugRoute = PublicBlogSlugRouteImport.update({
-  id: '/blog/$slug',
-  path: '/blog/$slug',
   getParentRoute: () => PublicRoute,
 } as any)
 
@@ -146,13 +128,10 @@ export interface FileRoutesByFullPath {
   '/profile': typeof ProtectedProfileRoute
   '/$username': typeof PublicUsernameRoute
   '/about': typeof PublicAboutRoute
-  '/archive': typeof PublicArchiveRoute
+  '/changelog': typeof PublicChangelogRoute
   '/leaderboard': typeof PublicLeaderboardRoute
   '/': typeof PublicIndexRoute
-  '/blog/$slug': typeof PublicBlogSlugRoute
-  '/category/$category': typeof PublicCategoryCategoryRoute
   '/s/$code': typeof PublicSCodeRoute
-  '/tag/$tag': typeof PublicTagTagRoute
   '/u/$username': typeof PublicUUsernameRoute
 }
 export interface FileRoutesByTo {
@@ -166,13 +145,10 @@ export interface FileRoutesByTo {
   '/profile': typeof ProtectedProfileRoute
   '/$username': typeof PublicUsernameRoute
   '/about': typeof PublicAboutRoute
-  '/archive': typeof PublicArchiveRoute
+  '/changelog': typeof PublicChangelogRoute
   '/leaderboard': typeof PublicLeaderboardRoute
   '/': typeof PublicIndexRoute
-  '/blog/$slug': typeof PublicBlogSlugRoute
-  '/category/$category': typeof PublicCategoryCategoryRoute
   '/s/$code': typeof PublicSCodeRoute
-  '/tag/$tag': typeof PublicTagTagRoute
   '/u/$username': typeof PublicUUsernameRoute
 }
 export interface FileRoutesById {
@@ -190,13 +166,10 @@ export interface FileRoutesById {
   '/_protected/profile': typeof ProtectedProfileRoute
   '/_public/$username': typeof PublicUsernameRoute
   '/_public/about': typeof PublicAboutRoute
-  '/_public/archive': typeof PublicArchiveRoute
+  '/_public/changelog': typeof PublicChangelogRoute
   '/_public/leaderboard': typeof PublicLeaderboardRoute
   '/_public/': typeof PublicIndexRoute
-  '/_public/blog/$slug': typeof PublicBlogSlugRoute
-  '/_public/category/$category': typeof PublicCategoryCategoryRoute
   '/_public/s/$code': typeof PublicSCodeRoute
-  '/_public/tag/$tag': typeof PublicTagTagRoute
   '/_public/u/$username': typeof PublicUUsernameRoute
 }
 export interface FileRouteTypes {
@@ -212,13 +185,10 @@ export interface FileRouteTypes {
     | '/profile'
     | '/$username'
     | '/about'
-    | '/archive'
+    | '/changelog'
     | '/leaderboard'
     | '/'
-    | '/blog/$slug'
-    | '/category/$category'
     | '/s/$code'
-    | '/tag/$tag'
     | '/u/$username'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -232,13 +202,10 @@ export interface FileRouteTypes {
     | '/profile'
     | '/$username'
     | '/about'
-    | '/archive'
+    | '/changelog'
     | '/leaderboard'
     | '/'
-    | '/blog/$slug'
-    | '/category/$category'
     | '/s/$code'
-    | '/tag/$tag'
     | '/u/$username'
   id:
     | '__root__'
@@ -255,13 +222,10 @@ export interface FileRouteTypes {
     | '/_protected/profile'
     | '/_public/$username'
     | '/_public/about'
-    | '/_public/archive'
+    | '/_public/changelog'
     | '/_public/leaderboard'
     | '/_public/'
-    | '/_public/blog/$slug'
-    | '/_public/category/$category'
     | '/_public/s/$code'
-    | '/_public/tag/$tag'
     | '/_public/u/$username'
   fileRoutesById: FileRoutesById
 }
@@ -311,11 +275,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicLeaderboardRouteImport
       parentRoute: typeof PublicRoute
     }
-    '/_public/archive': {
-      id: '/_public/archive'
-      path: '/archive'
-      fullPath: '/archive'
-      preLoaderRoute: typeof PublicArchiveRouteImport
+    '/_public/changelog': {
+      id: '/_public/changelog'
+      path: '/changelog'
+      fullPath: '/changelog'
+      preLoaderRoute: typeof PublicChangelogRouteImport
       parentRoute: typeof PublicRoute
     }
     '/_public/about': {
@@ -395,32 +359,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicUUsernameRouteImport
       parentRoute: typeof PublicRoute
     }
-    '/_public/tag/$tag': {
-      id: '/_public/tag/$tag'
-      path: '/tag/$tag'
-      fullPath: '/tag/$tag'
-      preLoaderRoute: typeof PublicTagTagRouteImport
-      parentRoute: typeof PublicRoute
-    }
     '/_public/s/$code': {
       id: '/_public/s/$code'
       path: '/s/$code'
       fullPath: '/s/$code'
       preLoaderRoute: typeof PublicSCodeRouteImport
-      parentRoute: typeof PublicRoute
-    }
-    '/_public/category/$category': {
-      id: '/_public/category/$category'
-      path: '/category/$category'
-      fullPath: '/category/$category'
-      preLoaderRoute: typeof PublicCategoryCategoryRouteImport
-      parentRoute: typeof PublicRoute
-    }
-    '/_public/blog/$slug': {
-      id: '/_public/blog/$slug'
-      path: '/blog/$slug'
-      fullPath: '/blog/$slug'
-      preLoaderRoute: typeof PublicBlogSlugRouteImport
       parentRoute: typeof PublicRoute
     }
   }
@@ -457,26 +400,20 @@ const ProtectedRouteWithChildren = ProtectedRoute._addFileChildren(
 interface PublicRouteChildren {
   PublicUsernameRoute: typeof PublicUsernameRoute
   PublicAboutRoute: typeof PublicAboutRoute
-  PublicArchiveRoute: typeof PublicArchiveRoute
+  PublicChangelogRoute: typeof PublicChangelogRoute
   PublicLeaderboardRoute: typeof PublicLeaderboardRoute
   PublicIndexRoute: typeof PublicIndexRoute
-  PublicBlogSlugRoute: typeof PublicBlogSlugRoute
-  PublicCategoryCategoryRoute: typeof PublicCategoryCategoryRoute
   PublicSCodeRoute: typeof PublicSCodeRoute
-  PublicTagTagRoute: typeof PublicTagTagRoute
   PublicUUsernameRoute: typeof PublicUUsernameRoute
 }
 
 const PublicRouteChildren: PublicRouteChildren = {
   PublicUsernameRoute: PublicUsernameRoute,
   PublicAboutRoute: PublicAboutRoute,
-  PublicArchiveRoute: PublicArchiveRoute,
+  PublicChangelogRoute: PublicChangelogRoute,
   PublicLeaderboardRoute: PublicLeaderboardRoute,
   PublicIndexRoute: PublicIndexRoute,
-  PublicBlogSlugRoute: PublicBlogSlugRoute,
-  PublicCategoryCategoryRoute: PublicCategoryCategoryRoute,
   PublicSCodeRoute: PublicSCodeRoute,
-  PublicTagTagRoute: PublicTagTagRoute,
   PublicUUsernameRoute: PublicUUsernameRoute,
 }
 

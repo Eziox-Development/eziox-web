@@ -1,6 +1,4 @@
 import type { ComponentType } from 'react'
-import { useState } from 'react'
-import { siteConfig } from '@/lib/site-config'
 import {
   LuTwitter,
   LuGithub,
@@ -11,9 +9,22 @@ import {
   LuMail,
   LuGlobe,
 } from 'react-icons/lu'
-import { FaDiscord } from 'react-icons/fa'
-import { motion, AnimatePresence } from 'motion/react'
-import { Sparkles, Verified, Code2, Briefcase, Calendar, ChevronDown, ChevronUp, MapPin } from 'lucide-react'
+import { FaDiscord, FaTiktok, FaTwitch } from 'react-icons/fa'
+import { motion } from 'motion/react'
+import {
+  User,
+  MapPin,
+  Link as LinkIcon,
+  Eye,
+  MousePointerClick,
+  Users,
+  Crown,
+  BadgeCheck,
+  ExternalLink,
+  Copy,
+  Check,
+} from 'lucide-react'
+import { useState } from 'react'
 
 const iconMap: Record<string, ComponentType<{ size?: number }>> = {
   twitter: LuTwitter,
@@ -25,381 +36,313 @@ const iconMap: Record<string, ComponentType<{ size?: number }>> = {
   mail: LuMail,
   globe: LuGlobe,
   discord: FaDiscord,
+  tiktok: FaTiktok,
+  twitch: FaTwitch,
 }
 
-const statsIconMap: Record<string, React.ComponentType<{ size?: number; className?: string; style?: React.CSSProperties }>> = {
-  calendar: Calendar,
-  briefcase: Briefcase,
-  code: Code2,
+interface ProfileCardProps {
+  user: {
+    id: string
+    name: string | null
+    username: string
+    email?: string
+    role?: string
+    createdAt?: string
+    profile?: {
+      bio?: string | null
+      avatar?: string | null
+      banner?: string | null
+      location?: string | null
+      website?: string | null
+      pronouns?: string | null
+      accentColor?: string | null
+      badges?: string[] | null
+      socials?: Record<string, string> | null
+      isPublic?: boolean
+    } | null
+    stats?: {
+      profileViews?: number
+      totalLinkClicks?: number
+      followers?: number
+      following?: number
+      score?: number
+    } | null
+  }
+  isOwner?: boolean
+  compact?: boolean
 }
 
-export function ProfileCard() {
-  const { owner } = siteConfig
-  const [showExtendedBio, setShowExtendedBio] = useState(false)
+export function ProfileCard({ user, isOwner = false, compact = false }: ProfileCardProps) {
+  const [copied, setCopied] = useState(false)
+  
+  const bioUrl = `eziox.link/${user.username}`
+  const isPremium = user.role === 'premium' || user.role === 'owner'
+  const isVerified = user.role === 'owner' || user.role === 'admin'
+
+  const copyBioLink = async () => {
+    await navigator.clipboard.writeText(`https://${bioUrl}`)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  const formatNumber = (num: number | undefined) => {
+    if (!num) return '0'
+    if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`
+    if (num >= 1000) return `${(num / 1000).toFixed(1)}K`
+    return num.toString()
+  }
 
   return (
-    <motion.aside
-      initial={{ opacity: 0, x: -30 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.6, delay: 0.2, type: 'spring', stiffness: 100 }}
-      className="sticky top-28"
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className={`relative rounded-2xl overflow-hidden ${compact ? '' : 'max-w-sm'}`}
+      style={{
+        background: 'var(--card)',
+        border: '1px solid var(--border)',
+        boxShadow: '0 10px 40px rgba(0, 0, 0, 0.2)',
+      }}
     >
-      {/* Glow effect behind card */}
-      <div
-        className="absolute -inset-2 rounded-3xl opacity-50 blur-2xl pointer-events-none"
-        style={{
-          background: 'linear-gradient(135deg, var(--primary), var(--accent))',
-        }}
-      />
-
-      <div
-        className="relative rounded-3xl overflow-hidden"
-        style={{
-          backgroundColor: 'var(--card)',
-          border: '1px solid var(--border)',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.12)',
-        }}
-      >
-        {/* Custom Banner or Gradient Header */}
-        <div className="h-28 relative overflow-hidden">
-          {owner.banner ? (
-            <>
-              <img
-                src={owner.banner}
-                alt="Profile Banner"
-                className="w-full h-full object-cover"
-                loading="lazy"
-              />
-              {/* Overlay gradient for better text visibility */}
-              <div
-                className="absolute inset-0"
-                style={{
-                  background: 'linear-gradient(to top, var(--card) 0%, transparent 50%)',
-                }}
-              />
-            </>
-          ) : (
-            <>
-              <div
-                className="absolute inset-0"
-                style={{
-                  background: 'linear-gradient(135deg, var(--primary), var(--accent))',
-                }}
-              />
-              {/* Animated floating particles */}
-              <motion.div
-                className="absolute inset-0"
-                animate={{ backgroundPosition: ['0% 0%', '100% 100%'] }}
-                transition={{
-                  duration: 20,
-                  repeat: Infinity,
-                  repeatType: 'reverse',
-                }}
-                style={{
-                  backgroundImage: `radial-gradient(circle at 20% 50%, rgba(255,255,255,0.3) 2px, transparent 2px),
-                                   radial-gradient(circle at 80% 30%, rgba(255,255,255,0.2) 2px, transparent 2px),
-                                   radial-gradient(circle at 40% 80%, rgba(255,255,255,0.25) 1px, transparent 1px),
-                                   radial-gradient(circle at 60% 20%, rgba(255,255,255,0.2) 1px, transparent 1px)`,
-                  backgroundSize: '80px 80px, 60px 60px, 40px 40px, 50px 50px',
-                }}
-              />
-            </>
-          )}
-
-          {/* Shimmer effect */}
-          <motion.div
-            className="absolute inset-0"
-            animate={{ x: ['-100%', '200%'] }}
-            transition={{ duration: 3, repeat: Infinity, repeatDelay: 5 }}
+      {/* Banner */}
+      <div className="relative h-24">
+        {user.profile?.banner ? (
+          <img
+            src={user.profile.banner}
+            alt="Banner"
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div
+            className="w-full h-full"
             style={{
-              background:
-                'linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)',
-              width: '50%',
+              background: user.profile?.accentColor 
+                ? `linear-gradient(135deg, ${user.profile.accentColor}, var(--accent))`
+                : 'linear-gradient(135deg, var(--primary), var(--accent))',
             }}
           />
-        </div>
-
-        {/* Avatar with glow ring */}
-        <div className="px-6 -mt-14 relative z-10">
-          <motion.div
-            className="relative w-28 h-28 rounded-2xl overflow-hidden"
-            whileHover={{ scale: 1.05, rotate: 3 }}
-            transition={{ type: 'spring', stiffness: 300 }}
+        )}
+        <div
+          className="absolute bottom-0 left-0 right-0 h-12"
+          style={{ background: 'linear-gradient(to top, var(--card), transparent)' }}
+        />
+        
+        {/* Premium Badge */}
+        {isPremium && (
+          <div
+            className="absolute top-3 right-3 flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold"
             style={{
-              boxShadow:
-                '0 0 0 4px var(--card), 0 0 30px rgba(var(--primary-rgb, 99, 102, 241), 0.4)',
+              background: 'linear-gradient(135deg, #fbbf24, #f59e0b)',
+              color: '#1f2937',
             }}
           >
-            <img
-              src={owner.avatar}
-              alt={owner.name}
-              className="w-full h-full object-cover"
-              loading="lazy"
-            />
-            {/* Hover shine */}
+            <Crown size={12} />
+            Premium
+          </div>
+        )}
+      </div>
+
+      {/* Avatar */}
+      <div className="px-4 -mt-10 relative z-10">
+        <motion.div
+          className="w-20 h-20 rounded-2xl overflow-hidden"
+          style={{
+            boxShadow: '0 0 0 4px var(--card), 0 0 20px rgba(99, 102, 241, 0.3)',
+            background: 'var(--background-secondary)',
+          }}
+          whileHover={{ scale: 1.02 }}
+        >
+          {user.profile?.avatar ? (
+            <img src={user.profile.avatar} alt={user.name || user.username} className="w-full h-full object-cover" />
+          ) : user.name ? (
             <div
-              className="absolute inset-0 opacity-0 hover:opacity-100 transition-opacity duration-500"
-              style={{
-                background:
-                  'linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.3) 50%, transparent 60%)',
-              }}
-            />
-          </motion.div>
-
-          {/* Online indicator */}
-          <motion.div
-            className="absolute bottom-1 right-5 w-5 h-5 rounded-full border-2"
-            style={{
-              backgroundColor: '#22c55e',
-              borderColor: 'var(--card)',
-            }}
-            animate={{ scale: [1, 1.2, 1] }}
-            transition={{ duration: 2, repeat: Infinity }}
-          />
-        </div>
-
-        {/* Content */}
-        <div className="p-6 pt-4 space-y-5">
-          {/* Name & Role */}
-          <div>
-            <motion.h2
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="text-2xl font-bold flex items-center gap-2"
-              style={{
-                color: 'var(--foreground)',
-                fontFamily: 'var(--font-display)',
-              }}
+              className="w-full h-full flex items-center justify-center text-3xl font-bold"
+              style={{ background: 'linear-gradient(135deg, var(--primary), var(--accent))', color: 'white' }}
             >
-              {owner.name}
-              <Verified
-                size={20}
-                fill="var(--primary)"
-                style={{ color: 'var(--primary-foreground)' }}
-              />
-            </motion.h2>
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.4 }}
-              className="text-sm mt-1 font-medium"
-              style={{
-                color: 'var(--primary)',
-                fontFamily: 'var(--font-body)',
-              }}
-            >
-              {owner.role}
-            </motion.p>
-            {owner.location && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.45 }}
-                className="flex items-center gap-1 mt-1 text-xs"
-                style={{ color: 'var(--foreground-muted)' }}
-              >
-                <MapPin size={12} />
-                {owner.location}
-              </motion.div>
-            )}
-          </div>
-
-          {/* Bio */}
-          <div>
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
-              className="text-sm leading-relaxed"
-              style={{
-                color: 'var(--foreground-muted)',
-                fontFamily: 'var(--font-body)',
-              }}
-            >
-              {owner.bio}
-            </motion.p>
-
-            {/* Extended Bio Toggle */}
-            <AnimatePresence>
-              {showExtendedBio && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.3 }}
-                  className="mt-3 text-sm leading-relaxed"
-                  style={{
-                    color: 'var(--foreground-muted)',
-                    fontFamily: 'var(--font-body)',
-                  }}
-                >
-                  {owner.extendedBio}
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            <button
-              onClick={() => setShowExtendedBio(!showExtendedBio)}
-              className="mt-2 flex items-center gap-1 text-xs font-medium transition-colors hover:opacity-80"
-              style={{ color: 'var(--primary)' }}
-            >
-              {showExtendedBio ? (
-                <>
-                  Show less <ChevronUp size={14} />
-                </>
-              ) : (
-                <>
-                  Read more <ChevronDown size={14} />
-                </>
-              )}
-            </button>
-          </div>
-
-          {/* Stats Section - Using real data from config */}
-          {owner.stats && owner.stats.length > 0 && (
-            <div className="grid grid-cols-3 gap-3">
-              {owner.stats.map((stat, index) => {
-                const Icon = statsIconMap[stat.icon.toLowerCase()] || Code2
-                return (
-                  <motion.div
-                    key={stat.label}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.5 + index * 0.1 }}
-                    whileHover={{ scale: 1.05, y: -2 }}
-                    className="p-3 rounded-xl text-center transition-all duration-200"
-                    style={{
-                      backgroundColor: 'var(--background-secondary)',
-                      border: '1px solid var(--border)',
-                    }}
-                  >
-                    <Icon
-                      size={18}
-                      className="mx-auto mb-1"
-                      style={{ color: 'var(--primary)' }}
-                    />
-                    <div
-                      className="text-lg font-bold"
-                      style={{ color: 'var(--foreground)' }}
-                    >
-                      {stat.value}
-                    </div>
-                    <div
-                      className="text-xs mt-0.5"
-                      style={{ color: 'var(--foreground-muted)' }}
-                    >
-                      {stat.label}
-                    </div>
-                  </motion.div>
-                )
-              })}
+              {user.name.charAt(0).toUpperCase()}
+            </div>
+          ) : (
+            <div className="w-full h-full flex items-center justify-center" style={{ color: 'var(--foreground-muted)' }}>
+              <User size={32} />
             </div>
           )}
+        </motion.div>
+      </div>
 
-          {/* Badges with gradient hover */}
-          <div className="flex flex-wrap gap-2">
-            {owner.badges.map((badge, index) => (
-              <motion.span
+      {/* Content */}
+      <div className="p-4 pt-3 space-y-4">
+        {/* Name & Username */}
+        <div>
+          <div className="flex items-center gap-2">
+            <h3 className="text-lg font-bold" style={{ color: 'var(--foreground)' }}>
+              {user.name || user.username}
+            </h3>
+            {isVerified && (
+              <BadgeCheck size={18} fill="var(--primary)" style={{ color: 'white' }} />
+            )}
+          </div>
+          <p className="text-sm" style={{ color: 'var(--foreground-muted)' }}>
+            @{user.username}
+          </p>
+          {user.profile?.pronouns && (
+            <p className="text-xs mt-0.5" style={{ color: 'var(--foreground-muted)' }}>
+              {user.profile.pronouns}
+            </p>
+          )}
+        </div>
+
+        {/* Bio */}
+        {user.profile?.bio && (
+          <p className="text-sm leading-relaxed" style={{ color: 'var(--foreground-muted)' }}>
+            {user.profile.bio}
+          </p>
+        )}
+
+        {/* Location & Website */}
+        <div className="flex flex-wrap gap-3 text-xs" style={{ color: 'var(--foreground-muted)' }}>
+          {user.profile?.location && (
+            <span className="flex items-center gap-1">
+              <MapPin size={12} />
+              {user.profile.location}
+            </span>
+          )}
+          {user.profile?.website && (
+            <a
+              href={user.profile.website}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 hover:text-[var(--primary)] transition-colors"
+            >
+              <LinkIcon size={12} />
+              {user.profile.website.replace(/^https?:\/\//, '').replace(/\/$/, '')}
+            </a>
+          )}
+        </div>
+
+        {/* Stats */}
+        {user.stats && (
+          <div className="grid grid-cols-3 gap-2">
+            <div
+              className="p-2 rounded-xl text-center"
+              style={{ background: 'var(--background-secondary)' }}
+            >
+              <Eye size={14} className="mx-auto mb-1" style={{ color: 'var(--primary)' }} />
+              <div className="text-sm font-bold" style={{ color: 'var(--foreground)' }}>
+                {formatNumber(user.stats.profileViews)}
+              </div>
+              <div className="text-[10px]" style={{ color: 'var(--foreground-muted)' }}>Views</div>
+            </div>
+            <div
+              className="p-2 rounded-xl text-center"
+              style={{ background: 'var(--background-secondary)' }}
+            >
+              <MousePointerClick size={14} className="mx-auto mb-1" style={{ color: 'var(--accent)' }} />
+              <div className="text-sm font-bold" style={{ color: 'var(--foreground)' }}>
+                {formatNumber(user.stats.totalLinkClicks)}
+              </div>
+              <div className="text-[10px]" style={{ color: 'var(--foreground-muted)' }}>Clicks</div>
+            </div>
+            <div
+              className="p-2 rounded-xl text-center"
+              style={{ background: 'var(--background-secondary)' }}
+            >
+              <Users size={14} className="mx-auto mb-1" style={{ color: 'var(--primary)' }} />
+              <div className="text-sm font-bold" style={{ color: 'var(--foreground)' }}>
+                {formatNumber(user.stats.followers)}
+              </div>
+              <div className="text-[10px]" style={{ color: 'var(--foreground-muted)' }}>Followers</div>
+            </div>
+          </div>
+        )}
+
+        {/* Badges */}
+        {user.profile?.badges && user.profile.badges.length > 0 && (
+          <div className="flex flex-wrap gap-1.5">
+            {user.profile.badges.map((badge) => (
+              <span
                 key={badge}
-                initial={{ opacity: 0, scale: 0.8, y: 10 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                transition={{ delay: 0.6 + index * 0.1, type: 'spring' }}
-                whileHover={{ scale: 1.05, y: -2 }}
-                className="px-3 py-1.5 rounded-lg text-xs font-semibold cursor-default transition-all duration-200"
+                className="px-2 py-1 rounded-md text-[10px] font-medium"
                 style={{
-                  backgroundColor: 'var(--background-secondary)',
-                  color: 'var(--foreground-muted)',
-                  border: '1px solid var(--border)',
-                  fontFamily: 'var(--font-body)',
+                  background: 'rgba(99, 102, 241, 0.1)',
+                  color: 'var(--primary)',
+                  border: '1px solid rgba(99, 102, 241, 0.2)',
                 }}
               >
                 {badge}
-              </motion.span>
+              </span>
             ))}
           </div>
+        )}
 
-          {/* Gradient Divider */}
-          <div
-            className="h-px"
-            style={{
-              background:
-                'linear-gradient(90deg, transparent, var(--border), var(--primary), var(--border), transparent)',
-            }}
-          />
-
-          {/* Social Links with glow and tooltips */}
-          <div>
-            <h3
-              className="text-xs font-semibold uppercase tracking-wider mb-3"
-              style={{ color: 'var(--foreground-muted)' }}
-            >
-              Connect
-            </h3>
-            <div className="flex flex-wrap gap-2">
-              {owner.socialLinks.map((social, index) => {
-                const Icon = iconMap[social.icon.toLowerCase()] || LuGlobe
-                return (
-                  <motion.a
-                    key={social.platform}
-                    href={social.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.7 + index * 0.05 }}
-                    whileHover={{
-                      scale: 1.15,
-                      y: -3,
-                    }}
-                    className="group relative p-3 rounded-xl transition-all duration-300"
-                    style={{
-                      backgroundColor: 'var(--background-secondary)',
-                      border: '1px solid var(--border)',
-                      color: 'var(--foreground-muted)',
-                    }}
-                    aria-label={social.platform}
-                    title={social.platform}
-                  >
-                    {/* Glow on hover */}
-                    <div
-                      className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10 blur-md"
-                      style={{ background: 'var(--primary)' }}
-                    />
-                    <Icon size={20} />
-                  </motion.a>
-                )
-              })}
-            </div>
+        {/* Social Links */}
+        {user.profile?.socials && Object.keys(user.profile.socials).length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {Object.entries(user.profile.socials).map(([platform, url]) => {
+              const Icon = iconMap[platform.toLowerCase()] || LuGlobe
+              return (
+                <motion.a
+                  key={platform}
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 rounded-lg transition-colors"
+                  style={{
+                    background: 'var(--background-secondary)',
+                    color: 'var(--foreground-muted)',
+                  }}
+                  whileHover={{ scale: 1.1, y: -2 }}
+                  title={platform}
+                >
+                  <Icon size={16} />
+                </motion.a>
+              )
+            })}
           </div>
+        )}
 
-          {/* Status badge - Using real availability from config */}
-          {owner.availability && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8 }}
-              className="flex items-center gap-2 pt-2"
+        {/* Bio Link */}
+        <div
+          className="flex items-center justify-between p-3 rounded-xl"
+          style={{ background: 'var(--background-secondary)' }}
+        >
+          <span className="text-xs font-mono" style={{ color: 'var(--primary)' }}>
+            {bioUrl}
+          </span>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={copyBioLink}
+              className="p-1.5 rounded-lg transition-colors hover:bg-[var(--background)]"
+              style={{ color: 'var(--foreground-muted)' }}
+              title="Copy link"
             >
-              <motion.div
-                animate={{ rotate: [0, 15, -15, 0] }}
-                transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
-              >
-                <Sparkles size={14} style={{ color: 'var(--primary)' }} />
-              </motion.div>
-              <span
-                className="text-xs font-medium"
-                style={{
-                  color: 'var(--foreground-muted)',
-                  fontFamily: 'var(--font-body)',
-                }}
-              >
-                {owner.availabilityText || 'Available for new projects'}
-              </span>
-            </motion.div>
-          )}
+              {copied ? <Check size={14} style={{ color: '#22c55e' }} /> : <Copy size={14} />}
+            </button>
+            <a
+              href={`https://${bioUrl}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-1.5 rounded-lg transition-colors hover:bg-[var(--background)]"
+              style={{ color: 'var(--foreground-muted)' }}
+              title="Open bio page"
+            >
+              <ExternalLink size={14} />
+            </a>
+          </div>
         </div>
+
+        {/* Owner Actions */}
+        {isOwner && (
+          <a
+            href="/profile"
+            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium transition-all hover:scale-[1.02]"
+            style={{
+              background: 'linear-gradient(135deg, var(--primary), var(--accent))',
+              color: 'white',
+            }}
+          >
+            Edit Profile
+          </a>
+        )}
       </div>
-    </motion.aside>
+    </motion.div>
   )
 }

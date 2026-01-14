@@ -78,10 +78,13 @@ function ProfilePage() {
       setFormData({
         name: currentUser.name || '',
         email: currentUser.email || '',
-        bio: '',
-        website: '',
-        location: '',
+        bio: currentUser.profile?.bio || '',
+        website: currentUser.profile?.website || '',
+        location: currentUser.profile?.location || '',
       })
+      // Initialize avatar and banner from profile
+      setCurrentAvatar(currentUser.profile?.avatar || null)
+      setCurrentBanner(currentUser.profile?.banner || null)
     }
   }, [currentUser])
 

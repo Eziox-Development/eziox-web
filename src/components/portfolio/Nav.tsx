@@ -11,8 +11,6 @@ import {
   User,
   ChevronDown,
   Link as LinkIcon,
-  BarChart3,
-  Settings,
   Crown,
   ExternalLink,
   Home,
@@ -25,7 +23,7 @@ import { useAuth } from '@/hooks/use-auth'
 
 const navItems = [
   { href: '/', label: 'Home', icon: Home },
-  { href: '/archive', label: 'Changelog', icon: Archive },
+  { href: '/changelog', label: 'Changelog', icon: Archive },
   { href: '/about', label: 'About', icon: Info },
   { href: '/leaderboard', label: 'Creators', icon: Users },
 ]
@@ -262,33 +260,18 @@ export function Nav() {
                             <User size={18} />
                             <span>Your Profile</span>
                           </Link>
-                          <Link
-                            to="/profile"
+                          <a
+                            href={`/${currentUser.username || currentUser.email?.split('@')[0]}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
                             onClick={() => setIsUserMenuOpen(false)}
                             className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors hover:bg-[var(--background-secondary)]"
                             style={{ color: 'var(--foreground)' }}
                           >
                             <LinkIcon size={18} />
-                            <span>Manage Links</span>
-                          </Link>
-                          <Link
-                            to="/profile"
-                            onClick={() => setIsUserMenuOpen(false)}
-                            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors hover:bg-[var(--background-secondary)]"
-                            style={{ color: 'var(--foreground)' }}
-                          >
-                            <BarChart3 size={18} />
-                            <span>Analytics</span>
-                          </Link>
-                          <Link
-                            to="/profile"
-                            onClick={() => setIsUserMenuOpen(false)}
-                            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors hover:bg-[var(--background-secondary)]"
-                            style={{ color: 'var(--foreground)' }}
-                          >
-                            <Settings size={18} />
-                            <span>Settings</span>
-                          </Link>
+                            <span>View Bio Page</span>
+                            <ExternalLink size={12} className="ml-auto" style={{ color: 'var(--foreground-muted)' }} />
+                          </a>
                         </div>
 
                         {/* Upgrade Banner */}

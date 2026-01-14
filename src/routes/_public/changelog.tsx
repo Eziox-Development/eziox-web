@@ -14,8 +14,8 @@ import {
   Palette,
 } from 'lucide-react'
 
-export const Route = createFileRoute('/_public/archive')({
-  component: ArchivePage,
+export const Route = createFileRoute('/_public/changelog')({
+  component: ChangelogPage,
 })
 
 // Eziox Website Timeline/Changelog
@@ -92,7 +92,7 @@ const timeline = [
   },
 ]
 
-function ArchivePage() {
+function ChangelogPage() {
   return (
     <motion.section
       initial={{ opacity: 0 }}
