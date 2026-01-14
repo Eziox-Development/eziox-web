@@ -16,6 +16,7 @@ coverImageAlt: Server infrastructure
 readingTime: 10
 featured: true
 author: Saito
+authorEmail: markungphim@gmail.com
 projectUrl: https://novaplex.xyz
 ---
 

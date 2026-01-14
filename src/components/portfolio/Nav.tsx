@@ -115,7 +115,7 @@ export function Nav() {
                   fontFamily: 'var(--font-body)',
                 }}
               >
-                Creative Developer
+                Bio Link Platform
               </span>
             </div>
           </Link>

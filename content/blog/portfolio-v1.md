@@ -13,6 +13,7 @@ coverImage: /blog-images/portfolio-v1.webp
 coverImageAlt: Blog and portfolio
 readingTime: 5
 author: Saito
+authorEmail: markungphim@gmail.com
 projectUrl: https://xsaitox.novaplex.xyz
 ---
 

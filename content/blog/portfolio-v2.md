@@ -16,6 +16,7 @@ coverImageAlt: Web development workspace
 readingTime: 8
 featured: true
 author: Saito
+authorEmail: markungphim@gmail.com
 projectUrl: https://xsaitox.novaplex.xyz
 ---
 

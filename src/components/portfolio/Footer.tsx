@@ -10,7 +10,6 @@ import {
   LuYoutube,
   LuMail,
   LuGlobe,
-  LuRss,
 } from 'react-icons/lu'
 import { FaDiscord } from 'react-icons/fa'
 import { Heart, Sparkles, ArrowUpRight, ChevronRight } from 'lucide-react'
@@ -23,7 +22,6 @@ const iconMap: Record<string, React.ComponentType<{ size?: number }>> = {
   dribbble: LuDribbble,
   youtube: LuYoutube,
   mail: LuMail,
-  rss: LuRss,
   globe: LuGlobe,
   discord: FaDiscord,
 }
@@ -103,7 +101,7 @@ export function Footer() {
                     fontFamily: 'var(--font-body)',
                   }}
                 >
-                  Creative Developer
+                  Bio Link Platform
                 </span>
               </div>
             </Link>
@@ -198,7 +196,7 @@ export function Footer() {
             </nav>
           </div>
 
-          {/* Newsletter / RSS Section */}
+          {/* Get Started Section */}
           <div className="md:col-span-4 space-y-5">
             <h3
               className="text-sm font-bold uppercase tracking-widest flex items-center gap-2"
@@ -208,7 +206,7 @@ export function Footer() {
               }}
             >
               <Sparkles size={14} style={{ color: 'var(--primary)' }} />
-              Stay Updated
+              Get Started
             </h3>
             <p
               className="text-sm"
@@ -217,13 +215,13 @@ export function Footer() {
                 fontFamily: 'var(--font-body)',
               }}
             >
-              Subscribe to get the latest posts and updates directly in your
-              feed reader.
+              Create your own bio page and share all your links with a single URL.
+              It's free to get started!
             </p>
 
-            <motion.a
-              href="/rss"
-              className="group inline-flex items-center gap-3 px-5 py-3 rounded-xl text-sm font-semibold transition-all duration-300"
+            <Link
+              to="/sign-up"
+              className="group inline-flex items-center gap-3 px-5 py-3 rounded-xl text-sm font-semibold transition-all duration-300 hover:scale-[1.02] hover:-translate-y-0.5"
               style={{
                 background:
                   'linear-gradient(135deg, var(--primary), var(--accent))',
@@ -232,16 +230,14 @@ export function Footer() {
                 boxShadow:
                   '0 4px 20px rgba(var(--primary-rgb, 99, 102, 241), 0.3)',
               }}
-              whileHover={{ scale: 1.02, y: -2 }}
-              whileTap={{ scale: 0.98 }}
             >
-              <LuRss size={18} />
-              Subscribe via RSS
+              <Sparkles size={18} />
+              Create Your Page
               <ArrowUpRight
                 size={16}
                 className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200"
               />
-            </motion.a>
+            </Link>
           </div>
         </div>
 

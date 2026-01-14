@@ -14,6 +14,7 @@ coverImage: /blog-images/novaplex-docs.webp
 coverImageAlt: Documentation
 readingTime: 6
 author: Saito
+authorEmail: markungphim@gmail.com
 projectUrl: https://docs.novaplex.xyz
 ---
 

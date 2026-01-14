@@ -27,6 +27,8 @@ export const users = pgTable('users', {
   name: varchar('name', { length: 100 }),
   emailVerified: boolean('email_verified').default(false),
   role: varchar('role', { length: 20 }).default('user'), // user, admin, owner
+  tier: varchar('tier', { length: 20 }).default('standard'), // standard, premium
+  tierExpiresAt: timestamp('tier_expires_at'), // When premium expires (null = never)
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 })

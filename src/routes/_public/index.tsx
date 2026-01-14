@@ -168,7 +168,7 @@ function HomePage() {
               >
                 <div
                   className="w-12 h-12 rounded-xl flex items-center justify-center mb-4"
-                  style={{ background: 'var(--primary)', opacity: 0.1 }}
+                  style={{ background: 'rgba(99, 102, 241, 0.15)' }}
                 >
                   <feature.icon size={24} style={{ color: 'var(--primary)' }} />
                 </div>

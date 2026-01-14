@@ -26,6 +26,7 @@ coverImageAlt: Project screenshot
 readingTime: 8
 featured: true
 author: Saito
+authorEmail: your-email@example.com
 projectUrl: https://example.com
 githubUrl: https://github.com/username/repo
 ---

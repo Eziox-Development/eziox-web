@@ -1,47 +1,65 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { motion } from 'motion/react'
 import {
-  User,
-  Code,
-  Briefcase,
-  Mail,
-  Github,
-  Calendar,
-  Award,
+  Info,
+  Link as LinkIcon,
+  BarChart3,
+  Palette,
   Zap,
+  Shield,
+  Users,
+  Globe,
   Heart,
-  ArrowUpRight,
+  ArrowRight,
+  Github,
+  Mail,
+  Sparkles,
+  Crown,
 } from 'lucide-react'
-import { FaDiscord } from 'react-icons/fa'
 
 export const Route = createFileRoute('/_public/about')({
   component: AboutPage,
 })
 
 function AboutPage() {
-  const skills = [
+  const features = [
     {
-      category: 'Frontend',
-      items: ['React', 'TypeScript', 'TailwindCSS', 'Next.js', 'TanStack'],
+      icon: LinkIcon,
+      title: 'Bio Links',
+      description: 'Create a personalized page with all your important links in one place.',
     },
     {
-      category: 'Backend',
-      items: ['Node.js', 'Bun', 'Appwrite', 'PostgreSQL', 'REST APIs'],
+      icon: BarChart3,
+      title: 'Analytics',
+      description: 'Track views, clicks, and engagement with real-time analytics.',
     },
     {
-      category: 'Tools',
-      items: ['Git', 'Docker', 'Vite', 'ESLint', 'Prettier'],
+      icon: Palette,
+      title: 'Customization',
+      description: 'Personalize your page with custom themes, colors, and layouts.',
+    },
+    {
+      icon: Zap,
+      title: 'URL Shortener',
+      description: 'Create short, memorable links for any URL with click tracking.',
+    },
+    {
+      icon: Shield,
+      title: 'Secure',
+      description: 'Your data is protected with industry-standard security practices.',
+    },
+    {
+      icon: Globe,
+      title: 'Custom Domains',
+      description: 'Use your own domain for a professional branded experience.',
     },
   ]
 
-  const experience = [
-    {
-      title: 'Full Stack Developer',
-      company: 'Novaplex',
-      period: '2023 - Present',
-      description:
-        'Building modern web applications with React, TypeScript, and Node.js',
-    },
+  const stats = [
+    { value: '100%', label: 'Free to Start' },
+    { value: '∞', label: 'Unlimited Links' },
+    { value: '24/7', label: 'Always Online' },
+    { value: '<1s', label: 'Load Time' },
   ]
 
   return (
@@ -69,20 +87,16 @@ function AboutPage() {
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.1, type: 'spring', stiffness: 200 }}
+          transition={{ delay: 0.1 }}
           className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full"
           style={{
-            background:
-              'linear-gradient(135deg, var(--primary), var(--accent))',
-            boxShadow: '0 4px 20px rgba(var(--primary-rgb, 99, 102, 241), 0.3)',
+            background: 'linear-gradient(135deg, var(--primary), var(--accent))',
+            boxShadow: '0 4px 20px rgba(99, 102, 241, 0.3)',
           }}
         >
-          <User size={18} style={{ color: 'var(--primary-foreground)' }} />
-          <span
-            className="text-xs font-bold uppercase tracking-widest"
-            style={{ color: 'var(--primary-foreground)' }}
-          >
-            About Me
+          <Info size={18} style={{ color: 'white' }} />
+          <span className="text-xs font-bold uppercase tracking-widest text-white">
+            About Eziox
           </span>
         </motion.div>
 
@@ -90,42 +104,25 @@ function AboutPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15 }}
-          className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black leading-tight"
+          className="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight"
           style={{
-            background:
-              'linear-gradient(135deg, var(--foreground), var(--primary))',
+            background: 'linear-gradient(135deg, var(--foreground), var(--primary))',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
-            fontFamily: 'var(--font-display)',
           }}
         >
-          Hi, I'm Saito
+          Your Bio, Your Way
         </motion.h1>
 
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="text-lg sm:text-xl lg:text-2xl max-w-3xl mx-auto leading-relaxed"
-          style={{
-            color: 'var(--foreground-muted)',
-            fontFamily: 'var(--font-body)',
-          }}
+          className="text-lg sm:text-xl max-w-3xl mx-auto leading-relaxed"
+          style={{ color: 'var(--foreground-muted)' }}
         >
-          A passionate{' '}
-          <span
-            style={{
-              background:
-                'linear-gradient(135deg, var(--primary), var(--accent))',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              fontWeight: 700,
-            }}
-          >
-            Full Stack Developer
-          </span>{' '}
-          who loves building modern, scalable web applications with cutting-edge
-          technologies.
+          Eziox is a modern bio link platform that helps you share everything you create,
+          curate, and sell from your social media profiles. One link to rule them all.
         </motion.p>
 
         <motion.div
@@ -134,355 +131,181 @@ function AboutPage() {
           transition={{ delay: 0.25 }}
           className="flex flex-wrap items-center justify-center gap-4 pt-4"
         >
-          <motion.a
-            href="mailto:saito@novaplex.xyz"
-            className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xl font-semibold transition-all"
+          <Link
+            to="/sign-up"
+            className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xl font-semibold transition-all hover:scale-105"
             style={{
-              background:
-                'linear-gradient(135deg, var(--primary), var(--accent))',
-              color: 'var(--primary-foreground)',
-              boxShadow:
-                '0 4px 20px rgba(var(--primary-rgb, 99, 102, 241), 0.3)',
+              background: 'linear-gradient(135deg, var(--primary), var(--accent))',
+              color: 'white',
+              boxShadow: '0 4px 20px rgba(99, 102, 241, 0.3)',
             }}
-            whileHover={{ scale: 1.05, y: -2 }}
-            whileTap={{ scale: 0.98 }}
           >
-            <Mail size={18} />
-            Get in Touch
-            <ArrowUpRight size={16} />
-          </motion.a>
-          <motion.a
-            href="https://github.com/XSaitoKungX"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xl font-semibold transition-all"
+            <Sparkles size={18} />
+            Get Started Free
+            <ArrowRight size={16} />
+          </Link>
+          <Link
+            to="/leaderboard"
+            className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xl font-semibold transition-all hover:scale-105"
             style={{
               backgroundColor: 'var(--card)',
               border: '1px solid var(--border)',
               color: 'var(--foreground)',
             }}
-            whileHover={{ scale: 1.05, y: -2 }}
-            whileTap={{ scale: 0.98 }}
           >
-            <Github size={18} />
-            GitHub
-          </motion.a>
+            <Users size={18} />
+            View Creators
+          </Link>
         </motion.div>
       </motion.section>
 
-      {/* About Section */}
+      {/* Stats Section */}
       <motion.section
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className="relative grid grid-cols-1 md:grid-cols-2 gap-8"
+        className="grid grid-cols-2 md:grid-cols-4 gap-4"
       >
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.35 }}
-          whileHover={{ y: -5 }}
-          className="group relative p-8 rounded-3xl space-y-5 overflow-hidden"
-          style={{
-            backgroundColor: 'var(--card)',
-            border: '1px solid var(--border)',
-          }}
-        >
-          {/* Glow effect on hover */}
-          <div
-            className="absolute -inset-1 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl -z-10"
+        {stats.map((stat, index) => (
+          <motion.div
+            key={stat.label}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.3 + index * 0.1 }}
+            className="p-6 rounded-2xl text-center"
             style={{
-              background:
-                'linear-gradient(135deg, var(--primary), var(--accent))',
+              background: 'var(--card)',
+              border: '1px solid var(--border)',
             }}
-          />
-          <div className="flex items-center gap-4">
-            <motion.div
-              className="p-3 rounded-xl"
-              style={{
-                background:
-                  'linear-gradient(135deg, var(--primary), var(--accent))',
-              }}
-              whileHover={{ scale: 1.1, rotate: 5 }}
-            >
-              <Code size={28} style={{ color: 'var(--primary-foreground)' }} />
-            </motion.div>
-            <h2
-              className="text-2xl font-bold"
-              style={{
-                color: 'var(--foreground)',
-                fontFamily: 'var(--font-display)',
-              }}
-            >
-              What I Do
-            </h2>
-          </div>
-          <p
-            className="text-base leading-relaxed"
-            style={{ color: 'var(--foreground-muted)' }}
           >
-            I specialize in building modern web applications using React,
-            TypeScript, and Node.js. I'm passionate about creating intuitive
-            user experiences and writing clean, maintainable code.
-          </p>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.4 }}
-          whileHover={{ y: -5 }}
-          className="group relative p-8 rounded-3xl space-y-5 overflow-hidden"
-          style={{
-            backgroundColor: 'var(--card)',
-            border: '1px solid var(--border)',
-          }}
-        >
-          {/* Glow effect on hover */}
-          <div
-            className="absolute -inset-1 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl -z-10"
-            style={{
-              background:
-                'linear-gradient(135deg, var(--accent), var(--primary))',
-            }}
-          />
-          <div className="flex items-center gap-4">
-            <motion.div
-              className="p-3 rounded-xl"
-              style={{
-                background:
-                  'linear-gradient(135deg, var(--accent), var(--primary))',
-              }}
-              whileHover={{ scale: 1.1, rotate: -5 }}
+            <div
+              className="text-3xl sm:text-4xl font-black mb-2"
+              style={{ color: 'var(--primary)' }}
             >
-              <Zap size={28} style={{ color: 'var(--primary-foreground)' }} />
-            </motion.div>
-            <h2
-              className="text-2xl font-bold"
-              style={{ color: 'var(--foreground)' }}
-            >
-              My Approach
-            </h2>
-          </div>
-          <p
-            className="text-base leading-relaxed"
-            style={{ color: 'var(--foreground-muted)' }}
-          >
-            I believe in writing code that is not only functional but also
-            elegant and efficient. I stay up-to-date with the latest
-            technologies and best practices to deliver top-quality solutions.
-          </p>
-        </motion.div>
+              {stat.value}
+            </div>
+            <div className="text-sm" style={{ color: 'var(--foreground-muted)' }}>
+              {stat.label}
+            </div>
+          </motion.div>
+        ))}
       </motion.section>
 
-      {/* Skills Section */}
+      {/* Features Section */}
       <motion.section
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-        className="relative space-y-8"
+        transition={{ delay: 0.4 }}
+        className="space-y-8"
       >
-        <div className="flex items-center gap-4">
-          <motion.div
-            className="p-3 rounded-xl"
-            style={{
-              background:
-                'linear-gradient(135deg, var(--primary), var(--accent))',
-            }}
-            whileHover={{ scale: 1.1, rotate: 5 }}
-          >
-            <Award size={24} style={{ color: 'var(--primary-foreground)' }} />
-          </motion.div>
+        <div className="text-center">
           <h2
-            className="text-3xl font-bold"
-            style={{
-              color: 'var(--foreground)',
-              fontFamily: 'var(--font-display)',
-            }}
+            className="text-3xl sm:text-4xl font-bold mb-4"
+            style={{ color: 'var(--foreground)' }}
           >
-            Skills & Technologies
+            Everything You Need
           </h2>
+          <p style={{ color: 'var(--foreground-muted)' }}>
+            Powerful features to help you stand out and grow your audience.
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {skills.map((skillGroup, index) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {features.map((feature, index) => (
             <motion.div
-              key={skillGroup.category}
+              key={feature.title}
               initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 + index * 0.1, type: 'spring' }}
-              whileHover={{ y: -5 }}
-              className="group relative p-6 rounded-2xl space-y-4 overflow-hidden"
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.1 }}
+              className="p-6 rounded-2xl"
               style={{
-                backgroundColor: 'var(--card)',
+                background: 'var(--card)',
                 border: '1px solid var(--border)',
               }}
             >
-              {/* Top gradient accent */}
               <div
-                className="absolute top-0 left-0 right-0 h-1"
-                style={{
-                  background:
-                    'linear-gradient(90deg, var(--primary), var(--accent))',
-                }}
-              />
-              <h3
-                className="text-xl font-bold"
-                style={{
-                  background:
-                    'linear-gradient(135deg, var(--primary), var(--accent))',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                }}
+                className="w-12 h-12 rounded-xl flex items-center justify-center mb-4"
+                style={{ background: 'rgba(99, 102, 241, 0.15)' }}
               >
-                {skillGroup.category}
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {skillGroup.items.map((skill, skillIndex) => (
-                  <motion.span
-                    key={skill}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{
-                      delay: 0.4 + index * 0.1 + skillIndex * 0.05,
-                    }}
-                    whileHover={{ scale: 1.05 }}
-                    className="px-3 py-1.5 rounded-lg text-sm font-medium transition-all"
-                    style={{
-                      backgroundColor: 'var(--background-secondary)',
-                      color: 'var(--foreground)',
-                      border: '1px solid var(--border)',
-                    }}
-                  >
-                    {skill}
-                  </motion.span>
-                ))}
+                <feature.icon size={24} style={{ color: 'var(--primary)' }} />
               </div>
+              <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--foreground)' }}>
+                {feature.title}
+              </h3>
+              <p className="text-sm" style={{ color: 'var(--foreground-muted)' }}>
+                {feature.description}
+              </p>
             </motion.div>
           ))}
         </div>
       </motion.section>
 
-      {/* Experience Section */}
+      {/* Premium Section */}
       <motion.section
         initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
-        className="relative space-y-8"
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        className="relative p-8 rounded-3xl overflow-hidden"
+        style={{
+          background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1))',
+          border: '1px solid var(--border)',
+        }}
       >
-        <div className="flex items-center gap-4">
-          <motion.div
-            className="p-3 rounded-xl"
+        <div className="flex flex-col md:flex-row items-center gap-8">
+          <div
+            className="w-20 h-20 rounded-2xl flex items-center justify-center flex-shrink-0"
             style={{
-              background:
-                'linear-gradient(135deg, var(--primary), var(--accent))',
+              background: 'linear-gradient(135deg, var(--primary), var(--accent))',
+              boxShadow: '0 8px 30px rgba(99, 102, 241, 0.4)',
             }}
-            whileHover={{ scale: 1.1, rotate: -5 }}
           >
-            <Briefcase
-              size={24}
-              style={{ color: 'var(--primary-foreground)' }}
-            />
-          </motion.div>
+            <Crown size={36} style={{ color: 'white' }} />
+          </div>
+          <div className="flex-1 text-center md:text-left">
+            <h3 className="text-2xl font-bold mb-2" style={{ color: 'var(--foreground)' }}>
+              Premium Features Coming Soon
+            </h3>
+            <p style={{ color: 'var(--foreground-muted)' }}>
+              Custom domains, advanced analytics, priority support, and full page customization.
+              Premium users will have complete control over their bio page design.
+            </p>
+          </div>
+        </div>
+      </motion.section>
+
+      {/* Tech Stack Section */}
+      <motion.section
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        className="space-y-8"
+      >
+        <div className="text-center">
           <h2
-            className="text-3xl font-bold"
-            style={{
-              color: 'var(--foreground)',
-              fontFamily: 'var(--font-display)',
-            }}
+            className="text-3xl sm:text-4xl font-bold mb-4"
+            style={{ color: 'var(--foreground)' }}
           >
-            Experience
+            Built with Modern Tech
           </h2>
+          <p style={{ color: 'var(--foreground-muted)' }}>
+            Eziox is built with cutting-edge technologies for speed and reliability.
+          </p>
         </div>
 
-        <div className="relative space-y-6">
-          {/* Timeline line */}
-          <div
-            className="absolute left-[11px] top-6 bottom-6 w-0.5 rounded-full hidden sm:block"
-            style={{
-              background:
-                'linear-gradient(180deg, var(--primary), var(--accent))',
-            }}
-          />
-
-          {experience.map((exp, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.5 + index * 0.1, type: 'spring' }}
-              whileHover={{ x: 8 }}
-              className="group relative sm:pl-10"
+        <div className="flex flex-wrap justify-center gap-3">
+          {['React', 'TypeScript', 'TailwindCSS', 'TanStack', 'Neon PostgreSQL', 'Drizzle ORM', 'Cloudinary', 'Vercel'].map((tech) => (
+            <span
+              key={tech}
+              className="px-4 py-2 rounded-lg text-sm font-medium"
+              style={{
+                background: 'var(--card)',
+                border: '1px solid var(--border)',
+                color: 'var(--foreground)',
+              }}
             >
-              {/* Timeline dot */}
-              <div
-                className="absolute left-0 top-6 w-6 h-6 rounded-full hidden sm:flex items-center justify-center"
-                style={{
-                  background:
-                    'linear-gradient(135deg, var(--primary), var(--accent))',
-                  boxShadow:
-                    '0 0 15px rgba(var(--primary-rgb, 99, 102, 241), 0.4)',
-                }}
-              >
-                <div
-                  className="w-2 h-2 rounded-full"
-                  style={{ backgroundColor: 'var(--primary-foreground)' }}
-                />
-              </div>
-
-              <div
-                className="relative p-6 rounded-2xl space-y-3 overflow-hidden"
-                style={{
-                  backgroundColor: 'var(--card)',
-                  border: '1px solid var(--border)',
-                }}
-              >
-                {/* Left gradient accent */}
-                <div
-                  className="absolute left-0 top-0 bottom-0 w-1"
-                  style={{
-                    background:
-                      'linear-gradient(180deg, var(--primary), var(--accent))',
-                  }}
-                />
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                  <h3
-                    className="text-xl font-bold"
-                    style={{
-                      color: 'var(--foreground)',
-                      fontFamily: 'var(--font-display)',
-                    }}
-                  >
-                    {exp.title}
-                  </h3>
-                  <div
-                    className="inline-flex items-center gap-2 text-xs font-medium px-3 py-1 rounded-full"
-                    style={{
-                      background:
-                        'linear-gradient(135deg, var(--primary), var(--accent))',
-                      color: 'var(--primary-foreground)',
-                    }}
-                  >
-                    <Calendar size={12} />
-                    {exp.period}
-                  </div>
-                </div>
-                <p
-                  className="font-semibold"
-                  style={{
-                    background:
-                      'linear-gradient(135deg, var(--primary), var(--accent))',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                  }}
-                >
-                  {exp.company}
-                </p>
-                <p style={{ color: 'var(--foreground-muted)' }}>
-                  {exp.description}
-                </p>
-              </div>
-            </motion.div>
+              {tech}
+            </span>
           ))}
         </div>
       </motion.section>
@@ -490,106 +313,77 @@ function AboutPage() {
       {/* Contact Section */}
       <motion.section
         initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.6 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
         className="relative text-center space-y-8 py-16 px-8 rounded-3xl overflow-hidden"
         style={{
           backgroundColor: 'var(--card)',
           border: '1px solid var(--border)',
         }}
       >
-        {/* Background glow */}
         <div
           className="absolute inset-0 opacity-20"
           style={{
-            background:
-              'radial-gradient(circle at center, var(--primary), transparent 70%)',
+            background: 'radial-gradient(circle at center, var(--primary), transparent 70%)',
           }}
         />
 
-        {/* Sparkle icon */}
         <motion.div
           initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ delay: 0.7, type: 'spring' }}
+          whileInView={{ scale: 1 }}
+          viewport={{ once: true }}
           className="relative mx-auto w-16 h-16 rounded-2xl flex items-center justify-center"
           style={{
-            background:
-              'linear-gradient(135deg, var(--primary), var(--accent))',
-            boxShadow: '0 0 30px rgba(var(--primary-rgb, 99, 102, 241), 0.4)',
+            background: 'linear-gradient(135deg, var(--primary), var(--accent))',
+            boxShadow: '0 0 30px rgba(99, 102, 241, 0.4)',
           }}
         >
-          <Heart size={28} style={{ color: 'var(--primary-foreground)' }} />
+          <Heart size={28} style={{ color: 'white' }} />
         </motion.div>
 
         <h2
           className="relative text-3xl sm:text-4xl font-bold"
           style={{
-            background:
-              'linear-gradient(135deg, var(--foreground), var(--primary))',
+            background: 'linear-gradient(135deg, var(--foreground), var(--primary))',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
-            fontFamily: 'var(--font-display)',
           }}
         >
-          Let's Work Together
+          Questions or Feedback?
         </h2>
         <p
           className="relative text-lg max-w-2xl mx-auto"
           style={{ color: 'var(--foreground-muted)' }}
         >
-          I'm always open to discussing new projects, creative ideas, or
-          opportunities to be part of your visions.
+          We'd love to hear from you! Reach out with questions, suggestions, or just to say hi.
         </p>
         <div className="relative flex flex-wrap items-center justify-center gap-4 pt-4">
-          <motion.a
-            href="mailto:saito@novaplex.xyz"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all"
+          <a
+            href="mailto:contact@eziox.link"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all hover:scale-105"
             style={{
-              background:
-                'linear-gradient(135deg, var(--primary), var(--accent))',
-              color: 'var(--primary-foreground)',
-              boxShadow:
-                '0 4px 20px rgba(var(--primary-rgb, 99, 102, 241), 0.3)',
+              background: 'linear-gradient(135deg, var(--primary), var(--accent))',
+              color: 'white',
+              boxShadow: '0 4px 20px rgba(99, 102, 241, 0.3)',
             }}
-            whileHover={{ scale: 1.05, y: -2 }}
-            whileTap={{ scale: 0.98 }}
           >
             <Mail size={18} />
-            Email Me
-          </motion.a>
-          <motion.a
-            href="https://github.com/XSaitoKungX"
+            Contact Us
+          </a>
+          <a
+            href="https://github.com/XSaitoKungX/portfolio-v2"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all hover:scale-105"
             style={{
               backgroundColor: 'var(--background-secondary)',
               border: '1px solid var(--border)',
               color: 'var(--foreground)',
             }}
-            whileHover={{ scale: 1.05, y: -2 }}
-            whileTap={{ scale: 0.98 }}
           >
             <Github size={18} />
             GitHub
-          </motion.a>
-          <motion.a
-            href="https://discord.com/users/848917797501141052"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all"
-            style={{
-              backgroundColor: 'var(--background-secondary)',
-              border: '1px solid var(--border)',
-              color: 'var(--foreground)',
-            }}
-            whileHover={{ scale: 1.05, y: -2 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <FaDiscord size={18} />
-            Discord
-          </motion.a>
+          </a>
         </div>
       </motion.section>
     </motion.div>

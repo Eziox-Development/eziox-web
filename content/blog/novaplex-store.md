@@ -13,6 +13,7 @@ coverImage: /blog-images/novaplex-store.webp
 coverImageAlt: Abstract gradient hero showing premium digital products UI
 readingTime: 7
 author: Saito
+authorEmail: markungphim@gmail.com
 projectUrl: https://store.novaplex.xyz
 ---
 

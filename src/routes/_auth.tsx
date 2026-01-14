@@ -1,5 +1,6 @@
 import { getCurrentUser } from '@/server/functions/auth'
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
+import { Nav, Footer } from '@/components/portfolio'
 
 export const Route = createFileRoute('/_auth')({
   loader: async ({ location }) => {
@@ -18,10 +19,14 @@ export const Route = createFileRoute('/_auth')({
 
 function AuthLayout() {
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md space-y-8">
-        <Outlet />
-      </div>
+    <div className="min-h-screen flex flex-col">
+      <Nav />
+      <main className="flex-1 flex items-center justify-center px-4 py-24 sm:px-6 lg:px-8">
+        <div className="w-full max-w-md space-y-8">
+          <Outlet />
+        </div>
+      </main>
+      <Footer />
     </div>
   )
 }

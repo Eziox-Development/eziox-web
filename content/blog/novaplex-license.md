@@ -14,6 +14,7 @@ coverImage: /blog-images/novaplex-license.webp
 coverImageAlt: Security concept
 readingTime: 8
 author: Saito
+authorEmail: markungphim@gmail.com
 projectUrl: https://license.novaplex.xyz
 ---
 

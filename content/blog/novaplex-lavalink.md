@@ -14,6 +14,7 @@ coverImage: /blog-images/novaplex-lavalink.webp
 coverImageAlt: Audio streaming
 readingTime: 6
 author: Saito
+authorEmail: markungphim@gmail.com
 projectUrl: https://lavalink.novaplex.xyz
 ---
 

@@ -17,6 +17,7 @@ coverImageAlt: Discord bot development
 readingTime: 12
 featured: true
 author: Saito
+authorEmail: markungphim@gmail.com
 projectUrl: https://astra-bot.app
 githubUrl: https://github.com/XSaitoKungX/Astra-Bot
 ---
