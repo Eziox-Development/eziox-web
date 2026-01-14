@@ -91,9 +91,10 @@ function BioPage() {
   const [clickedLink, setClickedLink] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
 
-  const handleLinkClick = async (linkId: string, url: string) => {
+  const handleLinkClick = (linkId: string, url: string) => {
     setClickedLink(linkId)
-    await trackClick({ data: { linkId } })
+    // Fire and forget - don't block navigation
+    trackClick({ data: { linkId } }).catch(console.error)
     window.open(url, '_blank', 'noopener,noreferrer')
     setTimeout(() => setClickedLink(null), 500)
   }

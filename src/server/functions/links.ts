@@ -249,35 +249,43 @@ export const reorderLinksFn = createServerFn({ method: 'POST' })
 export const trackLinkClickFn = createServerFn({ method: 'POST' })
   .inputValidator(z.object({ linkId: z.string().uuid() }))
   .handler(async ({ data }) => {
-    // Increment link clicks
-    await db
-      .update(userLinks)
-      .set({
-        clicks: sql`${userLinks.clicks} + 1`,
-        updatedAt: new Date(),
-      })
-      .where(eq(userLinks.id, data.linkId))
+    try {
+      // Get link first to verify it exists and get userId
+      const [link] = await db
+        .select()
+        .from(userLinks)
+        .where(eq(userLinks.id, data.linkId))
+        .limit(1)
 
-    // Get link to find user
-    const [link] = await db
-      .select()
-      .from(userLinks)
-      .where(eq(userLinks.id, data.linkId))
-      .limit(1)
+      if (!link) {
+        console.error('Link not found:', data.linkId)
+        return { success: false, error: 'Link not found' }
+      }
 
-    if (link) {
-      // Increment user's total link clicks
+      // Increment link clicks
+      await db
+        .update(userLinks)
+        .set({
+          clicks: sql`COALESCE(${userLinks.clicks}, 0) + 1`,
+          updatedAt: new Date(),
+        })
+        .where(eq(userLinks.id, data.linkId))
+
+      // Increment user's total link clicks in stats
       await db
         .update(userStats)
         .set({
-          totalLinkClicks: sql`${userStats.totalLinkClicks} + 1`,
-          score: sql`${userStats.score} + 1`,
+          totalLinkClicks: sql`COALESCE(${userStats.totalLinkClicks}, 0) + 1`,
+          score: sql`COALESCE(${userStats.score}, 0) + 1`,
           updatedAt: new Date(),
         })
         .where(eq(userStats.userId, link.userId))
-    }
 
-    return { success: true }
+      return { success: true }
+    } catch (error) {
+      console.error('Failed to track link click:', error)
+      return { success: false, error: 'Failed to track click' }
+    }
   })
 
 // ============================================================================
