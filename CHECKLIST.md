@@ -22,15 +22,20 @@
 - [x] Fixed link click tracking
 - [x] Updated documentation for Eziox Development
 - [x] Added MIT License
+- [x] **Followers System** - Complete with list pages
+- [x] **Bio Page UI Improvements** - Glassmorphism, animations
+- [x] **Following Count** - Added to stats section
+- [x] **CHANGELOG.md** - Created project changelog
 
 ---
 
-## 🔧 Bug Fixes Needed
+## 🔧 Bug Fixes Completed
 
-### High Priority
+### High Priority ✅
 - [x] **Link Click Tracking** - Fixed with COALESCE and proper error handling
 - [x] **Session Persistence** - 7-day expiry working correctly
 - [x] **View Tracking** - Fixed session-based deduplication (no tab-switch counting)
+- [x] **Session Detection** - Fixed on bio pages using useRouterState
 
 ---
 
@@ -38,7 +43,7 @@
 
 ### Phase 1: Social Features (Priority: HIGH)
 
-#### 1. Followers System ✅
+#### 1. Followers System ✅ COMPLETED
 - [x] Follow/Unfollow button on bio pages
 - [x] Followers/Following counts in profile (real-time)
 - [x] Server functions for follow/unfollow
@@ -46,8 +51,9 @@
 - [x] Update `follows` table usage
 - [x] Increment/decrement `userStats.followers` and `userStats.following`
 - [x] Sign-in prompt for non-authenticated users
-- [ ] Followers list page (`/profile/followers`) - Future
-- [ ] Following list page (`/profile/following`) - Future
+- [x] Followers list page (`/{username}/followers`)
+- [x] Following list page (`/{username}/following`)
+- [x] Follow/unfollow from list pages
 - [ ] Follow notifications - Future
 
 #### 2. Referral System
