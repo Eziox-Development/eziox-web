@@ -4,7 +4,7 @@
  * No Nav/Footer - this is the user's space
  */
 
-import { createFileRoute, Link, notFound } from '@tanstack/react-router'
+import { createFileRoute, Link, notFound, useRouterState } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
@@ -73,6 +73,7 @@ const RESERVED_PATHS = [
 
 export const Route = createFileRoute('/_bio/$username')({
   beforeLoad: ({ params }) => {
+    // Prevent reserved paths from being treated as usernames
     if (RESERVED_PATHS.includes(params.username.toLowerCase())) {
       throw notFound()
     }
@@ -84,6 +85,12 @@ function BioPage() {
   const params = Route.useParams()
   const username = params.username as string
   const queryClient = useQueryClient()
+  
+  // Get currentUser from parent layout loader via router state
+  const routerState = useRouterState()
+  const bioMatch = routerState.matches.find((m: { routeId: string }) => m.routeId === '/_bio')
+  const currentUser = (bioMatch?.loaderData as { currentUser?: { id: string; username: string } } | undefined)?.currentUser
+
   const getProfile = useServerFn(getPublicProfileFn)
   const trackClick = useServerFn(trackLinkClickFn)
   const trackView = useServerFn(trackProfileViewFn)
@@ -96,11 +103,15 @@ function BioPage() {
     queryFn: () => getProfile({ data: { username } }),
   })
 
+  // Determine follow status based on currentUser from SSR
+  const isSelf = currentUser?.id === profile?.user?.id
+  const isAuthenticated = !!currentUser
+
   // Check if current user is following this profile
   const { data: followStatus } = useQuery({
-    queryKey: ['followStatus', profile?.user?.id],
+    queryKey: ['followStatus', profile?.user?.id, currentUser?.id],
     queryFn: () => checkFollowing({ data: { targetUserId: profile!.user.id } }),
-    enabled: !!profile?.user?.id,
+    enabled: !!profile?.user?.id && isAuthenticated && !isSelf,
   })
 
   const [clickedLink, setClickedLink] = useState<string | null>(null)
@@ -147,7 +158,7 @@ function BioPage() {
 
   // Handle follow/unfollow with optimistic updates
   const handleFollowToggle = async () => {
-    if (!profile?.user?.id || !followStatus?.isAuthenticated || followStatus?.isSelf) return
+    if (!profile?.user?.id || !isAuthenticated || isSelf) return
     
     setIsFollowLoading(true)
     const wasFollowing = isFollowing
@@ -407,7 +418,7 @@ function BioPage() {
           </div>
 
           {/* Stats */}
-          <div className="flex items-center justify-center gap-6 mb-6">
+          <div className="flex items-center justify-center gap-4 sm:gap-6 mb-6">
             <div className="text-center">
               <div className="flex items-center justify-center gap-1 mb-0.5">
                 <Eye size={14} style={{ color: accentColor }} />
@@ -426,7 +437,11 @@ function BioPage() {
               </div>
               <span className="text-xs" style={{ color: 'var(--foreground-muted)' }}>clicks</span>
             </div>
-            <div className="text-center">
+            <Link
+              to="/$username/followers"
+              params={{ username }}
+              className="text-center hover:opacity-80 transition-opacity cursor-pointer"
+            >
               <div className="flex items-center justify-center gap-1 mb-0.5">
                 <Heart size={14} style={{ color: accentColor }} />
                 <span className="font-bold" style={{ color: 'var(--foreground)' }}>
@@ -434,11 +449,24 @@ function BioPage() {
                 </span>
               </div>
               <span className="text-xs" style={{ color: 'var(--foreground-muted)' }}>followers</span>
-            </div>
+            </Link>
+            <Link
+              to="/$username/following"
+              params={{ username }}
+              className="text-center hover:opacity-80 transition-opacity cursor-pointer"
+            >
+              <div className="flex items-center justify-center gap-1 mb-0.5">
+                <UserPlus size={14} style={{ color: accentColor }} />
+                <span className="font-bold" style={{ color: 'var(--foreground)' }}>
+                  {(profile.stats?.following || 0).toLocaleString()}
+                </span>
+              </div>
+              <span className="text-xs" style={{ color: 'var(--foreground-muted)' }}>following</span>
+            </Link>
           </div>
 
-          {/* Follow Button */}
-          {followStatus?.isAuthenticated && !followStatus?.isSelf && (
+          {/* Follow Button - for authenticated users viewing other profiles */}
+          {isAuthenticated && !isSelf && (
             <motion.button
               onClick={handleFollowToggle}
               disabled={isFollowLoading}
@@ -471,7 +499,7 @@ function BioPage() {
           )}
 
           {/* Sign in prompt for non-authenticated users */}
-          {!followStatus?.isAuthenticated && !followStatus?.isSelf && (
+          {!isAuthenticated && !isSelf && (
             <Link
               to="/sign-in"
               className="flex items-center justify-center gap-2 px-6 py-2.5 rounded-full font-medium transition-all mx-auto hover:scale-102"
@@ -522,21 +550,46 @@ function BioPage() {
               profile.links.map((link, index) => (
                 <motion.button
                   key={link.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 + index * 0.05 }}
+                  initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                  transition={{ 
+                    delay: 0.3 + index * 0.05,
+                    type: 'spring',
+                    stiffness: 300,
+                    damping: 25
+                  }}
                   onClick={() => handleLinkClick(link.id, link.url)}
                   disabled={clickedLink === link.id}
-                  className="w-full p-4 rounded-2xl text-left transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 group"
+                  className="w-full p-4 rounded-2xl text-left transition-all disabled:opacity-50 group relative overflow-hidden"
                   style={{
-                    background: link.backgroundColor || 'var(--card)',
-                    border: `1px solid ${link.backgroundColor ? 'transparent' : 'var(--border)'}`,
+                    background: link.backgroundColor || 'rgba(255,255,255,0.03)',
+                    border: `1px solid ${link.backgroundColor ? 'transparent' : 'rgba(255,255,255,0.08)'}`,
+                    backdropFilter: 'blur(12px)',
                   }}
+                  whileHover={{ 
+                    scale: 1.02, 
+                    y: -2,
+                    boxShadow: `0 8px 32px ${accentColor}20`
+                  }}
+                  whileTap={{ scale: 0.98 }}
                 >
-                  <div className="flex items-center justify-between">
+                  {/* Hover glow effect */}
+                  <motion.div
+                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+                    style={{
+                      background: `linear-gradient(135deg, ${accentColor}10, transparent)`,
+                    }}
+                  />
+                  <div className="flex items-center justify-between relative z-10">
                     <div className="flex items-center gap-3 flex-1 min-w-0">
                       {link.icon && (
-                        <span className="text-xl shrink-0">{link.icon}</span>
+                        <motion.span 
+                          className="text-2xl shrink-0"
+                          whileHover={{ scale: 1.2, rotate: 5 }}
+                        >
+                          {link.icon}
+                        </motion.span>
                       )}
                       <div className="min-w-0">
                         <p className="font-semibold truncate" style={{ color: link.textColor || 'var(--foreground)' }}>
@@ -551,13 +604,16 @@ function BioPage() {
                     </div>
                     <motion.div
                       className="shrink-0 ml-3"
-                      animate={{ x: clickedLink === link.id ? 0 : [0, 3, 0] }}
-                      transition={{ duration: 1.5, repeat: Infinity }}
+                      animate={{ 
+                        x: clickedLink === link.id ? 0 : [0, 4, 0],
+                        rotate: clickedLink === link.id ? 0 : [0, 5, 0]
+                      }}
+                      transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
                     >
                       {clickedLink === link.id ? (
-                        <Loader2 size={18} className="animate-spin" style={{ color: link.textColor || 'var(--foreground-muted)' }} />
+                        <Loader2 size={18} className="animate-spin" style={{ color: link.textColor || accentColor }} />
                       ) : (
-                        <ExternalLink size={18} className="opacity-50 group-hover:opacity-100 transition-opacity" style={{ color: link.textColor || 'var(--foreground-muted)' }} />
+                        <ExternalLink size={18} className="opacity-40 group-hover:opacity-100 transition-opacity" style={{ color: link.textColor || accentColor }} />
                       )}
                     </motion.div>
                   </div>
@@ -568,10 +624,14 @@ function BioPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                className="text-center py-12 rounded-2xl"
-                style={{ background: 'var(--card)', border: '1px solid var(--border)' }}
+                className="text-center py-16 rounded-2xl"
+                style={{ 
+                  background: 'rgba(255,255,255,0.02)', 
+                  border: '1px solid rgba(255,255,255,0.05)',
+                  backdropFilter: 'blur(12px)'
+                }}
               >
-                <LinkIcon className="w-12 h-12 mx-auto mb-4 opacity-30" style={{ color: 'var(--foreground-muted)' }} />
+                <LinkIcon className="w-12 h-12 mx-auto mb-4 opacity-20" style={{ color: 'var(--foreground-muted)' }} />
                 <p className="font-medium mb-1" style={{ color: 'var(--foreground)' }}>No links yet</p>
                 <p className="text-sm" style={{ color: 'var(--foreground-muted)' }}>
                   This creator hasn't added any links

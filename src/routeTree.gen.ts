@@ -27,6 +27,8 @@ import { Route as ApiSitemapRouteImport } from './routes/_api/sitemap'
 import { Route as ApiRssRouteImport } from './routes/_api/rss'
 import { Route as ApiHelloRouteImport } from './routes/_api/hello'
 import { Route as PublicSCodeRouteImport } from './routes/_public/s.$code'
+import { Route as BioUsernameFollowingRouteImport } from './routes/_bio/$username/following'
+import { Route as BioUsernameFollowersRouteImport } from './routes/_bio/$username/followers'
 
 const PublicRoute = PublicRouteImport.update({
   id: '/_public',
@@ -114,6 +116,16 @@ const PublicSCodeRoute = PublicSCodeRouteImport.update({
   path: '/s/$code',
   getParentRoute: () => PublicRoute,
 } as any)
+const BioUsernameFollowingRoute = BioUsernameFollowingRouteImport.update({
+  id: '/following',
+  path: '/following',
+  getParentRoute: () => BioUsernameRoute,
+} as any)
+const BioUsernameFollowersRoute = BioUsernameFollowersRouteImport.update({
+  id: '/followers',
+  path: '/followers',
+  getParentRoute: () => BioUsernameRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/hello': typeof ApiHelloRoute
@@ -122,13 +134,15 @@ export interface FileRoutesByFullPath {
   '/sign-in': typeof AuthSignInRoute
   '/sign-out': typeof AuthSignOutRoute
   '/sign-up': typeof AuthSignUpRoute
-  '/$username': typeof BioUsernameRoute
+  '/$username': typeof BioUsernameRouteWithChildren
   '/links': typeof ProtectedLinksRoute
   '/profile': typeof ProtectedProfileRoute
   '/about': typeof PublicAboutRoute
   '/changelog': typeof PublicChangelogRoute
   '/leaderboard': typeof PublicLeaderboardRoute
   '/': typeof PublicIndexRoute
+  '/$username/followers': typeof BioUsernameFollowersRoute
+  '/$username/following': typeof BioUsernameFollowingRoute
   '/s/$code': typeof PublicSCodeRoute
 }
 export interface FileRoutesByTo {
@@ -138,13 +152,15 @@ export interface FileRoutesByTo {
   '/sign-in': typeof AuthSignInRoute
   '/sign-out': typeof AuthSignOutRoute
   '/sign-up': typeof AuthSignUpRoute
-  '/$username': typeof BioUsernameRoute
+  '/$username': typeof BioUsernameRouteWithChildren
   '/links': typeof ProtectedLinksRoute
   '/profile': typeof ProtectedProfileRoute
   '/about': typeof PublicAboutRoute
   '/changelog': typeof PublicChangelogRoute
   '/leaderboard': typeof PublicLeaderboardRoute
   '/': typeof PublicIndexRoute
+  '/$username/followers': typeof BioUsernameFollowersRoute
+  '/$username/following': typeof BioUsernameFollowingRoute
   '/s/$code': typeof PublicSCodeRoute
 }
 export interface FileRoutesById {
@@ -159,13 +175,15 @@ export interface FileRoutesById {
   '/_auth/sign-in': typeof AuthSignInRoute
   '/_auth/sign-out': typeof AuthSignOutRoute
   '/_auth/sign-up': typeof AuthSignUpRoute
-  '/_bio/$username': typeof BioUsernameRoute
+  '/_bio/$username': typeof BioUsernameRouteWithChildren
   '/_protected/links': typeof ProtectedLinksRoute
   '/_protected/profile': typeof ProtectedProfileRoute
   '/_public/about': typeof PublicAboutRoute
   '/_public/changelog': typeof PublicChangelogRoute
   '/_public/leaderboard': typeof PublicLeaderboardRoute
   '/_public/': typeof PublicIndexRoute
+  '/_bio/$username/followers': typeof BioUsernameFollowersRoute
+  '/_bio/$username/following': typeof BioUsernameFollowingRoute
   '/_public/s/$code': typeof PublicSCodeRoute
 }
 export interface FileRouteTypes {
@@ -184,6 +202,8 @@ export interface FileRouteTypes {
     | '/changelog'
     | '/leaderboard'
     | '/'
+    | '/$username/followers'
+    | '/$username/following'
     | '/s/$code'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -200,6 +220,8 @@ export interface FileRouteTypes {
     | '/changelog'
     | '/leaderboard'
     | '/'
+    | '/$username/followers'
+    | '/$username/following'
     | '/s/$code'
   id:
     | '__root__'
@@ -220,6 +242,8 @@ export interface FileRouteTypes {
     | '/_public/changelog'
     | '/_public/leaderboard'
     | '/_public/'
+    | '/_bio/$username/followers'
+    | '/_bio/$username/following'
     | '/_public/s/$code'
   fileRoutesById: FileRoutesById
 }
@@ -361,6 +385,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicSCodeRouteImport
       parentRoute: typeof PublicRoute
     }
+    '/_bio/$username/following': {
+      id: '/_bio/$username/following'
+      path: '/following'
+      fullPath: '/$username/following'
+      preLoaderRoute: typeof BioUsernameFollowingRouteImport
+      parentRoute: typeof BioUsernameRoute
+    }
+    '/_bio/$username/followers': {
+      id: '/_bio/$username/followers'
+      path: '/followers'
+      fullPath: '/$username/followers'
+      preLoaderRoute: typeof BioUsernameFollowersRouteImport
+      parentRoute: typeof BioUsernameRoute
+    }
   }
 }
 
@@ -378,12 +416,26 @@ const AuthRouteChildren: AuthRouteChildren = {
 
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
+interface BioUsernameRouteChildren {
+  BioUsernameFollowersRoute: typeof BioUsernameFollowersRoute
+  BioUsernameFollowingRoute: typeof BioUsernameFollowingRoute
+}
+
+const BioUsernameRouteChildren: BioUsernameRouteChildren = {
+  BioUsernameFollowersRoute: BioUsernameFollowersRoute,
+  BioUsernameFollowingRoute: BioUsernameFollowingRoute,
+}
+
+const BioUsernameRouteWithChildren = BioUsernameRoute._addFileChildren(
+  BioUsernameRouteChildren,
+)
+
 interface BioRouteChildren {
-  BioUsernameRoute: typeof BioUsernameRoute
+  BioUsernameRoute: typeof BioUsernameRouteWithChildren
 }
 
 const BioRouteChildren: BioRouteChildren = {
-  BioUsernameRoute: BioUsernameRoute,
+  BioUsernameRoute: BioUsernameRouteWithChildren,
 }
 
 const BioRouteWithChildren = BioRoute._addFileChildren(BioRouteChildren)
