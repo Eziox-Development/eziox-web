@@ -9,7 +9,7 @@ tags:
   - react
   - personal-branding
   - showcase
-coverImage: /blog-images/portfolio.jpg
+coverImage: /blog-images/portfolio.webp
 coverImageAlt: Developer workspace
 readingTime: 5
 author: Saito

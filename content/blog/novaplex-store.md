@@ -9,7 +9,7 @@ tags:
   - ecommerce
   - digital-products
   - react
-coverImage: /blog-images/novaplex-store.jpg
+coverImage: /blog-images/novaplex-store.webp
 coverImageAlt: Abstract gradient hero showing premium digital products UI
 readingTime: 7
 author: Saito
@@ -23,12 +23,15 @@ projectUrl: https://store.novaplex.xyz
 ### Product Categories
 
 **Discord Bots**
+
 - Moderation, Music, Economy, Utility
 
 **Website Templates**
+
 - Portfolio, Business, Landing Pages, Dashboards
 
 **Source Codes**
+
 - Full-Stack Apps, APIs, Components
 
 ### Why Choose Us?

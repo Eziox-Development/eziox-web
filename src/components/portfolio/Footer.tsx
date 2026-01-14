@@ -39,19 +39,20 @@ export function Footer() {
       }}
     >
       {/* Top decorative border with gradient */}
-      <div 
+      <div
         className="absolute top-0 left-0 right-0 h-px"
         style={{
-          background: 'linear-gradient(90deg, transparent, var(--primary), var(--accent), var(--primary), transparent)',
+          background:
+            'linear-gradient(90deg, transparent, var(--primary), var(--accent), var(--primary), transparent)',
         }}
       />
-      
+
       {/* Background glow effects */}
-      <div 
+      <div
         className="absolute top-0 left-1/4 w-96 h-96 rounded-full pointer-events-none opacity-10 blur-3xl"
         style={{ background: 'var(--primary)' }}
       />
-      <div 
+      <div
         className="absolute bottom-0 right-1/4 w-96 h-96 rounded-full pointer-events-none opacity-10 blur-3xl"
         style={{ background: 'var(--accent)' }}
       />
@@ -61,12 +62,13 @@ export function Footer() {
           {/* Brand Section */}
           <div className="md:col-span-5 space-y-6">
             <Link to="/" className="inline-flex items-center gap-4 group">
-              <motion.div 
+              <motion.div
                 className="relative w-14 h-14 rounded-2xl overflow-hidden"
                 whileHover={{ scale: 1.05, rotate: 5 }}
                 transition={{ type: 'spring', stiffness: 300 }}
                 style={{
-                  boxShadow: '0 0 20px rgba(var(--primary-rgb, 99, 102, 241), 0.3)',
+                  boxShadow:
+                    '0 0 20px rgba(var(--primary-rgb, 99, 102, 241), 0.3)',
                 }}
               >
                 <img
@@ -76,10 +78,11 @@ export function Footer() {
                   loading="lazy"
                 />
                 {/* Shine effect */}
-                <div 
+                <div
                   className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
                   style={{
-                    background: 'linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.3) 50%, transparent 60%)',
+                    background:
+                      'linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.3) 50%, transparent 60%)',
                   }}
                 />
               </motion.div>
@@ -104,7 +107,7 @@ export function Footer() {
                 </span>
               </div>
             </Link>
-            
+
             <p
               className="text-sm leading-relaxed max-w-sm"
               style={{
@@ -131,7 +134,7 @@ export function Footer() {
                       border: '1px solid var(--border)',
                       color: 'var(--foreground-muted)',
                     }}
-                    whileHover={{ 
+                    whileHover={{
                       scale: 1.1,
                       y: -3,
                     }}
@@ -142,7 +145,7 @@ export function Footer() {
                     title={social.platform}
                   >
                     {/* Glow effect on hover */}
-                    <div 
+                    <div
                       className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10 blur-md"
                       style={{ background: 'var(--primary)' }}
                     />
@@ -181,8 +184,8 @@ export function Footer() {
                       fontFamily: 'var(--font-body)',
                     }}
                   >
-                    <ChevronRight 
-                      size={14} 
+                    <ChevronRight
+                      size={14}
                       className="transition-transform duration-200 group-hover:translate-x-1"
                       style={{ color: 'var(--primary)' }}
                     />
@@ -214,24 +217,30 @@ export function Footer() {
                 fontFamily: 'var(--font-body)',
               }}
             >
-              Subscribe to get the latest posts and updates directly in your feed reader.
+              Subscribe to get the latest posts and updates directly in your
+              feed reader.
             </p>
-            
+
             <motion.a
               href="/rss"
               className="group inline-flex items-center gap-3 px-5 py-3 rounded-xl text-sm font-semibold transition-all duration-300"
               style={{
-                background: 'linear-gradient(135deg, var(--primary), var(--accent))',
+                background:
+                  'linear-gradient(135deg, var(--primary), var(--accent))',
                 color: 'var(--primary-foreground)',
                 fontFamily: 'var(--font-body)',
-                boxShadow: '0 4px 20px rgba(var(--primary-rgb, 99, 102, 241), 0.3)',
+                boxShadow:
+                  '0 4px 20px rgba(var(--primary-rgb, 99, 102, 241), 0.3)',
               }}
               whileHover={{ scale: 1.02, y: -2 }}
               whileTap={{ scale: 0.98 }}
             >
               <LuRss size={18} />
               Subscribe via RSS
-              <ArrowUpRight size={16} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200" />
+              <ArrowUpRight
+                size={16}
+                className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200"
+              />
             </motion.a>
           </div>
         </div>
@@ -266,7 +275,11 @@ export function Footer() {
               animate={{ scale: [1, 1.2, 1] }}
               transition={{ duration: 1, repeat: Infinity, repeatDelay: 2 }}
             >
-              <Heart size={12} fill="var(--primary)" style={{ color: 'var(--primary)' }} />
+              <Heart
+                size={12}
+                fill="var(--primary)"
+                style={{ color: 'var(--primary)' }}
+              />
             </motion.span>
             and
             <Sparkles size={12} style={{ color: 'var(--accent)' }} />

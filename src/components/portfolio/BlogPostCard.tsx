@@ -20,8 +20,8 @@ export function BlogPostCard({
     <motion.article
       initial={{ opacity: 0, y: 30, scale: 0.95 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ 
-        duration: 0.5, 
+      transition={{
+        duration: 0.5,
         delay: index * 0.1,
         type: 'spring',
         stiffness: 100,
@@ -30,13 +30,13 @@ export function BlogPostCard({
       className="group relative"
     >
       {/* Glow effect on hover */}
-      <div 
+      <div
         className="absolute -inset-1 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl"
         style={{
           background: 'linear-gradient(135deg, var(--primary), var(--accent))',
         }}
       />
-      
+
       <Link
         to="/blog/$slug"
         params={{ slug: post.slug }}
@@ -59,7 +59,7 @@ export function BlogPostCard({
               whileHover={{ scale: 1.1 }}
               transition={{ duration: 0.6 }}
             />
-            
+
             {/* Anime-style gradient overlay */}
             <div
               className="absolute inset-0 opacity-60 group-hover:opacity-40 transition-opacity duration-500"
@@ -72,7 +72,7 @@ export function BlogPostCard({
                 )`,
               }}
             />
-            
+
             {/* Shimmer effect on hover */}
             <motion.div
               className="absolute inset-0 opacity-0 group-hover:opacity-100"
@@ -80,10 +80,11 @@ export function BlogPostCard({
               whileHover={{ x: '100%' }}
               transition={{ duration: 0.8 }}
               style={{
-                background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)',
+                background:
+                  'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)',
               }}
             />
-            
+
             {/* Category Badge with glow */}
             <div className="absolute top-4 left-4">
               <motion.span
@@ -92,17 +93,19 @@ export function BlogPostCard({
                 transition={{ delay: index * 0.1 + 0.3, type: 'spring' }}
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider backdrop-blur-sm"
                 style={{
-                  background: 'linear-gradient(135deg, var(--primary), var(--accent))',
+                  background:
+                    'linear-gradient(135deg, var(--primary), var(--accent))',
                   color: 'var(--primary-foreground)',
                   fontFamily: 'var(--font-body)',
-                  boxShadow: '0 4px 15px rgba(var(--primary-rgb, 99, 102, 241), 0.4)',
+                  boxShadow:
+                    '0 4px 15px rgba(var(--primary-rgb, 99, 102, 241), 0.4)',
                 }}
               >
                 <Sparkles size={10} />
                 {post.category}
               </motion.span>
             </div>
-            
+
             {/* Reading time badge */}
             <div className="absolute top-4 right-4">
               <span
@@ -226,22 +229,20 @@ export function BlogPostCard({
             >
               <span className="relative">
                 Read article
-                <motion.span 
+                <motion.span
                   className="absolute bottom-0 left-0 h-0.5 bg-current"
                   initial={{ width: 0 }}
                   whileHover={{ width: '100%' }}
                   transition={{ duration: 0.3 }}
                 />
               </span>
-              <motion.div
-                className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300"
-              >
+              <motion.div className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300">
                 <ArrowUpRight size={16} />
               </motion.div>
             </motion.div>
           )}
         </div>
-        
+
         {/* Bottom accent line */}
         <motion.div
           className="absolute bottom-0 left-0 right-0 h-1"

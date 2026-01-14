@@ -9,7 +9,7 @@ tags:
   - astro
   - blog
   - fuwari
-coverImage: /blog-images/portfolio-v1.jpg
+coverImage: /blog-images/portfolio-v1.webp
 coverImageAlt: Blog and portfolio
 readingTime: 5
 author: Saito
@@ -30,11 +30,13 @@ projectUrl: https://xsaitox.novaplex.xyz
 ### Blog Content
 
 **Discord Bots**
+
 - Econix Bot (Economy & Leveling)
 - Hikaari Bot (Multipurpose)
 - Stellar Music Bot
 
 **Gaming**
+
 - Valorant Setups
 
 ### Features

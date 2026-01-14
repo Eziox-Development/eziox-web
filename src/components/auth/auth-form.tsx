@@ -86,8 +86,8 @@ export function AuthForm<T extends FieldValues>({
         </AnimatePresence>
 
         {/* Submit Button */}
-        <Button 
-          type="submit" 
+        <Button
+          type="submit"
           className="w-full h-11 text-base font-semibold transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
           style={{
             background: `linear-gradient(135deg, var(--primary), var(--accent))`,

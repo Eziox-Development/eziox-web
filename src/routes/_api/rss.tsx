@@ -8,12 +8,14 @@ export const Route = createFileRoute('/_api/rss')({
       GET: async () => {
         const baseUrl = siteConfig.metadata.url
         const buildDate = new Date().toUTCString()
-        
+
         // Sort posts by date (newest first)
         const sortedPosts = [...blogPosts].sort(
-          (a, b) => new Date(b.publishDate).getTime() - new Date(a.publishDate).getTime()
+          (a, b) =>
+            new Date(b.publishDate).getTime() -
+            new Date(a.publishDate).getTime(),
         )
-        
+
         // Escape XML special characters
         const escapeXml = (text: string) => {
           return text
@@ -23,17 +25,18 @@ export const Route = createFileRoute('/_api/rss')({
             .replace(/"/g, '&quot;')
             .replace(/'/g, '&apos;')
         }
-        
+
         // Generate RSS items
-        const items = sortedPosts.map((post) => {
-          const postUrl = `${baseUrl}/blog/${post.slug}`
-          const pubDate = new Date(post.publishDate).toUTCString()
-          
-          const title = escapeXml(post.title)
-          const author = escapeXml(post.author || siteConfig.owner.name)
-          const category = escapeXml(post.category)
-          
-          return `
+        const items = sortedPosts
+          .map((post) => {
+            const postUrl = `${baseUrl}/blog/${post.slug}`
+            const pubDate = new Date(post.publishDate).toUTCString()
+
+            const title = escapeXml(post.title)
+            const author = escapeXml(post.author || siteConfig.owner.name)
+            const category = escapeXml(post.category)
+
+            return `
     <item>
       <title>${title}</title>
       <link>${postUrl}</link>
@@ -44,10 +47,11 @@ export const Route = createFileRoute('/_api/rss')({
       <description><![CDATA[${post.excerpt}]]></description>
       <content:encoded><![CDATA[${post.content}]]></content:encoded>
       ${post.coverImage ? `<enclosure url="${baseUrl}${post.coverImage}" type="image/jpeg" />` : ''}
-      ${post.tags.map(tag => `<category>${escapeXml(tag)}</category>`).join('\n      ')}
+      ${post.tags.map((tag) => `<category>${escapeXml(tag)}</category>`).join('\n      ')}
     </item>`
-        }).join('\n')
-        
+          })
+          .join('\n')
+
         // Generate RSS feed
         const rss = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" 
@@ -74,7 +78,7 @@ export const Route = createFileRoute('/_api/rss')({
     ${items}
   </channel>
 </rss>`
-        
+
         return new Response(rss, {
           status: 200,
           headers: {

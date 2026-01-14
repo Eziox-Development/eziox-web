@@ -22,21 +22,21 @@ export const getRouter = () => {
   const router = createRouter({
     routeTree,
     context: { ...rqContext },
-    
+
     // Preload routes on hover/focus for instant navigation
     defaultPreload: 'intent',
-    
+
     // Preload delay for better performance
     defaultPreloadDelay: 100,
-    
+
     // Global error boundary
     defaultErrorComponent: ({ error, info, reset }) => (
       <ErrorComponent error={error} info={info} reset={reset} />
     ),
-    
+
     // Global 404 page
     defaultNotFoundComponent: () => <NotFoundComponent />,
-    
+
     // Wrap all routes with TanStack Query provider
     Wrap: (props: { children: React.ReactNode }) => {
       return (
@@ -48,9 +48,9 @@ export const getRouter = () => {
   })
 
   // Setup SSR query integration for proper hydration
-  setupRouterSsrQueryIntegration({ 
-    router, 
-    queryClient: rqContext.queryClient 
+  setupRouterSsrQueryIntegration({
+    router,
+    queryClient: rqContext.queryClient,
   })
 
   return router

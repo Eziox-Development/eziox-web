@@ -14,10 +14,14 @@ export function ThemeSwitcher() {
         onClick={() => setIsOpen(!isOpen)}
         className="group flex items-center gap-2 px-3 py-2 rounded-xl transition-all duration-300"
         style={{
-          backgroundColor: isOpen ? 'var(--primary)' : 'var(--background-secondary)',
+          backgroundColor: isOpen
+            ? 'var(--primary)'
+            : 'var(--background-secondary)',
           border: '1px solid var(--border)',
           color: isOpen ? 'var(--primary-foreground)' : 'var(--foreground)',
-          boxShadow: isOpen ? '0 4px 15px rgba(var(--primary-rgb, 99, 102, 241), 0.3)' : 'none',
+          boxShadow: isOpen
+            ? '0 4px 15px rgba(var(--primary-rgb, 99, 102, 241), 0.3)'
+            : 'none',
         }}
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
@@ -28,7 +32,12 @@ export function ThemeSwitcher() {
           animate={{ rotate: isOpen ? 180 : 0 }}
           transition={{ duration: 0.3 }}
         >
-          <Palette size={18} style={{ color: isOpen ? 'var(--primary-foreground)' : 'var(--primary)' }} />
+          <Palette
+            size={18}
+            style={{
+              color: isOpen ? 'var(--primary-foreground)' : 'var(--primary)',
+            }}
+          />
         </motion.div>
         <span
           className="text-sm font-semibold hidden sm:inline"
@@ -42,7 +51,11 @@ export function ThemeSwitcher() {
         >
           <ChevronDown
             size={14}
-            style={{ color: isOpen ? 'var(--primary-foreground)' : 'var(--foreground-muted)' }}
+            style={{
+              color: isOpen
+                ? 'var(--primary-foreground)'
+                : 'var(--foreground-muted)',
+            }}
           />
         </motion.div>
       </motion.button>
@@ -69,17 +82,22 @@ export function ThemeSwitcher() {
               style={{
                 backgroundColor: 'var(--card)',
                 border: '1px solid var(--border)',
-                boxShadow: '0 20px 50px rgba(0, 0, 0, 0.2), 0 0 30px rgba(var(--primary-rgb, 99, 102, 241), 0.1)',
+                boxShadow:
+                  '0 20px 50px rgba(0, 0, 0, 0.2), 0 0 30px rgba(var(--primary-rgb, 99, 102, 241), 0.1)',
               }}
             >
               {/* Header */}
-              <div 
+              <div
                 className="px-4 py-3 flex items-center gap-2"
                 style={{
-                  background: 'linear-gradient(135deg, var(--primary), var(--accent))',
+                  background:
+                    'linear-gradient(135deg, var(--primary), var(--accent))',
                 }}
               >
-                <Sparkles size={14} style={{ color: 'var(--primary-foreground)' }} />
+                <Sparkles
+                  size={14}
+                  style={{ color: 'var(--primary-foreground)' }}
+                />
                 <p
                   className="text-xs font-bold uppercase tracking-widest"
                   style={{
@@ -111,8 +129,8 @@ export function ThemeSwitcher() {
                         background: isActive
                           ? 'linear-gradient(135deg, var(--primary), var(--accent))'
                           : 'transparent',
-                        boxShadow: isActive 
-                          ? '0 4px 12px rgba(var(--primary-rgb, 99, 102, 241), 0.3)' 
+                        boxShadow: isActive
+                          ? '0 4px 12px rgba(var(--primary-rgb, 99, 102, 241), 0.3)'
                           : 'none',
                       }}
                     >
@@ -138,7 +156,7 @@ export function ThemeSwitcher() {
                         />
                         <motion.div
                           className="relative w-4 h-4 rounded-full ring-2 ring-white/20"
-                          style={{ 
+                          style={{
                             backgroundColor: t.colors.background,
                             border: '1px solid var(--border)',
                           }}
@@ -149,7 +167,9 @@ export function ThemeSwitcher() {
                       <span
                         className="flex-1 text-left text-sm font-semibold"
                         style={{
-                          color: isActive ? 'var(--primary-foreground)' : 'var(--foreground)',
+                          color: isActive
+                            ? 'var(--primary-foreground)'
+                            : 'var(--foreground)',
                           fontFamily: 'var(--font-body)',
                         }}
                       >
@@ -167,7 +187,10 @@ export function ThemeSwitcher() {
                             className="p-1 rounded-full"
                             style={{ backgroundColor: 'rgba(255,255,255,0.2)' }}
                           >
-                            <Check size={12} style={{ color: 'var(--primary-foreground)' }} />
+                            <Check
+                              size={12}
+                              style={{ color: 'var(--primary-foreground)' }}
+                            />
                           </motion.div>
                         )}
                       </AnimatePresence>
@@ -177,7 +200,7 @@ export function ThemeSwitcher() {
               </div>
 
               {/* Footer hint */}
-              <div 
+              <div
                 className="px-4 py-2 text-center"
                 style={{ borderTop: '1px solid var(--border)' }}
               >

@@ -12,7 +12,7 @@ tags:
   - react
   - dashboard
   - featured
-coverImage: /blog-images/astra-discord-bot.jpg
+coverImage: /blog-images/astra-discord-bot.webp
 coverImageAlt: Discord bot development
 readingTime: 12
 featured: true

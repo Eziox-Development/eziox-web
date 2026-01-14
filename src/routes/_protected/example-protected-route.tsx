@@ -9,7 +9,7 @@ export const Route = createFileRoute('/_protected/example-protected-route')({
 
 function ProtectedPage() {
   const { currentUser } = useAuth()
-  
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -26,28 +26,34 @@ function ProtectedPage() {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.1 }}
           className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full shadow-lg"
-          style={{ 
-            backgroundColor: 'var(--card)', 
+          style={{
+            backgroundColor: 'var(--card)',
             border: '1px solid var(--border)',
-            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)'
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
           }}
         >
           <Shield size={18} style={{ color: 'var(--primary)' }} />
-          <span className="text-xs font-bold uppercase tracking-[0.25em]" style={{ color: 'var(--foreground-muted)' }}>
+          <span
+            className="text-xs font-bold uppercase tracking-[0.25em]"
+            style={{ color: 'var(--foreground-muted)' }}
+          >
             Protected Route
           </span>
         </motion.div>
-        
+
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15 }}
           className="text-4xl sm:text-5xl font-bold"
-          style={{ color: 'var(--foreground)', fontFamily: 'var(--font-display)' }}
+          style={{
+            color: 'var(--foreground)',
+            fontFamily: 'var(--font-display)',
+          }}
         >
           Welcome Back!
         </motion.h1>
-        
+
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -55,7 +61,8 @@ function ProtectedPage() {
           className="text-lg max-w-xl mx-auto"
           style={{ color: 'var(--foreground-muted)' }}
         >
-          You're viewing a protected page. Only authenticated users can see this content.
+          You're viewing a protected page. Only authenticated users can see this
+          content.
         </motion.p>
       </motion.div>
 
@@ -64,14 +71,26 @@ function ProtectedPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.25 }}
         className="p-8 rounded-2xl space-y-6"
-        style={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)' }}
+        style={{
+          backgroundColor: 'var(--card)',
+          border: '1px solid var(--border)',
+        }}
       >
         <div className="flex items-center gap-4">
-          <div className="p-3 rounded-xl" style={{ backgroundColor: 'var(--primary)', color: 'var(--primary-foreground)' }}>
+          <div
+            className="p-3 rounded-xl"
+            style={{
+              backgroundColor: 'var(--primary)',
+              color: 'var(--primary-foreground)',
+            }}
+          >
             <User size={28} />
           </div>
           <div>
-            <h2 className="text-xl font-bold" style={{ color: 'var(--foreground)' }}>
+            <h2
+              className="text-xl font-bold"
+              style={{ color: 'var(--foreground)' }}
+            >
               Your Account
             </h2>
             <p className="text-sm" style={{ color: 'var(--foreground-muted)' }}>
@@ -79,15 +98,21 @@ function ProtectedPage() {
             </p>
           </div>
         </div>
-        
+
         <div className="space-y-4">
-          <div 
+          <div
             className="flex items-center gap-3 p-4 rounded-xl"
-            style={{ backgroundColor: 'var(--background-secondary)', border: '1px solid var(--border)' }}
+            style={{
+              backgroundColor: 'var(--background-secondary)',
+              border: '1px solid var(--border)',
+            }}
           >
             <Mail size={20} style={{ color: 'var(--primary)' }} />
             <div>
-              <p className="text-xs font-medium uppercase tracking-wider" style={{ color: 'var(--foreground-muted)' }}>
+              <p
+                className="text-xs font-medium uppercase tracking-wider"
+                style={{ color: 'var(--foreground-muted)' }}
+              >
                 Email
               </p>
               <p className="font-medium" style={{ color: 'var(--foreground)' }}>
@@ -107,7 +132,11 @@ function ProtectedPage() {
         <Link
           to="/"
           className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xl font-semibold transition-all hover:scale-105 hover:shadow-lg"
-          style={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)', color: 'var(--foreground)' }}
+          style={{
+            backgroundColor: 'var(--card)',
+            border: '1px solid var(--border)',
+            color: 'var(--foreground)',
+          }}
         >
           <Home size={18} />
           Back to Home
@@ -115,7 +144,10 @@ function ProtectedPage() {
         <Link
           to="/sign-out"
           className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xl font-semibold transition-all hover:scale-105 hover:shadow-lg"
-          style={{ backgroundColor: 'var(--destructive)', color: 'var(--destructive-foreground)' }}
+          style={{
+            backgroundColor: 'var(--destructive)',
+            color: 'var(--destructive-foreground)',
+          }}
         >
           <LogOut size={18} />
           Sign Out

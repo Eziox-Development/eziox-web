@@ -19,7 +19,7 @@ export function AuthCard({ title, description, children }: AuthCardProps) {
   return (
     <div className="min-h-screen w-full flex items-center justify-center p-4 sm:p-6">
       {/* Animated background gradient */}
-      <div 
+      <div
         className="absolute inset-0 -z-10"
         style={{
           background: `radial-gradient(circle at 20% 50%, var(--primary) 0%, transparent 50%),
@@ -27,14 +27,14 @@ export function AuthCard({ title, description, children }: AuthCardProps) {
                       var(--background)`,
         }}
       />
-      
+
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
         className="w-full max-w-md"
       >
-        <Card 
+        <Card
           className="backdrop-blur-sm border-2 shadow-2xl"
           style={{
             backgroundColor: 'var(--card)',
@@ -52,15 +52,18 @@ export function AuthCard({ title, description, children }: AuthCardProps) {
                 background: `linear-gradient(135deg, var(--primary), var(--accent))`,
               }}
             >
-              <Lock className="w-8 h-8" style={{ color: 'var(--primary-foreground)' }} />
+              <Lock
+                className="w-8 h-8"
+                style={{ color: 'var(--primary-foreground)' }}
+              />
             </motion.div>
-            
+
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3 }}
             >
-              <CardTitle 
+              <CardTitle
                 className="text-2xl md:text-3xl font-bold"
                 style={{
                   color: 'var(--foreground)',
@@ -69,7 +72,7 @@ export function AuthCard({ title, description, children }: AuthCardProps) {
               >
                 {title}
               </CardTitle>
-              <CardDescription 
+              <CardDescription
                 className="text-sm md:text-base mt-2"
                 style={{
                   color: 'var(--foreground-muted)',
@@ -80,7 +83,7 @@ export function AuthCard({ title, description, children }: AuthCardProps) {
               </CardDescription>
             </motion.div>
           </CardHeader>
-          
+
           <CardContent className="pb-8">
             <motion.div
               initial={{ opacity: 0 }}

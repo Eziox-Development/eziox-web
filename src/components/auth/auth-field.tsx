@@ -50,7 +50,7 @@ export function AuthField<
       name={name}
       render={({ field, fieldState }) => (
         <FormItem>
-          <FormLabel 
+          <FormLabel
             className="text-sm font-medium"
             style={{
               color: 'var(--foreground)',
@@ -63,21 +63,25 @@ export function AuthField<
             <div className="relative">
               {Icon && (
                 <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
-                  <Icon 
-                    className="w-4 h-4" 
-                    style={{ color: fieldState.error ? 'var(--destructive)' : 'var(--foreground-muted)' }}
+                  <Icon
+                    className="w-4 h-4"
+                    style={{
+                      color: fieldState.error
+                        ? 'var(--destructive)'
+                        : 'var(--foreground-muted)',
+                    }}
                   />
                 </div>
               )}
               <Input
                 className={`h-11 transition-all duration-200 ${
                   Icon ? 'pl-10' : 'pl-4'
-                } ${
-                  isPassword ? 'pr-10' : 'pr-4'
-                }`}
+                } ${isPassword ? 'pr-10' : 'pr-4'}`}
                 style={{
                   backgroundColor: 'var(--background)',
-                  borderColor: fieldState.error ? 'var(--destructive)' : 'var(--border)',
+                  borderColor: fieldState.error
+                    ? 'var(--destructive)'
+                    : 'var(--border)',
                   color: 'var(--foreground)',
                   fontFamily: 'var(--font-body)',
                 }}
@@ -102,7 +106,7 @@ export function AuthField<
               )}
             </div>
           </FormControl>
-          <FormMessage 
+          <FormMessage
             className="text-xs mt-1.5"
             style={{
               color: 'var(--destructive)',

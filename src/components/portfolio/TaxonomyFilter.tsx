@@ -43,20 +43,24 @@ export function TaxonomyFilter({
           }}
         >
           {/* Background glow */}
-          <div 
+          <div
             className="absolute top-0 right-0 w-32 h-32 rounded-full pointer-events-none opacity-20 blur-2xl"
             style={{ background: 'var(--primary)' }}
           />
-          
+
           <div className="relative flex items-center gap-3 mb-5">
             <motion.div
               className="p-2 rounded-xl"
               style={{
-                background: 'linear-gradient(135deg, var(--primary), var(--accent))',
+                background:
+                  'linear-gradient(135deg, var(--primary), var(--accent))',
               }}
               whileHover={{ scale: 1.1, rotate: 5 }}
             >
-              <Folder size={16} style={{ color: 'var(--primary-foreground)' }} />
+              <Folder
+                size={16}
+                style={{ color: 'var(--primary-foreground)' }}
+              />
             </motion.div>
             <h3
               className="text-sm font-bold uppercase tracking-widest"
@@ -84,18 +88,17 @@ export function TaxonomyFilter({
                     ? 'var(--primary-foreground)'
                     : 'var(--foreground-muted)',
                 fontFamily: 'var(--font-body)',
-                boxShadow: !activeCategory && !activeTag 
-                  ? '0 4px 15px rgba(var(--primary-rgb, 99, 102, 241), 0.3)' 
-                  : 'none',
+                boxShadow:
+                  !activeCategory && !activeTag
+                    ? '0 4px 15px rgba(var(--primary-rgb, 99, 102, 241), 0.3)'
+                    : 'none',
               }}
             >
               <span className="flex items-center gap-2">
                 <Layers size={14} />
                 All Posts
               </span>
-              {(!activeCategory && !activeTag) && (
-                <Sparkles size={14} />
-              )}
+              {!activeCategory && !activeTag && <Sparkles size={14} />}
             </Link>
 
             {categories.map((category, index) => {
@@ -112,7 +115,9 @@ export function TaxonomyFilter({
                 >
                   <Link
                     to="/category/$category"
-                    params={{ category: category.toLowerCase().replace(/\s+/g, '-') }}
+                    params={{
+                      category: category.toLowerCase().replace(/\s+/g, '-'),
+                    }}
                     className="group flex items-center justify-between px-3 py-2.5 rounded-xl text-sm transition-all duration-300"
                     style={{
                       background: isActive
@@ -122,14 +127,14 @@ export function TaxonomyFilter({
                         ? 'var(--primary-foreground)'
                         : 'var(--foreground-muted)',
                       fontFamily: 'var(--font-body)',
-                      boxShadow: isActive 
-                        ? '0 4px 15px rgba(var(--primary-rgb, 99, 102, 241), 0.3)' 
+                      boxShadow: isActive
+                        ? '0 4px 15px rgba(var(--primary-rgb, 99, 102, 241), 0.3)'
                         : 'none',
                     }}
                   >
                     <span className="flex items-center gap-2">
-                      <ChevronRight 
-                        size={14} 
+                      <ChevronRight
+                        size={14}
                         className="transition-transform duration-200 group-hover:translate-x-1"
                       />
                       {category}
@@ -137,11 +142,11 @@ export function TaxonomyFilter({
                     <span
                       className="text-xs px-2 py-0.5 rounded-full font-medium"
                       style={{
-                        backgroundColor: isActive 
-                          ? 'rgba(255,255,255,0.2)' 
+                        backgroundColor: isActive
+                          ? 'rgba(255,255,255,0.2)'
                           : 'var(--background-secondary)',
-                        color: isActive 
-                          ? 'var(--primary-foreground)' 
+                        color: isActive
+                          ? 'var(--primary-foreground)'
                           : 'var(--foreground-muted)',
                       }}
                     >
@@ -169,16 +174,17 @@ export function TaxonomyFilter({
           }}
         >
           {/* Background glow */}
-          <div 
+          <div
             className="absolute bottom-0 left-0 w-32 h-32 rounded-full pointer-events-none opacity-20 blur-2xl"
             style={{ background: 'var(--accent)' }}
           />
-          
+
           <div className="relative flex items-center gap-3 mb-5">
             <motion.div
               className="p-2 rounded-xl"
               style={{
-                background: 'linear-gradient(135deg, var(--accent), var(--primary))',
+                background:
+                  'linear-gradient(135deg, var(--accent), var(--primary))',
               }}
               whileHover={{ scale: 1.1, rotate: -5 }}
             >
@@ -221,8 +227,8 @@ export function TaxonomyFilter({
                         : 'var(--foreground-muted)',
                       border: `1px solid ${isActive ? 'transparent' : 'var(--border)'}`,
                       fontFamily: 'var(--font-body)',
-                      boxShadow: isActive 
-                        ? '0 4px 12px rgba(var(--primary-rgb, 99, 102, 241), 0.3)' 
+                      boxShadow: isActive
+                        ? '0 4px 12px rgba(var(--primary-rgb, 99, 102, 241), 0.3)'
                         : 'none',
                     }}
                   >

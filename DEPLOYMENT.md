@@ -136,6 +136,7 @@ Go to your Appwrite Console:
 ### Automatic Deployments (Vercel)
 
 Vercel automatically deploys your frontend:
+
 - **Production**: Pushes to `main` branch → [portfolio.novaplex.xyz](https://portfolio.novaplex.xyz/)
 - **Preview**: Pull requests and other branches → `https://portfolio-v2-*.vercel.app`
 
@@ -249,6 +250,7 @@ bun run build
 ### Monitoring
 
 Use Vercel Analytics to monitor:
+
 - Page load times
 - Core Web Vitals
 - Error rates
@@ -274,6 +276,7 @@ Use Vercel Analytics to monitor:
 ## 🆘 Support
 
 If you encounter issues:
+
 1. Check the troubleshooting section above
 2. Review Vercel deployment logs
 3. Check Appwrite console for errors

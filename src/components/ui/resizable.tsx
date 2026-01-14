@@ -12,7 +12,10 @@ import { cn } from '@/lib/utils'
 
 type ResizablePanelGroupProps = GroupProps
 
-function ResizablePanelGroup({ className, ...props }: ResizablePanelGroupProps) {
+function ResizablePanelGroup({
+  className,
+  ...props
+}: ResizablePanelGroupProps) {
   return (
     <Group
       data-slot="resizable-panel-group"

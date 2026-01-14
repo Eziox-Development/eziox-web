@@ -16,7 +16,7 @@
     ],
     "readingTime": 8,
     "featured": true,
-    "coverImage": "/blog-images/portfolio-v2.jpg",
+    "coverImage": "/blog-images/portfolio-v2.webp",
     "coverImageAlt": "Web development workspace",
     "author": "Saito",
     "projectUrl": "https://xsaitox.novaplex.xyz"
@@ -37,7 +37,7 @@
     ],
     "readingTime": 8,
     "featured": false,
-    "coverImage": "/blog-images/novaplex-license.jpg",
+    "coverImage": "/blog-images/novaplex-license.webp",
     "coverImageAlt": "Security concept",
     "author": "Saito",
     "projectUrl": "https://license.novaplex.xyz"
@@ -58,7 +58,7 @@
     ],
     "readingTime": 6,
     "featured": false,
-    "coverImage": "/blog-images/novaplex-lavalink.jpg",
+    "coverImage": "/blog-images/novaplex-lavalink.webp",
     "coverImageAlt": "Audio streaming",
     "author": "Saito",
     "projectUrl": "https://lavalink.novaplex.xyz"
@@ -81,7 +81,7 @@
     ],
     "readingTime": 12,
     "featured": true,
-    "coverImage": "/blog-images/astra-discord-bot.jpg",
+    "coverImage": "/blog-images/astra-discord-bot.webp",
     "coverImageAlt": "Discord bot development",
     "author": "Saito",
     "projectUrl": "https://astra-bot.app",
@@ -104,7 +104,7 @@
     ],
     "readingTime": 10,
     "featured": true,
-    "coverImage": "/blog-images/novaplex-hosting.jpg",
+    "coverImage": "/blog-images/novaplex-hosting.webp",
     "coverImageAlt": "Server infrastructure",
     "author": "Saito",
     "projectUrl": "https://novaplex.xyz"
@@ -125,7 +125,7 @@
     ],
     "readingTime": 6,
     "featured": false,
-    "coverImage": "/blog-images/novaplex-docs.jpg",
+    "coverImage": "/blog-images/novaplex-docs.webp",
     "coverImageAlt": "Documentation",
     "author": "Saito",
     "projectUrl": "https://docs.novaplex.xyz"
@@ -134,7 +134,7 @@
     "slug": "novaplex-store-digital-marketplace",
     "title": "Novaplex Store - Premium Digital Products Marketplace",
     "excerpt": "Marketplace for Discord bots, websites, and digital source codes.",
-    "content": "## Premium Digital Products\n\n**Novaplex Store** offers high-quality digital products for developers.\n\n### Product Categories\n\n**Discord Bots**\n- Moderation, Music, Economy, Utility\n\n**Website Templates**\n- Portfolio, Business, Landing Pages, Dashboards\n\n**Source Codes**\n- Full-Stack Apps, APIs, Components\n\n### Why Choose Us?\n\n- High Quality & Tested\n- 24/7 Support (<30 min response)\n- Lifetime Updates\n- Comprehensive Documentation\n\n### Secure Transactions\n\n- Stripe/PayPal payments\n- Instant delivery\n- License management\n- Refund policy\n\n### Links\n\n- Website: https://store.novaplex.xyz\n- Discord: discord.gg/KD84DmNA89",
+    "content": "## Premium Digital Products\n\n**Novaplex Store** offers high-quality digital products for developers.\n\n### Product Categories\n\n**Discord Bots**\n\n- Moderation, Music, Economy, Utility\n\n**Website Templates**\n\n- Portfolio, Business, Landing Pages, Dashboards\n\n**Source Codes**\n\n- Full-Stack Apps, APIs, Components\n\n### Why Choose Us?\n\n- High Quality & Tested\n- 24/7 Support (<30 min response)\n- Lifetime Updates\n- Comprehensive Documentation\n\n### Secure Transactions\n\n- Stripe/PayPal payments\n- Instant delivery\n- License management\n- Refund policy\n\n### Links\n\n- Website: https://store.novaplex.xyz\n- Discord: discord.gg/KD84DmNA89",
     "publishDate": "2025-08-15",
     "category": "E-Commerce",
     "tags": [
@@ -145,7 +145,7 @@
     ],
     "readingTime": 7,
     "featured": false,
-    "coverImage": "/blog-images/novaplex-store.jpg",
+    "coverImage": "/blog-images/novaplex-store.webp",
     "coverImageAlt": "Abstract gradient hero showing premium digital products UI",
     "author": "Saito",
     "projectUrl": "https://store.novaplex.xyz"
@@ -165,7 +165,7 @@
     ],
     "readingTime": 5,
     "featured": false,
-    "coverImage": "/blog-images/portfolio.jpg",
+    "coverImage": "/blog-images/portfolio.webp",
     "coverImageAlt": "Developer workspace",
     "author": "Saito",
     "projectUrl": "https://saito.novaplex.xyz"
@@ -174,7 +174,7 @@
     "slug": "portfolio-xsaitox-v1-astro-blog",
     "title": "Portfolio XSaitoX v1 - Astro-Powered Blog & Portfolio",
     "excerpt": "First portfolio built with Astro and Fuwari theme with blog posts.",
-    "content": "## The Original Portfolio\n\n**Portfolio XSaitoX v1** - my first portfolio with Astro.\n\n### Tech Stack\n\n- Astro (Static site generator)\n- Fuwari Theme\n- Markdown content\n- RSS Feed support\n\n### Blog Content\n\n**Discord Bots**\n- Econix Bot (Economy & Leveling)\n- Hikaari Bot (Multipurpose)\n- Stellar Music Bot\n\n**Gaming**\n- Valorant Setups\n\n### Features\n\n- Category-based organization\n- Tag system\n- Archive page\n- RSS feed & Sitemap\n\n### Links\n\n- Website: https://xsaitox.novaplex.xyz",
+    "content": "## The Original Portfolio\n\n**Portfolio XSaitoX v1** - my first portfolio with Astro.\n\n### Tech Stack\n\n- Astro (Static site generator)\n- Fuwari Theme\n- Markdown content\n- RSS Feed support\n\n### Blog Content\n\n**Discord Bots**\n\n- Econix Bot (Economy & Leveling)\n- Hikaari Bot (Multipurpose)\n- Stellar Music Bot\n\n**Gaming**\n\n- Valorant Setups\n\n### Features\n\n- Category-based organization\n- Tag system\n- Archive page\n- RSS feed & Sitemap\n\n### Links\n\n- Website: https://xsaitox.novaplex.xyz",
     "publishDate": "2025-04-15",
     "category": "Web Development",
     "tags": [
@@ -185,7 +185,7 @@
     ],
     "readingTime": 5,
     "featured": false,
-    "coverImage": "/blog-images/portfolio-v1.jpg",
+    "coverImage": "/blog-images/portfolio-v1.webp",
     "coverImageAlt": "Blog and portfolio",
     "author": "Saito",
     "projectUrl": "https://xsaitox.novaplex.xyz"

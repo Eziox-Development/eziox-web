@@ -1,7 +1,7 @@
 /**
  * Markdown Parser Module
  * Converts markdown content to styled HTML with syntax highlighting support.
- * 
+ *
  * Features:
  * - Code blocks with language detection
  * - Tables, lists, blockquotes
@@ -162,17 +162,19 @@ export function parseMarkdown(
   html = html.replace(
     /(?<!\]\()(?<!\()(https?:\/\/[^\s<]+[^<.,:;"')\]\s])/g,
     (url) => {
-      const linkTarget = opts.linkTarget === '_blank' 
-        ? ' target="_blank" rel="noopener noreferrer"' 
-        : ''
+      const linkTarget =
+        opts.linkTarget === '_blank'
+          ? ' target="_blank" rel="noopener noreferrer"'
+          : ''
       return `<a href="${url}" class="md-link md-auto-link"${linkTarget}>${url}</a>`
-    }
+    },
   )
-  
+
   // Markdown links
-  const linkTarget = opts.linkTarget === '_blank' 
-    ? ' target="_blank" rel="noopener noreferrer"' 
-    : ''
+  const linkTarget =
+    opts.linkTarget === '_blank'
+      ? ' target="_blank" rel="noopener noreferrer"'
+      : ''
   html = html.replace(
     /\[([^\]]+)\]\(([^)]+)\)/g,
     `<a href="$2" class="md-link"${linkTarget}>$1</a>`,
@@ -199,7 +201,8 @@ export function parseMarkdown(
       .filter((row) => row.trim())
     if (rows.length < 2) return tableMatch
 
-    let tableHtml = '<div class="table-wrapper"><table class="md-table"><thead><tr>'
+    let tableHtml =
+      '<div class="table-wrapper"><table class="md-table"><thead><tr>'
 
     // Header row
     const headerCells = rows[0]?.split('|').filter((cell) => cell.trim()) ?? []
@@ -225,8 +228,14 @@ export function parseMarkdown(
   })
 
   // Task lists
-  html = html.replace(/^- \[x\] (.+)$/gm, '<li class="md-task md-task-checked"><input type="checkbox" checked disabled /> $1</li>')
-  html = html.replace(/^- \[ \] (.+)$/gm, '<li class="md-task"><input type="checkbox" disabled /> $1</li>')
+  html = html.replace(
+    /^- \[x\] (.+)$/gm,
+    '<li class="md-task md-task-checked"><input type="checkbox" checked disabled /> $1</li>',
+  )
+  html = html.replace(
+    /^- \[ \] (.+)$/gm,
+    '<li class="md-task"><input type="checkbox" disabled /> $1</li>',
+  )
 
   // Unordered lists
   html = html.replace(/^- (.+)$/gm, '<li class="md-li">$1</li>')
@@ -330,24 +339,24 @@ export function generateExcerpt(
   maxLength: number = 160,
 ): string {
   const text = content
-    .replace(/```[\s\S]*?```/g, '')           // Remove code blocks
-    .replace(/`[^`]+`/g, '')                   // Remove inline code
-    .replace(/#{1,6}\s/g, '')                  // Remove headers
-    .replace(/\*\*\*(.+?)\*\*\*/g, '$1')       // Remove bold+italic
-    .replace(/\*\*(.+?)\*\*/g, '$1')           // Remove bold
-    .replace(/\*(.+?)\*/g, '$1')               // Remove italic
-    .replace(/__(.+?)__/g, '$1')               // Remove bold (underscore)
-    .replace(/_(.+?)_/g, '$1')                 // Remove italic (underscore)
-    .replace(/~~(.+?)~~/g, '$1')               // Remove strikethrough
-    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')   // Remove links
-    .replace(/!\[[^\]]*\]\([^)]+\)/g, '')      // Remove images
-    .replace(/^>\s/gm, '')                     // Remove blockquotes
-    .replace(/^[-*]\s/gm, '')                  // Remove list markers
-    .replace(/^\d+\.\s/gm, '')                 // Remove ordered list markers
-    .replace(/- \[[x ]\]/g, '')                // Remove task list markers
-    .replace(/\|[^|]+\|/g, '')                 // Remove table syntax
-    .replace(/^(---|\_\_\_|\*\*\*)$/gm, '')    // Remove horizontal rules
-    .replace(/\s+/g, ' ')                      // Collapse whitespace
+    .replace(/```[\s\S]*?```/g, '') // Remove code blocks
+    .replace(/`[^`]+`/g, '') // Remove inline code
+    .replace(/#{1,6}\s/g, '') // Remove headers
+    .replace(/\*\*\*(.+?)\*\*\*/g, '$1') // Remove bold+italic
+    .replace(/\*\*(.+?)\*\*/g, '$1') // Remove bold
+    .replace(/\*(.+?)\*/g, '$1') // Remove italic
+    .replace(/__(.+?)__/g, '$1') // Remove bold (underscore)
+    .replace(/_(.+?)_/g, '$1') // Remove italic (underscore)
+    .replace(/~~(.+?)~~/g, '$1') // Remove strikethrough
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // Remove links
+    .replace(/!\[[^\]]*\]\([^)]+\)/g, '') // Remove images
+    .replace(/^>\s/gm, '') // Remove blockquotes
+    .replace(/^[-*]\s/gm, '') // Remove list markers
+    .replace(/^\d+\.\s/gm, '') // Remove ordered list markers
+    .replace(/- \[[x ]\]/g, '') // Remove task list markers
+    .replace(/\|[^|]+\|/g, '') // Remove table syntax
+    .replace(/^(---|\_\_\_|\*\*\*)$/gm, '') // Remove horizontal rules
+    .replace(/\s+/g, ' ') // Collapse whitespace
     .trim()
 
   if (text.length <= maxLength) return text
@@ -388,23 +397,23 @@ export function formatReadingTime(minutes: number): string {
  */
 export function stripMarkdown(content: string): string {
   return content
-    .replace(/```[\s\S]*?```/g, '')           // Remove code blocks
-    .replace(/`[^`]+`/g, '')                   // Remove inline code
-    .replace(/#{1,6}\s/g, '')                  // Remove headers
-    .replace(/\*\*\*(.+?)\*\*\*/g, '$1')       // Remove bold+italic
-    .replace(/\*\*(.+?)\*\*/g, '$1')           // Remove bold
-    .replace(/\*(.+?)\*/g, '$1')               // Remove italic
-    .replace(/__(.+?)__/g, '$1')               // Remove bold (underscore)
-    .replace(/_(.+?)_/g, '$1')                 // Remove italic (underscore)
-    .replace(/~~(.+?)~~/g, '$1')               // Remove strikethrough
-    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')   // Remove links
-    .replace(/!\[[^\]]*\]\([^)]+\)/g, '')      // Remove images
-    .replace(/^>\s/gm, '')                     // Remove blockquotes
-    .replace(/^[-*]\s/gm, '')                  // Remove list markers
-    .replace(/^\d+\.\s/gm, '')                 // Remove ordered list markers
-    .replace(/- \[[x ]\]/g, '')                // Remove task list markers
-    .replace(/\|[^|]+\|/g, '')                 // Remove table syntax
-    .replace(/^(---|\_\_\_|\*\*\*)$/gm, '')    // Remove horizontal rules
+    .replace(/```[\s\S]*?```/g, '') // Remove code blocks
+    .replace(/`[^`]+`/g, '') // Remove inline code
+    .replace(/#{1,6}\s/g, '') // Remove headers
+    .replace(/\*\*\*(.+?)\*\*\*/g, '$1') // Remove bold+italic
+    .replace(/\*\*(.+?)\*\*/g, '$1') // Remove bold
+    .replace(/\*(.+?)\*/g, '$1') // Remove italic
+    .replace(/__(.+?)__/g, '$1') // Remove bold (underscore)
+    .replace(/_(.+?)_/g, '$1') // Remove italic (underscore)
+    .replace(/~~(.+?)~~/g, '$1') // Remove strikethrough
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // Remove links
+    .replace(/!\[[^\]]*\]\([^)]+\)/g, '') // Remove images
+    .replace(/^>\s/gm, '') // Remove blockquotes
+    .replace(/^[-*]\s/gm, '') // Remove list markers
+    .replace(/^\d+\.\s/gm, '') // Remove ordered list markers
+    .replace(/- \[[x ]\]/g, '') // Remove task list markers
+    .replace(/\|[^|]+\|/g, '') // Remove table syntax
+    .replace(/^(---|\_\_\_|\*\*\*)$/gm, '') // Remove horizontal rules
     .trim()
 }
 

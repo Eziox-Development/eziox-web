@@ -18,7 +18,11 @@ export function Timeline({ posts }: TimelineProps) {
           key={year}
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: yearIndex * 0.15, type: 'spring' }}
+          transition={{
+            duration: 0.6,
+            delay: yearIndex * 0.15,
+            type: 'spring',
+          }}
           className="relative"
         >
           {/* Year Header with gradient */}
@@ -26,18 +30,26 @@ export function Timeline({ posts }: TimelineProps) {
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
-              transition={{ delay: yearIndex * 0.15 + 0.2, type: 'spring', stiffness: 200 }}
+              transition={{
+                delay: yearIndex * 0.15 + 0.2,
+                type: 'spring',
+                stiffness: 200,
+              }}
               className="relative"
             >
               {/* Glow behind year */}
-              <div 
+              <div
                 className="absolute -inset-2 rounded-2xl blur-xl opacity-50"
-                style={{ background: 'linear-gradient(135deg, var(--primary), var(--accent))' }}
+                style={{
+                  background:
+                    'linear-gradient(135deg, var(--primary), var(--accent))',
+                }}
               />
               <h2
                 className="relative text-4xl md:text-5xl font-black px-4 py-2 rounded-xl"
                 style={{
-                  background: 'linear-gradient(135deg, var(--primary), var(--accent))',
+                  background:
+                    'linear-gradient(135deg, var(--primary), var(--accent))',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
                   fontFamily: 'var(--font-display)',
@@ -46,28 +58,31 @@ export function Timeline({ posts }: TimelineProps) {
                 {year}
               </h2>
             </motion.div>
-            
+
             <motion.div
               initial={{ scaleX: 0 }}
               animate={{ scaleX: 1 }}
               transition={{ delay: yearIndex * 0.15 + 0.3, duration: 0.5 }}
               className="flex-1 h-0.5 rounded-full"
-              style={{ 
-                background: 'linear-gradient(90deg, var(--primary), transparent)',
+              style={{
+                background:
+                  'linear-gradient(90deg, var(--primary), transparent)',
                 transformOrigin: 'left',
               }}
             />
-            
+
             <motion.span
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: yearIndex * 0.15 + 0.4 }}
               className="text-sm px-4 py-1.5 rounded-full font-semibold flex items-center gap-2"
               style={{
-                background: 'linear-gradient(135deg, var(--primary), var(--accent))',
+                background:
+                  'linear-gradient(135deg, var(--primary), var(--accent))',
                 color: 'var(--primary-foreground)',
                 fontFamily: 'var(--font-body)',
-                boxShadow: '0 4px 15px rgba(var(--primary-rgb, 99, 102, 241), 0.3)',
+                boxShadow:
+                  '0 4px 15px rgba(var(--primary-rgb, 99, 102, 241), 0.3)',
               }}
             >
               <Sparkles size={12} />
@@ -83,8 +98,9 @@ export function Timeline({ posts }: TimelineProps) {
               animate={{ height: '100%' }}
               transition={{ delay: yearIndex * 0.15 + 0.3, duration: 0.8 }}
               className="absolute left-[11px] top-6 bottom-6 w-0.5 rounded-full"
-              style={{ 
-                background: 'linear-gradient(180deg, var(--primary), var(--accent), var(--primary))',
+              style={{
+                background:
+                  'linear-gradient(180deg, var(--primary), var(--accent), var(--primary))',
               }}
             />
 
@@ -106,12 +122,14 @@ export function Timeline({ posts }: TimelineProps) {
                   <motion.div
                     className="absolute left-0 top-6 w-6 h-6 rounded-full flex items-center justify-center"
                     style={{
-                      background: 'linear-gradient(135deg, var(--primary), var(--accent))',
-                      boxShadow: '0 0 20px rgba(var(--primary-rgb, 99, 102, 241), 0.5)',
+                      background:
+                        'linear-gradient(135deg, var(--primary), var(--accent))',
+                      boxShadow:
+                        '0 0 20px rgba(var(--primary-rgb, 99, 102, 241), 0.5)',
                     }}
                     whileHover={{ scale: 1.3 }}
                   >
-                    <div 
+                    <div
                       className="w-2 h-2 rounded-full"
                       style={{ backgroundColor: 'var(--primary-foreground)' }}
                     />
@@ -124,11 +142,14 @@ export function Timeline({ posts }: TimelineProps) {
                     className="relative"
                   >
                     {/* Glow effect */}
-                    <div 
+                    <div
                       className="absolute -inset-1 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl"
-                      style={{ background: 'linear-gradient(135deg, var(--primary), var(--accent))' }}
+                      style={{
+                        background:
+                          'linear-gradient(135deg, var(--primary), var(--accent))',
+                      }}
                     />
-                    
+
                     <Link
                       to="/blog/$slug"
                       params={{ slug: post.slug }}
@@ -144,7 +165,8 @@ export function Timeline({ posts }: TimelineProps) {
                         <span
                           className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg"
                           style={{
-                            background: 'linear-gradient(135deg, var(--primary), var(--accent))',
+                            background:
+                              'linear-gradient(135deg, var(--primary), var(--accent))',
                             color: 'var(--primary-foreground)',
                             fontFamily: 'var(--font-body)',
                           }}
@@ -210,7 +232,12 @@ export function Timeline({ posts }: TimelineProps) {
                             key={tag}
                             initial={{ opacity: 0, scale: 0.8 }}
                             animate={{ opacity: 1, scale: 1 }}
-                            transition={{ delay: yearIndex * 0.1 + postIndex * 0.05 + tagIndex * 0.03 }}
+                            transition={{
+                              delay:
+                                yearIndex * 0.1 +
+                                postIndex * 0.05 +
+                                tagIndex * 0.03,
+                            }}
                             className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium transition-all duration-200 hover:scale-105"
                             style={{
                               backgroundColor: 'var(--background-secondary)',
@@ -234,9 +261,7 @@ export function Timeline({ posts }: TimelineProps) {
                         }}
                       >
                         <span>Read article</span>
-                        <motion.div
-                          className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300"
-                        >
+                        <motion.div className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300">
                           <ArrowUpRight size={16} />
                         </motion.div>
                       </motion.div>
@@ -261,26 +286,32 @@ export function Timeline({ posts }: TimelineProps) {
           }}
         >
           {/* Background glow */}
-          <div 
+          <div
             className="absolute inset-0 opacity-20"
             style={{
-              background: 'radial-gradient(circle at center, var(--primary), transparent 70%)',
+              background:
+                'radial-gradient(circle at center, var(--primary), transparent 70%)',
             }}
           />
-          
+
           <motion.div
             animate={{ y: [0, -10, 0] }}
             transition={{ duration: 3, repeat: Infinity }}
             className="relative"
           >
-            <div 
+            <div
               className="mx-auto w-20 h-20 rounded-2xl flex items-center justify-center mb-6"
               style={{
-                background: 'linear-gradient(135deg, var(--primary), var(--accent))',
-                boxShadow: '0 0 40px rgba(var(--primary-rgb, 99, 102, 241), 0.4)',
+                background:
+                  'linear-gradient(135deg, var(--primary), var(--accent))',
+                boxShadow:
+                  '0 0 40px rgba(var(--primary-rgb, 99, 102, 241), 0.4)',
               }}
             >
-              <BookOpen className="w-10 h-10" style={{ color: 'var(--primary-foreground)' }} />
+              <BookOpen
+                className="w-10 h-10"
+                style={{ color: 'var(--primary-foreground)' }}
+              />
             </div>
             <p
               className="text-xl font-semibold mb-2"

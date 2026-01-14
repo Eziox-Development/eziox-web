@@ -37,13 +37,13 @@ export function ProfileCard() {
       className="sticky top-28"
     >
       {/* Glow effect behind card */}
-      <div 
+      <div
         className="absolute -inset-2 rounded-3xl opacity-50 blur-2xl pointer-events-none"
         style={{
           background: 'linear-gradient(135deg, var(--primary), var(--accent))',
         }}
       />
-      
+
       <div
         className="relative rounded-3xl overflow-hidden"
         style={{
@@ -63,7 +63,11 @@ export function ProfileCard() {
           <motion.div
             className="absolute inset-0"
             animate={{ backgroundPosition: ['0% 0%', '100% 100%'] }}
-            transition={{ duration: 20, repeat: Infinity, repeatType: 'reverse' }}
+            transition={{
+              duration: 20,
+              repeat: Infinity,
+              repeatType: 'reverse',
+            }}
             style={{
               backgroundImage: `radial-gradient(circle at 20% 50%, rgba(255,255,255,0.3) 2px, transparent 2px),
                                radial-gradient(circle at 80% 30%, rgba(255,255,255,0.2) 2px, transparent 2px),
@@ -72,14 +76,15 @@ export function ProfileCard() {
               backgroundSize: '80px 80px, 60px 60px, 40px 40px, 50px 50px',
             }}
           />
-          
+
           {/* Shimmer effect */}
           <motion.div
             className="absolute inset-0"
             animate={{ x: ['-100%', '200%'] }}
             transition={{ duration: 3, repeat: Infinity, repeatDelay: 5 }}
             style={{
-              background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)',
+              background:
+                'linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)',
               width: '50%',
             }}
           />
@@ -92,7 +97,8 @@ export function ProfileCard() {
             whileHover={{ scale: 1.05, rotate: 3 }}
             transition={{ type: 'spring', stiffness: 300 }}
             style={{
-              boxShadow: '0 0 0 4px var(--card), 0 0 30px rgba(var(--primary-rgb, 99, 102, 241), 0.4)',
+              boxShadow:
+                '0 0 0 4px var(--card), 0 0 30px rgba(var(--primary-rgb, 99, 102, 241), 0.4)',
             }}
           >
             <img
@@ -102,14 +108,15 @@ export function ProfileCard() {
               loading="lazy"
             />
             {/* Hover shine */}
-            <div 
+            <div
               className="absolute inset-0 opacity-0 hover:opacity-100 transition-opacity duration-500"
               style={{
-                background: 'linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.3) 50%, transparent 60%)',
+                background:
+                  'linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.3) 50%, transparent 60%)',
               }}
             />
           </motion.div>
-          
+
           {/* Online indicator */}
           <motion.div
             className="absolute bottom-1 right-5 w-5 h-5 rounded-full border-2"
@@ -137,9 +144,9 @@ export function ProfileCard() {
               }}
             >
               {owner.name}
-              <Verified 
-                size={20} 
-                fill="var(--primary)" 
+              <Verified
+                size={20}
+                fill="var(--primary)"
                 style={{ color: 'var(--primary-foreground)' }}
               />
             </motion.h2>
@@ -194,11 +201,12 @@ export function ProfileCard() {
           </div>
 
           {/* Gradient Divider */}
-          <div 
+          <div
             className="h-px"
-            style={{ 
-              background: 'linear-gradient(90deg, transparent, var(--border), var(--primary), var(--border), transparent)',
-            }} 
+            style={{
+              background:
+                'linear-gradient(90deg, transparent, var(--border), var(--primary), var(--border), transparent)',
+            }}
           />
 
           {/* Social Links with glow */}
@@ -214,7 +222,7 @@ export function ProfileCard() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.6 + index * 0.05 }}
-                  whileHover={{ 
+                  whileHover={{
                     scale: 1.15,
                     y: -3,
                   }}
@@ -228,7 +236,7 @@ export function ProfileCard() {
                   title={social.platform}
                 >
                   {/* Glow on hover */}
-                  <div 
+                  <div
                     className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10 blur-md"
                     style={{ background: 'var(--primary)' }}
                   />

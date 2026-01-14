@@ -11,7 +11,7 @@ tags:
   - typescript
   - ssr
   - featured
-coverImage: /blog-images/portfolio-v2.jpg
+coverImage: /blog-images/portfolio-v2.webp
 coverImageAlt: Web development workspace
 readingTime: 8
 featured: true

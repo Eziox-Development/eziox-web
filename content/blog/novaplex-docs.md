@@ -10,7 +10,7 @@ tags:
   - markdown
   - react
   - developer-tools
-coverImage: /blog-images/novaplex-docs.jpg
+coverImage: /blog-images/novaplex-docs.webp
 coverImageAlt: Documentation
 readingTime: 6
 author: Saito

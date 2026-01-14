@@ -39,7 +39,10 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
   head: () => {
     const meta = [
       { charSet: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1, viewport-fit=cover' },
+      {
+        name: 'viewport',
+        content: 'width=device-width, initial-scale=1, viewport-fit=cover',
+      },
       { title: siteConfig.metadata.title },
       { name: 'description', content: siteConfig.metadata.description },
       // Theme & PWA
@@ -47,7 +50,10 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       { name: 'color-scheme', content: 'dark light' },
       { name: 'apple-mobile-web-app-capable', content: 'yes' },
       { name: 'mobile-web-app-capable', content: 'yes' },
-      { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' },
+      {
+        name: 'apple-mobile-web-app-status-bar-style',
+        content: 'black-translucent',
+      },
       // SEO
       { name: 'robots', content: 'index, follow' },
       { name: 'author', content: 'Saito' },
@@ -64,9 +70,20 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       { name: 'twitter:description', content: siteConfig.metadata.description },
     ]
 
-    const links: { rel: string; href: string; type?: string; title?: string; sizes?: string }[] = [
+    const links: {
+      rel: string
+      href: string
+      type?: string
+      title?: string
+      sizes?: string
+    }[] = [
       { rel: 'stylesheet', href: appCss },
-      { rel: 'alternate', type: 'application/rss+xml', title: `${siteConfig.metadata.title} RSS Feed`, href: '/rss' },
+      {
+        rel: 'alternate',
+        type: 'application/rss+xml',
+        title: `${siteConfig.metadata.title} RSS Feed`,
+        href: '/rss',
+      },
       { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
       { rel: 'dns-prefetch', href: 'https://fonts.googleapis.com' },
     ]
@@ -98,9 +115,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       <body className="min-h-screen bg-background text-foreground antialiased">
         <PortfolioThemeProvider>
           <div className="relative flex min-h-screen flex-col">
-            <main className="flex-1">
-              {children}
-            </main>
+            <main className="flex-1">{children}</main>
           </div>
           <Toaster position="bottom-right" richColors closeButton />
         </PortfolioThemeProvider>

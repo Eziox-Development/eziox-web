@@ -72,7 +72,10 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     const { colors, typography } = theme
 
     // Enable smooth transitions for theme changes
-    root.style.setProperty('--theme-transition', `${TRANSITION_DURATION}ms ease-in-out`)
+    root.style.setProperty(
+      '--theme-transition',
+      `${TRANSITION_DURATION}ms ease-in-out`,
+    )
 
     // Apply colors
     root.style.setProperty('--background', colors.background)
@@ -90,7 +93,10 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     // Apply RGB values for use in rgba() functions (glow effects, etc.)
     root.style.setProperty('--primary-rgb', extractRgbValues(colors.primary))
     root.style.setProperty('--accent-rgb', extractRgbValues(colors.accent))
-    root.style.setProperty('--background-rgb', extractRgbValues(colors.background))
+    root.style.setProperty(
+      '--background-rgb',
+      extractRgbValues(colors.background),
+    )
 
     // Apply typography
     root.style.setProperty('--font-display', typography.displayFont)
@@ -119,28 +125,34 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   }, [theme, mounted])
 
   // Memoized setTheme function with transition state
-  const setTheme = useCallback((themeId: string) => {
-    const newTheme = getThemeById(themeId)
-    if (newTheme && newTheme.id !== theme.id) {
-      setIsTransitioning(true)
-      setThemeState(newTheme)
-      localStorage.setItem(THEME_STORAGE_KEY, themeId)
-      
-      // Reset transition state after animation completes
-      setTimeout(() => {
-        setIsTransitioning(false)
-      }, TRANSITION_DURATION)
-    }
-  }, [theme.id])
+  const setTheme = useCallback(
+    (themeId: string) => {
+      const newTheme = getThemeById(themeId)
+      if (newTheme && newTheme.id !== theme.id) {
+        setIsTransitioning(true)
+        setThemeState(newTheme)
+        localStorage.setItem(THEME_STORAGE_KEY, themeId)
+
+        // Reset transition state after animation completes
+        setTimeout(() => {
+          setIsTransitioning(false)
+        }, TRANSITION_DURATION)
+      }
+    },
+    [theme.id],
+  )
 
   // Memoized context value to prevent unnecessary re-renders
-  const contextValue = useMemo(() => ({
-    theme,
-    setTheme,
-    themes: siteConfig.themes,
-    isTransitioning,
-    mounted,
-  }), [theme, setTheme, isTransitioning, mounted])
+  const contextValue = useMemo(
+    () => ({
+      theme,
+      setTheme,
+      themes: siteConfig.themes,
+      isTransitioning,
+      mounted,
+    }),
+    [theme, setTheme, isTransitioning, mounted],
+  )
 
   return (
     <ThemeContext.Provider value={contextValue}>

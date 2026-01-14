@@ -10,7 +10,7 @@ tags:
   - discord
   - music
   - infrastructure
-coverImage: /blog-images/novaplex-lavalink.jpg
+coverImage: /blog-images/novaplex-lavalink.webp
 coverImageAlt: Audio streaming
 readingTime: 6
 author: Saito

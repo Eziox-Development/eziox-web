@@ -78,18 +78,18 @@ A modern, high-performance portfolio project built with the latest web technolog
 <summary><b>🎨 Frontend</b></summary>
 <br/>
 
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| **React** | 19.2.3 | UI Framework |
-| **TypeScript** | 5.9.3 | Type Safety |
-| **TanStack Router** | 1.147.3 | File-based Routing |
-| **TanStack Query** | 5.90.16 | Data Fetching & Caching |
-| **Tailwind CSS** | 4.1.18 | Utility-first Styling |
-| **shadcn/ui** | Latest | UI Component Library |
-| **Lucide React** | 0.562.0 | Icon Library |
-| **Motion** | 12.26.1 | Animations |
-| **React Hook Form** | 7.71.0 | Form Management |
-| **Zod** | 4.3.5 | Schema Validation |
+| Technology          | Version | Purpose                 |
+| ------------------- | ------- | ----------------------- |
+| **React**           | 19.2.3  | UI Framework            |
+| **TypeScript**      | 5.9.3   | Type Safety             |
+| **TanStack Router** | 1.147.3 | File-based Routing      |
+| **TanStack Query**  | 5.90.16 | Data Fetching & Caching |
+| **Tailwind CSS**    | 4.1.18  | Utility-first Styling   |
+| **shadcn/ui**       | Latest  | UI Component Library    |
+| **Lucide React**    | 0.562.0 | Icon Library            |
+| **Motion**          | 12.26.1 | Animations              |
+| **React Hook Form** | 7.71.0  | Form Management         |
+| **Zod**             | 4.3.5   | Schema Validation       |
 
 </details>
 
@@ -97,12 +97,12 @@ A modern, high-performance portfolio project built with the latest web technolog
 <summary><b>⚙️ Backend & Infrastructure</b></summary>
 <br/>
 
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| **Appwrite** | 21.1.0 | Backend-as-a-Service |
-| **Bun** | Latest | JavaScript Runtime |
-| **TanStack Start** | 1.149.2 | SSR Framework |
-| **Vite** | Rolldown | Build Tool |
+| Technology         | Version  | Purpose              |
+| ------------------ | -------- | -------------------- |
+| **Appwrite**       | 21.1.0   | Backend-as-a-Service |
+| **Bun**            | Latest   | JavaScript Runtime   |
+| **TanStack Start** | 1.149.2  | SSR Framework        |
+| **Vite**           | Rolldown | Build Tool           |
 
 </details>
 
@@ -110,12 +110,12 @@ A modern, high-performance portfolio project built with the latest web technolog
 <summary><b>🔧 Development Tools</b></summary>
 <br/>
 
-| Tool | Version | Purpose |
-|------|---------|---------|
-| **ESLint** | 8.53.0 | Code Linting |
-| **Prettier** | 3.7.4 | Code Formatting |
-| **Vitest** | 4.0.17 | Unit Testing |
-| **TypeScript ESLint** | 8.53.0 | TS Linting |
+| Tool                  | Version | Purpose         |
+| --------------------- | ------- | --------------- |
+| **ESLint**            | 8.53.0  | Code Linting    |
+| **Prettier**          | 3.7.4   | Code Formatting |
+| **Vitest**            | 4.0.17  | Unit Testing    |
+| **TypeScript ESLint** | 8.53.0  | TS Linting      |
 
 </details>
 
@@ -253,6 +253,7 @@ The project includes 5 pre-configured themes in `src/lib/site-config.ts`:
 - **Aurora** - Cyan-based theme
 
 Each theme includes:
+
 - Custom Color Palette
 - Typography (Google Fonts)
 - Tailwind CSS Variables
@@ -352,6 +353,7 @@ bun run start
 For complete deployment instructions, see **[DEPLOYMENT.md](./DEPLOYMENT.md)**
 
 Topics covered:
+
 - Vercel deployment (CLI & GitHub)
 - Appwrite backend setup (Database & Storage only)
 - Environment variables configuration

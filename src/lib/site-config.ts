@@ -82,7 +82,7 @@ export const siteConfig: SiteConfig = {
     title: 'Personal Portfolio',
     description:
       'A modern portfolio for content creators and professionals showcasing work, thoughts, and expertise.',
-    url: 'https://xsaitox.novaplex.xyz',
+    url: 'https://portfolio.novaplex.xyz',
     language: 'en',
     copyright: `© ${new Date().getFullYear()} All rights reserved.`,
     icon: '/saito.png',
@@ -107,8 +107,7 @@ infrastructure, and deployment. I value clean code, clear responsibilities, and 
 Besides development, I enjoy experimenting with hosting setups, automation, and developer tooling.
 I believe good software is built with intention, structure, and a solid understanding of fundamentals.
   `,
-    avatar:
-      'https://avatars.githubusercontent.com/u/64774999?v=4',
+    avatar: 'https://avatars.githubusercontent.com/u/64774999?v=4',
     badges: [
       'Software Developer',
       'Apprentice (AE)',

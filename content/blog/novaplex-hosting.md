@@ -11,7 +11,7 @@ tags:
   - nodejs
   - infrastructure
   - featured
-coverImage: /blog-images/novaplex-hosting.jpg
+coverImage: /blog-images/novaplex-hosting.webp
 coverImageAlt: Server infrastructure
 readingTime: 10
 featured: true

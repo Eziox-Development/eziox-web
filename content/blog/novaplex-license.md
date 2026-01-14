@@ -10,7 +10,7 @@ tags:
   - react
   - api
   - saas
-coverImage: /blog-images/novaplex-license.jpg
+coverImage: /blog-images/novaplex-license.webp
 coverImageAlt: Security concept
 readingTime: 8
 author: Saito
