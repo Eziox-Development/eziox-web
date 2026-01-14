@@ -213,6 +213,7 @@ export const getCurrentUser = createServerFn({ method: 'GET' }).handler(
 
       return {
         $id: user.$id,
+        $createdAt: user.$createdAt,
         email: user.email,
         name: user.name,
         emailVerification: user.emailVerification,
@@ -220,9 +221,12 @@ export const getCurrentUser = createServerFn({ method: 'GET' }).handler(
         labels: user.labels,
         registration: user.$createdAt,
       }
-    } catch {
-      // Session invalid or expired
-      clearSessionCookies()
+    } catch (error) {
+      // Only clear cookies for specific auth errors, not network issues
+      const appwriteError = error as AppwriteException
+      if (appwriteError.code === 401 || appwriteError.type === 'user_unauthorized') {
+        clearSessionCookies()
+      }
       return null
     }
   },

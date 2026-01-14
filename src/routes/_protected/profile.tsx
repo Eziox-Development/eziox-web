@@ -3,6 +3,8 @@ import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { useAuth } from '@/hooks/use-auth'
 import { siteConfig } from '@/lib/site-config'
+import { updateProfileFn } from '@/server/functions/auth'
+import { useServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
 import {
   User,
@@ -120,18 +122,23 @@ function ProfilePage() {
     }
   }
 
+  const updateProfile = useServerFn(updateProfileFn)
+
   const handleSave = async () => {
     setIsSaving(true)
     setSaveError(null)
     
     try {
-      // TODO: Implement profile update via Appwrite
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      // Update profile in Appwrite
+      await updateProfile({ data: { name: formData.name || undefined } })
       setSaveSuccess(true)
       setIsEditing(false)
       setTimeout(() => setSaveSuccess(false), 3000)
-    } catch {
-      setSaveError('Failed to update profile. Please try again.')
+      // Reload page to get updated user data
+      window.location.reload()
+    } catch (error) {
+      const err = error as { message?: string }
+      setSaveError(err.message || 'Failed to update profile. Please try again.')
     } finally {
       setIsSaving(false)
     }
@@ -215,7 +222,7 @@ function ProfilePage() {
   )
 
   return (
-    <div className="min-h-screen py-8 px-4">
+    <div className="min-h-screen pt-24 pb-8 px-4">
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Toast Notifications */}
         <AnimatePresence>
