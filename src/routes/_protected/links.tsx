@@ -20,6 +20,10 @@ import {
   X,
   ExternalLink,
   Sparkles,
+  MousePointerClick,
+  Globe,
+  Copy,
+  Check,
 } from 'lucide-react'
 
 export const Route = createFileRoute('/_protected/links')({
@@ -45,6 +49,7 @@ function LinksPage() {
 
   const [isCreating, setIsCreating] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
+  const [copied, setCopied] = useState(false)
 
   const form = useForm<LinkFormData>({
     resolver: zodResolver(linkSchema),
@@ -82,6 +87,8 @@ function LinksPage() {
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['my-links'] })
       setEditingId(null)
+      setIsCreating(false)
+      form.reset()
     },
   })
 
@@ -113,8 +120,30 @@ function LinksPage() {
     }
   })
 
+  const bioUrl = `https://eziox.link/${currentUser?.username}`
+  const totalClicks = links.reduce((sum, link) => sum + (link.clicks || 0), 0)
+  const activeLinks = links.filter(link => link.isActive).length
+
+  const copyToClipboard = async () => {
+    await navigator.clipboard.writeText(bioUrl)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
   return (
     <div className="min-h-screen pt-24 pb-12 px-4 sm:px-6 lg:px-8">
+      {/* Background Effects */}
+      <div className="fixed inset-0 pointer-events-none -z-10">
+        <div
+          className="absolute top-20 right-1/4 w-72 h-72 rounded-full blur-3xl opacity-10"
+          style={{ background: 'var(--primary)' }}
+        />
+        <div
+          className="absolute bottom-20 left-1/4 w-72 h-72 rounded-full blur-3xl opacity-10"
+          style={{ background: 'var(--accent)' }}
+        />
+      </div>
+
       <div className="max-w-3xl mx-auto">
         {/* Header */}
         <motion.div
@@ -122,21 +151,28 @@ function LinksPage() {
           animate={{ opacity: 1, y: 0 }}
           className="mb-8"
         >
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-6">
             <div>
               <h1 className="text-3xl font-bold" style={{ color: 'var(--foreground)' }}>
-                Manage Links
+                Link Manager
               </h1>
               <p className="text-sm mt-1" style={{ color: 'var(--foreground-muted)' }}>
                 Create and organize your bio links
               </p>
             </div>
             <motion.button
-              onClick={() => setIsCreating(!isCreating)}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-all"
+              onClick={() => {
+                setIsCreating(!isCreating)
+                if (isCreating) {
+                  setEditingId(null)
+                  form.reset()
+                }
+              }}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-medium transition-all"
               style={{
                 background: isCreating ? 'var(--background-secondary)' : 'linear-gradient(135deg, var(--primary), var(--accent))',
                 color: isCreating ? 'var(--foreground)' : 'white',
+                boxShadow: isCreating ? 'none' : '0 4px 20px rgba(99, 102, 241, 0.3)',
               }}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
@@ -146,33 +182,102 @@ function LinksPage() {
             </motion.button>
           </div>
 
-          {/* Bio Link Preview */}
-          <div
-            className="flex items-center justify-between p-4 rounded-xl"
-            style={{ background: 'var(--card)', border: '1px solid var(--border)' }}
+          {/* Stats Cards */}
+          <div className="grid grid-cols-3 gap-3 mb-6">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="p-4 rounded-xl text-center"
+              style={{ background: 'var(--card)', border: '1px solid var(--border)' }}
+            >
+              <LinkIcon size={20} className="mx-auto mb-2" style={{ color: 'var(--primary)' }} />
+              <p className="text-2xl font-bold" style={{ color: 'var(--foreground)' }}>{links.length}</p>
+              <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>Total Links</p>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15 }}
+              className="p-4 rounded-xl text-center"
+              style={{ background: 'var(--card)', border: '1px solid var(--border)' }}
+            >
+              <Eye size={20} className="mx-auto mb-2" style={{ color: '#22c55e' }} />
+              <p className="text-2xl font-bold" style={{ color: 'var(--foreground)' }}>{activeLinks}</p>
+              <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>Active</p>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="p-4 rounded-xl text-center"
+              style={{ background: 'var(--card)', border: '1px solid var(--border)' }}
+            >
+              <MousePointerClick size={20} className="mx-auto mb-2" style={{ color: '#f59e0b' }} />
+              <p className="text-2xl font-bold" style={{ color: 'var(--foreground)' }}>{totalClicks}</p>
+              <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>Total Clicks</p>
+            </motion.div>
+          </div>
+
+          {/* Bio Link Preview Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25 }}
+            className="p-5 rounded-2xl"
+            style={{ 
+              background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1))',
+              border: '1px solid rgba(99, 102, 241, 0.2)',
+            }}
           >
-            <div className="flex items-center gap-3">
-              <LinkIcon size={20} style={{ color: 'var(--primary)' }} />
-              <div>
-                <p className="text-sm font-medium" style={{ color: 'var(--foreground)' }}>
-                  Your Bio Page
-                </p>
-                <p className="text-xs font-mono" style={{ color: 'var(--primary)' }}>
-                  eziox.link/{currentUser?.username}
-                </p>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div 
+                  className="w-12 h-12 rounded-xl flex items-center justify-center"
+                  style={{ background: 'linear-gradient(135deg, var(--primary), var(--accent))' }}
+                >
+                  <Globe size={24} className="text-white" />
+                </div>
+                <div>
+                  <p className="font-semibold" style={{ color: 'var(--foreground)' }}>
+                    Your Bio Page
+                  </p>
+                  <p className="text-sm font-mono" style={{ color: 'var(--primary)' }}>
+                    eziox.link/{currentUser?.username}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <motion.button
+                  onClick={copyToClipboard}
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all"
+                  style={{ 
+                    background: 'var(--background-secondary)', 
+                    color: copied ? '#22c55e' : 'var(--foreground)',
+                    border: '1px solid var(--border)',
+                  }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  {copied ? <Check size={16} /> : <Copy size={16} />}
+                  {copied ? 'Copied!' : 'Copy'}
+                </motion.button>
+                <a
+                  href={`/${currentUser?.username}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all hover:opacity-80"
+                  style={{ 
+                    background: 'var(--primary)', 
+                    color: 'white',
+                  }}
+                >
+                  <ExternalLink size={16} />
+                  Preview
+                </a>
               </div>
             </div>
-            <a
-              href={`/${currentUser?.username}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors hover:bg-[var(--background-secondary)]"
-              style={{ color: 'var(--foreground)' }}
-            >
-              Preview
-              <ExternalLink size={14} />
-            </a>
-          </div>
+          </motion.div>
         </motion.div>
 
         {/* Create/Edit Form */}
