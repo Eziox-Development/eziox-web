@@ -5,11 +5,11 @@
  */
 
 import { createFileRoute, Link, notFound } from '@tanstack/react-router'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { useQuery } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
-import { getPublicProfileFn } from '@/server/functions/users'
+import { getPublicProfileFn, trackProfileViewFn } from '@/server/functions/users'
 import { trackLinkClickFn } from '@/server/functions/links'
 import {
   User,
@@ -82,6 +82,7 @@ function BioPage() {
   const username = params.username as string
   const getProfile = useServerFn(getPublicProfileFn)
   const trackClick = useServerFn(trackLinkClickFn)
+  const trackView = useServerFn(trackProfileViewFn)
 
   const { data: profile, isLoading, error } = useQuery({
     queryKey: ['publicProfile', username],
@@ -91,13 +92,33 @@ function BioPage() {
   const [clickedLink, setClickedLink] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
 
+  // Track profile view once per session
+  useEffect(() => {
+    if (!profile?.user?.id) return
+
+    const sessionKey = `viewed_${profile.user.id}`
+    const hasViewed = sessionStorage.getItem(sessionKey)
+
+    if (!hasViewed) {
+      // Generate session ID if not exists
+      let sessionId = sessionStorage.getItem('eziox_session_id')
+      if (!sessionId) {
+        sessionId = `${Date.now()}_${Math.random().toString(36).substring(2)}`
+        sessionStorage.setItem('eziox_session_id', sessionId)
+      }
+
+      // Track view
+      trackView({ data: { userId: profile.user.id, sessionId } })
+        .then(() => {
+          sessionStorage.setItem(sessionKey, 'true')
+        })
+        .catch(console.error)
+    }
+  }, [profile?.user?.id, trackView])
+
   const handleLinkClick = (linkId: string, url: string) => {
     setClickedLink(linkId)
-    console.log('[Bio] Tracking click for link:', linkId)
-    // Fire and forget - don't block navigation
-    trackClick({ data: { linkId } })
-      .then(result => console.log('[Bio] Click tracked:', result))
-      .catch(error => console.error('[Bio] Failed to track click:', error))
+    trackClick({ data: { linkId } }).catch(console.error)
     window.open(url, '_blank', 'noopener,noreferrer')
     setTimeout(() => setClickedLink(null), 500)
   }

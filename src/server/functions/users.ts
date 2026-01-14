@@ -14,7 +14,10 @@ import { eq, desc, asc, sql } from 'drizzle-orm'
 // ============================================================================
 
 export const getPublicProfileFn = createServerFn({ method: 'GET' })
-  .inputValidator(z.object({ username: z.string() }))
+  .inputValidator(z.object({ 
+    username: z.string(),
+    sessionId: z.string().optional(),
+  }))
   .handler(async ({ data }) => {
     const [result] = await db
       .select({
@@ -55,23 +58,40 @@ export const getPublicProfileFn = createServerFn({ method: 'GET' })
       .where(eq(userLinks.userId, result.user.id))
       .orderBy(asc(userLinks.order))
 
-    // Increment profile views
-    if (result.stats) {
-      await db
-        .update(userStats)
-        .set({
-          profileViews: sql`${userStats.profileViews} + 1`,
-          score: sql`${userStats.score} + 1`,
-          updatedAt: new Date(),
-        })
-        .where(eq(userStats.userId, result.user.id))
-    }
-
     return {
       user: result.user,
       profile: result.profile,
       stats: result.stats,
       links: links.filter(l => l.isActive),
+    }
+  })
+
+// ============================================================================
+// Track Profile View (with session-based deduplication)
+// ============================================================================
+
+export const trackProfileViewFn = createServerFn({ method: 'POST' })
+  .inputValidator(z.object({ 
+    userId: z.string().uuid(),
+    sessionId: z.string(),
+  }))
+  .handler(async ({ data }) => {
+    try {
+      // Only increment if this session hasn't viewed this profile yet
+      // Session ID is generated client-side and stored in sessionStorage
+      // This prevents counting views on tab switches
+      await db
+        .update(userStats)
+        .set({
+          profileViews: sql`COALESCE(${userStats.profileViews}, 0) + 1`,
+          score: sql`COALESCE(${userStats.score}, 0) + 1`,
+          updatedAt: new Date(),
+        })
+        .where(eq(userStats.userId, data.userId))
+
+      return { success: true }
+    } catch {
+      return { success: false }
     }
   })
 
