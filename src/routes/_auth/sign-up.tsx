@@ -9,6 +9,7 @@ import {
 } from '@tanstack/react-router'
 import { z } from 'zod'
 import { signUpFn } from '@/server/functions/auth'
+import { getPlatformStatsFn } from '@/server/functions/stats'
 import { useServerFn } from '@tanstack/react-start'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -40,6 +41,10 @@ const searchSchema = z.object({
 export const Route = createFileRoute('/_auth/sign-up')({
   component: SignUpPage,
   validateSearch: searchSchema,
+  loader: async () => {
+    const stats = await getPlatformStatsFn()
+    return { stats }
+  },
 })
 
 const signUpSchema = z.object({
@@ -71,6 +76,7 @@ const features = [
 ]
 
 function SignUpPage() {
+  const { stats } = Route.useLoaderData()
   const search = useSearch({ from: '/_auth/sign-up' })
   const navigate = useNavigate()
   const router = useRouter()
@@ -221,7 +227,7 @@ function SignUpPage() {
               </span>
             </h1>
             <p className="text-lg" style={{ color: 'var(--foreground-muted)' }}>
-              Join thousands of creators sharing their world through one simple link.
+              Join {stats.totalUsers.toLocaleString()}+ creators sharing their world through one simple link.
             </p>
           </motion.div>
 
@@ -285,16 +291,6 @@ function SignUpPage() {
           transition={{ duration: 0.5 }}
           className="w-full max-w-lg"
         >
-          {/* Mobile Logo */}
-          <div className="lg:hidden mb-8 text-center">
-            <Link to="/" className="inline-flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl overflow-hidden">
-                <img src="/icon.png" alt="Eziox" className="w-full h-full object-cover" />
-              </div>
-              <span className="text-xl font-bold" style={{ color: 'var(--foreground)' }}>Eziox</span>
-            </Link>
-          </div>
-
           {/* Header */}
           <div className="mb-8">
             <motion.div

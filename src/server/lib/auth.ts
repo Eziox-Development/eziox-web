@@ -8,7 +8,7 @@ import { db } from '../db'
 import { users, profiles, userStats, sessions } from '../db/schema'
 import { eq, and, gt } from 'drizzle-orm'
 
-const SESSION_EXPIRY_DAYS = 30
+const SESSION_EXPIRY_DAYS = 7
 
 // ============================================================================
 // Password Hashing

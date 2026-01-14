@@ -120,7 +120,7 @@ function LeaderboardPage() {
                 return (
                   <Link
                     key={item.user.id}
-                    to="/u/$username"
+                    to="/$username"
                     params={{ username: item.user.username }}
                     className="flex items-center gap-4 p-4 transition-colors hover:bg-white/5"
                   >

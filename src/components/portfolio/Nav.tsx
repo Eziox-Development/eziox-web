@@ -172,25 +172,33 @@ export function Nav() {
                 <div className="relative" onClick={(e) => e.stopPropagation()}>
                   <motion.button
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                    className="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-full transition-all"
+                    className="flex items-center gap-2 px-3 py-2 rounded-xl transition-all"
                     style={{
-                      background: isUserMenuOpen
-                        ? 'linear-gradient(135deg, var(--primary), var(--accent))'
-                        : 'rgba(var(--background-rgb, 0, 0, 0), 0.4)',
+                      background: isUserMenuOpen ? 'var(--primary)' : 'var(--background-secondary)',
                       border: '1px solid rgba(var(--border-rgb, 255, 255, 255), 0.1)',
                       color: isUserMenuOpen ? 'white' : 'var(--foreground)',
                     }}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    <div
-                      className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold"
-                      style={{
-                        background: 'linear-gradient(135deg, var(--primary), var(--accent))',
-                        color: 'white',
-                      }}
-                    >
-                      {currentUser.name?.charAt(0).toUpperCase() || currentUser.email?.charAt(0).toUpperCase()}
+                    <div className="w-7 h-7 rounded-full overflow-hidden">
+                      {currentUser.profile?.avatar ? (
+                        <img 
+                          src={currentUser.profile.avatar} 
+                          alt={currentUser.name || 'User'} 
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div
+                          className="w-full h-full flex items-center justify-center text-xs font-bold"
+                          style={{
+                            background: 'linear-gradient(135deg, var(--primary), var(--accent))',
+                            color: 'white',
+                          }}
+                        >
+                          {currentUser.name?.charAt(0).toUpperCase() || currentUser.email?.charAt(0).toUpperCase()}
+                        </div>
+                      )}
                     </div>
                     <span className="text-sm font-medium max-w-[80px] truncate">
                       {currentUser.name || currentUser.email?.split('@')[0]}
@@ -219,14 +227,24 @@ export function Nav() {
                         {/* User Info */}
                         <div className="p-4 border-b" style={{ borderColor: 'var(--border)' }}>
                           <div className="flex items-center gap-3">
-                            <div
-                              className="w-12 h-12 rounded-xl flex items-center justify-center text-lg font-bold"
-                              style={{
-                                background: 'linear-gradient(135deg, var(--primary), var(--accent))',
-                                color: 'white',
-                              }}
-                            >
-                              {currentUser.name?.charAt(0).toUpperCase() || 'U'}
+                            <div className="w-12 h-12 rounded-xl overflow-hidden">
+                              {currentUser.profile?.avatar ? (
+                                <img 
+                                  src={currentUser.profile.avatar} 
+                                  alt={currentUser.name || 'User'} 
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                <div
+                                  className="w-full h-full flex items-center justify-center text-lg font-bold"
+                                  style={{
+                                    background: 'linear-gradient(135deg, var(--primary), var(--accent))',
+                                    color: 'white',
+                                  }}
+                                >
+                                  {currentUser.name?.charAt(0).toUpperCase() || 'U'}
+                                </div>
+                              )}
                             </div>
                             <div className="flex-1 min-w-0">
                               <p className="font-semibold truncate" style={{ color: 'var(--foreground)' }}>
@@ -260,6 +278,15 @@ export function Nav() {
                             <User size={18} />
                             <span>Your Profile</span>
                           </Link>
+                          <Link
+                            to="/links"
+                            onClick={() => setIsUserMenuOpen(false)}
+                            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors hover:bg-[var(--background-secondary)]"
+                            style={{ color: 'var(--foreground)' }}
+                          >
+                            <LinkIcon size={18} />
+                            <span>Manage Links</span>
+                          </Link>
                           <a
                             href={`/${currentUser.username || currentUser.email?.split('@')[0]}`}
                             target="_blank"
@@ -268,9 +295,8 @@ export function Nav() {
                             className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors hover:bg-[var(--background-secondary)]"
                             style={{ color: 'var(--foreground)' }}
                           >
-                            <LinkIcon size={18} />
+                            <ExternalLink size={18} />
                             <span>View Bio Page</span>
-                            <ExternalLink size={12} className="ml-auto" style={{ color: 'var(--foreground-muted)' }} />
                           </a>
                         </div>
 

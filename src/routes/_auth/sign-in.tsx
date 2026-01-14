@@ -9,6 +9,7 @@ import {
 } from '@tanstack/react-router'
 import { z } from 'zod'
 import { signInFn } from '@/server/functions/auth'
+import { getPlatformStatsFn } from '@/server/functions/stats'
 import { useServerFn } from '@tanstack/react-start'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -36,6 +37,10 @@ const searchSchema = z.object({
 export const Route = createFileRoute('/_auth/sign-in')({
   component: SignInPage,
   validateSearch: searchSchema,
+  loader: async () => {
+    const stats = await getPlatformStatsFn()
+    return { stats }
+  },
 })
 
 const signInSchema = z.object({
@@ -45,13 +50,8 @@ const signInSchema = z.object({
 
 type SignInFormData = z.infer<typeof signInSchema>
 
-const testimonials = [
-  { name: 'Alex K.', role: 'Content Creator', text: 'Eziox made sharing my content so much easier!' },
-  { name: 'Sarah M.', role: 'Influencer', text: 'The analytics are incredible. I love seeing my growth.' },
-  { name: 'Mike R.', role: 'Developer', text: 'Clean, fast, and exactly what I needed.' },
-]
-
 function SignInPage() {
+  const { stats } = Route.useLoaderData()
   const search = useSearch({ from: '/_auth/sign-in' })
   const navigate = useNavigate()
   const router = useRouter()
@@ -168,9 +168,9 @@ function SignInPage() {
           {/* Stats */}
           <div className="grid grid-cols-3 gap-4 mb-12">
             {[
-              { icon: Users, value: '10K+', label: 'Creators' },
-              { icon: TrendingUp, value: '1M+', label: 'Link Clicks' },
-              { icon: Globe, value: '150+', label: 'Countries' },
+              { icon: Users, value: stats.totalUsers.toLocaleString(), label: 'Creators' },
+              { icon: TrendingUp, value: stats.totalClicks.toLocaleString(), label: 'Link Clicks' },
+              { icon: Globe, value: `${stats.totalCountries}+`, label: 'Countries' },
             ].map((stat, index) => (
               <motion.div
                 key={stat.label}
@@ -190,31 +190,39 @@ function SignInPage() {
             ))}
           </div>
 
-          {/* Testimonials */}
-          <div className="space-y-4">
+          {/* Trust Badges */}
+          <div className="space-y-3">
             <p className="text-sm font-medium" style={{ color: 'var(--foreground-muted)' }}>
-              What creators say
+              Trusted by creators worldwide
             </p>
-            {testimonials.map((testimonial, index) => (
+            <div className="grid grid-cols-2 gap-3">
               <motion.div
-                key={testimonial.name}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.4 + index * 0.1 }}
-                className="p-4 rounded-2xl backdrop-blur-sm"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                className="p-3 rounded-xl backdrop-blur-sm flex items-center gap-2"
                 style={{
                   background: 'rgba(var(--card-rgb, 20, 20, 30), 0.5)',
                   border: '1px solid rgba(var(--border-rgb, 255, 255, 255), 0.1)',
                 }}
               >
-                <p className="text-sm mb-2" style={{ color: 'var(--foreground)' }}>
-                  "{testimonial.text}"
-                </p>
-                <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>
-                  <span className="font-medium">{testimonial.name}</span> · {testimonial.role}
-                </p>
+                <Shield size={18} style={{ color: 'var(--accent)' }} />
+                <span className="text-xs font-medium" style={{ color: 'var(--foreground)' }}>Secure Login</span>
               </motion.div>
-            ))}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+                className="p-3 rounded-xl backdrop-blur-sm flex items-center gap-2"
+                style={{
+                  background: 'rgba(var(--card-rgb, 20, 20, 30), 0.5)',
+                  border: '1px solid rgba(var(--border-rgb, 255, 255, 255), 0.1)',
+                }}
+              >
+                <Zap size={18} style={{ color: 'var(--primary)' }} />
+                <span className="text-xs font-medium" style={{ color: 'var(--foreground)' }}>Instant Access</span>
+              </motion.div>
+            </div>
           </div>
         </div>
       </div>
@@ -227,16 +235,6 @@ function SignInPage() {
           transition={{ duration: 0.5 }}
           className="w-full max-w-md"
         >
-          {/* Mobile Logo */}
-          <div className="lg:hidden mb-8 text-center">
-            <Link to="/" className="inline-flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl overflow-hidden">
-                <img src="/icon.png" alt="Eziox" className="w-full h-full object-cover" />
-              </div>
-              <span className="text-xl font-bold" style={{ color: 'var(--foreground)' }}>Eziox</span>
-            </Link>
-          </div>
-
           {/* Header */}
           <div className="mb-8">
             <motion.div

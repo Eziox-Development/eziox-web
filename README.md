@@ -59,14 +59,14 @@
 
 ### ✨ Key Features
 
-- � **Bio Links** - Linktree-style customizable link pages
+- 🔗 **Bio Links** - Linktree-style customizable link pages
 - 📊 **Analytics** - Track profile views, link clicks, and engagement
 - 🏆 **Leaderboard** - User ranking system with scores
 - 👤 **User Profiles** - Custom avatars, banners, bios, and social links
 - 🔐 **Authentication** - Secure session-based auth with bcrypt
 - 🎨 **5 Theme Variants** - Royal Purple, Midnight, Sunset, Neon, Aurora
-- 📝 **Blog System** - Markdown-based blog posts with categories & tags
-- � **Projects** - Showcase your work with detailed project pages
+- 💎 **Premium Tiers** - Standard and Premium user tiers (coming soon)
+- 🔗 **Short Links** - URL shortener for sharing
 - 🎭 **shadcn/ui** - Modern, accessible UI components
 - 📱 **Responsive** - Mobile-first design
 - ⚡ **Fast** - Bun runtime + Vercel Edge deployment
@@ -229,8 +229,6 @@ eziox/
 │   │   └── lib/            # Auth utilities
 │   ├── styles.css          # Global styles
 │   └── router.tsx          # Router configuration
-├── content/                # Markdown content
-│   └── blog/               # Blog posts (.md files)
 ├── public/                 # Static assets
 ├── drizzle.config.ts       # Drizzle ORM configuration
 ├── vite.config.ts          # Vite configuration
@@ -260,14 +258,6 @@ Each theme includes:
 - Typography (Google Fonts)
 - Tailwind CSS Variables
 
-### 📝 Blog System
-
-- Markdown-based posts with frontmatter
-- Categories & Tags
-- Code Syntax Highlighting
-- Reading Time Estimation
-- SEO-optimized
-
 ### 🔐 Authentication
 
 - Sign Up / Sign In / Sign Out
@@ -286,7 +276,7 @@ Each theme includes:
 
 - User ranking by score
 - Sort by views, clicks, followers
-- Public profile pages at `/u/username`
+- Public profile pages at `/{username}`
 
 ### 🎯 Adding shadcn/ui Components
 
@@ -463,13 +453,13 @@ This project is licensed under the MIT License.
 ## 📊 Project Status
 
 ```text
-🎨 UI/UX Design      ████████████████████████░░   95% - Modern & Responsive
+🎨 UI/UX Design      ██████████████████████████   100% - Modern & Responsive
 🔐 Authentication    ██████████████████████████   100% - Session-based Auth
 🔗 Bio Links         ██████████████████████████   100% - Fully Implemented
 🏆 Leaderboard       ██████████████████████████   100% - Ranking System
-📝 Blog System       ████████████████████░░░░░░   85% - Markdown-based
-📁 Projects          ████████████████████░░░░░░   85% - Schema Ready
-⚡ Performance       ████████████████████████░░   95% - Edge Optimized
+💎 Premium Tiers     ████████████████░░░░░░░░░░   70% - Coming Soon
+🔗 Short Links       ██████████████████████████   100% - URL Shortener
+⚡ Performance       ██████████████████████████   100% - Edge Optimized
 ```
 
 <!-- ═══════════════════════════════════════════════════════════════════════════════ -->

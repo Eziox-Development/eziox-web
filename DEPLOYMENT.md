@@ -112,7 +112,7 @@ The schema includes:
 | `user_links` | Linktree-style links |
 | `user_stats` | Profile views, clicks, score |
 | `follows` | Follower relationships |
-| `blog_posts` | Blog articles |
+| `short_links` | URL shortener |
 | `projects` | Portfolio projects |
 | `activity_log` | User activity tracking |
 
@@ -187,7 +187,7 @@ Visit `http://localhost:4173` to test the production build locally.
 - [ ] Auth secret is secure and unique
 - [ ] RSS feed accessible at `/rss`
 - [ ] Leaderboard working at `/leaderboard`
-- [ ] Public profiles working at `/u/username`
+- [ ] Public profiles working at `/{username}`
 - [ ] Sign up/sign in working
 - [ ] Theme switcher working
 - [ ] Mobile responsive

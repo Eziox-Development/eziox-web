@@ -23,7 +23,6 @@
 
 ### Content
 
-- [ ] Blog posts reviewed and published
 - [ ] All images optimized (WebP format preferred)
 - [ ] Site metadata updated in `site-config.ts` (title: Eziox, url: eziox.link)
 - [ ] Social media links verified
@@ -55,7 +54,7 @@
   - [ ] `user_links` - Linktree-style links
   - [ ] `user_stats` - Views, clicks, score
   - [ ] `follows` - Follower relationships
-  - [ ] `blog_posts` - Blog articles
+  - [ ] `short_links` - URL shortener
   - [ ] `projects` - Portfolio projects
   - [ ] `activity_log` - Activity tracking
 
@@ -107,7 +106,6 @@
 ### Functionality
 
 - [ ] Homepage loads correctly
-- [ ] Blog posts display properly
 - [ ] Navigation works on all pages
 - [ ] Theme switcher functional
 - [ ] RSS feed accessible at `/rss`
@@ -121,7 +119,7 @@
 - [ ] Sign in authenticates correctly
 - [ ] Sign out clears session
 - [ ] Profile page loads user data
-- [ ] Public profile at `/u/username` works
+- [ ] Public profile at `/{username}` works
 - [ ] Leaderboard at `/leaderboard` works
 - [ ] Bio links can be created/edited/deleted
 - [ ] Click tracking increments stats

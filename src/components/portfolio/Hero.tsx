@@ -1,250 +1,242 @@
-import { siteConfig } from '@/lib/site-config'
 import { motion } from 'motion/react'
-import { Sparkles } from 'lucide-react'
+import { Link } from '@tanstack/react-router'
+import { Link as LinkIcon, Sparkles, ArrowRight, Users, MousePointerClick, Globe } from 'lucide-react'
 
 interface HeroProps {
-  title?: string
   subtitle?: string
-  image?: string
-  imageAlt?: string
-  compact?: boolean
-}
-
-// Floating particle component for anime effect
-function FloatingParticle({
-  delay,
-  duration,
-  x,
-  y,
-  size,
-}: {
-  delay: number
-  duration: number
-  x: string
-  y: string
-  size: number
-}) {
-  return (
-    <motion.div
-      className="absolute rounded-full pointer-events-none"
-      style={{
-        left: x,
-        top: y,
-        width: size,
-        height: size,
-        background:
-          'radial-gradient(circle, var(--primary) 0%, transparent 70%)',
-        filter: 'blur(1px)',
-      }}
-      initial={{ opacity: 0, scale: 0 }}
-      animate={{
-        opacity: [0, 0.8, 0],
-        scale: [0, 1.5, 0],
-        y: [0, -30, -60],
-      }}
-      transition={{
-        duration,
-        delay,
-        repeat: Infinity,
-        ease: 'easeOut',
-      }}
-    />
-  )
+  showCTA?: boolean
+  showStats?: boolean
+  stats?: {
+    users: number
+    clicks: number
+    countries: number
+  }
 }
 
 export function Hero({
-  title = siteConfig.header.title,
-  subtitle = siteConfig.header.subtitle,
-  image = siteConfig.header.image,
-  imageAlt = siteConfig.header.imageAlt,
-  compact = false,
+  subtitle = 'Create your bio page and share all your content, social links, and more with one simple link.',
+  showCTA = true,
+  showStats = false,
+  stats,
 }: HeroProps) {
-  // Generate random particles for anime effect
-  const particles = Array.from({ length: 12 }, (_, i) => ({
-    id: i,
-    delay: i * 0.4,
-    duration: 3 + Math.random() * 2,
-    x: `${10 + Math.random() * 80}%`,
-    y: `${60 + Math.random() * 30}%`,
-    size: 4 + Math.random() * 8,
-  }))
-
   return (
-    <section
-      className={`relative overflow-hidden ${compact ? 'pt-24 pb-12' : 'pt-32 pb-20 md:pt-40 md:pb-28'}`}
-    >
-      {/* Background Image with Overlay */}
-      <div className="absolute inset-0" style={{ zIndex: 0 }}>
-        {/* Animated background image */}
+    <section className="relative overflow-hidden pt-20 pb-24 md:pt-28 md:pb-32">
+      {/* Background Effects */}
+      <div className="absolute inset-0 pointer-events-none">
+        {/* Gradient orbs */}
         <motion.div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{
-            backgroundImage: image ? `url(${image})` : undefined,
-          }}
-          initial={{ scale: 1.1 }}
-          animate={{ scale: 1.05 }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            repeatType: 'reverse',
-            ease: 'linear',
-          }}
-          role="img"
-          aria-label={imageAlt}
+          className="absolute -top-40 -left-40 w-80 h-80 rounded-full blur-3xl opacity-30"
+          style={{ background: 'var(--primary)' }}
+          animate={{ scale: [1, 1.2, 1], x: [0, 30, 0] }}
+          transition={{ duration: 15, repeat: Infinity }}
         />
-
-        {/* Dark gradient overlay */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background: `linear-gradient(
-              to bottom,
-              rgba(0, 0, 0, 0.5) 0%,
-              rgba(0, 0, 0, 0.3) 40%,
-              rgba(0, 0, 0, 0.4) 70%,
-              var(--background) 100%
-            )`,
-          }}
-        />
-
-        {/* Anime-style color overlay with glow */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            background: `
-              radial-gradient(ellipse at 20% 20%, rgba(var(--primary-rgb, 99, 102, 241), 0.15) 0%, transparent 50%),
-              radial-gradient(ellipse at 80% 80%, rgba(var(--accent-rgb, 168, 85, 247), 0.15) 0%, transparent 50%)
-            `,
-          }}
-        />
-
-        {/* Animated scan line effect (anime style) */}
         <motion.div
-          className="absolute inset-0 pointer-events-none opacity-[0.03]"
+          className="absolute -bottom-40 -right-40 w-96 h-96 rounded-full blur-3xl opacity-20"
+          style={{ background: 'var(--accent)' }}
+          animate={{ scale: [1.2, 1, 1.2], y: [0, -30, 0] }}
+          transition={{ duration: 18, repeat: Infinity }}
+        />
+        <motion.div
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full blur-3xl opacity-10"
+          style={{ background: 'linear-gradient(135deg, var(--primary), var(--accent))' }}
+          animate={{ rotate: [0, 360] }}
+          transition={{ duration: 60, repeat: Infinity, ease: 'linear' }}
+        />
+        
+        {/* Grid pattern */}
+        <div
+          className="absolute inset-0 opacity-[0.02]"
           style={{
-            backgroundImage:
-              'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.1) 2px, rgba(255,255,255,0.1) 4px)',
+            backgroundImage: `linear-gradient(var(--foreground) 1px, transparent 1px),
+                             linear-gradient(90deg, var(--foreground) 1px, transparent 1px)`,
+            backgroundSize: '60px 60px',
           }}
-          animate={{ backgroundPositionY: ['0px', '100px'] }}
-          transition={{ duration: 10, repeat: Infinity, ease: 'linear' }}
         />
       </div>
-
-      {/* Floating particles */}
-      {!compact &&
-        particles.map((particle) => (
-          <FloatingParticle key={particle.id} {...particle} />
-        ))}
 
       {/* Content */}
-      <div
-        className="relative max-w-6xl mx-auto px-4 sm:px-6"
-        style={{ zIndex: 10 }}
-      >
-        <div className={`max-w-3xl ${compact ? '' : 'text-center mx-auto'}`}>
-          {/* Decorative sparkle icon */}
-          {!compact && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0, rotate: -180 }}
-              animate={{ opacity: 1, scale: 1, rotate: 0 }}
-              transition={{ duration: 0.8, type: 'spring', stiffness: 200 }}
-              className="inline-flex items-center justify-center mb-6"
-            >
-              <div
-                className="p-3 rounded-2xl"
-                style={{
-                  background:
-                    'linear-gradient(135deg, var(--primary), var(--accent))',
-                  boxShadow:
-                    '0 0 30px rgba(var(--primary-rgb, 99, 102, 241), 0.4)',
-                }}
-              >
-                <Sparkles
-                  className="w-6 h-6"
-                  style={{ color: 'var(--primary-foreground)' }}
-                />
-              </div>
-            </motion.div>
-          )}
+      <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 text-center">
+        {/* Badge */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-8"
+          style={{
+            background: 'rgba(var(--primary-rgb, 99, 102, 241), 0.1)',
+            border: '1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.2)',
+          }}
+        >
+          <Sparkles size={14} style={{ color: 'var(--primary)' }} />
+          <span className="text-sm font-medium" style={{ color: 'var(--primary)' }}>
+            Free to get started
+          </span>
+        </motion.div>
 
-          {/* Title with gradient text effect */}
-          <motion.h1
-            initial={{ opacity: 0, y: 30, filter: 'blur(10px)' }}
-            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-            transition={{ duration: 0.8, delay: 0.1 }}
-            className={`font-bold leading-tight ${
-              compact
-                ? 'text-3xl md:text-4xl'
-                : 'text-4xl md:text-5xl lg:text-6xl xl:text-7xl'
-            }`}
+        {/* Title */}
+        <motion.h1
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-tight mb-6"
+        >
+          <span style={{ color: 'var(--foreground)' }}>One Link for </span>
+          <span
             style={{
-              color: 'var(--foreground)',
-              fontFamily: 'var(--font-display)',
-              textShadow:
-                '0 4px 30px rgba(0, 0, 0, 0.5), 0 0 60px rgba(var(--primary-rgb, 99, 102, 241), 0.3)',
+              background: 'linear-gradient(135deg, var(--primary), var(--accent))',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
             }}
           >
-            {title}
-          </motion.h1>
+            Everything
+          </span>
+        </motion.h1>
 
-          {subtitle && (
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              className={`mt-6 md:mt-8 leading-relaxed ${
-                compact
-                  ? 'text-base md:text-lg'
-                  : 'text-lg md:text-xl lg:text-2xl'
-              }`}
+        {/* Subtitle */}
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="text-lg sm:text-xl md:text-2xl max-w-2xl mx-auto mb-10"
+          style={{ color: 'var(--foreground-muted)' }}
+        >
+          {subtitle}
+        </motion.p>
+
+        {/* CTA Buttons */}
+        {showCTA && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12"
+          >
+            <Link
+              to="/sign-up"
+              className="group flex items-center gap-2 px-8 py-4 rounded-2xl font-semibold text-lg transition-all hover:scale-105"
               style={{
-                color: 'var(--foreground)',
-                fontFamily: 'var(--font-body)',
-                textShadow: '0 2px 20px rgba(0, 0, 0, 0.4)',
-                opacity: 0.9,
+                background: 'linear-gradient(135deg, var(--primary), var(--accent))',
+                color: 'white',
+                boxShadow: '0 10px 40px rgba(var(--primary-rgb, 99, 102, 241), 0.3)',
               }}
             >
-              {subtitle}
-            </motion.p>
-          )}
-
-          {/* Animated underline decoration */}
-          {!compact && (
-            <motion.div
-              initial={{ scaleX: 0, opacity: 0 }}
-              animate={{ scaleX: 1, opacity: 1 }}
-              transition={{ duration: 1, delay: 0.5 }}
-              className="mt-8 mx-auto h-1 w-24 rounded-full"
+              <LinkIcon size={20} />
+              Create Your Bio Link
+              <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
+            </Link>
+            <Link
+              to="/leaderboard"
+              className="flex items-center gap-2 px-8 py-4 rounded-2xl font-semibold text-lg transition-all hover:scale-105"
               style={{
-                background:
-                  'linear-gradient(90deg, transparent, var(--primary), var(--accent), transparent)',
+                background: 'var(--background-secondary)',
+                border: '1px solid var(--border)',
+                color: 'var(--foreground)',
               }}
-            />
-          )}
-        </div>
+            >
+              <Users size={20} />
+              Explore Creators
+            </Link>
+          </motion.div>
+        )}
+
+        {/* Stats */}
+        {showStats && stats && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="flex items-center justify-center gap-8 sm:gap-12"
+          >
+            <div className="text-center">
+              <div className="flex items-center justify-center gap-2 mb-1">
+                <Users size={18} style={{ color: 'var(--primary)' }} />
+                <span className="text-2xl sm:text-3xl font-bold" style={{ color: 'var(--foreground)' }}>
+                  {stats.users.toLocaleString()}+
+                </span>
+              </div>
+              <span className="text-sm" style={{ color: 'var(--foreground-muted)' }}>Creators</span>
+            </div>
+            <div className="text-center">
+              <div className="flex items-center justify-center gap-2 mb-1">
+                <MousePointerClick size={18} style={{ color: 'var(--accent)' }} />
+                <span className="text-2xl sm:text-3xl font-bold" style={{ color: 'var(--foreground)' }}>
+                  {stats.clicks.toLocaleString()}+
+                </span>
+              </div>
+              <span className="text-sm" style={{ color: 'var(--foreground-muted)' }}>Link Clicks</span>
+            </div>
+            <div className="text-center">
+              <div className="flex items-center justify-center gap-2 mb-1">
+                <Globe size={18} style={{ color: 'var(--primary)' }} />
+                <span className="text-2xl sm:text-3xl font-bold" style={{ color: 'var(--foreground)' }}>
+                  {stats.countries}+
+                </span>
+              </div>
+              <span className="text-sm" style={{ color: 'var(--foreground-muted)' }}>Countries</span>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Preview mockup */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="mt-16 relative"
+        >
+          <div
+            className="max-w-sm mx-auto p-6 rounded-3xl"
+            style={{
+              background: 'var(--card)',
+              border: '1px solid var(--border)',
+              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
+            }}
+          >
+            {/* Mock bio card */}
+            <div className="text-center">
+              <div
+                className="w-20 h-20 rounded-2xl mx-auto mb-4 flex items-center justify-center text-2xl font-bold"
+                style={{
+                  background: 'linear-gradient(135deg, var(--primary), var(--accent))',
+                  color: 'white',
+                }}
+              >
+                E
+              </div>
+              <h3 className="text-lg font-bold mb-1" style={{ color: 'var(--foreground)' }}>
+                Your Name
+              </h3>
+              <p className="text-sm mb-4" style={{ color: 'var(--foreground-muted)' }}>
+                @yourname
+              </p>
+              <div className="space-y-2">
+                {['Website', 'Twitter', 'GitHub'].map((link, i) => (
+                  <div
+                    key={link}
+                    className="p-3 rounded-xl text-sm font-medium"
+                    style={{
+                      background: 'var(--background-secondary)',
+                      color: 'var(--foreground)',
+                      opacity: 1 - i * 0.15,
+                    }}
+                  >
+                    {link}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+          
+          {/* Decorative elements */}
+          <div
+            className="absolute -top-4 -left-4 w-24 h-24 rounded-full blur-2xl opacity-40"
+            style={{ background: 'var(--primary)' }}
+          />
+          <div
+            className="absolute -bottom-4 -right-4 w-32 h-32 rounded-full blur-2xl opacity-30"
+            style={{ background: 'var(--accent)' }}
+          />
+        </motion.div>
       </div>
-
-      {/* Bottom gradient fade */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1, delay: 0.5 }}
-        className="absolute bottom-0 left-0 right-0 h-32 pointer-events-none"
-        style={{
-          background: `linear-gradient(to top, var(--background), transparent)`,
-          zIndex: 5,
-        }}
-      />
-
-      {/* Side glow effects */}
-      <div
-        className="absolute top-1/2 -left-20 w-40 h-80 rounded-full pointer-events-none opacity-30 blur-3xl"
-        style={{ background: 'var(--primary)', transform: 'translateY(-50%)' }}
-      />
-      <div
-        className="absolute top-1/2 -right-20 w-40 h-80 rounded-full pointer-events-none opacity-30 blur-3xl"
-        style={{ background: 'var(--accent)', transform: 'translateY(-50%)' }}
-      />
     </section>
   )
 }

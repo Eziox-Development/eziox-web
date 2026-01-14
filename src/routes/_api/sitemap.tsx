@@ -1,5 +1,4 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { blogPosts, getAllCategories, getAllTags } from '@/lib/blog-data'
 import { siteConfig } from '@/lib/site-config'
 
 export const Route = createFileRoute('/_api/sitemap')({
@@ -9,7 +8,7 @@ export const Route = createFileRoute('/_api/sitemap')({
         const baseUrl = siteConfig.metadata.url
         const currentDate = new Date().toISOString()
 
-        // Static pages
+        // Static pages for Eziox platform
         const staticPages = [
           {
             url: '',
@@ -24,57 +23,35 @@ export const Route = createFileRoute('/_api/sitemap')({
             lastmod: currentDate,
           },
           {
-            url: '/archive',
+            url: '/changelog',
+            changefreq: 'weekly',
+            priority: '0.7',
+            lastmod: currentDate,
+          },
+          {
+            url: '/leaderboard',
             changefreq: 'daily',
+            priority: '0.8',
+            lastmod: currentDate,
+          },
+          {
+            url: '/sign-in',
+            changefreq: 'monthly',
+            priority: '0.6',
+            lastmod: currentDate,
+          },
+          {
+            url: '/sign-up',
+            changefreq: 'monthly',
             priority: '0.9',
             lastmod: currentDate,
           },
         ]
 
-        // Blog posts
-        const blogUrls = blogPosts.map((post) => ({
-          url: `/blog/${post.slug}`,
-          lastmod: new Date(post.publishDate).toISOString(),
-          changefreq: 'monthly',
-          priority: post.featured ? '0.9' : '0.7',
-        }))
-
-        // Categories
-        const categories = getAllCategories()
-        const categoryUrls = categories.map((category) => {
-          const slug = category.toLowerCase().replace(/\s+/g, '-')
-          return {
-            url: `/category/${slug}`,
-            lastmod: currentDate,
-            changefreq: 'weekly',
-            priority: '0.6',
-          }
-        })
-
-        // Tags
-        const tags = getAllTags()
-        const tagUrls = tags.map((tag) => {
-          const slug = tag.toLowerCase().replace(/\s+/g, '-')
-          return {
-            url: `/tag/${slug}`,
-            lastmod: currentDate,
-            changefreq: 'weekly',
-            priority: '0.5',
-          }
-        })
-
-        // Combine all URLs
-        const allUrls = [
-          ...staticPages,
-          ...blogUrls,
-          ...categoryUrls,
-          ...tagUrls,
-        ]
-
         // Generate sitemap XML
         const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${allUrls
+${staticPages
   .map(
     ({ url, lastmod, changefreq, priority }) => `  <url>
     <loc>${baseUrl}${url}</loc>

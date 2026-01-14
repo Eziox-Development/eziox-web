@@ -11,21 +11,21 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as PublicRouteImport } from './routes/_public'
 import { Route as ProtectedRouteImport } from './routes/_protected'
+import { Route as BioRouteImport } from './routes/_bio'
 import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
 import { Route as PublicLeaderboardRouteImport } from './routes/_public/leaderboard'
 import { Route as PublicChangelogRouteImport } from './routes/_public/changelog'
 import { Route as PublicAboutRouteImport } from './routes/_public/about'
-import { Route as PublicUsernameRouteImport } from './routes/_public/$username'
 import { Route as ProtectedProfileRouteImport } from './routes/_protected/profile'
-import { Route as ProtectedExampleProtectedRouteRouteImport } from './routes/_protected/example-protected-route'
+import { Route as ProtectedLinksRouteImport } from './routes/_protected/links'
+import { Route as BioUsernameRouteImport } from './routes/_bio/$username'
 import { Route as AuthSignUpRouteImport } from './routes/_auth/sign-up'
 import { Route as AuthSignOutRouteImport } from './routes/_auth/sign-out'
 import { Route as AuthSignInRouteImport } from './routes/_auth/sign-in'
 import { Route as ApiSitemapRouteImport } from './routes/_api/sitemap'
 import { Route as ApiRssRouteImport } from './routes/_api/rss'
 import { Route as ApiHelloRouteImport } from './routes/_api/hello'
-import { Route as PublicUUsernameRouteImport } from './routes/_public/u.$username'
 import { Route as PublicSCodeRouteImport } from './routes/_public/s.$code'
 
 const PublicRoute = PublicRouteImport.update({
@@ -34,6 +34,10 @@ const PublicRoute = PublicRouteImport.update({
 } as any)
 const ProtectedRoute = ProtectedRouteImport.update({
   id: '/_protected',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BioRoute = BioRouteImport.update({
+  id: '/_bio',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -60,22 +64,21 @@ const PublicAboutRoute = PublicAboutRouteImport.update({
   path: '/about',
   getParentRoute: () => PublicRoute,
 } as any)
-const PublicUsernameRoute = PublicUsernameRouteImport.update({
-  id: '/$username',
-  path: '/$username',
-  getParentRoute: () => PublicRoute,
-} as any)
 const ProtectedProfileRoute = ProtectedProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
   getParentRoute: () => ProtectedRoute,
 } as any)
-const ProtectedExampleProtectedRouteRoute =
-  ProtectedExampleProtectedRouteRouteImport.update({
-    id: '/example-protected-route',
-    path: '/example-protected-route',
-    getParentRoute: () => ProtectedRoute,
-  } as any)
+const ProtectedLinksRoute = ProtectedLinksRouteImport.update({
+  id: '/links',
+  path: '/links',
+  getParentRoute: () => ProtectedRoute,
+} as any)
+const BioUsernameRoute = BioUsernameRouteImport.update({
+  id: '/$username',
+  path: '/$username',
+  getParentRoute: () => BioRoute,
+} as any)
 const AuthSignUpRoute = AuthSignUpRouteImport.update({
   id: '/sign-up',
   path: '/sign-up',
@@ -106,11 +109,6 @@ const ApiHelloRoute = ApiHelloRouteImport.update({
   path: '/hello',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PublicUUsernameRoute = PublicUUsernameRouteImport.update({
-  id: '/u/$username',
-  path: '/u/$username',
-  getParentRoute: () => PublicRoute,
-} as any)
 const PublicSCodeRoute = PublicSCodeRouteImport.update({
   id: '/s/$code',
   path: '/s/$code',
@@ -124,15 +122,14 @@ export interface FileRoutesByFullPath {
   '/sign-in': typeof AuthSignInRoute
   '/sign-out': typeof AuthSignOutRoute
   '/sign-up': typeof AuthSignUpRoute
-  '/example-protected-route': typeof ProtectedExampleProtectedRouteRoute
+  '/$username': typeof BioUsernameRoute
+  '/links': typeof ProtectedLinksRoute
   '/profile': typeof ProtectedProfileRoute
-  '/$username': typeof PublicUsernameRoute
   '/about': typeof PublicAboutRoute
   '/changelog': typeof PublicChangelogRoute
   '/leaderboard': typeof PublicLeaderboardRoute
   '/': typeof PublicIndexRoute
   '/s/$code': typeof PublicSCodeRoute
-  '/u/$username': typeof PublicUUsernameRoute
 }
 export interface FileRoutesByTo {
   '/hello': typeof ApiHelloRoute
@@ -141,19 +138,19 @@ export interface FileRoutesByTo {
   '/sign-in': typeof AuthSignInRoute
   '/sign-out': typeof AuthSignOutRoute
   '/sign-up': typeof AuthSignUpRoute
-  '/example-protected-route': typeof ProtectedExampleProtectedRouteRoute
+  '/$username': typeof BioUsernameRoute
+  '/links': typeof ProtectedLinksRoute
   '/profile': typeof ProtectedProfileRoute
-  '/$username': typeof PublicUsernameRoute
   '/about': typeof PublicAboutRoute
   '/changelog': typeof PublicChangelogRoute
   '/leaderboard': typeof PublicLeaderboardRoute
   '/': typeof PublicIndexRoute
   '/s/$code': typeof PublicSCodeRoute
-  '/u/$username': typeof PublicUUsernameRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_auth': typeof AuthRouteWithChildren
+  '/_bio': typeof BioRouteWithChildren
   '/_protected': typeof ProtectedRouteWithChildren
   '/_public': typeof PublicRouteWithChildren
   '/_api/hello': typeof ApiHelloRoute
@@ -162,15 +159,14 @@ export interface FileRoutesById {
   '/_auth/sign-in': typeof AuthSignInRoute
   '/_auth/sign-out': typeof AuthSignOutRoute
   '/_auth/sign-up': typeof AuthSignUpRoute
-  '/_protected/example-protected-route': typeof ProtectedExampleProtectedRouteRoute
+  '/_bio/$username': typeof BioUsernameRoute
+  '/_protected/links': typeof ProtectedLinksRoute
   '/_protected/profile': typeof ProtectedProfileRoute
-  '/_public/$username': typeof PublicUsernameRoute
   '/_public/about': typeof PublicAboutRoute
   '/_public/changelog': typeof PublicChangelogRoute
   '/_public/leaderboard': typeof PublicLeaderboardRoute
   '/_public/': typeof PublicIndexRoute
   '/_public/s/$code': typeof PublicSCodeRoute
-  '/_public/u/$username': typeof PublicUUsernameRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -181,15 +177,14 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-out'
     | '/sign-up'
-    | '/example-protected-route'
-    | '/profile'
     | '/$username'
+    | '/links'
+    | '/profile'
     | '/about'
     | '/changelog'
     | '/leaderboard'
     | '/'
     | '/s/$code'
-    | '/u/$username'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/hello'
@@ -198,18 +193,18 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-out'
     | '/sign-up'
-    | '/example-protected-route'
-    | '/profile'
     | '/$username'
+    | '/links'
+    | '/profile'
     | '/about'
     | '/changelog'
     | '/leaderboard'
     | '/'
     | '/s/$code'
-    | '/u/$username'
   id:
     | '__root__'
     | '/_auth'
+    | '/_bio'
     | '/_protected'
     | '/_public'
     | '/_api/hello'
@@ -218,19 +213,19 @@ export interface FileRouteTypes {
     | '/_auth/sign-in'
     | '/_auth/sign-out'
     | '/_auth/sign-up'
-    | '/_protected/example-protected-route'
+    | '/_bio/$username'
+    | '/_protected/links'
     | '/_protected/profile'
-    | '/_public/$username'
     | '/_public/about'
     | '/_public/changelog'
     | '/_public/leaderboard'
     | '/_public/'
     | '/_public/s/$code'
-    | '/_public/u/$username'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   AuthRoute: typeof AuthRouteWithChildren
+  BioRoute: typeof BioRouteWithChildren
   ProtectedRoute: typeof ProtectedRouteWithChildren
   PublicRoute: typeof PublicRouteWithChildren
   ApiHelloRoute: typeof ApiHelloRoute
@@ -252,6 +247,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: ''
       preLoaderRoute: typeof ProtectedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_bio': {
+      id: '/_bio'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof BioRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_auth': {
@@ -289,13 +291,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicAboutRouteImport
       parentRoute: typeof PublicRoute
     }
-    '/_public/$username': {
-      id: '/_public/$username'
-      path: '/$username'
-      fullPath: '/$username'
-      preLoaderRoute: typeof PublicUsernameRouteImport
-      parentRoute: typeof PublicRoute
-    }
     '/_protected/profile': {
       id: '/_protected/profile'
       path: '/profile'
@@ -303,12 +298,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedProfileRouteImport
       parentRoute: typeof ProtectedRoute
     }
-    '/_protected/example-protected-route': {
-      id: '/_protected/example-protected-route'
-      path: '/example-protected-route'
-      fullPath: '/example-protected-route'
-      preLoaderRoute: typeof ProtectedExampleProtectedRouteRouteImport
+    '/_protected/links': {
+      id: '/_protected/links'
+      path: '/links'
+      fullPath: '/links'
+      preLoaderRoute: typeof ProtectedLinksRouteImport
       parentRoute: typeof ProtectedRoute
+    }
+    '/_bio/$username': {
+      id: '/_bio/$username'
+      path: '/$username'
+      fullPath: '/$username'
+      preLoaderRoute: typeof BioUsernameRouteImport
+      parentRoute: typeof BioRoute
     }
     '/_auth/sign-up': {
       id: '/_auth/sign-up'
@@ -352,13 +354,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiHelloRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_public/u/$username': {
-      id: '/_public/u/$username'
-      path: '/u/$username'
-      fullPath: '/u/$username'
-      preLoaderRoute: typeof PublicUUsernameRouteImport
-      parentRoute: typeof PublicRoute
-    }
     '/_public/s/$code': {
       id: '/_public/s/$code'
       path: '/s/$code'
@@ -383,13 +378,23 @@ const AuthRouteChildren: AuthRouteChildren = {
 
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
+interface BioRouteChildren {
+  BioUsernameRoute: typeof BioUsernameRoute
+}
+
+const BioRouteChildren: BioRouteChildren = {
+  BioUsernameRoute: BioUsernameRoute,
+}
+
+const BioRouteWithChildren = BioRoute._addFileChildren(BioRouteChildren)
+
 interface ProtectedRouteChildren {
-  ProtectedExampleProtectedRouteRoute: typeof ProtectedExampleProtectedRouteRoute
+  ProtectedLinksRoute: typeof ProtectedLinksRoute
   ProtectedProfileRoute: typeof ProtectedProfileRoute
 }
 
 const ProtectedRouteChildren: ProtectedRouteChildren = {
-  ProtectedExampleProtectedRouteRoute: ProtectedExampleProtectedRouteRoute,
+  ProtectedLinksRoute: ProtectedLinksRoute,
   ProtectedProfileRoute: ProtectedProfileRoute,
 }
 
@@ -398,23 +403,19 @@ const ProtectedRouteWithChildren = ProtectedRoute._addFileChildren(
 )
 
 interface PublicRouteChildren {
-  PublicUsernameRoute: typeof PublicUsernameRoute
   PublicAboutRoute: typeof PublicAboutRoute
   PublicChangelogRoute: typeof PublicChangelogRoute
   PublicLeaderboardRoute: typeof PublicLeaderboardRoute
   PublicIndexRoute: typeof PublicIndexRoute
   PublicSCodeRoute: typeof PublicSCodeRoute
-  PublicUUsernameRoute: typeof PublicUUsernameRoute
 }
 
 const PublicRouteChildren: PublicRouteChildren = {
-  PublicUsernameRoute: PublicUsernameRoute,
   PublicAboutRoute: PublicAboutRoute,
   PublicChangelogRoute: PublicChangelogRoute,
   PublicLeaderboardRoute: PublicLeaderboardRoute,
   PublicIndexRoute: PublicIndexRoute,
   PublicSCodeRoute: PublicSCodeRoute,
-  PublicUUsernameRoute: PublicUUsernameRoute,
 }
 
 const PublicRouteWithChildren =
@@ -422,6 +423,7 @@ const PublicRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRouteWithChildren,
+  BioRoute: BioRouteWithChildren,
   ProtectedRoute: ProtectedRouteWithChildren,
   PublicRoute: PublicRouteWithChildren,
   ApiHelloRoute: ApiHelloRoute,

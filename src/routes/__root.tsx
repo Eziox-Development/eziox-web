@@ -8,7 +8,6 @@ import appCss from '../styles.css?url'
 import type { QueryClient } from '@tanstack/react-query'
 import { Toaster } from '@/components/ui/sonner'
 import { ThemeProvider as PortfolioThemeProvider } from '@/components/portfolio/ThemeProvider'
-import { markdownStyles } from '@/components/portfolio/MarkdownContent'
 import { siteConfig } from '@/lib/site-config'
 import { authMiddleware } from '@/server/functions/auth'
 
@@ -110,7 +109,6 @@ function RootDocument({ children }: { children: React.ReactNode }) {
     <html lang={siteConfig.metadata.language} suppressHydrationWarning>
       <head>
         <HeadContent />
-        <style dangerouslySetInnerHTML={{ __html: markdownStyles }} />
       </head>
       <body className="min-h-screen bg-background text-foreground antialiased">
         <PortfolioThemeProvider>
