@@ -19,8 +19,8 @@ function HomePage() {
       <Hero />
 
       {/* Main Content - Two Column Layout */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-16">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-20">
           {/* Left Column - Profile Card */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}

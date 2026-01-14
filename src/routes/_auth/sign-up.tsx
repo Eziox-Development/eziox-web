@@ -31,6 +31,7 @@ import {
   Loader2,
   Check,
   X,
+  ArrowLeft,
 } from 'lucide-react'
 
 const searchSchema = z.object({
@@ -51,6 +52,10 @@ const signUpSchema = z.object({
     .regex(/[A-Z]/, 'Must contain uppercase letter')
     .regex(/[a-z]/, 'Must contain lowercase letter')
     .regex(/[0-9]/, 'Must contain a number'),
+  confirmPassword: z.string().min(1, 'Please confirm your password'),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: 'Passwords do not match',
+  path: ['confirmPassword'],
 })
 
 type SignUpFormData = z.infer<typeof signUpSchema>
@@ -69,11 +74,13 @@ function SignUpPage() {
       name: '',
       email: '',
       password: '',
+      confirmPassword: '',
     },
     mode: 'onChange',
   })
 
   const password = form.watch('password')
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   const passwordStrength = useMemo(() => {
     if (!password) return { score: 0, label: '', color: '' }
@@ -126,6 +133,20 @@ function SignUpPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Back to Home Button */}
+      <Link
+        to="/"
+        className="absolute top-6 left-6 z-20 flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 group"
+        style={{
+          background: 'var(--background-secondary)',
+          border: '1px solid var(--border)',
+          color: 'var(--foreground)',
+        }}
+      >
+        <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+        Back to Home
+      </Link>
+
       {/* Animated background */}
       <div className="absolute inset-0 -z-10">
         <div className="absolute inset-0" style={{ background: 'var(--background)' }} />
@@ -361,11 +382,56 @@ function SignUpPage() {
               )}
             </motion.div>
 
+            {/* Confirm Password field */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.65 }}
+            >
+              <label className="block text-sm font-medium mb-2" style={{ color: 'var(--foreground-muted)' }}>
+                Confirm Password
+              </label>
+              <div
+                className="relative"
+                onFocus={() => setFocusedField('confirmPassword')}
+                onBlur={() => setFocusedField(null)}
+              >
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                  <Lock
+                    className="w-5 h-5 transition-colors duration-300"
+                    style={{ color: focusedField === 'confirmPassword' ? 'var(--primary)' : 'var(--foreground-muted)' }}
+                  />
+                </div>
+                <input
+                  {...form.register('confirmPassword')}
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  placeholder="••••••••"
+                  className="w-full pl-12 pr-12 py-3.5 rounded-xl outline-none transition-all duration-300"
+                  style={{
+                    background: 'var(--background-secondary)',
+                    border: `1px solid ${form.formState.errors.confirmPassword ? 'rgba(239, 68, 68, 0.5)' : focusedField === 'confirmPassword' ? 'var(--primary)' : 'var(--border)'}`,
+                    color: 'var(--foreground)',
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 p-1 rounded-lg transition-colors hover:bg-white/10"
+                  style={{ color: 'var(--foreground-muted)' }}
+                >
+                  {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                </button>
+              </div>
+              {form.formState.errors.confirmPassword && (
+                <p className="mt-2 text-sm text-red-400">{form.formState.errors.confirmPassword.message}</p>
+              )}
+            </motion.div>
+
             {/* Submit button */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.7 }}
+              transition={{ delay: 0.75 }}
             >
               <motion.button
                 type="submit"

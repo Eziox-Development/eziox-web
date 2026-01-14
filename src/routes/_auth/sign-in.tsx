@@ -24,6 +24,7 @@ import {
   Zap,
   AlertCircle,
   Loader2,
+  ArrowLeft,
 } from 'lucide-react'
 
 const searchSchema = z.object({
@@ -82,6 +83,20 @@ function SignInPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Back to Home Button */}
+      <Link
+        to="/"
+        className="absolute top-6 left-6 z-20 flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 group"
+        style={{
+          background: 'var(--background-secondary)',
+          border: '1px solid var(--border)',
+          color: 'var(--foreground)',
+        }}
+      >
+        <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+        Back to Home
+      </Link>
+
       {/* Animated background */}
       <div className="absolute inset-0 -z-10">
         <div
