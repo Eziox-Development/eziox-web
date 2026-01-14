@@ -43,6 +43,7 @@ export interface Theme {
 export interface OwnerInfo {
   name: string
   email: string
+  userId?: string
   role: string
   bio: string
   extendedBio: string
@@ -90,7 +91,8 @@ export const siteConfig: SiteConfig = {
 
   owner: {
     name: 'Saito',
-    email: 'saito@novaplex.xyz',
+    email: import.meta.env.VITE_OWNER_EMAIL || '',
+    userId: import.meta.env.VITE_OWNER_USER_ID || '',
     role: 'Software Developer · Fachinformatiker AE',
     bio: `
 I’m a software developer in training (Fachinformatiker für Anwendungsentwicklung) 

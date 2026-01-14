@@ -1,4 +1,5 @@
 import type { ComponentType } from 'react'
+import { useState } from 'react'
 import { siteConfig } from '@/lib/site-config'
 import {
   LuTwitter,
@@ -11,8 +12,8 @@ import {
   LuGlobe,
 } from 'react-icons/lu'
 import { FaDiscord } from 'react-icons/fa'
-import { motion } from 'motion/react'
-import { Sparkles, Verified } from 'lucide-react'
+import { motion, AnimatePresence } from 'motion/react'
+import { Sparkles, Verified, Code2, Briefcase, Calendar, ChevronDown, ChevronUp } from 'lucide-react'
 
 const iconMap: Record<string, ComponentType<{ size?: number }>> = {
   twitter: LuTwitter,
@@ -28,6 +29,13 @@ const iconMap: Record<string, ComponentType<{ size?: number }>> = {
 
 export function ProfileCard() {
   const { owner } = siteConfig
+  const [showExtendedBio, setShowExtendedBio] = useState(false)
+
+  const stats = [
+    { label: 'Years Experience', value: '3+', icon: Calendar },
+    { label: 'Projects', value: '15+', icon: Briefcase },
+    { label: 'Technologies', value: '20+', icon: Code2 },
+  ]
 
   return (
     <motion.aside
@@ -165,18 +173,94 @@ export function ProfileCard() {
           </div>
 
           {/* Bio */}
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-            className="text-sm leading-relaxed"
-            style={{
-              color: 'var(--foreground-muted)',
-              fontFamily: 'var(--font-body)',
-            }}
-          >
-            {owner.bio}
-          </motion.p>
+          <div>
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+              className="text-sm leading-relaxed"
+              style={{
+                color: 'var(--foreground-muted)',
+                fontFamily: 'var(--font-body)',
+              }}
+            >
+              {owner.bio}
+            </motion.p>
+
+            {/* Extended Bio Toggle */}
+            <AnimatePresence>
+              {showExtendedBio && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="mt-3 text-sm leading-relaxed"
+                  style={{
+                    color: 'var(--foreground-muted)',
+                    fontFamily: 'var(--font-body)',
+                  }}
+                >
+                  {owner.extendedBio}
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <button
+              onClick={() => setShowExtendedBio(!showExtendedBio)}
+              className="mt-2 flex items-center gap-1 text-xs font-medium transition-colors hover:opacity-80"
+              style={{ color: 'var(--primary)' }}
+            >
+              {showExtendedBio ? (
+                <>
+                  Show less <ChevronUp size={14} />
+                </>
+              ) : (
+                <>
+                  Read more <ChevronDown size={14} />
+                </>
+              )}
+            </button>
+          </div>
+
+          {/* Stats Section */}
+          <div className="grid grid-cols-3 gap-3">
+            {stats.map((stat, index) => {
+              const Icon = stat.icon
+              return (
+                <motion.div
+                  key={stat.label}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 + index * 0.1 }}
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  className="p-3 rounded-xl text-center transition-all duration-200"
+                  style={{
+                    backgroundColor: 'var(--background-secondary)',
+                    border: '1px solid var(--border)',
+                  }}
+                >
+                  <Icon
+                    size={18}
+                    className="mx-auto mb-1"
+                    style={{ color: 'var(--primary)' }}
+                  />
+                  <div
+                    className="text-lg font-bold"
+                    style={{ color: 'var(--foreground)' }}
+                  >
+                    {stat.value}
+                  </div>
+                  <div
+                    className="text-xs mt-0.5"
+                    style={{ color: 'var(--foreground-muted)' }}
+                  >
+                    {stat.label}
+                  </div>
+                </motion.div>
+              )
+            })}
+          </div>
 
           {/* Badges with gradient hover */}
           <div className="flex flex-wrap gap-2">
@@ -185,7 +269,7 @@ export function ProfileCard() {
                 key={badge}
                 initial={{ opacity: 0, scale: 0.8, y: 10 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
-                transition={{ delay: 0.5 + index * 0.1, type: 'spring' }}
+                transition={{ delay: 0.6 + index * 0.1, type: 'spring' }}
                 whileHover={{ scale: 1.05, y: -2 }}
                 className="px-3 py-1.5 rounded-lg text-xs font-semibold cursor-default transition-all duration-200"
                 style={{
@@ -209,41 +293,49 @@ export function ProfileCard() {
             }}
           />
 
-          {/* Social Links with glow */}
-          <div className="flex flex-wrap gap-2">
-            {owner.socialLinks.map((social, index) => {
-              const Icon = iconMap[social.icon.toLowerCase()] || LuGlobe
-              return (
-                <motion.a
-                  key={social.platform}
-                  href={social.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.6 + index * 0.05 }}
-                  whileHover={{
-                    scale: 1.15,
-                    y: -3,
-                  }}
-                  className="group relative p-2.5 rounded-xl transition-all duration-300"
-                  style={{
-                    backgroundColor: 'var(--background-secondary)',
-                    border: '1px solid var(--border)',
-                    color: 'var(--foreground-muted)',
-                  }}
-                  aria-label={social.platform}
-                  title={social.platform}
-                >
-                  {/* Glow on hover */}
-                  <div
-                    className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10 blur-md"
-                    style={{ background: 'var(--primary)' }}
-                  />
-                  <Icon size={18} />
-                </motion.a>
-              )
-            })}
+          {/* Social Links with glow and tooltips */}
+          <div>
+            <h3
+              className="text-xs font-semibold uppercase tracking-wider mb-3"
+              style={{ color: 'var(--foreground-muted)' }}
+            >
+              Connect
+            </h3>
+            <div className="flex flex-wrap gap-2">
+              {owner.socialLinks.map((social, index) => {
+                const Icon = iconMap[social.icon.toLowerCase()] || LuGlobe
+                return (
+                  <motion.a
+                    key={social.platform}
+                    href={social.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.7 + index * 0.05 }}
+                    whileHover={{
+                      scale: 1.15,
+                      y: -3,
+                    }}
+                    className="group relative p-3 rounded-xl transition-all duration-300"
+                    style={{
+                      backgroundColor: 'var(--background-secondary)',
+                      border: '1px solid var(--border)',
+                      color: 'var(--foreground-muted)',
+                    }}
+                    aria-label={social.platform}
+                    title={social.platform}
+                  >
+                    {/* Glow on hover */}
+                    <div
+                      className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10 blur-md"
+                      style={{ background: 'var(--primary)' }}
+                    />
+                    <Icon size={20} />
+                  </motion.a>
+                )
+              })}
+            </div>
           </div>
 
           {/* Status badge */}

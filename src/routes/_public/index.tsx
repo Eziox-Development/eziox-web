@@ -19,14 +19,14 @@ function HomePage() {
       <Hero />
 
       {/* Main Content - Two Column Layout */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 py-16">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-16">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16">
           {/* Left Column - Profile Card */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2 }}
-            className="lg:col-span-4"
+            className="lg:col-span-5"
           >
             <div className="lg:sticky lg:top-24">
               <ProfileCard />
@@ -38,7 +38,7 @@ function HomePage() {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3 }}
-            className="lg:col-span-8"
+            className="lg:col-span-7"
           >
             <BlogFeed posts={posts} count={5} showViewAll={true} />
           </motion.div>
