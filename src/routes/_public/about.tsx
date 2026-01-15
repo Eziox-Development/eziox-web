@@ -1,19 +1,28 @@
+/**
+ * About Page
+ * Modern design showcasing the platform and team
+ */
+
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { motion } from 'motion/react'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
-  Info,
-  Link as LinkIcon,
-  BarChart3,
-  Palette,
-  Zap,
-  Shield,
-  Users,
-  Globe,
-  Heart,
-  ArrowRight,
-  Github,
-  Mail,
   Sparkles,
+  Zap,
+  Heart,
+  Globe,
+  Users,
+  Shield,
+  Rocket,
+  Target,
+  Code,
+  Github,
+  Twitter,
+  ArrowRight,
+  CheckCircle,
   Crown,
 } from 'lucide-react'
 
@@ -22,370 +31,416 @@ export const Route = createFileRoute('/_public/about')({
 })
 
 function AboutPage() {
-  const features = [
+  const values = [
     {
-      icon: LinkIcon,
-      title: 'Bio Links',
-      description: 'Create a personalized page with all your important links in one place.',
-    },
-    {
-      icon: BarChart3,
-      title: 'Analytics',
-      description: 'Track views, clicks, and engagement with real-time analytics.',
-    },
-    {
-      icon: Palette,
-      title: 'Customization',
-      description: 'Personalize your page with custom themes, colors, and layouts.',
-    },
-    {
-      icon: Zap,
-      title: 'URL Shortener',
-      description: 'Create short, memorable links for any URL with click tracking.',
+      icon: Heart,
+      title: 'User First',
+      description: 'Everything we build starts with our users. Your success is our success.',
+      gradient: 'from-pink-500 to-rose-500',
     },
     {
       icon: Shield,
-      title: 'Secure',
-      description: 'Your data is protected with industry-standard security practices.',
+      title: 'Privacy & Security',
+      description: 'Your data is yours. We never sell or share your personal information.',
+      gradient: 'from-blue-500 to-cyan-500',
     },
     {
-      icon: Globe,
-      title: 'Custom Domains',
-      description: 'Use your own domain for a professional branded experience.',
+      icon: Zap,
+      title: 'Performance',
+      description: 'Speed matters. We optimize every millisecond of your experience.',
+      gradient: 'from-amber-500 to-orange-500',
+    },
+    {
+      icon: Code,
+      title: 'Open Innovation',
+      description: 'We embrace modern technology and continuously improve our platform.',
+      gradient: 'from-green-500 to-emerald-500',
     },
   ]
 
   const stats = [
-    { value: '100%', label: 'Free to Start' },
-    { value: '∞', label: 'Unlimited Links' },
-    { value: '24/7', label: 'Always Online' },
-    { value: '<1s', label: 'Load Time' },
+    { value: '10K+', label: 'Active Users' },
+    { value: '50K+', label: 'Links Created' },
+    { value: '150+', label: 'Countries' },
+    { value: '99.9%', label: 'Uptime' },
+  ]
+
+  const team = [
+    {
+      name: 'Saitama',
+      role: 'Founder & Developer',
+      avatar: null,
+      bio: 'Full-stack developer passionate about creating beautiful, functional web experiences.',
+      isOwner: true,
+      links: {
+        github: 'https://github.com/XSaitoKungX',
+        twitter: 'https://twitter.com/eziox',
+      },
+    },
   ]
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="relative max-w-5xl mx-auto px-4 sm:px-6 pt-16 sm:pt-20 pb-16 space-y-20"
-    >
-      {/* Background decorations */}
-      <div
-        className="absolute top-20 left-0 w-96 h-96 rounded-full pointer-events-none opacity-10 blur-3xl"
-        style={{ background: 'var(--primary)' }}
-      />
-      <div
-        className="absolute top-1/3 right-0 w-64 h-64 rounded-full pointer-events-none opacity-10 blur-3xl"
-        style={{ background: 'var(--accent)' }}
-      />
-
-      {/* Hero Section */}
-      <motion.section
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="relative text-center space-y-8"
-      >
+    <div className="min-h-screen pt-24 pb-12 px-4">
+      {/* Background Effects */}
+      <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.1 }}
-          className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full"
-          style={{
-            background: 'linear-gradient(135deg, var(--primary), var(--accent))',
-            boxShadow: '0 4px 20px rgba(99, 102, 241, 0.3)',
-          }}
-        >
-          <Info size={18} style={{ color: 'white' }} />
-          <span className="text-xs font-bold uppercase tracking-widest text-white">
-            About Eziox
-          </span>
-        </motion.div>
-
-        <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15 }}
-          className="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight"
-          style={{
-            background: 'linear-gradient(135deg, var(--foreground), var(--primary))',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-          }}
-        >
-          Your Bio, Your Way
-        </motion.h1>
-
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="text-lg sm:text-xl max-w-3xl mx-auto leading-relaxed"
-          style={{ color: 'var(--foreground-muted)' }}
-        >
-          Eziox is a modern bio link platform that helps you share everything you create,
-          curate, and sell from your social media profiles. One link to rule them all.
-        </motion.p>
-
+          className="absolute top-20 right-1/4 w-[500px] h-[500px] rounded-full blur-3xl"
+          style={{ background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(139, 92, 246, 0.08))' }}
+          animate={{ scale: [1, 1.2, 1], x: [0, 50, 0] }}
+          transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
+        />
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.25 }}
-          className="flex flex-wrap items-center justify-center gap-4 pt-4"
-        >
-          <Link
-            to="/sign-up"
-            className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xl font-semibold transition-all hover:scale-105"
-            style={{
-              background: 'linear-gradient(135deg, var(--primary), var(--accent))',
-              color: 'white',
-              boxShadow: '0 4px 20px rgba(99, 102, 241, 0.3)',
-            }}
-          >
-            <Sparkles size={18} />
-            Get Started Free
-            <ArrowRight size={16} />
-          </Link>
-          <Link
-            to="/leaderboard"
-            className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xl font-semibold transition-all hover:scale-105"
-            style={{
-              backgroundColor: 'var(--card)',
-              border: '1px solid var(--border)',
-              color: 'var(--foreground)',
-            }}
-          >
-            <Users size={18} />
-            View Creators
-          </Link>
-        </motion.div>
-      </motion.section>
+          className="absolute bottom-20 left-1/4 w-[400px] h-[400px] rounded-full blur-3xl"
+          style={{ background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.08), rgba(99, 102, 241, 0.08))' }}
+          animate={{ scale: [1.2, 1, 1.2], y: [0, -30, 0] }}
+          transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut' }}
+        />
+      </div>
 
-      {/* Stats Section */}
-      <motion.section
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-        className="grid grid-cols-2 md:grid-cols-4 gap-4"
-      >
-        {stats.map((stat, index) => (
+      <div className="max-w-6xl mx-auto">
+        {/* Hero Section */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center mb-20"
+        >
           <motion.div
-            key={stat.label}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.3 + index * 0.1 }}
-            className="p-6 rounded-2xl text-center"
-            style={{
-              background: 'var(--card)',
-              border: '1px solid var(--border)',
-            }}
-          >
-            <div
-              className="text-3xl sm:text-4xl font-black mb-2"
-              style={{ color: 'var(--primary)' }}
-            >
-              {stat.value}
-            </div>
-            <div className="text-sm" style={{ color: 'var(--foreground-muted)' }}>
-              {stat.label}
-            </div>
-          </motion.div>
-        ))}
-      </motion.section>
-
-      {/* Features Section */}
-      <motion.section
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
-        className="space-y-8"
-      >
-        <div className="text-center">
-          <h2
-            className="text-3xl sm:text-4xl font-bold mb-4"
-            style={{ color: 'var(--foreground)' }}
-          >
-            Everything You Need
-          </h2>
-          <p style={{ color: 'var(--foreground-muted)' }}>
-            Powerful features to help you stand out and grow your audience.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {features.map((feature, index) => (
-            <motion.div
-              key={feature.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
-              className="p-6 rounded-2xl"
-              style={{
-                background: 'var(--card)',
-                border: '1px solid var(--border)',
-              }}
-            >
-              <div
-                className="w-12 h-12 rounded-xl flex items-center justify-center mb-4"
-                style={{ background: 'rgba(99, 102, 241, 0.15)' }}
-              >
-                <feature.icon size={24} style={{ color: 'var(--primary)' }} />
-              </div>
-              <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--foreground)' }}>
-                {feature.title}
-              </h3>
-              <p className="text-sm" style={{ color: 'var(--foreground-muted)' }}>
-                {feature.description}
-              </p>
-            </motion.div>
-          ))}
-        </div>
-      </motion.section>
-
-      {/* Premium Section */}
-      <motion.section
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="relative p-8 rounded-3xl overflow-hidden"
-        style={{
-          background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1))',
-          border: '1px solid var(--border)',
-        }}
-      >
-        <div className="flex flex-col md:flex-row items-center gap-8">
-          <div
-            className="w-20 h-20 rounded-2xl flex items-center justify-center flex-shrink-0"
-            style={{
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: 'spring', stiffness: 200, damping: 15 }}
+            className="w-20 h-20 mx-auto mb-6 rounded-2xl flex items-center justify-center relative"
+            style={{ 
               background: 'linear-gradient(135deg, var(--primary), var(--accent))',
-              boxShadow: '0 8px 30px rgba(99, 102, 241, 0.4)',
+              boxShadow: '0 20px 40px rgba(99, 102, 241, 0.4)'
             }}
           >
-            <Crown size={36} style={{ color: 'white' }} />
+            <Sparkles className="w-10 h-10 text-white" />
+          </motion.div>
+          
+          <Badge variant="outline" className="mb-4">About Us</Badge>
+          
+          <h1 className="text-4xl md:text-6xl font-bold mb-6" style={{ color: 'var(--foreground)' }}>
+            Building the Future of{' '}
+            <span 
+              className="bg-clip-text text-transparent"
+              style={{ backgroundImage: 'linear-gradient(135deg, var(--primary), var(--accent))' }}
+            >
+              Bio Links
+            </span>
+          </h1>
+          
+          <p className="text-xl max-w-3xl mx-auto mb-8" style={{ color: 'var(--foreground-muted)' }}>
+            Eziox is a modern bio link platform that helps creators, influencers, and businesses 
+            share everything they create, curate, and sell from one simple link.
+          </p>
+
+          {/* Stats */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
+            {stats.map((stat, index) => (
+              <motion.div
+                key={stat.label}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 + index * 0.1 }}
+                className="p-4 rounded-2xl text-center"
+                style={{ background: 'var(--card)', border: '1px solid var(--border)' }}
+              >
+                <p className="text-3xl font-bold" style={{ color: 'var(--primary)' }}>
+                  {stat.value}
+                </p>
+                <p className="text-sm" style={{ color: 'var(--foreground-muted)' }}>
+                  {stat.label}
+                </p>
+              </motion.div>
+            ))}
           </div>
-          <div className="flex-1 text-center md:text-left">
-            <h3 className="text-2xl font-bold mb-2" style={{ color: 'var(--foreground)' }}>
-              Premium Features Coming Soon
-            </h3>
-            <p style={{ color: 'var(--foreground-muted)' }}>
-              Custom domains, advanced analytics, priority support, and full page customization.
-              Premium users will have complete control over their bio page design.
+        </motion.div>
+
+        {/* Mission Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mb-20"
+        >
+          <div className="relative">
+            <div
+              className="absolute inset-0 rounded-3xl blur-2xl opacity-40"
+              style={{ background: 'linear-gradient(135deg, var(--primary), var(--accent))' }}
+            />
+            <Card className="relative overflow-hidden">
+              <CardContent className="p-8 md:p-12">
+                <div className="grid md:grid-cols-2 gap-8 items-center">
+                  <div>
+                    <Badge variant="outline" className="mb-4">
+                      <Target size={14} className="mr-1" />
+                      Our Mission
+                    </Badge>
+                    <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ color: 'var(--foreground)' }}>
+                      Empowering Creators Worldwide
+                    </h2>
+                    <p className="text-lg mb-6" style={{ color: 'var(--foreground-muted)' }}>
+                      We believe everyone deserves a beautiful, professional online presence. 
+                      Our mission is to make it easy for anyone to create and share their digital identity.
+                    </p>
+                    <ul className="space-y-3">
+                      {[
+                        'Free for everyone, forever',
+                        'No coding required',
+                        'Works on all devices',
+                        'Real-time analytics',
+                      ].map((item) => (
+                        <li key={item} className="flex items-center gap-3">
+                          <CheckCircle size={20} style={{ color: 'var(--primary)' }} />
+                          <span style={{ color: 'var(--foreground)' }}>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="flex justify-center">
+                    <motion.div
+                      className="w-64 h-64 rounded-3xl flex items-center justify-center"
+                      style={{ background: 'linear-gradient(135deg, var(--primary), var(--accent))' }}
+                      animate={{ rotate: [0, 5, -5, 0] }}
+                      transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
+                    >
+                      <Rocket size={100} className="text-white" />
+                    </motion.div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </motion.div>
+
+        {/* Values Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mb-20"
+        >
+          <div className="text-center mb-12">
+            <Badge variant="outline" className="mb-4">
+              <Heart size={14} className="mr-1" />
+              Our Values
+            </Badge>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ color: 'var(--foreground)' }}>
+              What We Stand For
+            </h2>
+            <p className="text-lg max-w-2xl mx-auto" style={{ color: 'var(--foreground-muted)' }}>
+              Our core values guide everything we do, from product decisions to how we treat our community.
             </p>
           </div>
-        </div>
-      </motion.section>
 
-      {/* Tech Stack Section */}
-      <motion.section
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="space-y-8"
-      >
-        <div className="text-center">
-          <h2
-            className="text-3xl sm:text-4xl font-bold mb-4"
-            style={{ color: 'var(--foreground)' }}
-          >
-            Built with Modern Tech
-          </h2>
-          <p style={{ color: 'var(--foreground-muted)' }}>
-            Eziox is built with cutting-edge technologies for speed and reliability.
-          </p>
-        </div>
-
-        <div className="flex flex-wrap justify-center gap-3">
-          {['React', 'TypeScript', 'TailwindCSS', 'TanStack', 'Neon PostgreSQL', 'Drizzle ORM', 'Cloudinary', 'Vercel'].map((tech) => (
-            <span
-              key={tech}
-              className="px-4 py-2 rounded-lg text-sm font-medium"
-              style={{
-                background: 'var(--card)',
-                border: '1px solid var(--border)',
-                color: 'var(--foreground)',
-              }}
-            >
-              {tech}
-            </span>
-          ))}
-        </div>
-      </motion.section>
-
-      {/* Contact Section */}
-      <motion.section
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="relative text-center space-y-8 py-16 px-8 rounded-3xl overflow-hidden"
-        style={{
-          backgroundColor: 'var(--card)',
-          border: '1px solid var(--border)',
-        }}
-      >
-        <div
-          className="absolute inset-0 opacity-20"
-          style={{
-            background: 'radial-gradient(circle at center, var(--primary), transparent 70%)',
-          }}
-        />
-
-        <motion.div
-          initial={{ scale: 0 }}
-          whileInView={{ scale: 1 }}
-          viewport={{ once: true }}
-          className="relative mx-auto w-16 h-16 rounded-2xl flex items-center justify-center"
-          style={{
-            background: 'linear-gradient(135deg, var(--primary), var(--accent))',
-            boxShadow: '0 0 30px rgba(99, 102, 241, 0.4)',
-          }}
-        >
-          <Heart size={28} style={{ color: 'white' }} />
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {values.map((value, index) => (
+              <motion.div
+                key={value.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+              >
+                <Card className="h-full hover:scale-[1.02] transition-transform">
+                  <CardContent className="p-6 text-center">
+                    <div className={`w-16 h-16 mx-auto mb-4 rounded-xl flex items-center justify-center bg-gradient-to-br ${value.gradient}`}>
+                      <value.icon size={32} className="text-white" />
+                    </div>
+                    <h3 className="text-xl font-semibold mb-2" style={{ color: 'var(--foreground)' }}>
+                      {value.title}
+                    </h3>
+                    <p style={{ color: 'var(--foreground-muted)' }}>
+                      {value.description}
+                    </p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
         </motion.div>
 
-        <h2
-          className="relative text-3xl sm:text-4xl font-bold"
-          style={{
-            background: 'linear-gradient(135deg, var(--foreground), var(--primary))',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-          }}
+        {/* Team Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mb-20"
         >
-          Questions or Feedback?
-        </h2>
-        <p
-          className="relative text-lg max-w-2xl mx-auto"
-          style={{ color: 'var(--foreground-muted)' }}
+          <div className="text-center mb-12">
+            <Badge variant="outline" className="mb-4">
+              <Users size={14} className="mr-1" />
+              Our Team
+            </Badge>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ color: 'var(--foreground)' }}>
+              Meet the Creator
+            </h2>
+            <p className="text-lg max-w-2xl mx-auto" style={{ color: 'var(--foreground-muted)' }}>
+              Eziox is built with passion by a solo developer dedicated to creating the best bio link experience.
+            </p>
+          </div>
+
+          <div className="max-w-md mx-auto">
+            {team.map((member) => (
+              <motion.div
+                key={member.name}
+                initial={{ opacity: 0, scale: 0.95 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+              >
+                <Card className="overflow-hidden">
+                  <CardContent className="p-8 text-center">
+                    <div className="relative inline-block mb-4">
+                      <Avatar className="w-32 h-32 mx-auto">
+                        <AvatarImage src={member.avatar || undefined} />
+                        <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white text-4xl font-bold">
+                          {member.name.charAt(0)}
+                        </AvatarFallback>
+                      </Avatar>
+                      {member.isOwner && (
+                        <div 
+                          className="absolute -top-2 -right-2 w-10 h-10 rounded-full flex items-center justify-center"
+                          style={{ background: 'linear-gradient(135deg, #f59e0b, #d97706)' }}
+                        >
+                          <Crown size={20} className="text-white" />
+                        </div>
+                      )}
+                    </div>
+                    
+                    <h3 className="text-2xl font-bold mb-1" style={{ color: 'var(--foreground)' }}>
+                      {member.name}
+                    </h3>
+                    <p className="text-sm mb-4" style={{ color: 'var(--primary)' }}>
+                      {member.role}
+                    </p>
+                    <p className="mb-6" style={{ color: 'var(--foreground-muted)' }}>
+                      {member.bio}
+                    </p>
+                    
+                    <div className="flex justify-center gap-3">
+                      {member.links.github && (
+                        <motion.a
+                          href={member.links.github}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-10 h-10 rounded-lg flex items-center justify-center"
+                          style={{ background: 'var(--background-secondary)' }}
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          <Github size={20} style={{ color: 'var(--foreground)' }} />
+                        </motion.a>
+                      )}
+                      {member.links.twitter && (
+                        <motion.a
+                          href={member.links.twitter}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-10 h-10 rounded-lg flex items-center justify-center"
+                          style={{ background: 'var(--background-secondary)' }}
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          <Twitter size={20} style={{ color: 'var(--foreground)' }} />
+                        </motion.a>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Tech Stack Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mb-20"
         >
-          We'd love to hear from you! Reach out with questions, suggestions, or just to say hi.
-        </p>
-        <div className="relative flex flex-wrap items-center justify-center gap-4 pt-4">
-          <a
-            href="mailto:contact@eziox.link"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all hover:scale-105"
-            style={{
-              background: 'linear-gradient(135deg, var(--primary), var(--accent))',
-              color: 'white',
-              boxShadow: '0 4px 20px rgba(99, 102, 241, 0.3)',
-            }}
-          >
-            <Mail size={18} />
-            Contact Us
-          </a>
-          <a
-            href="https://github.com/XSaitoKungX/portfolio-v2"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all hover:scale-105"
-            style={{
-              backgroundColor: 'var(--background-secondary)',
-              border: '1px solid var(--border)',
-              color: 'var(--foreground)',
-            }}
-          >
-            <Github size={18} />
-            GitHub
-          </a>
-        </div>
-      </motion.section>
-    </motion.div>
+          <Card>
+            <CardContent className="p-8">
+              <div className="text-center mb-8">
+                <Badge variant="outline" className="mb-4">
+                  <Code size={14} className="mr-1" />
+                  Tech Stack
+                </Badge>
+                <h2 className="text-2xl font-bold" style={{ color: 'var(--foreground)' }}>
+                  Built with Modern Technology
+                </h2>
+              </div>
+              
+              <div className="flex flex-wrap justify-center gap-4">
+                {[
+                  'React', 'TypeScript', 'TanStack Router', 'TanStack Query',
+                  'Tailwind CSS', 'Drizzle ORM', 'PostgreSQL', 'Vercel',
+                ].map((tech) => (
+                  <motion.div
+                    key={tech}
+                    className="px-4 py-2 rounded-lg"
+                    style={{ background: 'var(--background-secondary)', border: '1px solid var(--border)' }}
+                    whileHover={{ scale: 1.05 }}
+                  >
+                    <span className="font-medium" style={{ color: 'var(--foreground)' }}>
+                      {tech}
+                    </span>
+                  </motion.div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* CTA Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+        >
+          <div className="relative">
+            <div
+              className="absolute inset-0 rounded-3xl blur-2xl opacity-50"
+              style={{ background: 'linear-gradient(135deg, var(--primary), var(--accent))' }}
+            />
+            <Card className="relative overflow-hidden">
+              <CardContent className="p-12 text-center">
+                <motion.div
+                  initial={{ scale: 0 }}
+                  whileInView={{ scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ type: 'spring', stiffness: 200, damping: 15 }}
+                  className="w-20 h-20 mx-auto mb-6 rounded-2xl flex items-center justify-center"
+                  style={{ background: 'linear-gradient(135deg, var(--primary), var(--accent))' }}
+                >
+                  <Globe size={40} className="text-white" />
+                </motion.div>
+                
+                <h2 className="text-3xl font-bold mb-4" style={{ color: 'var(--foreground)' }}>
+                  Ready to Join Us?
+                </h2>
+                <p className="text-lg mb-8 max-w-xl mx-auto" style={{ color: 'var(--foreground-muted)' }}>
+                  Create your free bio link page today and join thousands of creators worldwide.
+                </p>
+                
+                <Link to="/sign-up">
+                  <Button 
+                    size="lg" 
+                    className="text-lg px-8 py-6 rounded-xl font-semibold"
+                    style={{ 
+                      background: 'linear-gradient(135deg, var(--primary), var(--accent))',
+                      boxShadow: '0 10px 40px rgba(99, 102, 241, 0.4)'
+                    }}
+                  >
+                    Get Started Free
+                    <ArrowRight className="ml-2" size={20} />
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+          </div>
+        </motion.div>
+      </div>
+    </div>
   )
 }
