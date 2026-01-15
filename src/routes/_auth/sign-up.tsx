@@ -361,9 +361,10 @@ function SignUpPage() {
           </div>
 
           {/* Error message */}
-          <AnimatePresence>
+          <AnimatePresence mode="wait">
             {form.formState.errors.root && (
               <motion.div
+                key="form-error"
                 initial={{ opacity: 0, y: -10, height: 0 }}
                 animate={{ opacity: 1, y: 0, height: 'auto' }}
                 exit={{ opacity: 0, y: -10, height: 0 }}
