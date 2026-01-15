@@ -199,8 +199,15 @@ export const searchUsersFn = createServerFn({ method: 'GET' })
 // Get Top Users (for homepage widget)
 // ============================================================================
 
-export const getTopUsersFn = createServerFn({ method: 'GET' }).handler(
-  async () => {
+export const getTopUsersFn = createServerFn({ method: 'GET' })
+  .inputValidator(
+    z.object({
+      limit: z.number().int().min(1).max(100).default(5),
+    }).optional()
+  )
+  .handler(async ({ data }) => {
+    const limit = data?.limit || 5
+    
     const results = await db
       .select({
         user: {
@@ -223,11 +230,10 @@ export const getTopUsersFn = createServerFn({ method: 'GET' }).handler(
       .leftJoin(profiles, eq(profiles.userId, users.id))
       .leftJoin(userStats, eq(userStats.userId, users.id))
       .orderBy(desc(userStats.score))
-      .limit(5)
+      .limit(limit)
 
     return results
-  },
-)
+  })
 
 // ============================================================================
 // Type Exports

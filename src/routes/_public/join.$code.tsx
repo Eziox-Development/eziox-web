@@ -35,10 +35,9 @@ function JoinPage() {
     retry: false,
   })
 
-  // Store referral code in sessionStorage for signup
+  // Mark code as ready for redirect
   useEffect(() => {
     if (validation?.valid && code) {
-      sessionStorage.setItem('referral_code', code.toUpperCase())
       setStoredCode(true)
     }
   }, [validation?.valid, code])
@@ -223,7 +222,7 @@ function JoinPage() {
             style={{ color: '#22c55e' }}
           >
             <Sparkles size={16} />
-            <span>Referral code applied!</span>
+            <span>Referral code: {code.toUpperCase()}</span>
           </motion.div>
         )}
 
@@ -235,6 +234,7 @@ function JoinPage() {
         >
           <Link
             to="/sign-up"
+            search={{ referral: code.toUpperCase() }}
             className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl font-semibold text-lg transition-all hover:scale-105 w-full sm:w-auto"
             style={{ 
               background: 'linear-gradient(135deg, var(--primary), var(--accent))',

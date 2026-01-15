@@ -38,7 +38,7 @@ function LeaderboardPage() {
   
   const { data: topUsers, isLoading } = useQuery({
     queryKey: ['topUsers', 'leaderboard'],
-    queryFn: () => getTopUsers(),
+    queryFn: () => getTopUsers({ data: { limit: 50 } }),
   })
 
   const getRankIcon = (rank: number) => {

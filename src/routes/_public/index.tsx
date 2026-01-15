@@ -8,6 +8,7 @@ import { motion } from 'motion/react'
 import { useQuery } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
 import { getTopUsersFn } from '@/server/functions/users'
+import { getPlatformStatsFn } from '@/server/functions/stats'
 import { useAuth } from '@/hooks/use-auth'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -39,9 +40,16 @@ export const Route = createFileRoute('/_public/')({
 function HomePage() {
   const { currentUser } = useAuth()
   const getTopUsers = useServerFn(getTopUsersFn)
+  const getPlatformStats = useServerFn(getPlatformStatsFn)
+  
   const { data: topUsers } = useQuery({
     queryKey: ['topUsers'],
     queryFn: () => getTopUsers({}),
+  })
+  
+  const { data: platformStats } = useQuery({
+    queryKey: ['platformStats'],
+    queryFn: () => getPlatformStats(),
   })
 
   const features = [
@@ -84,10 +92,10 @@ function HomePage() {
   ]
 
   const stats = [
-    { label: 'Active Users', value: '10K+', icon: Users },
-    { label: 'Links Created', value: '50K+', icon: LinkIcon },
-    { label: 'Daily Clicks', value: '100K+', icon: MousePointerClick },
-    { label: 'Countries', value: '150+', icon: Globe },
+    { label: 'Active Users', value: platformStats?.totalUsers || 0, icon: Users },
+    { label: 'Links Created', value: platformStats?.totalLinks || 0, icon: LinkIcon },
+    { label: 'Total Clicks', value: platformStats?.totalClicks || 0, icon: MousePointerClick },
+    { label: 'Countries', value: platformStats?.totalCountries || 0, icon: Globe },
   ]
 
   return (
@@ -223,7 +231,7 @@ function HomePage() {
               >
                 <stat.icon size={24} className="mx-auto mb-2" style={{ color: 'var(--primary)' }} />
                 <p className="text-2xl font-bold" style={{ color: 'var(--foreground)' }}>
-                  {stat.value}
+                  {typeof stat.value === 'number' ? stat.value.toLocaleString() : stat.value}
                 </p>
                 <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>
                   {stat.label}

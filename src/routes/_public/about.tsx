@@ -5,6 +5,9 @@
 
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { motion } from 'motion/react'
+import { useQuery } from '@tanstack/react-query'
+import { useServerFn } from '@tanstack/react-start'
+import { getPlatformStatsFn } from '@/server/functions/stats'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -20,7 +23,7 @@ import {
   Target,
   Code,
   Github,
-  Twitter,
+  MessageCircle,
   ArrowRight,
   CheckCircle,
   Crown,
@@ -31,6 +34,13 @@ export const Route = createFileRoute('/_public/about')({
 })
 
 function AboutPage() {
+  const getPlatformStats = useServerFn(getPlatformStatsFn)
+  
+  const { data: platformStats } = useQuery({
+    queryKey: ['platformStats'],
+    queryFn: () => getPlatformStats(),
+  })
+
   const values = [
     {
       icon: Heart,
@@ -59,22 +69,23 @@ function AboutPage() {
   ]
 
   const stats = [
-    { value: '10K+', label: 'Active Users' },
-    { value: '50K+', label: 'Links Created' },
-    { value: '150+', label: 'Countries' },
+    { value: platformStats?.totalUsers?.toLocaleString() || '0', label: 'Active Users' },
+    { value: platformStats?.totalLinks?.toLocaleString() || '0', label: 'Links Created' },
+    { value: platformStats?.totalCountries?.toLocaleString() || '0', label: 'Countries' },
     { value: '99.9%', label: 'Uptime' },
   ]
 
   const team = [
     {
-      name: 'Saitama',
+      name: 'Saito',
       role: 'Founder & Developer',
-      avatar: null,
+      avatar: 'https://eziox.link/images/avatars/saito.png',
       bio: 'Full-stack developer passionate about creating beautiful, functional web experiences.',
       isOwner: true,
       links: {
         github: 'https://github.com/XSaitoKungX',
-        twitter: 'https://twitter.com/eziox',
+        website: 'https://eziox.link',
+        discord: 'https://discord.com/invite/KD84DmNA89',
       },
     },
   ]
@@ -331,9 +342,9 @@ function AboutPage() {
                           <Github size={20} style={{ color: 'var(--foreground)' }} />
                         </motion.a>
                       )}
-                      {member.links.twitter && (
+                      {member.links.discord && (
                         <motion.a
-                          href={member.links.twitter}
+                          href={member.links.discord}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="w-10 h-10 rounded-lg flex items-center justify-center"
@@ -341,7 +352,7 @@ function AboutPage() {
                           whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.95 }}
                         >
-                          <Twitter size={20} style={{ color: 'var(--foreground)' }} />
+                          <MessageCircle size={20} style={{ color: 'var(--foreground)' }} />
                         </motion.a>
                       )}
                     </div>

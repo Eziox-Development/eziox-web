@@ -36,6 +36,7 @@ import {
 
 const searchSchema = z.object({
   redirect: z.string().optional(),
+  referral: z.string().optional(),
 })
 
 export const Route = createFileRoute('/_auth/sign-up')({
@@ -129,22 +130,15 @@ function SignUpPage() {
 
   const signUpMutation = useMutation({
     mutationFn: async (data: SignUpFormData) => {
-      // Get referral code from sessionStorage (set by /join/{code} page)
-      const referralCode = typeof window !== 'undefined' 
-        ? sessionStorage.getItem('referral_code') 
-        : null
+      // Get referral code from URL query param (set by /join/{code} redirect)
+      const referralCode = search.referral || undefined
       
       const result = await signUp({ 
         data: { 
           ...data, 
-          referralCode: referralCode || undefined 
+          referralCode
         } 
       })
-      
-      // Clear referral code after successful signup
-      if (typeof window !== 'undefined') {
-        sessionStorage.removeItem('referral_code')
-      }
       
       return result
     },
@@ -310,20 +304,37 @@ function SignUpPage() {
         >
           {/* Header */}
           <div className="mb-8">
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-4"
-              style={{
-                background: 'rgba(99, 102, 241, 0.1)',
-                border: '1px solid rgba(99, 102, 241, 0.2)',
-              }}
-            >
-              <Sparkles size={14} style={{ color: 'var(--primary)' }} />
-              <span className="text-xs font-medium" style={{ color: 'var(--primary)' }}>
-                Free to get started
-              </span>
-            </motion.div>
+            {search.referral ? (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-4"
+                style={{
+                  background: 'rgba(34, 197, 94, 0.1)',
+                  border: '1px solid rgba(34, 197, 94, 0.3)',
+                }}
+              >
+                <Sparkles size={14} style={{ color: '#22c55e' }} />
+                <span className="text-xs font-medium" style={{ color: '#22c55e' }}>
+                  Referral: {search.referral}
+                </span>
+              </motion.div>
+            ) : (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-4"
+                style={{
+                  background: 'rgba(99, 102, 241, 0.1)',
+                  border: '1px solid rgba(99, 102, 241, 0.2)',
+                }}
+              >
+                <Sparkles size={14} style={{ color: 'var(--primary)' }} />
+                <span className="text-xs font-medium" style={{ color: 'var(--primary)' }}>
+                  Free to get started
+                </span>
+              </motion.div>
+            )}
             <h2 className="text-3xl font-bold mb-2" style={{ color: 'var(--foreground)' }}>
               Create your account
             </h2>
