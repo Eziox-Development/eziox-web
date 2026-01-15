@@ -1,6 +1,6 @@
 /**
- * Following List Page - Modern Design
- * Shows all users that a user follows at eziox.link/{username}/following
+ * Followers List Page - Modern Design
+ * Shows all followers of a user at eziox.link/{username}/followers
  * Real-time updates, modern UI/UX, dynamic page title
  */
 
@@ -10,7 +10,7 @@ import { motion, AnimatePresence } from 'motion/react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
 import { getPublicProfileFn } from '@/server/functions/users'
-import { getFollowingFn, followUserFn, unfollowUserFn } from '@/server/functions/follows'
+import { getFollowersFn, followUserFn, unfollowUserFn } from '@/server/functions/follows'
 import {
   ArrowLeft,
   Users,
@@ -20,24 +20,25 @@ import {
   Crown,
   BadgeCheck,
   Sparkles,
+  Heart,
   RefreshCw,
   Search,
   Eye,
 } from 'lucide-react'
 
-export const Route = createFileRoute('/_bio/$username/following')({
+export const Route = createFileRoute('/_bio/$username_/followers')({
   head: ({ params }) => ({
     meta: [
-      { title: `@${params.username} is Following | Eziox` },
-      { name: 'description', content: `See who @${params.username} follows on Eziox` },
-      { property: 'og:title', content: `@${params.username} is Following | Eziox` },
+      { title: `Followers of @${params.username} | Eziox` },
+      { name: 'description', content: `See who follows @${params.username} on Eziox` },
+      { property: 'og:title', content: `Followers of @${params.username} | Eziox` },
       { name: 'robots', content: 'noindex' },
     ],
   }),
-  component: FollowingPage,
+  component: FollowersPage,
 })
 
-function FollowingPage() {
+function FollowersPage() {
   const { username } = Route.useParams()
   const queryClient = useQueryClient()
   const [searchQuery, setSearchQuery] = useState('')
@@ -50,7 +51,7 @@ function FollowingPage() {
   const isAuthenticated = !!currentUser
 
   const getProfile = useServerFn(getPublicProfileFn)
-  const getFollowing = useServerFn(getFollowingFn)
+  const getFollowers = useServerFn(getFollowersFn)
   const followUser = useServerFn(followUserFn)
   const unfollowUser = useServerFn(unfollowUserFn)
 
@@ -59,9 +60,9 @@ function FollowingPage() {
     queryFn: () => getProfile({ data: { username } }),
   })
 
-  const { data: followingData, isLoading, refetch } = useQuery({
-    queryKey: ['following', profile?.user?.id],
-    queryFn: () => getFollowing({ data: { userId: profile!.user.id, limit: 100, offset: 0 } }),
+  const { data: followersData, isLoading, refetch } = useQuery({
+    queryKey: ['followers', profile?.user?.id],
+    queryFn: () => getFollowers({ data: { userId: profile!.user.id, limit: 100, offset: 0 } }),
     enabled: !!profile?.user?.id,
     refetchInterval: 30000, // Real-time: refresh every 30s
   })
@@ -84,7 +85,7 @@ function FollowingPage() {
       } else {
         await followUser({ data: { targetUserId } })
       }
-      void queryClient.invalidateQueries({ queryKey: ['following', profile?.user?.id] })
+      void queryClient.invalidateQueries({ queryKey: ['followers', profile?.user?.id] })
       void queryClient.invalidateQueries({ queryKey: ['publicProfile', username] })
     } finally {
       setLoadingFollow(null)
@@ -94,20 +95,20 @@ function FollowingPage() {
   const profileData = profile?.profile as { accentColor?: string; avatar?: string } | undefined
   const accentColor = profileData?.accentColor || '#3b82f6'
 
-  // Filter following by search query
-  const filteredFollowing = followingData?.following?.filter(followed => {
+  // Filter followers by search query
+  const filteredFollowers = followersData?.followers?.filter(follower => {
     if (!searchQuery) return true
     const query = searchQuery.toLowerCase()
     return (
-      followed.user.username.toLowerCase().includes(query) ||
-      (followed.user.name?.toLowerCase().includes(query) ?? false)
+      follower.user.username.toLowerCase().includes(query) ||
+      (follower.user.name?.toLowerCase().includes(query) ?? false)
     )
   }) || []
 
   // Dynamic page title update
   useEffect(() => {
     if (profile?.user) {
-      document.title = `@${profile.user.username} is Following | Eziox`
+      document.title = `Followers of @${profile.user.username} | Eziox`
     }
   }, [profile?.user])
 
@@ -211,14 +212,14 @@ function FollowingPage() {
                 className="p-2 rounded-xl"
                 style={{ background: `${accentColor}20` }}
               >
-                <UserPlus size={18} style={{ color: accentColor }} />
+                <Heart size={18} style={{ color: accentColor }} />
               </div>
               <div>
                 <p className="text-2xl font-bold" style={{ color: 'var(--foreground)' }}>
-                  {followingData?.total?.toLocaleString() || 0}
+                  {followersData?.total?.toLocaleString() || 0}
                 </p>
                 <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>
-                  Following
+                  Total Followers
                 </p>
               </div>
             </div>
@@ -240,7 +241,7 @@ function FollowingPage() {
             />
             <input
               type="text"
-              placeholder="Search following..."
+              placeholder="Search followers..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-12 pr-4 py-3 rounded-xl text-sm transition-all focus:outline-none focus:ring-2"
@@ -253,7 +254,7 @@ function FollowingPage() {
           </div>
         </motion.div>
 
-        {/* Following List */}
+        {/* Followers List */}
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-16 gap-4">
             <motion.div
@@ -263,10 +264,10 @@ function FollowingPage() {
               <Loader2 size={32} style={{ color: accentColor }} />
             </motion.div>
             <p className="text-sm" style={{ color: 'var(--foreground-muted)' }}>
-              Loading following...
+              Loading followers...
             </p>
           </div>
-        ) : filteredFollowing.length > 0 ? (
+        ) : filteredFollowers.length > 0 ? (
           <div className="space-y-3">
             {/* Results Count */}
             {searchQuery && (
@@ -276,14 +277,14 @@ function FollowingPage() {
                 className="text-sm px-2 mb-4"
                 style={{ color: 'var(--foreground-muted)' }}
               >
-                {filteredFollowing.length} result{filteredFollowing.length !== 1 ? 's' : ''} for "{searchQuery}"
+                {filteredFollowers.length} result{filteredFollowers.length !== 1 ? 's' : ''} for "{searchQuery}"
               </motion.p>
             )}
 
             <AnimatePresence mode="popLayout">
-              {filteredFollowing.map((followed, index) => (
+              {filteredFollowers.map((follower, index) => (
                 <motion.div
-                  key={followed.user.id}
+                  key={follower.user.id}
                   initial={{ opacity: 0, y: 20, scale: 0.95 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.95 }}
@@ -297,7 +298,7 @@ function FollowingPage() {
                 >
                   <div className="flex items-center gap-4">
                     {/* Avatar with Ring */}
-                    <Link to="/$username" params={{ username: followed.user.username }} className="shrink-0">
+                    <Link to="/$username" params={{ username: follower.user.username }} className="shrink-0">
                       <motion.div 
                         className="relative"
                         whileHover={{ scale: 1.05 }}
@@ -308,15 +309,15 @@ function FollowingPage() {
                             background: `linear-gradient(135deg, ${accentColor}, #8b5cf6)`,
                           }}
                         >
-                          {followed.profile?.avatar ? (
+                          {follower.profile?.avatar ? (
                             <img 
-                              src={followed.profile.avatar} 
-                              alt={followed.user.name || followed.user.username}
+                              src={follower.profile.avatar} 
+                              alt={follower.user.name || follower.user.username}
                               className="w-full h-full object-cover"
                             />
                           ) : (
                             <span className="text-white font-bold text-xl">
-                              {(followed.user.name || followed.user.username).charAt(0).toUpperCase()}
+                              {(follower.user.name || follower.user.username).charAt(0).toUpperCase()}
                             </span>
                           )}
                         </div>
@@ -326,24 +327,24 @@ function FollowingPage() {
                     </Link>
 
                     {/* User Info */}
-                    <Link to="/$username" params={{ username: followed.user.username }} className="flex-1 min-w-0">
+                    <Link to="/$username" params={{ username: follower.user.username }} className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
                         <span className="font-semibold truncate" style={{ color: 'var(--foreground)' }}>
-                          {followed.user.name || followed.user.username}
+                          {follower.user.name || follower.user.username}
                         </span>
-                        {followed.user.role === 'owner' && (
+                        {follower.user.role === 'owner' && (
                           <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-yellow-500/10">
                             <Crown size={12} className="text-yellow-500" />
                             <span className="text-xs text-yellow-500 font-medium">Owner</span>
                           </div>
                         )}
-                        {followed.user.role === 'admin' && (
+                        {follower.user.role === 'admin' && (
                           <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-500/10">
                             <BadgeCheck size={12} className="text-blue-500" />
                             <span className="text-xs text-blue-500 font-medium">Admin</span>
                           </div>
                         )}
-                        {followed.user.role === 'premium' && (
+                        {follower.user.role === 'premium' && (
                           <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-purple-500/10">
                             <Sparkles size={12} className="text-purple-500" />
                             <span className="text-xs text-purple-500 font-medium">Pro</span>
@@ -351,35 +352,35 @@ function FollowingPage() {
                         )}
                       </div>
                       <p className="text-sm truncate" style={{ color: 'var(--foreground-muted)' }}>
-                        @{followed.user.username}
+                        @{follower.user.username}
                       </p>
-                      {followed.profile?.bio && (
+                      {follower.profile?.bio && (
                         <p className="text-xs mt-1 line-clamp-1" style={{ color: 'var(--foreground-muted)' }}>
-                          {followed.profile.bio}
+                          {follower.profile.bio}
                         </p>
                       )}
                     </Link>
 
                     {/* Follow Button */}
-                    {isAuthenticated && !followed.isSelf && (
+                    {isAuthenticated && !follower.isSelf && (
                       <motion.button
-                        onClick={() => handleFollowToggle(followed.user.id, followed.isFollowing)}
-                        disabled={loadingFollow === followed.user.id}
+                        onClick={() => handleFollowToggle(follower.user.id, follower.isFollowing)}
+                        disabled={loadingFollow === follower.user.id}
                         className="shrink-0 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all"
                         style={{
-                          background: followed.isFollowing 
+                          background: follower.isFollowing 
                             ? 'var(--background-secondary)' 
                             : `linear-gradient(135deg, ${accentColor}, #8b5cf6)`,
-                          color: followed.isFollowing ? 'var(--foreground)' : 'white',
-                          border: followed.isFollowing ? '1px solid var(--border)' : 'none',
-                          boxShadow: followed.isFollowing ? 'none' : `0 4px 12px ${accentColor}40`
+                          color: follower.isFollowing ? 'var(--foreground)' : 'white',
+                          border: follower.isFollowing ? '1px solid var(--border)' : 'none',
+                          boxShadow: follower.isFollowing ? 'none' : `0 4px 12px ${accentColor}40`
                         }}
                         whileHover={{ scale: 1.03 }}
                         whileTap={{ scale: 0.97 }}
                       >
-                        {loadingFollow === followed.user.id ? (
+                        {loadingFollow === follower.user.id ? (
                           <Loader2 size={16} className="animate-spin mx-auto" />
-                        ) : followed.isFollowing ? (
+                        ) : follower.isFollowing ? (
                           <span className="flex items-center gap-1.5">
                             <UserMinus size={15} />
                             Following
@@ -411,12 +412,12 @@ function FollowingPage() {
               <Users size={36} style={{ color: accentColor }} />
             </div>
             <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--foreground)' }}>
-              {searchQuery ? 'No Results Found' : 'Not Following Anyone'}
+              {searchQuery ? 'No Results Found' : 'No Followers Yet'}
             </h3>
             <p className="text-sm max-w-xs mx-auto" style={{ color: 'var(--foreground-muted)' }}>
               {searchQuery 
-                ? `No users match "${searchQuery}"`
-                : `@${username} isn't following anyone yet.`
+                ? `No followers match "${searchQuery}"`
+                : `@${username} doesn't have any followers yet. Be the first!`
               }
             </p>
           </motion.div>
