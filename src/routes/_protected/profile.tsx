@@ -17,7 +17,7 @@ import { useQuery } from '@tanstack/react-query'
 import { ImageUpload } from '@/components/profile/image-upload'
 import {
   Save, X, Loader2, CheckCircle, AlertCircle,
-  Copy, Check, Crown, Globe, Sparkles, Link as LinkIcon, AtSign,
+  Copy, Check, Globe, Sparkles, Link as LinkIcon, AtSign,
   ExternalLink, Eye, MousePointerClick, Users, Heart,
   Settings, Gift, TrendingUp, Shield, Lock,
   Twitter, Instagram, Youtube, Twitch, Github,
@@ -28,6 +28,8 @@ import { LinksTab } from '@/components/profile/tabs/LinksTab'
 import { ReferralsTab } from '@/components/profile/tabs/ReferralsTab'
 import { SettingsTab } from '@/components/profile/tabs/SettingsTab'
 import { PrivacyTab } from '@/components/profile/tabs/PrivacyTab'
+import { BadgesTab } from '@/components/profile/tabs/BadgesTab'
+import { BadgeDisplay } from '@/components/ui/BadgeDisplay'
 
 export const Route = createFileRoute('/_protected/profile')({
   head: () => ({
@@ -40,7 +42,7 @@ export const Route = createFileRoute('/_protected/profile')({
   component: ProfilePage,
 })
 
-export type TabType = 'profile' | 'links' | 'referrals' | 'settings' | 'privacy'
+export type TabType = 'profile' | 'links' | 'referrals' | 'badges' | 'settings' | 'privacy'
 
 export const SOCIAL_PLATFORMS = [
   { key: 'twitter', label: 'Twitter / X', icon: Twitter, placeholder: '@username', color: '#1DA1F2' },
@@ -209,10 +211,13 @@ function ProfilePage() {
     )
   }
 
+  const userBadges = (currentUser.profile?.badges || []) as string[]
+  
   const tabs = [
     { id: 'profile' as TabType, label: 'Profile', icon: UserCircle },
     { id: 'links' as TabType, label: 'Links', icon: LinkIcon, badge: links.length },
     { id: 'referrals' as TabType, label: 'Referrals', icon: Gift, badge: referralCount },
+    { id: 'badges' as TabType, label: 'Badges', icon: Shield, badge: userBadges.length },
     { id: 'settings' as TabType, label: 'Settings', icon: Settings },
     { id: 'privacy' as TabType, label: 'Privacy', icon: Lock },
   ]
@@ -310,8 +315,7 @@ function ProfilePage() {
                       <div className="space-y-1.5">
                         <div className="flex items-center gap-2 flex-wrap">
                           <h1 className="text-xl md:text-2xl font-bold" style={{ color: 'var(--foreground)' }}>{currentUser.name || 'Anonymous'}</h1>
-                          {isOwner && <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-500 text-white"><Crown size={10} />Owner</span>}
-                          <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold text-white" style={{ background: formData.accentColor }}><Shield size={10} />Verified</span>
+                          {userBadges.length > 0 && <BadgeDisplay badges={userBadges} size="sm" maxDisplay={4} />}
                           {formData.creatorType && <span className="px-2 py-0.5 rounded-full text-xs" style={{ background: 'var(--background-secondary)', color: 'var(--foreground-muted)' }}><Sparkles size={10} className="inline mr-1" />{CREATOR_TYPES.find(t => t.value === formData.creatorType)?.label}</span>}
                         </div>
                         <p className="text-sm flex items-center gap-1.5" style={{ color: 'var(--foreground-muted)' }}><AtSign size={14} />{currentUser.username}{formData.pronouns && <span className="ml-2 px-2 py-0.5 rounded-full text-xs" style={{ background: 'var(--background-secondary)' }}>{formData.pronouns}</span>}</p>
@@ -347,6 +351,7 @@ function ProfilePage() {
               {activeTab === 'profile' && <ProfileTab key="profile" formData={formData} updateField={updateField} updateSocial={updateSocial} customPronouns={customPronouns} setCustomPronouns={setCustomPronouns} />}
               {activeTab === 'links' && <LinksTab key="links" accentColor={formData.accentColor} />}
               {activeTab === 'referrals' && <ReferralsTab key="referrals" accentColor={formData.accentColor} />}
+              {activeTab === 'badges' && <BadgesTab key="badges" badges={userBadges} accentColor={formData.accentColor} referralCount={referralCount} isEarlyAdopter={userBadges.includes('early_adopter')} />}
               {activeTab === 'settings' && <SettingsTab key="settings" formData={formData} updateField={updateField} currentUser={currentUser} copyToClipboard={copyToClipboard} copiedField={copiedField} />}
               {activeTab === 'privacy' && <PrivacyTab key="privacy" formData={formData} updateField={updateField} isOwner={isOwner} />}
             </AnimatePresence>

@@ -17,8 +17,6 @@ import {
   Eye,
   Link as LinkIcon,
   ExternalLink,
-  Crown,
-  BadgeCheck,
   Loader2,
   MapPin,
   Globe,
@@ -30,6 +28,7 @@ import {
   UserMinus,
   Heart,
 } from 'lucide-react'
+import { BadgeDisplay } from '@/components/ui/BadgeDisplay'
 import {
   LuTwitter,
   LuGithub,
@@ -302,8 +301,6 @@ function BioPage() {
 
   const profileData = profile.profile && 'bio' in profile.profile ? profile.profile : null
   const accentColor = profileData?.accentColor || 'var(--primary)'
-  const isPremium = profile.user.role === 'premium' || profile.user.role === 'owner'
-  const isVerified = profile.user.role === 'owner' || profile.user.role === 'admin'
 
   return (
     <div className="min-h-screen relative" style={{ background: 'var(--background)' }}>
@@ -395,22 +392,6 @@ function BioPage() {
               )}
             </div>
             
-            {/* Premium/Verified Badge */}
-            {(isPremium || isVerified) && (
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 0.3, type: 'spring' }}
-                className="absolute -bottom-1 -right-1 p-1.5 rounded-full"
-                style={{ background: 'var(--background)' }}
-              >
-                {isPremium ? (
-                  <Crown size={18} style={{ color: '#fbbf24' }} />
-                ) : (
-                  <BadgeCheck size={18} fill={accentColor} style={{ color: 'white' }} />
-                )}
-              </motion.div>
-            )}
           </motion.div>
         </motion.div>
 
@@ -421,9 +402,14 @@ function BioPage() {
           transition={{ delay: 0.2 }}
           className="text-center mb-8"
         >
-          <h1 className="text-2xl sm:text-3xl font-bold mb-1" style={{ color: 'var(--foreground)' }}>
-            {profile.user.name || profile.user.username}
-          </h1>
+          <div className="flex items-center justify-center gap-2 mb-1">
+            <h1 className="text-2xl sm:text-3xl font-bold" style={{ color: 'var(--foreground)' }}>
+              {profile.user.name || profile.user.username}
+            </h1>
+            {profileData?.badges && profileData.badges.length > 0 && (
+              <BadgeDisplay badges={profileData.badges as string[]} size="md" maxDisplay={3} />
+            )}
+          </div>
           <p className="text-sm mb-4" style={{ color: 'var(--foreground-muted)' }}>
             @{profile.user.username}
             {profileData?.pronouns && ` · ${profileData.pronouns}`}

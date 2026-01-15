@@ -124,9 +124,16 @@ export const signUpFn = createServerFn({ method: 'POST' })
           const { processReferralFn } = await import('./referrals')
           await processReferralFn({ data: { newUserId: user.id, referralCode } })
         } catch {
-          // Silently fail referral processing - don't block signup
           console.error('Failed to process referral')
         }
+      }
+
+      // Auto-award badges (early_adopter, etc.)
+      try {
+        const { checkAndAwardBadgesFn } = await import('./badges')
+        await checkAndAwardBadgesFn({ data: { userId: user.id } })
+      } catch {
+        console.error('Failed to check badges')
       }
 
       // Create session
