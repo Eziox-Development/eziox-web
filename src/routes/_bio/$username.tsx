@@ -40,6 +40,7 @@ import {
 import { FaDiscord, FaTiktok, FaTwitch } from 'react-icons/fa'
 import type { ComponentType } from 'react'
 import { FollowModal } from '@/components/bio/FollowModal'
+import { getSocialUrl } from '@/lib/social-links'
 
 const socialIconMap: Record<string, ComponentType<{ size?: number }>> = {
   twitter: LuTwitter,
@@ -567,12 +568,13 @@ function BioPage() {
             transition={{ delay: 0.3 }}
             className="flex justify-center gap-3 mb-8"
           >
-            {Object.entries(profileData.socials).map(([platform, url]) => {
+            {Object.entries(profileData.socials).map(([platform, username]) => {
               const Icon = socialIconMap[platform.toLowerCase()] || Globe
+              const socialUrl = getSocialUrl(platform, username as string)
               return (
                 <motion.a
                   key={platform}
-                  href={url}
+                  href={socialUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="p-3 rounded-xl transition-all"
