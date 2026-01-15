@@ -18,7 +18,6 @@ import {
   UserMinus,
   Crown,
   BadgeCheck,
-  Sparkles,
   RefreshCw,
   Search,
   Eye,
@@ -90,17 +89,22 @@ export function FollowModal({
       }
       
       // Invalidate queries
-      queryClient.invalidateQueries({ queryKey: ['followers', userId] })
-      queryClient.invalidateQueries({ queryKey: ['following', userId] })
-      queryClient.invalidateQueries({ queryKey: ['isFollowing'] })
-      queryClient.invalidateQueries({ queryKey: ['publicProfile', username] })
+      await queryClient.invalidateQueries({ queryKey: ['followers', userId] })
+      await queryClient.invalidateQueries({ queryKey: ['following', userId] })
+      await queryClient.invalidateQueries({ queryKey: ['isFollowing'] })
+      await queryClient.invalidateQueries({ queryKey: ['publicProfile', username] })
     } catch (error) {
       console.error('Follow toggle error:', error)
     }
   }
 
   // Filter users based on search
-  const filterUsers = (users: any[]) => {
+  const filterUsers = (users: Array<{
+    user: { id: string; username: string; name: string | null; role: string | null }
+    profile: { avatar: string | null; bio: string | null } | null
+    isFollowing: boolean
+    isSelf: boolean
+  }>) => {
     if (!searchQuery.trim()) return users
     
     const query = searchQuery.toLowerCase()
@@ -120,9 +124,9 @@ export function FollowModal({
 
   const handleRefresh = () => {
     if (activeTab === 'followers') {
-      refetchFollowers()
+      void refetchFollowers()
     } else {
-      refetchFollowing()
+      void refetchFollowing()
     }
   }
 
@@ -356,9 +360,6 @@ export function FollowModal({
                               )}
                               {user.role === 'admin' && (
                                 <BadgeCheck className="w-4 h-4 shrink-0" style={{ color: '#3b82f6' }} />
-                              )}
-                              {user.isPro && (
-                                <Sparkles className="w-4 h-4 shrink-0" style={{ color: '#a855f7' }} />
                               )}
                             </div>
                             
