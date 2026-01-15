@@ -4,7 +4,7 @@
  * No Nav/Footer - this is the user's space
  */
 
-import { createFileRoute, Link, notFound, useRouterState } from '@tanstack/react-router'
+import { createFileRoute, Link, notFound, useRouterState, Outlet } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
@@ -125,6 +125,16 @@ function BioPage() {
   const routerState = useRouterState()
   const bioMatch = routerState.matches.find((m: { routeId: string }) => m.routeId === '/_bio')
   const currentUser = (bioMatch?.loaderData as { currentUser?: { id: string; username: string } } | undefined)?.currentUser
+
+  // Check if we're on a child route (followers/following)
+  const isChildRoute = routerState.matches.some((m: { routeId: string }) => 
+    m.routeId === '/_bio/$username/followers' || m.routeId === '/_bio/$username/following'
+  )
+
+  // If on child route, render Outlet instead of bio page content
+  if (isChildRoute) {
+    return <Outlet />
+  }
 
   const getProfile = useServerFn(getPublicProfileFn)
   const trackClick = useServerFn(trackLinkClickFn)
