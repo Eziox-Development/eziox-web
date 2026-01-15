@@ -91,6 +91,10 @@
   - [x] `vtuber` - VTuber badge
   - [x] `streamer` - Streamer badge
   - [x] `artist` - Digital artist badge
+  - [x] `developer` - Software developer badge
+  - [x] `musician` - Music creator badge
+  - [x] `gamer` - Gaming enthusiast badge
+  - [x] `other` - General creator badge
   - [x] `partner` - Official partner
 - [x] Badge configuration (`src/lib/badges.ts`)
 - [x] Badge display on bio pages (`BadgeDisplay` component)

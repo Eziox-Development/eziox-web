@@ -14,6 +14,10 @@ export type BadgeId =
   | 'vtuber'
   | 'streamer'
   | 'artist'
+  | 'developer'
+  | 'musician'
+  | 'gamer'
+  | 'other'
   | 'partner'
 
 export interface BadgeConfig {
@@ -136,6 +140,50 @@ export const BADGES: Record<BadgeId, BadgeConfig> = {
     color: '#f43f5e',
     bgColor: 'rgba(244, 63, 94, 0.15)',
     rarity: 'rare',
+    autoAwarded: false,
+    adminOnly: true,
+  },
+  developer: {
+    id: 'developer',
+    name: 'Developer',
+    description: 'Software developer',
+    icon: 'Code2',
+    color: '#06b6d4',
+    bgColor: 'rgba(6, 182, 212, 0.15)',
+    rarity: 'rare',
+    autoAwarded: false,
+    adminOnly: true,
+  },
+  musician: {
+    id: 'musician',
+    name: 'Musician',
+    description: 'Music creator',
+    icon: 'Music',
+    color: '#f472b6',
+    bgColor: 'rgba(244, 114, 182, 0.15)',
+    rarity: 'rare',
+    autoAwarded: false,
+    adminOnly: true,
+  },
+  gamer: {
+    id: 'gamer',
+    name: 'Gamer',
+    description: 'Gaming enthusiast',
+    icon: 'Gamepad2',
+    color: '#22c55e',
+    bgColor: 'rgba(34, 197, 94, 0.15)',
+    rarity: 'common',
+    autoAwarded: false,
+    adminOnly: true,
+  },
+  other: {
+    id: 'other',
+    name: 'Creator',
+    description: 'Content creator',
+    icon: 'Wand2',
+    color: '#94a3b8',
+    bgColor: 'rgba(148, 163, 184, 0.15)',
+    rarity: 'common',
     autoAwarded: false,
     adminOnly: true,
   },

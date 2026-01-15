@@ -299,11 +299,25 @@ function ProfilePage() {
 
           <div className="flex-1 min-w-0">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="relative mb-8">
-              <div className="absolute inset-0 rounded-3xl blur-2xl opacity-40" style={{ background: `linear-gradient(135deg, ${formData.accentColor}, var(--accent))` }} />
-              <div className="relative rounded-3xl overflow-hidden" style={{ background: 'rgba(var(--card-rgb, 30, 30, 30), 0.9)', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
-                <div className="relative h-40 md:h-48">
+              <motion.div
+                className="absolute inset-0 rounded-3xl blur-3xl"
+                style={{ background: `linear-gradient(135deg, ${formData.accentColor}30, var(--accent)20)` }}
+                animate={{ opacity: [0.3, 0.5, 0.3] }}
+                transition={{ duration: 4, repeat: Infinity }}
+              />
+              <div
+                className="relative rounded-3xl overflow-hidden"
+                style={{
+                  background: 'rgba(255, 255, 255, 0.02)',
+                  backdropFilter: 'blur(20px)',
+                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
+                }}
+              >
+                <div className="absolute top-0 left-0 right-0 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent)' }} />
+                <div className="relative h-44 md:h-52">
                   <ImageUpload type="banner" currentImage={currentBanner} onUploadSuccess={(url) => setCurrentBanner(url)} />
-                  <div className="absolute bottom-0 left-0 right-0 h-24" style={{ background: 'linear-gradient(to top, rgba(var(--card-rgb, 30, 30, 30), 1), transparent)' }} />
+                  <div className="absolute bottom-0 left-0 right-0 h-32" style={{ background: 'linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent)' }} />
                 </div>
                 <div className="px-6 pb-6 -mt-14 relative z-10">
                   <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
@@ -332,18 +346,50 @@ function ProfilePage() {
               </div>
             </motion.div>
 
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
               {[
-                { label: 'Profile Views', value: stats.profileViews, icon: Eye, gradient: 'from-indigo-500 to-purple-500' },
-                { label: 'Link Clicks', value: totalClicks, icon: MousePointerClick, gradient: 'from-amber-500 to-orange-500' },
-                { label: 'Followers', value: stats.followers, icon: Heart, gradient: 'from-pink-500 to-rose-500' },
-                { label: 'Referrals', value: referralCount, icon: Users, gradient: 'from-green-500 to-emerald-500' },
-              ].map((stat) => (
-                <div key={stat.label} className="p-4 rounded-xl text-center" style={{ background: 'rgba(var(--card-rgb, 30, 30, 30), 0.8)', border: '1px solid var(--border)' }}>
-                  <div className={`w-10 h-10 mx-auto mb-2 rounded-lg flex items-center justify-center bg-gradient-to-br ${stat.gradient}`}><stat.icon size={20} className="text-white" /></div>
-                  <p className="text-2xl font-bold" style={{ color: 'var(--foreground)' }}>{(stat.value || 0).toLocaleString()}</p>
-                  <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>{stat.label}</p>
-                </div>
+                { label: 'Profile Views', value: stats.profileViews, icon: Eye, color: '#8b5cf6', bgColor: 'rgba(139, 92, 246, 0.15)' },
+                { label: 'Link Clicks', value: totalClicks, icon: MousePointerClick, color: '#f97316', bgColor: 'rgba(249, 115, 22, 0.15)' },
+                { label: 'Followers', value: stats.followers, icon: Heart, color: '#ec4899', bgColor: 'rgba(236, 72, 153, 0.15)' },
+                { label: 'Referrals', value: referralCount, icon: Users, color: '#10b981', bgColor: 'rgba(16, 185, 129, 0.15)' },
+              ].map((stat, index) => (
+                <motion.div
+                  key={stat.label}
+                  initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{ delay: 0.15 + index * 0.05, type: 'spring', stiffness: 300 }}
+                  whileHover={{ scale: 1.03, y: -2 }}
+                  className="relative p-5 rounded-2xl text-center overflow-hidden group cursor-default"
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.03)',
+                    backdropFilter: 'blur(20px)',
+                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.12)',
+                  }}
+                >
+                  <motion.div
+                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    style={{ background: `radial-gradient(circle at 50% 0%, ${stat.bgColor}, transparent 70%)` }}
+                  />
+                  <div className="absolute top-0 left-0 right-0 h-px" style={{ background: `linear-gradient(90deg, transparent, ${stat.color}40, transparent)` }} />
+                  <motion.div
+                    className="w-12 h-12 mx-auto mb-3 rounded-xl flex items-center justify-center relative"
+                    style={{ background: stat.bgColor }}
+                    whileHover={{ rotate: [0, -5, 5, 0] }}
+                    transition={{ duration: 0.4 }}
+                  >
+                    <stat.icon size={22} style={{ color: stat.color }} />
+                  </motion.div>
+                  <motion.p
+                    className="text-3xl font-bold mb-1"
+                    style={{ color: 'var(--foreground)' }}
+                    initial={{ scale: 1 }}
+                    whileHover={{ scale: 1.05 }}
+                  >
+                    {(stat.value || 0).toLocaleString()}
+                  </motion.p>
+                  <p className="text-xs font-medium" style={{ color: 'var(--foreground-muted)' }}>{stat.label}</p>
+                </motion.div>
               ))}
             </motion.div>
 

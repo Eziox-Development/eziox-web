@@ -17,6 +17,7 @@ import {
   Trophy,
   LayoutDashboard,
   Globe,
+  Shield,
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'motion/react'
 import { useAuth } from '@/hooks/use-auth'
@@ -227,6 +228,17 @@ export function Nav() {
                             <span>View Bio Page</span>
                             <ExternalLink size={12} className="ml-auto" style={{ color: 'var(--foreground-muted)' }} />
                           </a>
+                          {(currentUser.role === 'owner' || currentUser.role === 'admin') && (
+                            <Link
+                              to="/admin"
+                              onClick={() => setIsUserMenuOpen(false)}
+                              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors hover:bg-[var(--background-secondary)]"
+                              style={{ color: 'var(--foreground)' }}
+                            >
+                              <Shield size={18} style={{ color: '#ef4444' }} />
+                              <span>Admin Panel</span>
+                            </Link>
+                          )}
                         </div>
 
                         <div className="p-2" style={{ borderTop: '1px solid var(--border)' }}>
