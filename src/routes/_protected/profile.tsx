@@ -38,7 +38,6 @@ import {
   Gift,
   TrendingUp,
   Shield,
-  MapPin,
   Clock,
 } from 'lucide-react'
 
@@ -194,442 +193,458 @@ function ProfilePage() {
         )}
       </AnimatePresence>
 
-      <div className="max-w-5xl mx-auto">
-        {/* Profile Header Card */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="relative mb-8"
-        >
-          {/* Glow Effect */}
-          <div
-            className="absolute inset-0 rounded-3xl blur-2xl opacity-40"
-            style={{ background: 'linear-gradient(135deg, var(--primary), var(--accent))' }}
-          />
-          
-          <div
-            className="relative rounded-3xl overflow-hidden"
-            style={{ 
-              background: 'rgba(var(--card-rgb, 30, 30, 30), 0.9)',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-            }}
+      <div className="max-w-7xl mx-auto">
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* Left Sidebar - Navigation */}
+          <motion.aside
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="lg:w-72 flex-shrink-0"
           >
-            {/* Banner */}
-            <div className="relative h-48 md:h-56">
-              <ImageUpload 
-                type="banner" 
-                currentImage={currentBanner}
-                onUploadSuccess={(url) => setCurrentBanner(url)}
-              />
-              
-              {/* Gradient Overlay */}
-              <div
-                className="absolute bottom-0 left-0 right-0 h-32"
-                style={{ background: 'linear-gradient(to top, rgba(var(--card-rgb, 30, 30, 30), 1), transparent)' }}
-              />
-            </div>
-
-            {/* Profile Info */}
-            <div className="px-6 md:px-8 pb-8 -mt-16 relative z-10">
-              <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
-                {/* Avatar & Name */}
-                <div className="flex flex-col md:flex-row md:items-end gap-5">
-                  {/* Avatar */}
+            <div
+              className="lg:sticky lg:top-28 rounded-2xl overflow-hidden"
+              style={{ background: 'var(--card)', border: '1px solid var(--border)' }}
+            >
+              {/* User Mini Card */}
+              <div className="p-5 border-b" style={{ borderColor: 'var(--border)' }}>
+                <div className="flex items-center gap-3">
                   <div className="relative">
-                    <ImageUpload 
-                      type="avatar" 
-                      currentImage={currentAvatar}
-                      onUploadSuccess={(url) => setCurrentAvatar(url)}
-                    />
-                    {/* Online Indicator */}
+                    <div
+                      className="w-12 h-12 rounded-full bg-cover bg-center"
+                      style={{ 
+                        backgroundImage: currentAvatar ? `url(${currentAvatar})` : undefined,
+                        background: !currentAvatar ? 'linear-gradient(135deg, var(--primary), var(--accent))' : undefined,
+                      }}
+                    >
+                      {!currentAvatar && (
+                        <div className="w-full h-full flex items-center justify-center text-white font-bold text-lg">
+                          {(currentUser.name || currentUser.username || 'U').charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                    </div>
                     <motion.div
-                      className="absolute bottom-2 right-2 w-5 h-5 rounded-full border-4"
+                      className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full border-2"
                       style={{ backgroundColor: '#22c55e', borderColor: 'var(--card)' }}
                       animate={{ scale: [1, 1.2, 1] }}
                       transition={{ duration: 2, repeat: Infinity }}
                     />
                   </div>
-
-                  {/* Name & Username */}
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-3 flex-wrap">
-                      {isEditing ? (
-                        <input
-                          type="text"
-                          value={formData.name}
-                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                          className="text-2xl md:text-3xl font-bold bg-transparent border-b-2 outline-none px-1"
-                          style={{ color: 'var(--foreground)', borderColor: 'var(--primary)' }}
-                          placeholder="Your name"
-                        />
-                      ) : (
-                        <h1 className="text-2xl md:text-3xl font-bold" style={{ color: 'var(--foreground)' }}>
-                          {currentUser.name || 'Anonymous'}
-                        </h1>
-                      )}
-                      
-                      {/* Badges */}
-                      {isOwner && (
-                        <motion.span
-                          className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold"
-                          style={{ background: 'linear-gradient(135deg, #f59e0b, #d97706)', color: 'white' }}
-                          whileHover={{ scale: 1.05 }}
-                        >
-                          <Crown size={12} />
-                          Owner
-                        </motion.span>
-                      )}
-                      <motion.span
-                        className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold"
-                        style={{ background: 'var(--primary)', color: 'white' }}
-                        whileHover={{ scale: 1.05 }}
-                      >
-                        <Shield size={12} />
-                        Verified
-                      </motion.span>
-                    </div>
-                    
-                    <p className="text-sm flex items-center gap-2" style={{ color: 'var(--foreground-muted)' }}>
-                      <AtSign size={14} />
-                      {currentUser.username || currentUser.email?.split('@')[0]}
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold truncate" style={{ color: 'var(--foreground)' }}>
+                      {currentUser.name || 'Anonymous'}
                     </p>
-                    
-                    {formData.location && (
-                      <p className="text-sm flex items-center gap-2" style={{ color: 'var(--foreground-muted)' }}>
-                        <MapPin size={14} />
-                        {formData.location}
-                      </p>
-                    )}
+                    <p className="text-xs truncate" style={{ color: 'var(--foreground-muted)' }}>
+                      @{currentUser.username}
+                    </p>
                   </div>
                 </div>
-
-                {/* Action Buttons */}
-                <div className="flex gap-3">
-                  {!isEditing ? (
-                    <motion.button
-                      onClick={() => setIsEditing(true)}
-                      className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-white"
-                      style={{ 
-                        background: 'linear-gradient(135deg, var(--primary), var(--accent))',
-                        boxShadow: '0 10px 30px rgba(99, 102, 241, 0.3)'
-                      }}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      <Edit3 size={16} />
-                      Edit Profile
-                    </motion.button>
-                  ) : (
-                    <>
-                      <motion.button
-                        onClick={handleCancel}
-                        className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium"
-                        style={{ background: 'var(--background-secondary)', color: 'var(--foreground)', border: '1px solid var(--border)' }}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                      >
-                        <X size={16} />
-                        Cancel
-                      </motion.button>
-                      <motion.button
-                        onClick={handleSave}
-                        disabled={isSaving}
-                        className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-white disabled:opacity-50"
-                        style={{ background: 'linear-gradient(135deg, #22c55e, #16a34a)' }}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                      >
-                        {isSaving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
-                        Save
-                      </motion.button>
-                    </>
-                  )}
-                </div>
               </div>
-            </div>
-          </div>
-        </motion.div>
 
-        {/* Stats Grid */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"
-        >
-          {[
-            { label: 'Profile Views', value: stats.profileViews || 0, icon: Eye, gradient: 'from-indigo-500 to-purple-500' },
-            { label: 'Link Clicks', value: stats.totalLinkClicks || 0, icon: MousePointerClick, gradient: 'from-amber-500 to-orange-500' },
-            { label: 'Followers', value: stats.followers || 0, icon: Heart, gradient: 'from-pink-500 to-rose-500' },
-            { label: 'Following', value: stats.following || 0, icon: Users, gradient: 'from-green-500 to-emerald-500' },
-          ].map((stat, index) => (
-            <motion.div
-              key={stat.label}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 + index * 0.05 }}
-              className="relative group"
-            >
-              <div
-                className="relative p-5 rounded-2xl text-center backdrop-blur-sm"
-                style={{ 
-                  background: 'rgba(var(--card-rgb, 30, 30, 30), 0.8)',
-                  border: '1px solid var(--border)',
-                }}
-              >
-                <div className={`w-12 h-12 mx-auto mb-3 rounded-xl flex items-center justify-center bg-gradient-to-br ${stat.gradient}`}>
-                  <stat.icon size={24} className="text-white" />
-                </div>
-                <p className="text-3xl font-bold mb-1" style={{ color: 'var(--foreground)' }}>
-                  {stat.value.toLocaleString()}
+              {/* Navigation Links */}
+              <nav className="p-3">
+                <p className="px-3 py-2 text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--foreground-muted)' }}>
+                  Quick Links
                 </p>
-                <p className="text-xs font-medium" style={{ color: 'var(--foreground-muted)' }}>
-                  {stat.label}
-                </p>
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
-
-        {/* Bio Link Card */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="relative mb-8"
-        >
-          <div
-            className="absolute inset-0 rounded-2xl blur-xl opacity-30"
-            style={{ background: 'linear-gradient(135deg, var(--primary), var(--accent))' }}
-          />
-          <div
-            className="relative p-6 rounded-2xl"
-            style={{ 
-              background: 'rgba(var(--card-rgb, 30, 30, 30), 0.9)',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-            }}
-          >
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="flex items-center gap-4">
-                <div 
-                  className="w-14 h-14 rounded-xl flex items-center justify-center"
-                  style={{ background: 'linear-gradient(135deg, var(--primary), var(--accent))' }}
-                >
-                  <Globe size={28} className="text-white" />
-                </div>
-                <div>
-                  <p className="font-bold text-lg" style={{ color: 'var(--foreground)' }}>
-                    Your Bio Page
-                  </p>
-                  <p className="text-sm font-mono" style={{ color: 'var(--primary)' }}>
-                    eziox.link/{currentUser.username}
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <motion.button
-                  onClick={() => copyToClipboard(bioUrl, 'bio')}
-                  className="flex items-center gap-2 px-5 py-3 rounded-xl font-medium"
-                  style={{ 
-                    background: 'var(--background-secondary)', 
-                    color: copiedField === 'bio' ? '#22c55e' : 'var(--foreground)',
-                    border: '1px solid var(--border)',
-                  }}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  {copiedField === 'bio' ? <Check size={18} /> : <Copy size={18} />}
-                  {copiedField === 'bio' ? 'Copied!' : 'Copy'}
-                </motion.button>
-                <motion.a
-                  href={`/${currentUser.username}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-5 py-3 rounded-xl font-semibold text-white"
-                  style={{ 
-                    background: 'linear-gradient(135deg, var(--primary), var(--accent))',
-                    boxShadow: '0 10px 30px rgba(99, 102, 241, 0.3)'
-                  }}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <ExternalLink size={18} />
-                  View
-                </motion.a>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Quick Actions Grid */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"
-        >
-          {[
-            { label: 'Manage Links', href: '/links', icon: LinkIcon, description: 'Edit your bio links' },
-            { label: 'Referrals', href: '/referrals', icon: Gift, description: 'Invite friends' },
-            { label: 'Analytics', href: '/links', icon: TrendingUp, description: 'View statistics' },
-            { label: 'Settings', href: '/profile', icon: Settings, description: 'Account settings' },
-          ].map((action, index) => (
-            <motion.div
-              key={action.label}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 + index * 0.05 }}
-            >
-              <Link
-                to={action.href}
-                className="block p-5 rounded-2xl transition-all hover:scale-[1.02] group"
-                style={{ 
-                  background: 'var(--card)',
-                  border: '1px solid var(--border)',
-                }}
-              >
-                <div 
-                  className="w-12 h-12 mb-4 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110"
-                  style={{ background: 'var(--background-secondary)' }}
-                >
-                  <action.icon size={24} style={{ color: 'var(--primary)' }} />
-                </div>
-                <p className="font-semibold mb-1" style={{ color: 'var(--foreground)' }}>
-                  {action.label}
-                </p>
-                <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>
-                  {action.description}
-                </p>
-              </Link>
-            </motion.div>
-          ))}
-        </motion.div>
-
-        {/* Account Details */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="rounded-2xl overflow-hidden"
-          style={{ background: 'var(--card)', border: '1px solid var(--border)' }}
-        >
-          <div className="p-6 border-b" style={{ borderColor: 'var(--border)' }}>
-            <h2 className="text-xl font-bold" style={{ color: 'var(--foreground)' }}>
-              Account Details
-            </h2>
-            <p className="text-sm" style={{ color: 'var(--foreground-muted)' }}>
-              Your account information
-            </p>
-          </div>
-          
-          <div className="p-6 space-y-4">
-            {[
-              { label: 'Email', value: currentUser.email, icon: Mail, key: 'email' },
-              { label: 'Username', value: `@${currentUser.username}`, icon: AtSign, key: 'username' },
-              { label: 'User ID', value: currentUser.id, icon: User, key: 'id' },
-              { label: 'Member Since', value: memberSince, icon: Calendar, key: 'member' },
-              { label: 'Account Type', value: currentUser.role === 'admin' ? 'Admin' : 'Standard', icon: Sparkles, key: 'tier' },
-            ].map((item) => (
-              <motion.button
-                key={item.key}
-                onClick={() => copyToClipboard(item.value || '', item.key)}
-                className="w-full flex items-center justify-between p-4 rounded-xl transition-all hover:bg-white/5 group"
-                style={{ background: 'var(--background-secondary)' }}
-                whileHover={{ scale: 1.01 }}
-                whileTap={{ scale: 0.99 }}
-              >
-                <div className="flex items-center gap-4">
-                  <div
-                    className="w-10 h-10 rounded-lg flex items-center justify-center"
-                    style={{ background: 'var(--card)' }}
+                {[
+                  { label: 'My Bio Page', href: `/${currentUser.username}`, icon: Globe, external: true },
+                  { label: 'Manage Links', href: '/links', icon: LinkIcon },
+                  { label: 'Referrals', href: '/referrals', icon: Gift },
+                  { label: 'Leaderboard', href: '/leaderboard', icon: TrendingUp },
+                ].map((item) => (
+                  <Link
+                    key={item.label}
+                    to={item.href}
+                    target={item.external ? '_blank' : undefined}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all hover:bg-white/5 group"
                   >
-                    <item.icon size={18} style={{ color: 'var(--primary)' }} />
-                  </div>
-                  <div className="text-left">
-                    <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>
+                    <div
+                      className="w-9 h-9 rounded-lg flex items-center justify-center transition-colors group-hover:bg-white/10"
+                      style={{ background: 'var(--background-secondary)' }}
+                    >
+                      <item.icon size={18} style={{ color: 'var(--primary)' }} />
+                    </div>
+                    <span className="font-medium" style={{ color: 'var(--foreground)' }}>
                       {item.label}
-                    </p>
-                    <p className="font-medium" style={{ color: 'var(--foreground)' }}>
-                      {item.value}
-                    </p>
-                  </div>
-                </div>
-                <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                  {copiedField === item.key ? (
-                    <Check size={18} className="text-green-500" />
-                  ) : (
-                    <Copy size={18} style={{ color: 'var(--foreground-muted)' }} />
-                  )}
-                </div>
-              </motion.button>
-            ))}
-          </div>
-        </motion.div>
+                    </span>
+                    {item.external && <ExternalLink size={14} style={{ color: 'var(--foreground-muted)' }} />}
+                  </Link>
+                ))}
 
-        {/* Owner Section */}
-        {isOwner && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="mt-8 p-6 rounded-2xl"
-            style={{ 
-              background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(217, 119, 6, 0.1))',
-              border: '1px solid rgba(245, 158, 11, 0.3)',
-            }}
-          >
-            <div className="flex items-center gap-3 mb-4">
-              <Crown size={24} style={{ color: '#f59e0b' }} />
-              <h3 className="text-lg font-bold" style={{ color: '#f59e0b' }}>
-                Owner Privileges
-              </h3>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {[
-                { label: 'Full Access', description: 'All platform features', icon: Zap },
-                { label: 'User Management', description: 'Manage all users', icon: Users },
-                { label: 'Site Settings', description: 'Full control', icon: Settings },
-              ].map((priv) => (
-                <div
-                  key={priv.label}
-                  className="flex items-center gap-3 p-4 rounded-xl"
-                  style={{ background: 'var(--card)' }}
-                >
-                  <priv.icon size={20} style={{ color: '#f59e0b' }} />
-                  <div>
-                    <p className="font-medium" style={{ color: 'var(--foreground)' }}>
-                      {priv.label}
-                    </p>
-                    <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>
-                      {priv.description}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-        )}
+                <div className="my-3 border-t" style={{ borderColor: 'var(--border)' }} />
 
-        {/* Activity Indicator */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
-          className="mt-8 text-center"
-        >
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full" style={{ background: 'var(--background-secondary)' }}>
+                <p className="px-3 py-2 text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--foreground-muted)' }}>
+                  Account
+                </p>
+                {[
+                  { label: 'Settings', href: '/profile', icon: Settings },
+                  { label: 'Help Center', href: '/about', icon: AlertCircle },
+                ].map((item) => (
+                  <Link
+                    key={item.label}
+                    to={item.href}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all hover:bg-white/5 group"
+                  >
+                    <div
+                      className="w-9 h-9 rounded-lg flex items-center justify-center transition-colors group-hover:bg-white/10"
+                      style={{ background: 'var(--background-secondary)' }}
+                    >
+                      <item.icon size={18} style={{ color: 'var(--foreground-muted)' }} />
+                    </div>
+                    <span className="font-medium" style={{ color: 'var(--foreground)' }}>
+                      {item.label}
+                    </span>
+                  </Link>
+                ))}
+              </nav>
+
+              {/* Bio Link Quick Copy */}
+              <div className="p-4 border-t" style={{ borderColor: 'var(--border)' }}>
+                <p className="text-xs font-medium mb-2" style={{ color: 'var(--foreground-muted)' }}>
+                  Your Bio Link
+                </p>
+                <div className="flex items-center gap-2">
+                  <div
+                    className="flex-1 px-3 py-2 rounded-lg text-sm font-mono truncate"
+                    style={{ background: 'var(--background-secondary)', color: 'var(--primary)' }}
+                  >
+                    eziox.link/{currentUser.username}
+                  </div>
+                  <motion.button
+                    onClick={() => copyToClipboard(bioUrl, 'sidebar-bio')}
+                    className="p-2 rounded-lg"
+                    style={{ background: 'var(--background-secondary)' }}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    {copiedField === 'sidebar-bio' ? (
+                      <Check size={18} className="text-green-500" />
+                    ) : (
+                      <Copy size={18} style={{ color: 'var(--foreground-muted)' }} />
+                    )}
+                  </motion.button>
+                </div>
+              </div>
+            </div>
+          </motion.aside>
+
+          {/* Right Content - User Card & Info */}
+          <div className="flex-1 min-w-0">
+            {/* Profile Header Card */}
             <motion.div
-              className="w-2 h-2 rounded-full"
-              style={{ background: '#22c55e' }}
-              animate={{ scale: [1, 1.3, 1], opacity: [1, 0.7, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            />
-            <span className="text-sm" style={{ color: 'var(--foreground-muted)' }}>
-              <Clock size={14} className="inline mr-1" />
-              Last active: Just now
-            </span>
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="relative mb-8"
+            >
+              {/* Glow Effect */}
+              <div
+                className="absolute inset-0 rounded-3xl blur-2xl opacity-40"
+                style={{ background: 'linear-gradient(135deg, var(--primary), var(--accent))' }}
+              />
+              
+              <div
+                className="relative rounded-3xl overflow-hidden"
+                style={{ 
+                  background: 'rgba(var(--card-rgb, 30, 30, 30), 0.9)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                }}
+              >
+                {/* Banner */}
+                <div className="relative h-40 md:h-48">
+                  <ImageUpload 
+                    type="banner" 
+                    currentImage={currentBanner}
+                    onUploadSuccess={(url) => setCurrentBanner(url)}
+                  />
+                  
+                  {/* Gradient Overlay */}
+                  <div
+                    className="absolute bottom-0 left-0 right-0 h-24"
+                    style={{ background: 'linear-gradient(to top, rgba(var(--card-rgb, 30, 30, 30), 1), transparent)' }}
+                  />
+                </div>
+
+                {/* Profile Info */}
+                <div className="px-6 pb-6 -mt-14 relative z-10">
+                  <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+                    {/* Avatar & Name */}
+                    <div className="flex flex-col md:flex-row md:items-end gap-4">
+                      {/* Avatar */}
+                      <div className="relative">
+                        <ImageUpload 
+                          type="avatar" 
+                          currentImage={currentAvatar}
+                          onUploadSuccess={(url) => setCurrentAvatar(url)}
+                        />
+                        {/* Online Indicator */}
+                        <motion.div
+                          className="absolute bottom-2 right-2 w-5 h-5 rounded-full border-4"
+                          style={{ backgroundColor: '#22c55e', borderColor: 'var(--card)' }}
+                          animate={{ scale: [1, 1.2, 1] }}
+                          transition={{ duration: 2, repeat: Infinity }}
+                        />
+                      </div>
+
+                      {/* Name & Username */}
+                      <div className="space-y-1.5">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          {isEditing ? (
+                            <input
+                              type="text"
+                              value={formData.name}
+                              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                              className="text-xl md:text-2xl font-bold bg-transparent border-b-2 outline-none px-1"
+                              style={{ color: 'var(--foreground)', borderColor: 'var(--primary)' }}
+                              placeholder="Your name"
+                            />
+                          ) : (
+                            <h1 className="text-xl md:text-2xl font-bold" style={{ color: 'var(--foreground)' }}>
+                              {currentUser.name || 'Anonymous'}
+                            </h1>
+                          )}
+                          
+                          {/* Badges */}
+                          {isOwner && (
+                            <motion.span
+                              className="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold"
+                              style={{ background: 'linear-gradient(135deg, #f59e0b, #d97706)', color: 'white' }}
+                              whileHover={{ scale: 1.05 }}
+                            >
+                              <Crown size={10} />
+                              Owner
+                            </motion.span>
+                          )}
+                          <motion.span
+                            className="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold"
+                            style={{ background: 'var(--primary)', color: 'white' }}
+                            whileHover={{ scale: 1.05 }}
+                          >
+                            <Shield size={10} />
+                            Verified
+                          </motion.span>
+                        </div>
+                        
+                        <p className="text-sm flex items-center gap-1.5" style={{ color: 'var(--foreground-muted)' }}>
+                          <AtSign size={14} />
+                          {currentUser.username || currentUser.email?.split('@')[0]}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex gap-2">
+                      {!isEditing ? (
+                        <motion.button
+                          onClick={() => setIsEditing(true)}
+                          className="flex items-center gap-2 px-4 py-2 rounded-xl font-semibold text-white text-sm"
+                          style={{ 
+                            background: 'linear-gradient(135deg, var(--primary), var(--accent))',
+                            boxShadow: '0 10px 30px rgba(99, 102, 241, 0.3)'
+                          }}
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                        >
+                          <Edit3 size={14} />
+                          Edit Profile
+                        </motion.button>
+                      ) : (
+                        <>
+                          <motion.button
+                            onClick={handleCancel}
+                            className="flex items-center gap-2 px-3 py-2 rounded-xl font-medium text-sm"
+                            style={{ background: 'var(--background-secondary)', color: 'var(--foreground)', border: '1px solid var(--border)' }}
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                          >
+                            <X size={14} />
+                            Cancel
+                          </motion.button>
+                          <motion.button
+                            onClick={handleSave}
+                            disabled={isSaving}
+                            className="flex items-center gap-2 px-4 py-2 rounded-xl font-semibold text-white text-sm disabled:opacity-50"
+                            style={{ background: 'linear-gradient(135deg, #22c55e, #16a34a)' }}
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                          >
+                            {isSaving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
+                            Save
+                          </motion.button>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Stats Grid */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8"
+            >
+              {[
+                { label: 'Profile Views', value: stats.profileViews || 0, icon: Eye, gradient: 'from-indigo-500 to-purple-500' },
+                { label: 'Link Clicks', value: stats.totalLinkClicks || 0, icon: MousePointerClick, gradient: 'from-amber-500 to-orange-500' },
+                { label: 'Followers', value: stats.followers || 0, icon: Heart, gradient: 'from-pink-500 to-rose-500' },
+                { label: 'Following', value: stats.following || 0, icon: Users, gradient: 'from-green-500 to-emerald-500' },
+              ].map((stat, index) => (
+                <motion.div
+                  key={stat.label}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 + index * 0.05 }}
+                  className="relative group"
+                >
+                  <div
+                    className="relative p-4 rounded-xl text-center backdrop-blur-sm"
+                    style={{ 
+                      background: 'rgba(var(--card-rgb, 30, 30, 30), 0.8)',
+                      border: '1px solid var(--border)',
+                    }}
+                  >
+                    <div className={`w-10 h-10 mx-auto mb-2 rounded-lg flex items-center justify-center bg-gradient-to-br ${stat.gradient}`}>
+                      <stat.icon size={20} className="text-white" />
+                    </div>
+                    <p className="text-2xl font-bold mb-0.5" style={{ color: 'var(--foreground)' }}>
+                      {stat.value.toLocaleString()}
+                    </p>
+                    <p className="text-xs font-medium" style={{ color: 'var(--foreground-muted)' }}>
+                      {stat.label}
+                    </p>
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
+
+            {/* Account Details */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="rounded-2xl overflow-hidden mb-8"
+              style={{ background: 'var(--card)', border: '1px solid var(--border)' }}
+            >
+              <div className="p-5 border-b" style={{ borderColor: 'var(--border)' }}>
+                <h2 className="text-lg font-bold" style={{ color: 'var(--foreground)' }}>
+                  Account Details
+                </h2>
+                <p className="text-sm" style={{ color: 'var(--foreground-muted)' }}>
+                  Your account information
+                </p>
+              </div>
+              
+              <div className="p-5 space-y-3">
+                {[
+                  { label: 'Email', value: currentUser.email, icon: Mail, key: 'email' },
+                  { label: 'Username', value: `@${currentUser.username}`, icon: AtSign, key: 'username' },
+                  { label: 'User ID', value: currentUser.id, icon: User, key: 'id' },
+                  { label: 'Member Since', value: memberSince, icon: Calendar, key: 'member' },
+                  { label: 'Account Type', value: currentUser.role === 'admin' ? 'Admin' : 'Standard', icon: Sparkles, key: 'tier' },
+                ].map((item) => (
+                  <motion.button
+                    key={item.key}
+                    onClick={() => copyToClipboard(item.value || '', item.key)}
+                    className="w-full flex items-center justify-between p-3 rounded-xl transition-all hover:bg-white/5 group"
+                    style={{ background: 'var(--background-secondary)' }}
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.99 }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div
+                        className="w-9 h-9 rounded-lg flex items-center justify-center"
+                        style={{ background: 'var(--card)' }}
+                      >
+                        <item.icon size={16} style={{ color: 'var(--primary)' }} />
+                      </div>
+                      <div className="text-left">
+                        <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>
+                          {item.label}
+                        </p>
+                        <p className="font-medium text-sm" style={{ color: 'var(--foreground)' }}>
+                          {item.value}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                      {copiedField === item.key ? (
+                        <Check size={16} className="text-green-500" />
+                      ) : (
+                        <Copy size={16} style={{ color: 'var(--foreground-muted)' }} />
+                      )}
+                    </div>
+                  </motion.button>
+                ))}
+              </div>
+            </motion.div>
+
+            {/* Owner Section */}
+            {isOwner && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="p-5 rounded-2xl mb-8"
+                style={{ 
+                  background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(217, 119, 6, 0.1))',
+                  border: '1px solid rgba(245, 158, 11, 0.3)',
+                }}
+              >
+                <div className="flex items-center gap-2 mb-4">
+                  <Crown size={20} style={{ color: '#f59e0b' }} />
+                  <h3 className="font-bold" style={{ color: '#f59e0b' }}>
+                    Owner Privileges
+                  </h3>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  {[
+                    { label: 'Full Access', description: 'All platform features', icon: Zap },
+                    { label: 'User Management', description: 'Manage all users', icon: Users },
+                    { label: 'Site Settings', description: 'Full control', icon: Settings },
+                  ].map((priv) => (
+                    <div
+                      key={priv.label}
+                      className="flex items-center gap-3 p-3 rounded-xl"
+                      style={{ background: 'var(--card)' }}
+                    >
+                      <priv.icon size={18} style={{ color: '#f59e0b' }} />
+                      <div>
+                        <p className="font-medium text-sm" style={{ color: 'var(--foreground)' }}>
+                          {priv.label}
+                        </p>
+                        <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>
+                          {priv.description}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+
+            {/* Activity Indicator */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4 }}
+              className="text-center"
+            >
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full" style={{ background: 'var(--background-secondary)' }}>
+                <motion.div
+                  className="w-2 h-2 rounded-full"
+                  style={{ background: '#22c55e' }}
+                  animate={{ scale: [1, 1.3, 1], opacity: [1, 0.7, 1] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                />
+                <span className="text-sm" style={{ color: 'var(--foreground-muted)' }}>
+                  <Clock size={14} className="inline mr-1" />
+                  Last active: Just now
+                </span>
+              </div>
+            </motion.div>
           </div>
-        </motion.div>
+        </div>
       </div>
     </div>
   )
