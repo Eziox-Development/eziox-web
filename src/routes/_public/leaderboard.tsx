@@ -8,6 +8,7 @@ import { motion } from 'motion/react'
 import { useQuery } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
 import { getTopUsersFn } from '@/server/functions/users'
+import { getPlatformStatsFn } from '@/server/functions/stats'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -35,10 +36,16 @@ export const Route = createFileRoute('/_public/leaderboard')({
 
 function LeaderboardPage() {
   const getTopUsers = useServerFn(getTopUsersFn)
+  const getPlatformStats = useServerFn(getPlatformStatsFn)
   
   const { data: topUsers, isLoading } = useQuery({
     queryKey: ['topUsers', 'leaderboard'],
     queryFn: () => getTopUsers({ data: { limit: 50 } }),
+  })
+  
+  const { data: platformStats } = useQuery({
+    queryKey: ['platformStats'],
+    queryFn: () => getPlatformStats(),
   })
 
   const getRankIcon = (rank: number) => {
@@ -56,10 +63,10 @@ function LeaderboardPage() {
 
   
   const stats = [
-    { label: 'Total Creators', value: topUsers?.length || 0, icon: Users, gradient: 'from-indigo-500 to-purple-500' },
-    { label: 'Total Points', value: topUsers?.reduce((sum, u) => sum + (u.stats?.score || 0), 0).toLocaleString() || '0', icon: Star, gradient: 'from-yellow-500 to-amber-500' },
-    { label: 'Active Today', value: Math.floor((topUsers?.length || 0) * 0.7), icon: Flame, gradient: 'from-orange-500 to-red-500' },
-    { label: 'New This Week', value: Math.floor((topUsers?.length || 0) * 0.2), icon: TrendingUp, gradient: 'from-green-500 to-emerald-500' },
+    { label: 'Total Creators', value: platformStats?.totalUsers || 0, icon: Users, gradient: 'from-indigo-500 to-purple-500' },
+    { label: 'Total Points', value: platformStats?.totalScore || 0, icon: Star, gradient: 'from-yellow-500 to-amber-500' },
+    { label: 'Active Today', value: platformStats?.activeUsers24h || 0, icon: Flame, gradient: 'from-orange-500 to-red-500' },
+    { label: 'New This Week', value: platformStats?.newUsersThisWeek || 0, icon: TrendingUp, gradient: 'from-green-500 to-emerald-500' },
   ]
 
   return (
