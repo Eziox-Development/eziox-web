@@ -423,21 +423,10 @@ function BioPage() {
           <h1 className="text-2xl sm:text-3xl font-bold mb-1" style={{ color: 'var(--foreground)' }}>
             {profile.user.name || profile.user.username}
           </h1>
-          <p className="text-sm mb-2" style={{ color: 'var(--foreground-muted)' }}>
+          <p className="text-sm mb-4" style={{ color: 'var(--foreground-muted)' }}>
             @{profile.user.username}
             {profileData?.pronouns && ` · ${profileData.pronouns}`}
           </p>
-          
-          {/* Creator Type Badge */}
-          {profileData?.creatorType && (
-            <div 
-              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium mb-4"
-              style={{ background: `${accentColor}20`, color: accentColor }}
-            >
-              <Sparkles size={12} />
-              {profileData.creatorType}
-            </div>
-          )}
 
           {/* Bio */}
           {profileData?.bio && (
