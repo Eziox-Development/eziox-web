@@ -17,7 +17,17 @@
 - [x] Profile view tracking
 - [x] RSS feed & Sitemap
 
-### Recent Updates (2026-01-14)
+### Recent Updates (2026-01-15)
+- [x] **FollowModal Component** - Modern modal-based UI for followers/following
+- [x] **Dynamic Page Titles & SEO** - Enhanced metadata across all pages
+- [x] **Profile Page Redesign** - 2-column layout with sidebar
+- [x] **Leaderboard Redesign** - Enhanced podium with placeholders
+- [x] **Public Pages Redesign** - Complete UI overhaul (Home, About, Changelog)
+- [x] **React Hydration Error #300** - Fixed SSR/CSR mismatch
+- [x] **Avatar Display Fix** - Corrected profile sidebar rendering
+- [x] **ESLint Errors** - Code quality improvements
+
+### Previous Updates (2026-01-14)
 - [x] Modernized `/links` page with stats cards
 - [x] Fixed link click tracking
 - [x] Updated documentation for Eziox Development
@@ -51,9 +61,12 @@
 - [x] Update `follows` table usage
 - [x] Increment/decrement `userStats.followers` and `userStats.following`
 - [x] Sign-in prompt for non-authenticated users
-- [x] Followers list page (`/{username}/followers`)
-- [x] Following list page (`/{username}/following`)
-- [x] Follow/unfollow from list pages
+- [x] **FollowModal Component** - Modern modal UI (replaces separate pages)
+  - [x] Tab-based navigation (Followers/Following)
+  - [x] Real-time search and filtering
+  - [x] Auto-refresh every 30 seconds
+  - [x] Glass-morphism design
+  - [x] Follow/unfollow from modal
 - [ ] Follow notifications - Future
 
 #### 2. Referral System ✅ COMPLETED
@@ -282,5 +295,5 @@ ALTER TABLE user_stats ADD COLUMN referral_count INTEGER DEFAULT 0;
 
 ---
 
-**Last Updated**: 2026-01-14  
+**Last Updated**: 2026-01-15  
 **Next Review**: Before each major feature release
