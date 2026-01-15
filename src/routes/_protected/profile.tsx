@@ -30,6 +30,7 @@ import {
   AtSign,
   ExternalLink,
   Eye,
+  EyeOff,
   MousePointerClick,
   Users,
   Heart,
@@ -56,6 +57,7 @@ function ProfilePage() {
   const [copiedField, setCopiedField] = useState<string | null>(null)
   const [currentAvatar, setCurrentAvatar] = useState<string | null>(null)
   const [currentBanner, setCurrentBanner] = useState<string | null>(null)
+  const [isInfoBlurred, setIsInfoBlurred] = useState(true)
 
   const [formData, setFormData] = useState({
     name: '',
@@ -528,21 +530,37 @@ function ProfilePage() {
               style={{ background: 'var(--card)', border: '1px solid var(--border)' }}
             >
               <div className="p-5 border-b" style={{ borderColor: 'var(--border)' }}>
-                <h2 className="text-lg font-bold" style={{ color: 'var(--foreground)' }}>
-                  Account Details
-                </h2>
-                <p className="text-sm" style={{ color: 'var(--foreground-muted)' }}>
-                  Your account information
-                </p>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-lg font-bold" style={{ color: 'var(--foreground)' }}>
+                      Account Details
+                    </h2>
+                    <p className="text-sm" style={{ color: 'var(--foreground-muted)' }}>
+                      Your account information
+                    </p>
+                  </div>
+                  <motion.button
+                    onClick={() => setIsInfoBlurred(!isInfoBlurred)}
+                    className="flex items-center gap-2 px-3 py-2 rounded-lg transition-colors"
+                    style={{ background: 'var(--background-secondary)', color: 'var(--foreground-muted)' }}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    {isInfoBlurred ? <Eye size={16} /> : <EyeOff size={16} />}
+                    <span className="text-sm">
+                      {isInfoBlurred ? 'Show' : 'Hide'}
+                    </span>
+                  </motion.button>
+                </div>
               </div>
               
               <div className="p-5 space-y-3">
                 {[
-                  { label: 'Email', value: currentUser.email, icon: Mail, key: 'email' },
-                  { label: 'Username', value: `@${currentUser.username}`, icon: AtSign, key: 'username' },
-                  { label: 'User ID', value: currentUser.id, icon: User, key: 'id' },
-                  { label: 'Member Since', value: memberSince, icon: Calendar, key: 'member' },
-                  { label: 'Account Type', value: currentUser.role === 'admin' ? 'Admin' : 'Standard', icon: Sparkles, key: 'tier' },
+                  { label: 'Email', value: currentUser.email, icon: Mail, key: 'email', sensitive: true },
+                  { label: 'Username', value: `@${currentUser.username}`, icon: AtSign, key: 'username', sensitive: false },
+                  { label: 'User ID', value: currentUser.id, icon: User, key: 'id', sensitive: true },
+                  { label: 'Member Since', value: memberSince, icon: Calendar, key: 'member', sensitive: false },
+                  { label: 'Account Type', value: currentUser.role === 'admin' ? 'Admin' : 'Standard', icon: Sparkles, key: 'tier', sensitive: false },
                 ].map((item) => (
                   <motion.button
                     key={item.key}
@@ -563,7 +581,13 @@ function ProfilePage() {
                         <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>
                           {item.label}
                         </p>
-                        <p className="font-medium text-sm" style={{ color: 'var(--foreground)' }}>
+                        <p 
+                          className="font-medium text-sm transition-all duration-200"
+                          style={{ 
+                            color: 'var(--foreground)',
+                            filter: item.sensitive && isInfoBlurred ? 'blur(5px)' : 'none'
+                          }}
+                        >
                           {item.value}
                         </p>
                       </div>
