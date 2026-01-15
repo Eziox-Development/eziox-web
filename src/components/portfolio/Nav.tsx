@@ -17,15 +17,23 @@ import {
   LayoutDashboard,
   Globe,
   Shield,
+  Users2,
+  Handshake,
+  Trophy,
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'motion/react'
 import { useAuth } from '@/hooks/use-auth'
 
 const NAV_ITEMS = [
   { href: '/', label: 'Home', icon: Home },
-  { href: '/creators', label: 'Creators', icon: Sparkles },
   { href: '/changelog', label: 'Updates', icon: FileText },
   { href: '/about', label: 'About', icon: Info },
+] as const
+
+const COMMUNITY_ITEMS = [
+  { href: '/creators', label: 'Creators', icon: Sparkles, description: 'Discover amazing creators', color: '#8b5cf6' },
+  { href: '/partners', label: 'Partners', icon: Handshake, description: 'Official platform partners', color: '#14b8a6' },
+  { href: '/leaderboard', label: 'Leaderboard', icon: Trophy, description: 'Top performing users', color: '#f59e0b' },
 ] as const
 
 export function Nav() {
@@ -35,6 +43,7 @@ export function Nav() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
+  const [isCommunityMenuOpen, setIsCommunityMenuOpen] = useState(false)
 
   useEffect(() => {
     const onScroll = () => setIsScrolled(window.scrollY > 20)
@@ -45,14 +54,18 @@ export function Nav() {
   useEffect(() => {
     setIsMobileMenuOpen(false)
     setIsUserMenuOpen(false)
+    setIsCommunityMenuOpen(false)
   }, [location.pathname])
 
   useEffect(() => {
-    if (!isUserMenuOpen) return
-    const close = () => setIsUserMenuOpen(false)
+    if (!isUserMenuOpen && !isCommunityMenuOpen) return
+    const close = () => {
+      setIsUserMenuOpen(false)
+      setIsCommunityMenuOpen(false)
+    }
     document.addEventListener('click', close)
     return () => document.removeEventListener('click', close)
-  }, [isUserMenuOpen])
+  }, [isUserMenuOpen, isCommunityMenuOpen])
 
   const handleSignOut = async () => {
     await signOut()
@@ -114,7 +127,7 @@ export function Nav() {
               className="flex items-center gap-0.5 p-1.5 rounded-2xl"
               style={{ background: 'rgba(var(--background-rgb), 0.5)', backdropFilter: 'blur(10px)', border: '1px solid rgba(var(--border-rgb), 0.1)' }}
             >
-              {NAV_ITEMS.map((item) => {
+              {NAV_ITEMS.slice(0, 1).map((item) => {
                 const isActive = location.pathname === item.href
                 return (
                   <Link
@@ -128,6 +141,93 @@ export function Nav() {
                     {isActive && (
                       <motion.div
                         layoutId="nav-active"
+                        className="absolute inset-0 rounded-xl -z-10"
+                        style={{ background: 'linear-gradient(135deg, var(--primary), var(--accent))', boxShadow: '0 4px 15px rgba(var(--primary-rgb), 0.4)' }}
+                        transition={{ type: 'spring', stiffness: 500, damping: 35 }}
+                      />
+                    )}
+                  </Link>
+                )
+              })}
+
+              <div className="relative" onClick={(e) => e.stopPropagation()}>
+                <motion.button
+                  onClick={() => setIsCommunityMenuOpen(!isCommunityMenuOpen)}
+                  className="relative flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-colors"
+                  style={{ color: isCommunityMenuOpen || COMMUNITY_ITEMS.some(i => location.pathname === i.href) ? 'white' : 'var(--foreground-muted)' }}
+                >
+                  <Users2 size={16} />
+                  <span>Community</span>
+                  <ChevronDown size={14} className={`transition-transform duration-200 ${isCommunityMenuOpen ? 'rotate-180' : ''}`} />
+                  {(isCommunityMenuOpen || COMMUNITY_ITEMS.some(i => location.pathname === i.href)) && (
+                    <motion.div
+                      layoutId="nav-active"
+                      className="absolute inset-0 rounded-xl -z-10"
+                      style={{ background: 'linear-gradient(135deg, var(--primary), var(--accent))', boxShadow: '0 4px 15px rgba(var(--primary-rgb), 0.4)' }}
+                      transition={{ type: 'spring', stiffness: 500, damping: 35 }}
+                    />
+                  )}
+                </motion.button>
+
+                <AnimatePresence>
+                  {isCommunityMenuOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                      transition={{ duration: 0.15 }}
+                      className="absolute left-0 top-full mt-2 w-64 rounded-2xl overflow-hidden"
+                      style={{ background: 'var(--card)', border: '1px solid var(--border)', boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}
+                    >
+                      <div className="p-2">
+                        {COMMUNITY_ITEMS.map((item, index) => {
+                          const isActive = location.pathname === item.href
+                          return (
+                            <motion.div
+                              key={item.href}
+                              initial={{ opacity: 0, x: -10 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: index * 0.05 }}
+                            >
+                              <Link
+                                to={item.href}
+                                className="flex items-center gap-3 px-3 py-3 rounded-xl transition-all hover:bg-[var(--background-secondary)]"
+                                style={{ background: isActive ? `${item.color}15` : 'transparent' }}
+                              >
+                                <div
+                                  className="w-10 h-10 rounded-xl flex items-center justify-center"
+                                  style={{ background: `${item.color}20` }}
+                                >
+                                  <item.icon size={20} style={{ color: item.color }} />
+                                </div>
+                                <div className="flex-1">
+                                  <p className="text-sm font-medium" style={{ color: isActive ? item.color : 'var(--foreground)' }}>{item.label}</p>
+                                  <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>{item.description}</p>
+                                </div>
+                              </Link>
+                            </motion.div>
+                          )
+                        })}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {NAV_ITEMS.slice(1).map((item) => {
+                const isActive = location.pathname === item.href
+                return (
+                  <Link
+                    key={item.href}
+                    to={item.href}
+                    className="relative flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-colors"
+                    style={{ color: isActive ? 'white' : 'var(--foreground-muted)' }}
+                  >
+                    <item.icon size={16} />
+                    <span>{item.label}</span>
+                    {isActive && (
+                      <motion.div
+                        layoutId="nav-active-2"
                         className="absolute inset-0 rounded-xl -z-10"
                         style={{ background: 'linear-gradient(135deg, var(--primary), var(--accent))', boxShadow: '0 4px 15px rgba(var(--primary-rgb), 0.4)' }}
                         transition={{ type: 'spring', stiffness: 500, damping: 35 }}
@@ -331,7 +431,7 @@ export function Nav() {
             style={{ background: 'var(--background)', borderTop: '1px solid var(--border)' }}
           >
             <div className="px-4 py-5 space-y-2">
-              {NAV_ITEMS.map((item, i) => {
+              {NAV_ITEMS.slice(0, 1).map((item, i) => {
                 const isActive = location.pathname === item.href
                 return (
                   <motion.div
@@ -358,7 +458,62 @@ export function Nav() {
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: NAV_ITEMS.length * 0.05 }}
+                transition={{ delay: 0.05 }}
+                className="space-y-1"
+              >
+                <p className="px-4 py-2 text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--foreground-muted)' }}>Community</p>
+                {COMMUNITY_ITEMS.map((item) => {
+                  const isActive = location.pathname === item.href
+                  return (
+                    <Link
+                      key={item.href}
+                      to={item.href}
+                      className="flex items-center gap-3 px-4 py-3 rounded-xl font-medium"
+                      style={{
+                        background: isActive ? `${item.color}20` : 'var(--background-secondary)',
+                        color: isActive ? item.color : 'var(--foreground)',
+                      }}
+                    >
+                      <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: `${item.color}20` }}>
+                        <item.icon size={16} style={{ color: item.color }} />
+                      </div>
+                      <div>
+                        <span className="block">{item.label}</span>
+                        <span className="text-xs" style={{ color: 'var(--foreground-muted)' }}>{item.description}</span>
+                      </div>
+                    </Link>
+                  )
+                })}
+              </motion.div>
+
+              {NAV_ITEMS.slice(1).map((item, i) => {
+                const isActive = location.pathname === item.href
+                return (
+                  <motion.div
+                    key={item.href}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: (i + COMMUNITY_ITEMS.length + 1) * 0.05 }}
+                  >
+                    <Link
+                      to={item.href}
+                      className="flex items-center gap-3 px-4 py-3 rounded-xl font-medium"
+                      style={{
+                        background: isActive ? 'linear-gradient(135deg, var(--primary), var(--accent))' : 'var(--background-secondary)',
+                        color: isActive ? 'white' : 'var(--foreground)',
+                      }}
+                    >
+                      <item.icon size={18} />
+                      {item.label}
+                    </Link>
+                  </motion.div>
+                )
+              })}
+
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: (NAV_ITEMS.length + COMMUNITY_ITEMS.length) * 0.05 }}
                 className="pt-4 mt-4 space-y-2"
                 style={{ borderTop: '1px solid var(--border)' }}
               >

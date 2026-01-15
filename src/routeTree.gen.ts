@@ -14,6 +14,7 @@ import { Route as ProtectedRouteImport } from './routes/_protected'
 import { Route as BioRouteImport } from './routes/_bio'
 import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
+import { Route as PublicPartnersRouteImport } from './routes/_public/partners'
 import { Route as PublicLeaderboardRouteImport } from './routes/_public/leaderboard'
 import { Route as PublicCreatorsRouteImport } from './routes/_public/creators'
 import { Route as PublicChangelogRouteImport } from './routes/_public/changelog'
@@ -51,6 +52,11 @@ const AuthRoute = AuthRouteImport.update({
 const PublicIndexRoute = PublicIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => PublicRoute,
+} as any)
+const PublicPartnersRoute = PublicPartnersRouteImport.update({
+  id: '/partners',
+  path: '/partners',
   getParentRoute: () => PublicRoute,
 } as any)
 const PublicLeaderboardRoute = PublicLeaderboardRouteImport.update({
@@ -155,6 +161,7 @@ export interface FileRoutesByFullPath {
   '/changelog': typeof PublicChangelogRoute
   '/creators': typeof PublicCreatorsRoute
   '/leaderboard': typeof PublicLeaderboardRoute
+  '/partners': typeof PublicPartnersRoute
   '/': typeof PublicIndexRoute
   '/join/$code': typeof PublicJoinCodeRoute
   '/s/$code': typeof PublicSCodeRoute
@@ -175,6 +182,7 @@ export interface FileRoutesByTo {
   '/changelog': typeof PublicChangelogRoute
   '/creators': typeof PublicCreatorsRoute
   '/leaderboard': typeof PublicLeaderboardRoute
+  '/partners': typeof PublicPartnersRoute
   '/': typeof PublicIndexRoute
   '/join/$code': typeof PublicJoinCodeRoute
   '/s/$code': typeof PublicSCodeRoute
@@ -200,6 +208,7 @@ export interface FileRoutesById {
   '/_public/changelog': typeof PublicChangelogRoute
   '/_public/creators': typeof PublicCreatorsRoute
   '/_public/leaderboard': typeof PublicLeaderboardRoute
+  '/_public/partners': typeof PublicPartnersRoute
   '/_public/': typeof PublicIndexRoute
   '/_public/join/$code': typeof PublicJoinCodeRoute
   '/_public/s/$code': typeof PublicSCodeRoute
@@ -222,6 +231,7 @@ export interface FileRouteTypes {
     | '/changelog'
     | '/creators'
     | '/leaderboard'
+    | '/partners'
     | '/'
     | '/join/$code'
     | '/s/$code'
@@ -242,6 +252,7 @@ export interface FileRouteTypes {
     | '/changelog'
     | '/creators'
     | '/leaderboard'
+    | '/partners'
     | '/'
     | '/join/$code'
     | '/s/$code'
@@ -266,6 +277,7 @@ export interface FileRouteTypes {
     | '/_public/changelog'
     | '/_public/creators'
     | '/_public/leaderboard'
+    | '/_public/partners'
     | '/_public/'
     | '/_public/join/$code'
     | '/_public/s/$code'
@@ -316,6 +328,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof PublicIndexRouteImport
+      parentRoute: typeof PublicRoute
+    }
+    '/_public/partners': {
+      id: '/_public/partners'
+      path: '/partners'
+      fullPath: '/partners'
+      preLoaderRoute: typeof PublicPartnersRouteImport
       parentRoute: typeof PublicRoute
     }
     '/_public/leaderboard': {
@@ -487,6 +506,7 @@ interface PublicRouteChildren {
   PublicChangelogRoute: typeof PublicChangelogRoute
   PublicCreatorsRoute: typeof PublicCreatorsRoute
   PublicLeaderboardRoute: typeof PublicLeaderboardRoute
+  PublicPartnersRoute: typeof PublicPartnersRoute
   PublicIndexRoute: typeof PublicIndexRoute
   PublicJoinCodeRoute: typeof PublicJoinCodeRoute
   PublicSCodeRoute: typeof PublicSCodeRoute
@@ -497,6 +517,7 @@ const PublicRouteChildren: PublicRouteChildren = {
   PublicChangelogRoute: PublicChangelogRoute,
   PublicCreatorsRoute: PublicCreatorsRoute,
   PublicLeaderboardRoute: PublicLeaderboardRoute,
+  PublicPartnersRoute: PublicPartnersRoute,
   PublicIndexRoute: PublicIndexRoute,
   PublicJoinCodeRoute: PublicJoinCodeRoute,
   PublicSCodeRoute: PublicSCodeRoute,
