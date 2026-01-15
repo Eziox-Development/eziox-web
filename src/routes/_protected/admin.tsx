@@ -20,8 +20,8 @@ import * as LucideIcons from 'lucide-react'
 
 export const Route = createFileRoute('/_protected/admin')({
   beforeLoad: async ({ context }) => {
-    const user = (context as { currentUser?: { role?: string } }).currentUser
-    if (!user || (user.role !== 'admin' && user.role !== 'owner')) {
+    const { currentUser } = context as { currentUser?: { role?: string } }
+    if (!currentUser || (currentUser.role !== 'admin' && currentUser.role !== 'owner')) {
       throw redirect({ to: '/profile' })
     }
   },
