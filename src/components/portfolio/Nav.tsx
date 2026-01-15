@@ -8,9 +8,7 @@ import {
   Sparkles,
   LogIn,
   LogOut,
-  User,
   ChevronDown,
-  Link as LinkIcon,
   Crown,
   ExternalLink,
   Home,
@@ -208,22 +206,15 @@ export function Nav() {
                         </div>
 
                         <div className="p-2">
-                          {[
-                            { to: '/profile', icon: LayoutDashboard, label: 'Dashboard' },
-                            { to: '/profile', icon: User, label: 'Edit Profile', hash: '#profile' },
-                            { to: '/profile', icon: LinkIcon, label: 'Manage Links', hash: '#links' },
-                          ].map((item) => (
-                            <Link
-                              key={item.label}
-                              to={item.to}
-                              onClick={() => setIsUserMenuOpen(false)}
-                              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors hover:bg-[var(--background-secondary)]"
-                              style={{ color: 'var(--foreground)' }}
-                            >
-                              <item.icon size={18} style={{ color: 'var(--foreground-muted)' }} />
-                              <span>{item.label}</span>
-                            </Link>
-                          ))}
+                          <Link
+                            to="/profile"
+                            onClick={() => setIsUserMenuOpen(false)}
+                            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors hover:bg-[var(--background-secondary)]"
+                            style={{ color: 'var(--foreground)' }}
+                          >
+                            <LayoutDashboard size={18} style={{ color: 'var(--foreground-muted)' }} />
+                            <span>Dashboard</span>
+                          </Link>
                           <a
                             href={`https://${bioLink}`}
                             target="_blank"
