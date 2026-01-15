@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Referral System** - Complete referral functionality
+  - Unique referral codes per user (auto-generated)
+  - Referral join page at `eziox.link/join/{code}`
+  - Referral tracking in database with `referrals` table
+  - Referral dashboard at `/referrals` with stats and referred users list
+  - Owner-only special code "EZIOX"
+  - Score rewards: +5 points per successful referral
+  - Schema updates: `referral_code`, `referred_by`, `creator_type`, `is_featured` on profiles
+  - Schema updates: `referral_count` on user_stats
 - **Followers System** - Complete follow/unfollow functionality
   - Follow/Unfollow button on all bio pages (`eziox.link/{username}`)
   - Real-time follower count updates with optimistic UI

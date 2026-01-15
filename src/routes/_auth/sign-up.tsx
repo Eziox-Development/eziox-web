@@ -129,7 +129,24 @@ function SignUpPage() {
 
   const signUpMutation = useMutation({
     mutationFn: async (data: SignUpFormData) => {
-      return await signUp({ data })
+      // Get referral code from sessionStorage (set by /join/{code} page)
+      const referralCode = typeof window !== 'undefined' 
+        ? sessionStorage.getItem('referral_code') 
+        : null
+      
+      const result = await signUp({ 
+        data: { 
+          ...data, 
+          referralCode: referralCode || undefined 
+        } 
+      })
+      
+      // Clear referral code after successful signup
+      if (typeof window !== 'undefined') {
+        sessionStorage.removeItem('referral_code')
+      }
+      
+      return result
     },
     onSuccess: async () => {
       await router.invalidate()

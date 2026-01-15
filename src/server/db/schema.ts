@@ -61,6 +61,10 @@ export const profiles = pgTable('profiles', {
   socials: jsonb('socials').$type<Record<string, string>>().default({}),
   isPublic: boolean('is_public').default(true),
   showActivity: boolean('show_activity').default(true),
+  referralCode: varchar('referral_code', { length: 20 }), // Referral code
+  referredBy: uuid('referred_by').references(() => users.id, { onDelete: 'set null' }), // Who referred this user
+  creatorType: varchar('creator_type', { length: 50 }), // vtuber, streamer, artist, etc.
+  isFeatured: boolean('is_featured').default(false), // Featured on creators page
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 })
@@ -116,6 +120,7 @@ export const userStats = pgTable('user_stats', {
   totalLinkClicks: integer('total_link_clicks').default(0),
   followers: integer('followers').default(0),
   following: integer('following').default(0),
+  referralCount: integer('referral_count').default(0), // Number of users referred
   score: integer('score').default(0), // For ranking
   lastActive: timestamp('last_active').defaultNow(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
@@ -177,6 +182,37 @@ export const followsRelations = relations(follows, ({ one }) => ({
     fields: [follows.followingId],
     references: [users.id],
     relationName: 'following',
+  }),
+}))
+
+// ============================================================================
+// REFERRALS TABLE
+// ============================================================================
+
+export const referrals = pgTable('referrals', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  referrerId: uuid('referrer_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  referredId: uuid('referred_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' })
+    .unique(), // Each user can only be referred once
+  code: varchar('code', { length: 20 }).notNull(), // The code used for referral
+  rewardClaimed: boolean('reward_claimed').default(false), // If referrer claimed reward
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+})
+
+export const referralsRelations = relations(referrals, ({ one }) => ({
+  referrer: one(users, {
+    fields: [referrals.referrerId],
+    references: [users.id],
+    relationName: 'referrer',
+  }),
+  referred: one(users, {
+    fields: [referrals.referredId],
+    references: [users.id],
+    relationName: 'referred',
   }),
 }))
 
@@ -310,6 +346,8 @@ export type NewUserLink = typeof userLinks.$inferInsert
 export type UserStats = typeof userStats.$inferSelect
 export type Session = typeof sessions.$inferSelect
 export type Follow = typeof follows.$inferSelect
+export type Referral = typeof referrals.$inferSelect
+export type NewReferral = typeof referrals.$inferInsert
 export type ActivityLog = typeof activityLog.$inferSelect
 export type BlogPost = typeof blogPosts.$inferSelect
 export type NewBlogPost = typeof blogPosts.$inferInsert

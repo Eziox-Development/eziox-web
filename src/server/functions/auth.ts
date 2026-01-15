@@ -60,6 +60,7 @@ const signUpSchema = z.object({
   password: passwordSchema,
   username: usernameSchema,
   name: nameSchema,
+  referralCode: z.string().max(20).optional(),
 })
 
 const signInSchema = z.object({
@@ -97,7 +98,7 @@ export const getSessionTokenFn = createServerFn({ method: 'GET' }).handler(
 export const signUpFn = createServerFn({ method: 'POST' })
   .inputValidator(signUpSchema)
   .handler(async ({ data }) => {
-    const { email, password, username, name } = data
+    const { email, password, username, name, referralCode } = data
 
     try {
       // Check if email already exists
@@ -116,6 +117,17 @@ export const signUpFn = createServerFn({ method: 'POST' })
 
       // Create user
       const user = await createUser({ email, password, username, name })
+
+      // Process referral if code provided
+      if (referralCode) {
+        try {
+          const { processReferralFn } = await import('./referrals')
+          await processReferralFn({ data: { newUserId: user.id, referralCode } })
+        } catch {
+          // Silently fail referral processing - don't block signup
+          console.error('Failed to process referral')
+        }
+      }
 
       // Create session
       const session = await createSession(user.id)

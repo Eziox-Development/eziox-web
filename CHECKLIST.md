@@ -56,14 +56,15 @@
 - [x] Follow/unfollow from list pages
 - [ ] Follow notifications - Future
 
-#### 2. Referral System
-- [ ] Generate unique referral codes per user
-- [ ] Referral link format: `eziox.link/join/{code}`
-- [ ] Track referral signups in database
-- [ ] New table: `referrals` (referrer_id, referred_id, code, created_at)
-- [ ] Referral stats in profile/dashboard
-- [ ] **Owner-only referral code** - Special code only visible to owner
-- [ ] Referral rewards system (premium days, badges)
+#### 2. Referral System ✅ COMPLETED
+- [x] Generate unique referral codes per user
+- [x] Referral link format: `eziox.link/join/{code}`
+- [x] Track referral signups in database
+- [x] New table: `referrals` (referrer_id, referred_id, code, created_at)
+- [x] Referral stats in profile/dashboard (`/referrals`)
+- [x] **Owner-only referral code** - Special "EZIOX" code for owner
+- [x] Score rewards (+5 per referral)
+- [ ] Premium days rewards - Future
 
 #### 3. Badge System
 - [ ] Badge types:

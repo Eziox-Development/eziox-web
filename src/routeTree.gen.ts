@@ -17,6 +17,7 @@ import { Route as PublicIndexRouteImport } from './routes/_public/index'
 import { Route as PublicLeaderboardRouteImport } from './routes/_public/leaderboard'
 import { Route as PublicChangelogRouteImport } from './routes/_public/changelog'
 import { Route as PublicAboutRouteImport } from './routes/_public/about'
+import { Route as ProtectedReferralsRouteImport } from './routes/_protected/referrals'
 import { Route as ProtectedProfileRouteImport } from './routes/_protected/profile'
 import { Route as ProtectedLinksRouteImport } from './routes/_protected/links'
 import { Route as BioUsernameRouteImport } from './routes/_bio/$username'
@@ -27,6 +28,7 @@ import { Route as ApiSitemapRouteImport } from './routes/_api/sitemap'
 import { Route as ApiRssRouteImport } from './routes/_api/rss'
 import { Route as ApiHelloRouteImport } from './routes/_api/hello'
 import { Route as PublicSCodeRouteImport } from './routes/_public/s.$code'
+import { Route as PublicJoinCodeRouteImport } from './routes/_public/join.$code'
 import { Route as BioUsernameFollowingRouteImport } from './routes/_bio/$username/following'
 import { Route as BioUsernameFollowersRouteImport } from './routes/_bio/$username/followers'
 
@@ -65,6 +67,11 @@ const PublicAboutRoute = PublicAboutRouteImport.update({
   id: '/about',
   path: '/about',
   getParentRoute: () => PublicRoute,
+} as any)
+const ProtectedReferralsRoute = ProtectedReferralsRouteImport.update({
+  id: '/referrals',
+  path: '/referrals',
+  getParentRoute: () => ProtectedRoute,
 } as any)
 const ProtectedProfileRoute = ProtectedProfileRouteImport.update({
   id: '/profile',
@@ -116,6 +123,11 @@ const PublicSCodeRoute = PublicSCodeRouteImport.update({
   path: '/s/$code',
   getParentRoute: () => PublicRoute,
 } as any)
+const PublicJoinCodeRoute = PublicJoinCodeRouteImport.update({
+  id: '/join/$code',
+  path: '/join/$code',
+  getParentRoute: () => PublicRoute,
+} as any)
 const BioUsernameFollowingRoute = BioUsernameFollowingRouteImport.update({
   id: '/following',
   path: '/following',
@@ -137,12 +149,14 @@ export interface FileRoutesByFullPath {
   '/$username': typeof BioUsernameRouteWithChildren
   '/links': typeof ProtectedLinksRoute
   '/profile': typeof ProtectedProfileRoute
+  '/referrals': typeof ProtectedReferralsRoute
   '/about': typeof PublicAboutRoute
   '/changelog': typeof PublicChangelogRoute
   '/leaderboard': typeof PublicLeaderboardRoute
   '/': typeof PublicIndexRoute
   '/$username/followers': typeof BioUsernameFollowersRoute
   '/$username/following': typeof BioUsernameFollowingRoute
+  '/join/$code': typeof PublicJoinCodeRoute
   '/s/$code': typeof PublicSCodeRoute
 }
 export interface FileRoutesByTo {
@@ -155,12 +169,14 @@ export interface FileRoutesByTo {
   '/$username': typeof BioUsernameRouteWithChildren
   '/links': typeof ProtectedLinksRoute
   '/profile': typeof ProtectedProfileRoute
+  '/referrals': typeof ProtectedReferralsRoute
   '/about': typeof PublicAboutRoute
   '/changelog': typeof PublicChangelogRoute
   '/leaderboard': typeof PublicLeaderboardRoute
   '/': typeof PublicIndexRoute
   '/$username/followers': typeof BioUsernameFollowersRoute
   '/$username/following': typeof BioUsernameFollowingRoute
+  '/join/$code': typeof PublicJoinCodeRoute
   '/s/$code': typeof PublicSCodeRoute
 }
 export interface FileRoutesById {
@@ -178,12 +194,14 @@ export interface FileRoutesById {
   '/_bio/$username': typeof BioUsernameRouteWithChildren
   '/_protected/links': typeof ProtectedLinksRoute
   '/_protected/profile': typeof ProtectedProfileRoute
+  '/_protected/referrals': typeof ProtectedReferralsRoute
   '/_public/about': typeof PublicAboutRoute
   '/_public/changelog': typeof PublicChangelogRoute
   '/_public/leaderboard': typeof PublicLeaderboardRoute
   '/_public/': typeof PublicIndexRoute
   '/_bio/$username/followers': typeof BioUsernameFollowersRoute
   '/_bio/$username/following': typeof BioUsernameFollowingRoute
+  '/_public/join/$code': typeof PublicJoinCodeRoute
   '/_public/s/$code': typeof PublicSCodeRoute
 }
 export interface FileRouteTypes {
@@ -198,12 +216,14 @@ export interface FileRouteTypes {
     | '/$username'
     | '/links'
     | '/profile'
+    | '/referrals'
     | '/about'
     | '/changelog'
     | '/leaderboard'
     | '/'
     | '/$username/followers'
     | '/$username/following'
+    | '/join/$code'
     | '/s/$code'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -216,12 +236,14 @@ export interface FileRouteTypes {
     | '/$username'
     | '/links'
     | '/profile'
+    | '/referrals'
     | '/about'
     | '/changelog'
     | '/leaderboard'
     | '/'
     | '/$username/followers'
     | '/$username/following'
+    | '/join/$code'
     | '/s/$code'
   id:
     | '__root__'
@@ -238,12 +260,14 @@ export interface FileRouteTypes {
     | '/_bio/$username'
     | '/_protected/links'
     | '/_protected/profile'
+    | '/_protected/referrals'
     | '/_public/about'
     | '/_public/changelog'
     | '/_public/leaderboard'
     | '/_public/'
     | '/_bio/$username/followers'
     | '/_bio/$username/following'
+    | '/_public/join/$code'
     | '/_public/s/$code'
   fileRoutesById: FileRoutesById
 }
@@ -315,6 +339,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicAboutRouteImport
       parentRoute: typeof PublicRoute
     }
+    '/_protected/referrals': {
+      id: '/_protected/referrals'
+      path: '/referrals'
+      fullPath: '/referrals'
+      preLoaderRoute: typeof ProtectedReferralsRouteImport
+      parentRoute: typeof ProtectedRoute
+    }
     '/_protected/profile': {
       id: '/_protected/profile'
       path: '/profile'
@@ -385,6 +416,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicSCodeRouteImport
       parentRoute: typeof PublicRoute
     }
+    '/_public/join/$code': {
+      id: '/_public/join/$code'
+      path: '/join/$code'
+      fullPath: '/join/$code'
+      preLoaderRoute: typeof PublicJoinCodeRouteImport
+      parentRoute: typeof PublicRoute
+    }
     '/_bio/$username/following': {
       id: '/_bio/$username/following'
       path: '/following'
@@ -443,11 +481,13 @@ const BioRouteWithChildren = BioRoute._addFileChildren(BioRouteChildren)
 interface ProtectedRouteChildren {
   ProtectedLinksRoute: typeof ProtectedLinksRoute
   ProtectedProfileRoute: typeof ProtectedProfileRoute
+  ProtectedReferralsRoute: typeof ProtectedReferralsRoute
 }
 
 const ProtectedRouteChildren: ProtectedRouteChildren = {
   ProtectedLinksRoute: ProtectedLinksRoute,
   ProtectedProfileRoute: ProtectedProfileRoute,
+  ProtectedReferralsRoute: ProtectedReferralsRoute,
 }
 
 const ProtectedRouteWithChildren = ProtectedRoute._addFileChildren(
@@ -459,6 +499,7 @@ interface PublicRouteChildren {
   PublicChangelogRoute: typeof PublicChangelogRoute
   PublicLeaderboardRoute: typeof PublicLeaderboardRoute
   PublicIndexRoute: typeof PublicIndexRoute
+  PublicJoinCodeRoute: typeof PublicJoinCodeRoute
   PublicSCodeRoute: typeof PublicSCodeRoute
 }
 
@@ -467,6 +508,7 @@ const PublicRouteChildren: PublicRouteChildren = {
   PublicChangelogRoute: PublicChangelogRoute,
   PublicLeaderboardRoute: PublicLeaderboardRoute,
   PublicIndexRoute: PublicIndexRoute,
+  PublicJoinCodeRoute: PublicJoinCodeRoute,
   PublicSCodeRoute: PublicSCodeRoute,
 }
 

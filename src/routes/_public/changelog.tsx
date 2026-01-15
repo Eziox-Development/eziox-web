@@ -15,6 +15,7 @@ import {
   Eye,
   FileText,
   Bug,
+  Gift,
 } from 'lucide-react'
 
 export const Route = createFileRoute('/_public/changelog')({
@@ -23,6 +24,13 @@ export const Route = createFileRoute('/_public/changelog')({
 
 // Eziox Website Timeline/Changelog
 const timeline = [
+  {
+    date: '15.01.2026',
+    title: 'Referral System',
+    description: 'Complete referral system with unique codes, join page, referral tracking, dashboard with stats, owner-only special code, and score rewards (+5 per referral).',
+    icon: Gift,
+    type: 'major',
+  },
   {
     date: '14.01.2026',
     title: 'Followers System & UI Improvements',
