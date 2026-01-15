@@ -259,7 +259,7 @@ function AdminPage() {
                                 style={{ background: 'var(--background-secondary)' }}
                               >
                                 {(() => {
-                                  const IconComponent = (LucideIcons as any)[badge.icon]
+                                  const IconComponent = LucideIcons[badge.icon as keyof typeof LucideIcons] as React.ComponentType<{ size?: number; style?: React.CSSProperties }>
                                   return IconComponent ? <IconComponent size={20} style={{ color: hasBadge ? badge.color : 'var(--foreground-muted)' }} /> : null
                                 })()}
                                 <div className="flex-1">

@@ -83,7 +83,7 @@ function BadgeIcon({ badge, size, showTooltip, delay = 0 }: BadgeIconProps) {
       title={showTooltip ? `${badge.name}: ${badge.description}` : undefined}
     >
       {(() => {
-        const IconComponent = (LucideIcons as any)[badge.icon]
+        const IconComponent = LucideIcons[badge.icon as keyof typeof LucideIcons] as React.ComponentType<{ size?: number; style?: React.CSSProperties }>
         return IconComponent ? <IconComponent size={size === 'sm' ? 12 : size === 'md' ? 14 : 16} style={{ color: badge.color }} /> : null
       })()}
       
@@ -130,7 +130,7 @@ export function BadgeList({ badges, className = '' }: BadgeListProps) {
           style={{ background: badge.bgColor, border: `1px solid ${badge.color}30` }}
         >
           {(() => {
-            const IconComponent = (LucideIcons as any)[badge.icon]
+            const IconComponent = LucideIcons[badge.icon as keyof typeof LucideIcons] as React.ComponentType<{ size?: number; style?: React.CSSProperties }>
             return IconComponent ? <IconComponent size={16} style={{ color: badge.color }} /> : null
           })()}
           <span className="text-sm font-medium" style={{ color: badge.color }}>{badge.name}</span>

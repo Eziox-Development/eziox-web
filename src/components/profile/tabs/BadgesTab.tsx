@@ -210,7 +210,7 @@ function BadgeCard({ badge, earned, delay = 0 }: BadgeCardProps) {
     >
       <div className="mb-2">
         {(() => {
-          const IconComponent = (LucideIcons as any)[badge.icon]
+          const IconComponent = LucideIcons[badge.icon as keyof typeof LucideIcons] as React.ComponentType<{ size?: number; style?: React.CSSProperties; className?: string }>
           return IconComponent ? <IconComponent size={32} style={{ color: earned ? badge.color : 'var(--foreground-muted)' }} className="mx-auto" /> : null
         })()}
       </div>
@@ -251,7 +251,7 @@ function ProgressBadge({ badge, earned, description, progress, progressText, loc
           style={{ background: badge.bgColor }}
         >
           {(() => {
-            const IconComponent = (LucideIcons as any)[badge.icon]
+            const IconComponent = LucideIcons[badge.icon as keyof typeof LucideIcons] as React.ComponentType<{ size?: number; style?: React.CSSProperties }>
             return IconComponent ? <IconComponent size={24} style={{ color: badge.color }} /> : null
           })()}
         </div>
