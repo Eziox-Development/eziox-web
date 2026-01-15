@@ -48,19 +48,6 @@ function LeaderboardPage() {
     queryFn: () => getPlatformStats(),
   })
 
-  const getRankIcon = (rank: number) => {
-    switch (rank) {
-      case 1:
-        return <Crown size={24} className="text-yellow-500" />
-      case 2:
-        return <Medal size={24} className="text-gray-400" />
-      case 3:
-        return <Medal size={24} className="text-amber-600" />
-      default:
-        return <span className="text-lg font-bold" style={{ color: 'var(--foreground-muted)' }}>#{rank}</span>
-    }
-  }
-
   
   const stats = [
     { label: 'Total Creators', value: platformStats?.totalUsers || 0, icon: Users, gradient: 'from-indigo-500 to-purple-500' },
@@ -159,134 +146,206 @@ function LeaderboardPage() {
           ))}
         </motion.div>
 
-        {/* Top 3 Podium */}
-        {(() => {
-          if (isLoading || !topUsers || topUsers.length < 3) return null
-          const first = topUsers[0]
-          const second = topUsers[1]
-          const third = topUsers[2]
-          if (!first || !second || !third) return null
+        {/* Top 3 Podium Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="mb-10"
+        >
+          <div className="text-center mb-6">
+            <Badge variant="outline" className="mb-3">
+              <Trophy size={14} className="mr-1" />
+              Top 3 Creators
+            </Badge>
+          </div>
           
-          return (
+          <div className="grid grid-cols-3 gap-4 items-end">
+            {/* 2nd Place */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="mb-10"
+              transition={{ delay: 0.3 }}
             >
-              <div className="grid grid-cols-3 gap-4 items-end">
-                {/* 2nd Place */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 }}
-                >
-                  <Link to="/$username" params={{ username: second.user.username }}>
-                    <Card className="hover:scale-[1.02] transition-transform">
-                      <CardContent className="p-6 text-center">
-                        <div className="relative inline-block mb-4">
-                          <Avatar className="w-20 h-20 mx-auto ring-4 ring-gray-400">
-                            <AvatarImage src={second.profile?.avatar || undefined} />
-                            <AvatarFallback className="bg-gradient-to-br from-gray-400 to-gray-500 text-white text-2xl font-bold">
-                              {(second.user.name || second.user.username).charAt(0).toUpperCase()}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-8 h-8 rounded-full bg-gray-400 flex items-center justify-center text-white font-bold">
-                            2
-                          </div>
+              {topUsers && topUsers[1] ? (
+                <Link to="/$username" params={{ username: topUsers[1].user.username }}>
+                  <Card className="hover:scale-[1.02] transition-transform">
+                    <CardContent className="p-6 text-center">
+                      <div className="relative inline-block mb-4">
+                        <Avatar className="w-20 h-20 mx-auto ring-4 ring-gray-400">
+                          <AvatarImage src={topUsers[1].profile?.avatar || undefined} />
+                          <AvatarFallback className="bg-gradient-to-br from-gray-400 to-gray-500 text-white text-2xl font-bold">
+                            {(topUsers[1].user.name || topUsers[1].user.username).charAt(0).toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-8 h-8 rounded-full bg-gray-400 flex items-center justify-center text-white font-bold">
+                          2
                         </div>
-                        <h3 className="font-semibold truncate" style={{ color: 'var(--foreground)' }}>
-                          {second.user.name || second.user.username}
-                        </h3>
-                        <p className="text-sm truncate mb-2" style={{ color: 'var(--foreground-muted)' }}>
-                          @{second.user.username}
-                        </p>
-                        <p className="text-xl font-bold" style={{ color: '#9ca3af' }}>
-                          {second.stats?.score?.toLocaleString() || 0} pts
-                        </p>
-                      </CardContent>
-                    </Card>
-                  </Link>
-                </motion.div>
-
-                {/* 1st Place */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.25 }}
-                >
-                  <Link to="/$username" params={{ username: first.user.username }}>
-                    <div className="relative">
-                      <div
-                        className="absolute inset-0 rounded-2xl blur-xl opacity-50"
-                        style={{ background: 'linear-gradient(135deg, #f59e0b, #d97706)' }}
-                      />
-                      <Card className="relative hover:scale-[1.02] transition-transform border-2 border-yellow-500/50">
-                        <CardContent className="p-8 text-center">
-                          <Crown size={32} className="mx-auto mb-2 text-yellow-500" />
-                          <div className="relative inline-block mb-4">
-                            <Avatar className="w-28 h-28 mx-auto ring-4 ring-yellow-500">
-                              <AvatarImage src={first.profile?.avatar || undefined} />
-                              <AvatarFallback className="bg-gradient-to-br from-yellow-500 to-amber-500 text-white text-3xl font-bold">
-                                {(first.user.name || first.user.username).charAt(0).toUpperCase()}
-                              </AvatarFallback>
-                            </Avatar>
-                            <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-10 h-10 rounded-full bg-gradient-to-br from-yellow-500 to-amber-500 flex items-center justify-center text-white font-bold text-lg">
-                              1
-                            </div>
-                          </div>
-                          <h3 className="text-xl font-bold truncate" style={{ color: 'var(--foreground)' }}>
-                            {first.user.name || first.user.username}
-                          </h3>
-                          <p className="text-sm truncate mb-2" style={{ color: 'var(--foreground-muted)' }}>
-                            @{first.user.username}
-                          </p>
-                          <p className="text-2xl font-bold text-yellow-500">
-                            {first.stats?.score?.toLocaleString() || 0} pts
-                          </p>
-                        </CardContent>
-                      </Card>
+                      </div>
+                      <h3 className="font-semibold truncate" style={{ color: 'var(--foreground)' }}>
+                        {topUsers[1].user.name || topUsers[1].user.username}
+                      </h3>
+                      <p className="text-sm truncate mb-2" style={{ color: 'var(--foreground-muted)' }}>
+                        @{topUsers[1].user.username}
+                      </p>
+                      <p className="text-xl font-bold" style={{ color: '#9ca3af' }}>
+                        {topUsers[1].stats?.score?.toLocaleString() || 0} pts
+                      </p>
+                    </CardContent>
+                  </Card>
+                </Link>
+              ) : (
+                <Card className="opacity-50">
+                  <CardContent className="p-6 text-center">
+                    <div className="relative inline-block mb-4">
+                      <div className="w-20 h-20 mx-auto rounded-full ring-4 ring-gray-400/50 flex items-center justify-center" style={{ background: 'var(--background-secondary)' }}>
+                        <Medal size={32} className="text-gray-400/50" />
+                      </div>
+                      <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-8 h-8 rounded-full bg-gray-400/50 flex items-center justify-center text-white/50 font-bold">
+                        2
+                      </div>
                     </div>
-                  </Link>
-                </motion.div>
+                    <h3 className="font-semibold" style={{ color: 'var(--foreground-muted)' }}>
+                      Awaiting
+                    </h3>
+                    <p className="text-sm mb-2" style={{ color: 'var(--foreground-muted)' }}>
+                      ---
+                    </p>
+                    <p className="text-xl font-bold" style={{ color: 'var(--foreground-muted)' }}>
+                      --- pts
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
+            </motion.div>
 
-                {/* 3rd Place */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.35 }}
-                >
-                  <Link to="/$username" params={{ username: third.user.username }}>
-                    <Card className="hover:scale-[1.02] transition-transform">
-                      <CardContent className="p-6 text-center">
+            {/* 1st Place */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.25 }}
+            >
+              {topUsers && topUsers[0] ? (
+                <Link to="/$username" params={{ username: topUsers[0].user.username }}>
+                  <div className="relative">
+                    <div
+                      className="absolute inset-0 rounded-2xl blur-xl opacity-50"
+                      style={{ background: 'linear-gradient(135deg, #f59e0b, #d97706)' }}
+                    />
+                    <Card className="relative hover:scale-[1.02] transition-transform border-2 border-yellow-500/50">
+                      <CardContent className="p-8 text-center">
+                        <Crown size={32} className="mx-auto mb-2 text-yellow-500" />
                         <div className="relative inline-block mb-4">
-                          <Avatar className="w-20 h-20 mx-auto ring-4 ring-amber-600">
-                            <AvatarImage src={third.profile?.avatar || undefined} />
-                            <AvatarFallback className="bg-gradient-to-br from-amber-600 to-orange-600 text-white text-2xl font-bold">
-                              {(third.user.name || third.user.username).charAt(0).toUpperCase()}
+                          <Avatar className="w-28 h-28 mx-auto ring-4 ring-yellow-500">
+                            <AvatarImage src={topUsers[0].profile?.avatar || undefined} />
+                            <AvatarFallback className="bg-gradient-to-br from-yellow-500 to-amber-500 text-white text-3xl font-bold">
+                              {(topUsers[0].user.name || topUsers[0].user.username).charAt(0).toUpperCase()}
                             </AvatarFallback>
                           </Avatar>
-                          <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-8 h-8 rounded-full bg-amber-600 flex items-center justify-center text-white font-bold">
-                            3
+                          <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-10 h-10 rounded-full bg-gradient-to-br from-yellow-500 to-amber-500 flex items-center justify-center text-white font-bold text-lg">
+                            1
                           </div>
                         </div>
-                        <h3 className="font-semibold truncate" style={{ color: 'var(--foreground)' }}>
-                          {third.user.name || third.user.username}
+                        <h3 className="text-xl font-bold truncate" style={{ color: 'var(--foreground)' }}>
+                          {topUsers[0].user.name || topUsers[0].user.username}
                         </h3>
                         <p className="text-sm truncate mb-2" style={{ color: 'var(--foreground-muted)' }}>
-                          @{third.user.username}
+                          @{topUsers[0].user.username}
                         </p>
-                        <p className="text-xl font-bold" style={{ color: '#d97706' }}>
-                          {third.stats?.score?.toLocaleString() || 0} pts
+                        <p className="text-2xl font-bold text-yellow-500">
+                          {topUsers[0].stats?.score?.toLocaleString() || 0} pts
                         </p>
                       </CardContent>
                     </Card>
-                  </Link>
-                </motion.div>
-              </div>
+                  </div>
+                </Link>
+              ) : (
+                <div className="relative opacity-50">
+                  <Card className="border-2 border-yellow-500/20">
+                    <CardContent className="p-8 text-center">
+                      <Crown size={32} className="mx-auto mb-2 text-yellow-500/50" />
+                      <div className="relative inline-block mb-4">
+                        <div className="w-28 h-28 mx-auto rounded-full ring-4 ring-yellow-500/30 flex items-center justify-center" style={{ background: 'var(--background-secondary)' }}>
+                          <Trophy size={40} className="text-yellow-500/30" />
+                        </div>
+                        <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-10 h-10 rounded-full bg-yellow-500/30 flex items-center justify-center text-white/50 font-bold text-lg">
+                          1
+                        </div>
+                      </div>
+                      <h3 className="text-xl font-bold" style={{ color: 'var(--foreground-muted)' }}>
+                        Awaiting
+                      </h3>
+                      <p className="text-sm mb-2" style={{ color: 'var(--foreground-muted)' }}>
+                        ---
+                      </p>
+                      <p className="text-2xl font-bold" style={{ color: 'var(--foreground-muted)' }}>
+                        --- pts
+                      </p>
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
             </motion.div>
-          )
-        })()}
+
+            {/* 3rd Place */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.35 }}
+            >
+              {topUsers && topUsers[2] ? (
+                <Link to="/$username" params={{ username: topUsers[2].user.username }}>
+                  <Card className="hover:scale-[1.02] transition-transform">
+                    <CardContent className="p-6 text-center">
+                      <div className="relative inline-block mb-4">
+                        <Avatar className="w-20 h-20 mx-auto ring-4 ring-amber-600">
+                          <AvatarImage src={topUsers[2].profile?.avatar || undefined} />
+                          <AvatarFallback className="bg-gradient-to-br from-amber-600 to-orange-600 text-white text-2xl font-bold">
+                            {(topUsers[2].user.name || topUsers[2].user.username).charAt(0).toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-8 h-8 rounded-full bg-amber-600 flex items-center justify-center text-white font-bold">
+                          3
+                        </div>
+                      </div>
+                      <h3 className="font-semibold truncate" style={{ color: 'var(--foreground)' }}>
+                        {topUsers[2].user.name || topUsers[2].user.username}
+                      </h3>
+                      <p className="text-sm truncate mb-2" style={{ color: 'var(--foreground-muted)' }}>
+                        @{topUsers[2].user.username}
+                      </p>
+                      <p className="text-xl font-bold" style={{ color: '#d97706' }}>
+                        {topUsers[2].stats?.score?.toLocaleString() || 0} pts
+                      </p>
+                    </CardContent>
+                  </Card>
+                </Link>
+              ) : (
+                <Card className="opacity-50">
+                  <CardContent className="p-6 text-center">
+                    <div className="relative inline-block mb-4">
+                      <div className="w-20 h-20 mx-auto rounded-full ring-4 ring-amber-600/50 flex items-center justify-center" style={{ background: 'var(--background-secondary)' }}>
+                        <Medal size={32} className="text-amber-600/50" />
+                      </div>
+                      <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-8 h-8 rounded-full bg-amber-600/50 flex items-center justify-center text-white/50 font-bold">
+                        3
+                      </div>
+                    </div>
+                    <h3 className="font-semibold" style={{ color: 'var(--foreground-muted)' }}>
+                      Awaiting
+                    </h3>
+                    <p className="text-sm mb-2" style={{ color: 'var(--foreground-muted)' }}>
+                      ---
+                    </p>
+                    <p className="text-xl font-bold" style={{ color: 'var(--foreground-muted)' }}>
+                      --- pts
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
+            </motion.div>
+          </div>
+        </motion.div>
 
         {/* Full Leaderboard */}
         <motion.div
@@ -327,9 +386,15 @@ function LeaderboardPage() {
                 </div>
               ) : (
                 <div className="divide-y" style={{ borderColor: 'var(--border)' }}>
-                  {topUsers?.slice(3).map((item, index) => {
-                    const rank = index + 4
+                  {topUsers?.map((item, index) => {
+                    const rank = index + 1
                     const isOwner = item.user.role === 'admin'
+                    const isTop3 = rank <= 3
+                    const rankColors: Record<number, string> = {
+                      1: 'text-yellow-500',
+                      2: 'text-gray-400',
+                      3: 'text-amber-600',
+                    }
                     return (
                       <motion.div
                         key={item.user.id}
@@ -344,11 +409,19 @@ function LeaderboardPage() {
                         >
                           {/* Rank */}
                           <div className="w-10 text-center">
-                            {getRankIcon(rank)}
+                            {isTop3 ? (
+                              <div className="flex items-center justify-center">
+                                {rank === 1 && <Crown size={20} className={rankColors[rank]} />}
+                                {rank === 2 && <Medal size={20} className={rankColors[rank]} />}
+                                {rank === 3 && <Medal size={20} className={rankColors[rank]} />}
+                              </div>
+                            ) : (
+                              <span className="text-lg font-bold" style={{ color: 'var(--foreground-muted)' }}>#{rank}</span>
+                            )}
                           </div>
 
                           {/* Avatar */}
-                          <Avatar className="w-12 h-12">
+                          <Avatar className={`w-12 h-12 ${isTop3 ? `ring-2 ${rank === 1 ? 'ring-yellow-500' : rank === 2 ? 'ring-gray-400' : 'ring-amber-600'}` : ''}`}>
                             <AvatarImage src={item.profile?.avatar || undefined} />
                             <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white font-bold">
                               {(item.user.name || item.user.username).charAt(0).toUpperCase()}
@@ -362,6 +435,11 @@ function LeaderboardPage() {
                                 {item.user.name || item.user.username}
                               </p>
                               {isOwner && <Crown size={14} className="text-amber-500" />}
+                              {isTop3 && (
+                                <Badge variant="outline" className="text-xs px-1.5 py-0">
+                                  Top {rank}
+                                </Badge>
+                              )}
                             </div>
                             <p className="text-sm truncate" style={{ color: 'var(--foreground-muted)' }}>
                               @{item.user.username}
@@ -370,7 +448,7 @@ function LeaderboardPage() {
 
                           {/* Score */}
                           <div className="text-right">
-                            <p className="font-bold" style={{ color: 'var(--primary)' }}>
+                            <p className={`font-bold ${isTop3 ? rankColors[rank] : ''}`} style={!isTop3 ? { color: 'var(--primary)' } : undefined}>
                               {item.stats?.score?.toLocaleString() || 0}
                             </p>
                             <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>
