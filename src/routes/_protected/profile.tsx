@@ -212,8 +212,9 @@ function ProfilePage() {
                     <div
                       className="w-12 h-12 rounded-full bg-cover bg-center"
                       style={{ 
-                        backgroundImage: currentAvatar ? `url(${currentAvatar})` : undefined,
-                        background: !currentAvatar ? 'linear-gradient(135deg, var(--primary), var(--accent))' : undefined,
+                        background: currentAvatar 
+                          ? `url(${currentAvatar}) center/cover` 
+                          : 'linear-gradient(135deg, var(--primary), var(--accent))',
                       }}
                     >
                       {!currentAvatar && (
