@@ -34,6 +34,18 @@ import {
 } from 'lucide-react'
 
 export const Route = createFileRoute('/_public/')({
+  head: () => ({
+    meta: [
+      { title: 'Eziox - Modern Bio Link Platform' },
+      { name: 'description', content: 'Create your personalized bio link page. Share all your links in one place with a beautiful, customizable profile.' },
+      { property: 'og:title', content: 'Eziox - Modern Bio Link Platform' },
+      { property: 'og:description', content: 'Create your personalized bio link page. Share all your links in one place with a beautiful, customizable profile.' },
+      { property: 'og:type', content: 'website' },
+      { name: 'twitter:card', content: 'summary_large_image' },
+      { name: 'twitter:title', content: 'Eziox - Modern Bio Link Platform' },
+      { name: 'twitter:description', content: 'Create your personalized bio link page. Share all your links in one place with a beautiful, customizable profile.' },
+    ],
+  }),
   component: HomePage,
 })
 

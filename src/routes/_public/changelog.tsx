@@ -19,6 +19,15 @@ import {
 } from 'lucide-react'
 
 export const Route = createFileRoute('/_public/changelog')({
+  head: () => ({
+    meta: [
+      { title: 'Changelog - Latest Updates | Eziox' },
+      { name: 'description', content: 'Stay updated with the latest features, improvements, and bug fixes on Eziox.' },
+      { property: 'og:title', content: 'Changelog - Latest Updates | Eziox' },
+      { property: 'og:description', content: 'Stay updated with the latest features, improvements, and bug fixes on Eziox.' },
+      { name: 'twitter:card', content: 'summary' },
+    ],
+  }),
   component: ChangelogPage,
 })
 

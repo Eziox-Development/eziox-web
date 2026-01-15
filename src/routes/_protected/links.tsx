@@ -29,6 +29,14 @@ import {
 } from 'lucide-react'
 
 export const Route = createFileRoute('/_protected/links')({
+  head: () => ({
+    meta: [
+      { title: 'Manage Links | Eziox' },
+      { name: 'description', content: 'Create and manage your bio page links' },
+      { property: 'og:title', content: 'Manage Links | Eziox' },
+      { name: 'robots', content: 'noindex, nofollow' },
+    ],
+  }),
   component: LinksPage,
 })
 

@@ -41,6 +41,15 @@ const DiscordIcon = ({ size = 20, className = '' }: { size?: number; className?:
 )
 
 export const Route = createFileRoute('/_public/about')({
+  head: () => ({
+    meta: [
+      { title: 'About Eziox - Our Story & Mission' },
+      { name: 'description', content: 'Learn about Eziox, the modern bio link platform. Discover our mission to help creators share their content in one beautiful place.' },
+      { property: 'og:title', content: 'About Eziox - Our Story & Mission' },
+      { property: 'og:description', content: 'Learn about Eziox, the modern bio link platform. Discover our mission to help creators share their content in one beautiful place.' },
+      { name: 'twitter:card', content: 'summary' },
+    ],
+  }),
   component: AboutPage,
 })
 

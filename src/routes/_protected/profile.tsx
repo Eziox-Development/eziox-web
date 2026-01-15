@@ -43,6 +43,15 @@ import {
 } from 'lucide-react'
 
 export const Route = createFileRoute('/_protected/profile')({
+  head: () => ({
+    meta: [
+      { title: 'My Profile | Eziox' },
+      { name: 'description', content: 'Manage your Eziox profile, links, and account settings' },
+      { property: 'og:title', content: 'My Profile | Eziox' },
+      { property: 'og:description', content: 'Manage your Eziox profile, links, and account settings' },
+      { name: 'robots', content: 'noindex, nofollow' },
+    ],
+  }),
   component: ProfilePage,
 })
 

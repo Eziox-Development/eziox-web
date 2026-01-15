@@ -78,6 +78,41 @@ export const Route = createFileRoute('/_bio/$username')({
       throw notFound()
     }
   },
+  loader: async ({ params }) => {
+    const getProfile = getPublicProfileFn
+    try {
+      const profile = await getProfile({ data: { username: params.username } })
+      return { profile }
+    } catch {
+      throw notFound()
+    }
+  },
+  head: ({ loaderData }) => {
+    const profile = loaderData?.profile
+    if (!profile || !profile.profile || 'isPublic' in profile.profile && !profile.profile.isPublic) return {}
+
+    const displayName = profile.user.name || profile.user.username
+    const title = `${displayName} (@${profile.user.username}) | Eziox`
+    const bio = 'bio' in profile.profile ? profile.profile.bio : null
+    const description = bio || `Check out ${displayName}'s bio page on Eziox`
+    const avatarUrl = 'avatar' in profile.profile ? profile.profile.avatar : null
+
+    return {
+      meta: [
+        { title },
+        { name: 'description', content: description },
+        { property: 'og:title', content: title },
+        { property: 'og:description', content: description },
+        { property: 'og:type', content: 'profile' },
+        { property: 'og:url', content: `https://eziox.link/${profile.user.username}` },
+        ...(avatarUrl ? [{ property: 'og:image', content: avatarUrl }] : []),
+        { name: 'twitter:card', content: avatarUrl ? 'summary_large_image' : 'summary' },
+        { name: 'twitter:title', content: title },
+        { name: 'twitter:description', content: description },
+        ...(avatarUrl ? [{ name: 'twitter:image', content: avatarUrl }] : []),
+      ],
+    }
+  },
   component: BioPage,
 })
 

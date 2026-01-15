@@ -35,6 +35,14 @@ const searchSchema = z.object({
 })
 
 export const Route = createFileRoute('/_auth/sign-in')({
+  head: () => ({
+    meta: [
+      { title: 'Sign In | Eziox' },
+      { name: 'description', content: 'Sign in to your Eziox account and manage your bio links' },
+      { property: 'og:title', content: 'Sign In | Eziox' },
+      { name: 'robots', content: 'noindex, nofollow' },
+    ],
+  }),
   component: SignInPage,
   validateSearch: searchSchema,
   loader: async () => {

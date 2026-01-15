@@ -31,6 +31,15 @@ import {
 } from 'lucide-react'
 
 export const Route = createFileRoute('/_public/leaderboard')({
+  head: () => ({
+    meta: [
+      { title: 'Leaderboard - Top Creators | Eziox' },
+      { name: 'description', content: 'Discover the top creators on Eziox. See who\'s leading the community with the most engagement and followers.' },
+      { property: 'og:title', content: 'Leaderboard - Top Creators | Eziox' },
+      { property: 'og:description', content: 'Discover the top creators on Eziox. See who\'s leading the community with the most engagement and followers.' },
+      { name: 'twitter:card', content: 'summary' },
+    ],
+  }),
   component: LeaderboardPage,
 })
 

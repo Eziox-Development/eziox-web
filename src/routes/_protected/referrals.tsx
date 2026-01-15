@@ -28,6 +28,14 @@ import {
 } from 'lucide-react'
 
 export const Route = createFileRoute('/_protected/referrals')({
+  head: () => ({
+    meta: [
+      { title: 'Referrals | Eziox' },
+      { name: 'description', content: 'Invite friends and earn rewards' },
+      { property: 'og:title', content: 'Referrals | Eziox' },
+      { name: 'robots', content: 'noindex, nofollow' },
+    ],
+  }),
   component: ReferralsPage,
 })
 
