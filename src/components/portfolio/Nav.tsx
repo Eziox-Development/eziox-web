@@ -17,6 +17,7 @@ import {
   Archive,
   Info,
   Users,
+  Gift,
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'motion/react'
 import { useAuth } from '@/hooks/use-auth'
@@ -286,6 +287,21 @@ export function Nav() {
                           >
                             <LinkIcon size={18} />
                             <span>Manage Links</span>
+                          </Link>
+                          <Link
+                            to="/referrals"
+                            onClick={() => setIsUserMenuOpen(false)}
+                            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors hover:bg-[var(--background-secondary)]"
+                            style={{ color: 'var(--foreground)' }}
+                          >
+                            <Gift size={18} />
+                            <span>Referrals</span>
+                            <span 
+                              className="ml-auto text-[10px] px-1.5 py-0.5 rounded-full font-semibold"
+                              style={{ background: 'var(--primary)', color: 'white' }}
+                            >
+                              NEW
+                            </span>
                           </Link>
                           <a
                             href={`/${currentUser.username || currentUser.email?.split('@')[0]}`}

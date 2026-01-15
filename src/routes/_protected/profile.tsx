@@ -1,11 +1,15 @@
-import { createFileRoute, useSearch, Link } from '@tanstack/react-router'
+/**
+ * Profile Dashboard Page
+ * Modern, clean design with real-time data and glassmorphism effects
+ */
+
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { useAuth } from '@/hooks/use-auth'
 import { siteConfig } from '@/lib/site-config'
 import { updateProfileFn } from '@/server/functions/auth'
 import { useServerFn } from '@tanstack/react-start'
-import { z } from 'zod'
 import { ImageUpload } from '@/components/profile/image-upload'
 import {
   User,
@@ -13,7 +17,6 @@ import {
   Save,
   X,
   Edit3,
-  Shield,
   Calendar,
   Loader2,
   CheckCircle,
@@ -22,47 +25,41 @@ import {
   Check,
   Crown,
   Globe,
-  Clock,
   Sparkles,
-  Settings,
   Link as LinkIcon,
   AtSign,
-  Fingerprint,
-  BadgeCheck,
-  Palette,
-  Activity,
-  Eye,
-  Users,
-  FileText,
   ExternalLink,
+  Eye,
+  MousePointerClick,
+  Users,
+  Heart,
+  Zap,
+  Settings,
+  Gift,
+  TrendingUp,
+  Shield,
+  MapPin,
+  Clock,
 } from 'lucide-react'
-
-const profileSearchSchema = z.object({
-  user: z.string().optional(),
-})
 
 export const Route = createFileRoute('/_protected/profile')({
   component: ProfilePage,
-  validateSearch: profileSearchSchema,
 })
 
 function ProfilePage() {
   const { currentUser } = useAuth()
-  const search = useSearch({ from: '/_protected/profile' })
-  const viewingUserId = search.user
+  const updateProfile = useServerFn(updateProfileFn)
   
   const [isEditing, setIsEditing] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [saveSuccess, setSaveSuccess] = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null)
   const [copiedField, setCopiedField] = useState<string | null>(null)
-  const [activeTab, setActiveTab] = useState<'overview' | 'activity' | 'settings'>('overview')
   const [currentAvatar, setCurrentAvatar] = useState<string | null>(null)
   const [currentBanner, setCurrentBanner] = useState<string | null>(null)
 
   const [formData, setFormData] = useState({
-    name: currentUser?.name || '',
-    email: currentUser?.email || '',
+    name: '',
     bio: '',
     website: '',
     location: '',
@@ -70,19 +67,15 @@ function ProfilePage() {
 
   const isOwner = currentUser?.email === siteConfig.owner.email || 
                   currentUser?.email === import.meta.env.VITE_OWNER_EMAIL
-  
-  const isViewingOwnProfile = !viewingUserId || viewingUserId === currentUser?.id
 
   useEffect(() => {
     if (currentUser) {
       setFormData({
         name: currentUser.name || '',
-        email: currentUser.email || '',
         bio: currentUser.profile?.bio || '',
         website: currentUser.profile?.website || '',
         location: currentUser.profile?.location || '',
       })
-      // Initialize avatar and banner from profile
       setCurrentAvatar(currentUser.profile?.avatar || null)
       setCurrentBanner(currentUser.profile?.banner || null)
     }
@@ -98,712 +91,546 @@ function ProfilePage() {
     }
   }
 
-
-  const updateProfile = useServerFn(updateProfileFn)
-
   const handleSave = async () => {
     setIsSaving(true)
     setSaveError(null)
     
     try {
-      // Update profile in Appwrite
       await updateProfile({ data: { name: formData.name || undefined } })
       setSaveSuccess(true)
       setIsEditing(false)
       setTimeout(() => setSaveSuccess(false), 3000)
-      // Reload page to get updated user data
       window.location.reload()
     } catch (error) {
       const err = error as { message?: string }
-      setSaveError(err.message || 'Failed to update profile. Please try again.')
+      setSaveError(err.message || 'Failed to update profile')
     } finally {
       setIsSaving(false)
     }
   }
 
   const handleCancel = () => {
-    setFormData({
-      name: currentUser?.name || '',
-      email: currentUser?.email || '',
-      bio: '',
-      website: '',
-      location: '',
-    })
+    if (currentUser) {
+      setFormData({
+        name: currentUser.name || '',
+        bio: currentUser.profile?.bio || '',
+        website: currentUser.profile?.website || '',
+        location: currentUser.profile?.location || '',
+      })
+    }
     setIsEditing(false)
     setSaveError(null)
   }
 
   const memberSince = currentUser?.createdAt 
-    ? new Date(currentUser.createdAt).toLocaleDateString('de-DE', {
-        day: '2-digit',
-        month: '2-digit',
+    ? new Date(currentUser.createdAt).toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
         year: 'numeric',
       })
-    : new Date().toLocaleDateString('de-DE')
+    : 'Unknown'
+
+  const stats = currentUser?.stats || { profileViews: 0, totalLinkClicks: 0, followers: 0, following: 0 }
+  const bioUrl = `https://eziox.link/${currentUser?.username}`
 
   if (!currentUser) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin" style={{ color: 'var(--primary)' }} />
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="text-center"
+        >
+          <Loader2 className="w-10 h-10 animate-spin mx-auto mb-4" style={{ color: 'var(--primary)' }} />
+          <p style={{ color: 'var(--foreground-muted)' }}>Loading profile...</p>
+        </motion.div>
       </div>
     )
   }
 
-  const CopyableField = ({ 
-    label, 
-    value, 
-    icon: Icon, 
-    fieldKey 
-  }: { 
-    label: string
-    value: string
-    icon: React.ElementType
-    fieldKey: string 
-  }) => (
-    <motion.button
-      onClick={() => copyToClipboard(value, fieldKey)}
-      className="w-full flex items-center justify-between p-3 rounded-xl transition-all group"
-      style={{
-        background: 'var(--background)',
-        border: '1px solid var(--border)',
-      }}
-      whileHover={{ scale: 1.01 }}
-      whileTap={{ scale: 0.99 }}
-    >
-      <div className="flex items-center gap-3">
-        <div
-          className="p-2 rounded-lg"
-          style={{ background: 'var(--background-secondary)' }}
-        >
-          <Icon size={16} style={{ color: 'var(--primary)' }} />
-        </div>
-        <div className="text-left">
-          <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>
-            {label}
-          </p>
-          <p className="text-sm font-medium" style={{ color: 'var(--foreground)' }}>
-            {value}
-          </p>
-        </div>
-      </div>
-      <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-        {copiedField === fieldKey ? (
-          <Check size={16} className="text-green-500" />
-        ) : (
-          <Copy size={16} style={{ color: 'var(--foreground-muted)' }} />
-        )}
-      </div>
-    </motion.button>
-  )
-
   return (
-    <div className="min-h-screen pt-24 pb-8 px-4">
-      <div className="max-w-4xl mx-auto space-y-6">
-        {/* Toast Notifications */}
-        <AnimatePresence>
-          {saveSuccess && (
-            <motion.div
-              initial={{ opacity: 0, y: -20, x: '-50%' }}
-              animate={{ opacity: 1, y: 0, x: '-50%' }}
-              exit={{ opacity: 0, y: -20, x: '-50%' }}
-              className="fixed top-20 left-1/2 z-50 px-6 py-3 rounded-xl flex items-center gap-3 shadow-2xl"
-              style={{
-                background: 'rgba(34, 197, 94, 0.95)',
-                backdropFilter: 'blur(10px)',
-              }}
-            >
-              <CheckCircle className="w-5 h-5 text-white" />
-              <span className="text-white font-medium">Profile updated successfully!</span>
-            </motion.div>
-          )}
-        </AnimatePresence>
+    <div className="min-h-screen pt-24 pb-12 px-4">
+      {/* Background Effects */}
+      <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
+        <motion.div
+          className="absolute top-20 right-1/4 w-[600px] h-[600px] rounded-full blur-3xl"
+          style={{ background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(139, 92, 246, 0.08))' }}
+          animate={{ scale: [1, 1.2, 1], x: [0, 50, 0] }}
+          transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
+        />
+        <motion.div
+          className="absolute bottom-20 left-1/4 w-[500px] h-[500px] rounded-full blur-3xl"
+          style={{ background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.08), rgba(99, 102, 241, 0.08))' }}
+          animate={{ scale: [1.2, 1, 1.2], y: [0, -30, 0] }}
+          transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut' }}
+        />
+      </div>
 
-        <AnimatePresence>
-          {saveError && (
-            <motion.div
-              initial={{ opacity: 0, y: -20, x: '-50%' }}
-              animate={{ opacity: 1, y: 0, x: '-50%' }}
-              exit={{ opacity: 0, y: -20, x: '-50%' }}
-              className="fixed top-20 left-1/2 z-50 px-6 py-3 rounded-xl flex items-center gap-3 shadow-2xl"
-              style={{
-                background: 'rgba(239, 68, 68, 0.95)',
-                backdropFilter: 'blur(10px)',
-              }}
-            >
-              <AlertCircle className="w-5 h-5 text-white" />
-              <span className="text-white font-medium">{saveError}</span>
-            </motion.div>
-          )}
-        </AnimatePresence>
+      {/* Toast Notifications */}
+      <AnimatePresence>
+        {saveSuccess && (
+          <motion.div
+            initial={{ opacity: 0, y: -20, x: '-50%' }}
+            animate={{ opacity: 1, y: 0, x: '-50%' }}
+            exit={{ opacity: 0, y: -20, x: '-50%' }}
+            className="fixed top-24 left-1/2 z-50 px-6 py-3 rounded-xl flex items-center gap-3"
+            style={{ background: 'rgba(34, 197, 94, 0.95)', backdropFilter: 'blur(10px)' }}
+          >
+            <CheckCircle className="w-5 h-5 text-white" />
+            <span className="text-white font-medium">Profile updated!</span>
+          </motion.div>
+        )}
+        {saveError && (
+          <motion.div
+            initial={{ opacity: 0, y: -20, x: '-50%' }}
+            animate={{ opacity: 1, y: 0, x: '-50%' }}
+            exit={{ opacity: 0, y: -20, x: '-50%' }}
+            className="fixed top-24 left-1/2 z-50 px-6 py-3 rounded-xl flex items-center gap-3"
+            style={{ background: 'rgba(239, 68, 68, 0.95)', backdropFilter: 'blur(10px)' }}
+          >
+            <AlertCircle className="w-5 h-5 text-white" />
+            <span className="text-white font-medium">{saveError}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-        {/* Main Profile Card - Discord Style */}
+      <div className="max-w-5xl mx-auto">
+        {/* Profile Header Card */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="rounded-3xl overflow-hidden"
-          style={{
-            background: 'var(--card)',
-            border: '1px solid var(--border)',
-            boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
-          }}
+          className="relative mb-8"
         >
-          {/* Banner Section */}
-          {isViewingOwnProfile ? (
-            <div className="p-6 pb-0">
+          {/* Glow Effect */}
+          <div
+            className="absolute inset-0 rounded-3xl blur-2xl opacity-40"
+            style={{ background: 'linear-gradient(135deg, var(--primary), var(--accent))' }}
+          />
+          
+          <div
+            className="relative rounded-3xl overflow-hidden"
+            style={{ 
+              background: 'rgba(var(--card-rgb, 30, 30, 30), 0.9)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+            }}
+          >
+            {/* Banner */}
+            <div className="relative h-48 md:h-56">
               <ImageUpload 
                 type="banner" 
                 currentImage={currentBanner}
                 onUploadSuccess={(url) => setCurrentBanner(url)}
               />
-            </div>
-          ) : (
-            <div className="relative h-48">
-              <div
-                className="absolute inset-0"
-                style={{
-                  background: currentBanner
-                    ? `url(${currentBanner}) center/cover`
-                    : 'linear-gradient(135deg, var(--primary), var(--accent), var(--primary))',
-                  backgroundSize: currentBanner ? 'cover' : '200% 200%',
-                  animation: currentBanner ? 'none' : 'gradientShift 8s ease infinite',
-                }}
-              />
-              <div
-                className="absolute bottom-0 left-0 right-0 h-24"
-                style={{
-                  background: 'linear-gradient(to top, var(--card), transparent)',
-                }}
-              />
-            </div>
-          )}
-
-          {/* Profile Header */}
-          <div className="px-6 -mt-16 relative z-10">
-            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-              {/* Avatar */}
-              {isViewingOwnProfile ? (
-                <div className="relative">
-                  <ImageUpload 
-                    type="avatar" 
-                    currentImage={currentAvatar}
-                    onUploadSuccess={(url) => setCurrentAvatar(url)}
-                  />
-                  {/* Online Status Indicator */}
-                  <motion.div
-                    className="absolute bottom-1 right-1 w-6 h-6 rounded-full border-4"
-                    style={{
-                      backgroundColor: '#22c55e',
-                      borderColor: 'var(--card)',
-                    }}
-                    animate={{ scale: [1, 1.1, 1] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                  />
-                </div>
-              ) : (
-                <div className="relative">
-                  <motion.div
-                    className="w-32 h-32 rounded-3xl overflow-hidden"
-                    style={{
-                      boxShadow: '0 0 0 6px var(--card), 0 0 30px rgba(var(--primary-rgb, 99, 102, 241), 0.3)',
-                      background: 'var(--background-secondary)',
-                    }}
-                    whileHover={{ scale: 1.02 }}
-                  >
-                    {currentAvatar ? (
-                      <img src={currentAvatar} alt="Avatar" className="w-full h-full object-cover" />
-                    ) : currentUser.name ? (
-                      <div
-                        className="w-full h-full flex items-center justify-center text-5xl font-bold"
-                        style={{
-                          background: 'linear-gradient(135deg, var(--primary), var(--accent))',
-                          color: 'white',
-                        }}
-                      >
-                        {currentUser.name.charAt(0).toUpperCase()}
-                      </div>
-                    ) : (
-                      <div
-                        className="w-full h-full flex items-center justify-center"
-                        style={{ color: 'var(--foreground-muted)' }}
-                      >
-                        <User size={60} />
-                      </div>
-                    )}
-                  </motion.div>
-                  {/* Online Status Indicator */}
-                  <motion.div
-                    className="absolute bottom-1 right-1 w-6 h-6 rounded-full border-4"
-                    style={{
-                      backgroundColor: '#22c55e',
-                      borderColor: 'var(--card)',
-                    }}
-                    animate={{ scale: [1, 1.1, 1] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                  />
-                </div>
-              )}
-
-              {/* Action Buttons */}
-              <div className="flex gap-2 pb-2">
-                {isViewingOwnProfile && (
-                  <>
-                    {!isEditing ? (
-                      <motion.button
-                        onClick={() => setIsEditing(true)}
-                        className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all"
-                        style={{
-                          background: 'var(--primary)',
-                          color: 'white',
-                        }}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                      >
-                        <Edit3 size={16} />
-                        Edit Profile
-                      </motion.button>
-                    ) : (
-                      <>
-                        <motion.button
-                          onClick={handleCancel}
-                          className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium"
-                          style={{
-                            background: 'var(--background-secondary)',
-                            border: '1px solid var(--border)',
-                            color: 'var(--foreground-muted)',
-                          }}
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                        >
-                          <X size={16} />
-                          Cancel
-                        </motion.button>
-                        <motion.button
-                          onClick={handleSave}
-                          disabled={isSaving}
-                          className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold disabled:opacity-50"
-                          style={{
-                            background: 'linear-gradient(135deg, #22c55e, #16a34a)',
-                            color: 'white',
-                          }}
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                        >
-                          {isSaving ? (
-                            <Loader2 size={16} className="animate-spin" />
-                          ) : (
-                            <Save size={16} />
-                          )}
-                          Save
-                        </motion.button>
-                      </>
-                    )}
-                  </>
-                )}
-              </div>
-            </div>
-
-            {/* User Info */}
-            <div className="mt-4 space-y-2">
-              <div className="flex items-center gap-3 flex-wrap">
-                {isEditing ? (
-                  <input
-                    type="text"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="text-2xl font-bold bg-transparent border-b-2 outline-none px-1"
-                    style={{
-                      color: 'var(--foreground)',
-                      borderColor: 'var(--primary)',
-                    }}
-                    placeholder="Your name"
-                  />
-                ) : (
-                  <h1 className="text-2xl font-bold" style={{ color: 'var(--foreground)' }}>
-                    {currentUser.name || 'Anonymous User'}
-                  </h1>
-                )}
-                
-                {/* Badges */}
-                {isOwner && (
-                  <motion.div
-                    className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold"
-                    style={{
-                      background: 'linear-gradient(135deg, #f59e0b, #d97706)',
-                      color: 'white',
-                    }}
-                    whileHover={{ scale: 1.05 }}
-                  >
-                    <Crown size={12} />
-                    Owner
-                  </motion.div>
-                )}
-                <motion.div
-                  className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold"
-                  style={{
-                    background: 'var(--primary)',
-                    color: 'white',
-                  }}
-                  whileHover={{ scale: 1.05 }}
-                >
-                  <BadgeCheck size={12} />
-                  Verified
-                </motion.div>
-              </div>
               
-              <p className="text-sm" style={{ color: 'var(--foreground-muted)' }}>
-                @{currentUser.name?.toLowerCase().replace(/\s+/g, '') || currentUser.email?.split('@')[0]}
-              </p>
+              {/* Gradient Overlay */}
+              <div
+                className="absolute bottom-0 left-0 right-0 h-32"
+                style={{ background: 'linear-gradient(to top, rgba(var(--card-rgb, 30, 30, 30), 1), transparent)' }}
+              />
             </div>
-          </div>
 
-          {/* Tab Navigation */}
-          <div className="px-6 mt-6">
-            <div
-              className="flex gap-1 p-1 rounded-xl"
-              style={{ background: 'var(--background-secondary)' }}
-            >
-              {[
-                { id: 'overview', label: 'Overview', icon: User },
-                { id: 'activity', label: 'Activity', icon: Activity },
-                { id: 'settings', label: 'Settings', icon: Settings },
-              ].map((tab) => (
-                <motion.button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id as typeof activeTab)}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all"
-                  style={{
-                    background: activeTab === tab.id ? 'var(--card)' : 'transparent',
-                    color: activeTab === tab.id ? 'var(--foreground)' : 'var(--foreground-muted)',
-                    boxShadow: activeTab === tab.id ? '0 2px 10px rgba(0,0,0,0.1)' : 'none',
-                  }}
-                  whileHover={{ scale: 1.01 }}
-                  whileTap={{ scale: 0.99 }}
-                >
-                  <tab.icon size={16} />
-                  {tab.label}
-                </motion.button>
-              ))}
-            </div>
-          </div>
+            {/* Profile Info */}
+            <div className="px-6 md:px-8 pb-8 -mt-16 relative z-10">
+              <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+                {/* Avatar & Name */}
+                <div className="flex flex-col md:flex-row md:items-end gap-5">
+                  {/* Avatar */}
+                  <div className="relative">
+                    <ImageUpload 
+                      type="avatar" 
+                      currentImage={currentAvatar}
+                      onUploadSuccess={(url) => setCurrentAvatar(url)}
+                    />
+                    {/* Online Indicator */}
+                    <motion.div
+                      className="absolute bottom-2 right-2 w-5 h-5 rounded-full border-4"
+                      style={{ backgroundColor: '#22c55e', borderColor: 'var(--card)' }}
+                      animate={{ scale: [1, 1.2, 1] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    />
+                  </div>
 
-          {/* Tab Content */}
-          <div className="p-6">
-            <AnimatePresence mode="wait">
-              {activeTab === 'overview' && (
-                <motion.div
-                  key="overview"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="grid grid-cols-1 lg:grid-cols-2 gap-6"
-                >
-                  {/* About Me Section */}
-                  <div
-                    className="p-5 rounded-2xl space-y-4"
-                    style={{
-                      background: 'var(--background-secondary)',
-                      border: '1px solid var(--border)',
-                    }}
-                  >
-                    <h3
-                      className="text-sm font-semibold uppercase tracking-wider flex items-center gap-2"
-                      style={{ color: 'var(--foreground-muted)' }}
-                    >
-                      <Sparkles size={14} style={{ color: 'var(--primary)' }} />
-                      About Me
-                    </h3>
-                    {isEditing ? (
-                      <textarea
-                        value={formData.bio}
-                        onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-                        className="w-full h-24 p-3 rounded-xl outline-none resize-none text-sm"
-                        style={{
-                          background: 'var(--background)',
-                          border: '1px solid var(--primary)',
-                          color: 'var(--foreground)',
-                        }}
-                        placeholder="Tell us about yourself..."
-                      />
-                    ) : (
-                      <p className="text-sm leading-relaxed" style={{ color: 'var(--foreground)' }}>
-                        {formData.bio || 'No bio yet. Click Edit Profile to add one!'}
+                  {/* Name & Username */}
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-3 flex-wrap">
+                      {isEditing ? (
+                        <input
+                          type="text"
+                          value={formData.name}
+                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                          className="text-2xl md:text-3xl font-bold bg-transparent border-b-2 outline-none px-1"
+                          style={{ color: 'var(--foreground)', borderColor: 'var(--primary)' }}
+                          placeholder="Your name"
+                        />
+                      ) : (
+                        <h1 className="text-2xl md:text-3xl font-bold" style={{ color: 'var(--foreground)' }}>
+                          {currentUser.name || 'Anonymous'}
+                        </h1>
+                      )}
+                      
+                      {/* Badges */}
+                      {isOwner && (
+                        <motion.span
+                          className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold"
+                          style={{ background: 'linear-gradient(135deg, #f59e0b, #d97706)', color: 'white' }}
+                          whileHover={{ scale: 1.05 }}
+                        >
+                          <Crown size={12} />
+                          Owner
+                        </motion.span>
+                      )}
+                      <motion.span
+                        className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold"
+                        style={{ background: 'var(--primary)', color: 'white' }}
+                        whileHover={{ scale: 1.05 }}
+                      >
+                        <Shield size={12} />
+                        Verified
+                      </motion.span>
+                    </div>
+                    
+                    <p className="text-sm flex items-center gap-2" style={{ color: 'var(--foreground-muted)' }}>
+                      <AtSign size={14} />
+                      {currentUser.username || currentUser.email?.split('@')[0]}
+                    </p>
+                    
+                    {formData.location && (
+                      <p className="text-sm flex items-center gap-2" style={{ color: 'var(--foreground-muted)' }}>
+                        <MapPin size={14} />
+                        {formData.location}
                       </p>
                     )}
                   </div>
+                </div>
 
-                  {/* Member Since Section */}
-                  <div
-                    className="p-5 rounded-2xl space-y-4"
-                    style={{
-                      background: 'var(--background-secondary)',
-                      border: '1px solid var(--border)',
-                    }}
-                  >
-                    <h3
-                      className="text-sm font-semibold uppercase tracking-wider flex items-center gap-2"
-                      style={{ color: 'var(--foreground-muted)' }}
-                    >
-                      <Calendar size={14} style={{ color: 'var(--primary)' }} />
-                      Member Since
-                    </h3>
-                    <div className="flex items-center gap-3">
-                      <div
-                        className="p-3 rounded-xl"
-                        style={{ background: 'var(--background)' }}
-                      >
-                        <Clock size={24} style={{ color: 'var(--primary)' }} />
-                      </div>
-                      <div>
-                        <p className="text-lg font-bold" style={{ color: 'var(--foreground)' }}>
-                          {memberSince}
-                        </p>
-                        <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>
-                          Account created
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Account Details - Full Width */}
-                  <div
-                    className="lg:col-span-2 p-5 rounded-2xl space-y-4"
-                    style={{
-                      background: 'var(--background-secondary)',
-                      border: '1px solid var(--border)',
-                    }}
-                  >
-                    <h3
-                      className="text-sm font-semibold uppercase tracking-wider flex items-center gap-2"
-                      style={{ color: 'var(--foreground-muted)' }}
-                    >
-                      <Shield size={14} style={{ color: 'var(--primary)' }} />
-                      Account Details
-                      <span className="text-xs font-normal ml-auto" style={{ color: 'var(--foreground-muted)' }}>
-                        Click to copy
-                      </span>
-                    </h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <CopyableField
-                        label="User ID"
-                        value={currentUser?.id || 'N/A'}
-                        icon={Fingerprint}
-                        fieldKey="userId"
-                      />
-                      <CopyableField
-                        label="Email"
-                        value={currentUser.email || 'N/A'}
-                        icon={Mail}
-                        fieldKey="email"
-                      />
-                      <CopyableField
-                        label="Username"
-                        value={`@${currentUser.username || currentUser.name?.toLowerCase().replace(/\s+/g, '') || currentUser.email?.split('@')[0]}`}
-                        icon={AtSign}
-                        fieldKey="username"
-                      />
-                      <CopyableField
-                        label="Profile URL"
-                        value={`${window.location.origin}/profile?user=${currentUser?.id}`}
-                        icon={LinkIcon}
-                        fieldKey="profileUrl"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Owner Section - Only visible to owner */}
-                  {isOwner && (
-                    <div
-                      className="lg:col-span-2 p-5 rounded-2xl space-y-4"
-                      style={{
-                        background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(217, 119, 6, 0.1))',
-                        border: '1px solid rgba(245, 158, 11, 0.3)',
+                {/* Action Buttons */}
+                <div className="flex gap-3">
+                  {!isEditing ? (
+                    <motion.button
+                      onClick={() => setIsEditing(true)}
+                      className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-white"
+                      style={{ 
+                        background: 'linear-gradient(135deg, var(--primary), var(--accent))',
+                        boxShadow: '0 10px 30px rgba(99, 102, 241, 0.3)'
                       }}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
                     >
-                      <h3
-                        className="text-sm font-semibold uppercase tracking-wider flex items-center gap-2"
-                        style={{ color: '#f59e0b' }}
+                      <Edit3 size={16} />
+                      Edit Profile
+                    </motion.button>
+                  ) : (
+                    <>
+                      <motion.button
+                        onClick={handleCancel}
+                        className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium"
+                        style={{ background: 'var(--background-secondary)', color: 'var(--foreground)', border: '1px solid var(--border)' }}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
                       >
-                        <Crown size={14} />
-                        Owner Privileges
-                      </h3>
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        <div className="flex items-center gap-3 p-3 rounded-xl" style={{ background: 'var(--background)' }}>
-                          <FileText size={20} style={{ color: '#f59e0b' }} />
-                          <div>
-                            <p className="text-sm font-medium" style={{ color: 'var(--foreground)' }}>Full Access</p>
-                            <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>All documents</p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-3 p-3 rounded-xl" style={{ background: 'var(--background)' }}>
-                          <Users size={20} style={{ color: '#f59e0b' }} />
-                          <div>
-                            <p className="text-sm font-medium" style={{ color: 'var(--foreground)' }}>User Management</p>
-                            <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>Manage all users</p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-3 p-3 rounded-xl" style={{ background: 'var(--background)' }}>
-                          <Settings size={20} style={{ color: '#f59e0b' }} />
-                          <div>
-                            <p className="text-sm font-medium" style={{ color: 'var(--foreground)' }}>Site Settings</p>
-                            <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>Full control</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                        <X size={16} />
+                        Cancel
+                      </motion.button>
+                      <motion.button
+                        onClick={handleSave}
+                        disabled={isSaving}
+                        className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-white disabled:opacity-50"
+                        style={{ background: 'linear-gradient(135deg, #22c55e, #16a34a)' }}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        {isSaving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+                        Save
+                      </motion.button>
+                    </>
                   )}
-                </motion.div>
-              )}
-
-              {activeTab === 'activity' && (
-                <motion.div
-                  key="activity"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="space-y-4"
-                >
-                  <div
-                    className="p-8 rounded-2xl text-center"
-                    style={{
-                      background: 'var(--background-secondary)',
-                      border: '1px solid var(--border)',
-                    }}
-                  >
-                    <Activity size={48} className="mx-auto mb-4" style={{ color: 'var(--foreground-muted)' }} />
-                    <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--foreground)' }}>
-                      No Activity Yet
-                    </h3>
-                    <p className="text-sm" style={{ color: 'var(--foreground-muted)' }}>
-                      Your recent activity will appear here
-                    </p>
-                  </div>
-                </motion.div>
-              )}
-
-              {activeTab === 'settings' && (
-                <motion.div
-                  key="settings"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="space-y-4"
-                >
-                  {/* Appearance */}
-                  <div
-                    className="p-5 rounded-2xl space-y-4"
-                    style={{
-                      background: 'var(--background-secondary)',
-                      border: '1px solid var(--border)',
-                    }}
-                  >
-                    <h3
-                      className="text-sm font-semibold uppercase tracking-wider flex items-center gap-2"
-                      style={{ color: 'var(--foreground-muted)' }}
-                    >
-                      <Palette size={14} style={{ color: 'var(--primary)' }} />
-                      Appearance
-                    </h3>
-                    <p className="text-sm" style={{ color: 'var(--foreground-muted)' }}>
-                      Theme settings are available in the navigation bar
-                    </p>
-                  </div>
-
-                  {/* Privacy */}
-                  <div
-                    className="p-5 rounded-2xl space-y-4"
-                    style={{
-                      background: 'var(--background-secondary)',
-                      border: '1px solid var(--border)',
-                    }}
-                  >
-                    <h3
-                      className="text-sm font-semibold uppercase tracking-wider flex items-center gap-2"
-                      style={{ color: 'var(--foreground-muted)' }}
-                    >
-                      <Eye size={14} style={{ color: 'var(--primary)' }} />
-                      Privacy
-                    </h3>
-                    <div className="flex items-center justify-between p-3 rounded-xl" style={{ background: 'var(--background)' }}>
-                      <div className="flex items-center gap-3">
-                        <Globe size={18} style={{ color: 'var(--foreground-muted)' }} />
-                        <div>
-                          <p className="text-sm font-medium" style={{ color: 'var(--foreground)' }}>Public Profile</p>
-                          <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>Anyone can view your profile</p>
-                        </div>
-                      </div>
-                      <div
-                        className="w-12 h-6 rounded-full relative cursor-pointer"
-                        style={{ background: 'var(--primary)' }}
-                      >
-                        <div
-                          className="absolute right-1 top-1 w-4 h-4 rounded-full bg-white transition-all"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Connected Accounts */}
-                  <div
-                    className="p-5 rounded-2xl space-y-4"
-                    style={{
-                      background: 'var(--background-secondary)',
-                      border: '1px solid var(--border)',
-                    }}
-                  >
-                    <h3
-                      className="text-sm font-semibold uppercase tracking-wider flex items-center gap-2"
-                      style={{ color: 'var(--foreground-muted)' }}
-                    >
-                      <LinkIcon size={14} style={{ color: 'var(--primary)' }} />
-                      Connected Accounts
-                    </h3>
-                    <p className="text-sm" style={{ color: 'var(--foreground-muted)' }}>
-                      No connected accounts yet. OAuth integrations coming soon!
-                    </p>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                </div>
+              </div>
+            </div>
           </div>
         </motion.div>
 
-        {/* Quick Links */}
+        {/* Stats Grid */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"
+        >
+          {[
+            { label: 'Profile Views', value: stats.profileViews || 0, icon: Eye, gradient: 'from-indigo-500 to-purple-500' },
+            { label: 'Link Clicks', value: stats.totalLinkClicks || 0, icon: MousePointerClick, gradient: 'from-amber-500 to-orange-500' },
+            { label: 'Followers', value: stats.followers || 0, icon: Heart, gradient: 'from-pink-500 to-rose-500' },
+            { label: 'Following', value: stats.following || 0, icon: Users, gradient: 'from-green-500 to-emerald-500' },
+          ].map((stat, index) => (
+            <motion.div
+              key={stat.label}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 + index * 0.05 }}
+              className="relative group"
+            >
+              <div
+                className="relative p-5 rounded-2xl text-center backdrop-blur-sm"
+                style={{ 
+                  background: 'rgba(var(--card-rgb, 30, 30, 30), 0.8)',
+                  border: '1px solid var(--border)',
+                }}
+              >
+                <div className={`w-12 h-12 mx-auto mb-3 rounded-xl flex items-center justify-center bg-gradient-to-br ${stat.gradient}`}>
+                  <stat.icon size={24} className="text-white" />
+                </div>
+                <p className="text-3xl font-bold mb-1" style={{ color: 'var(--foreground)' }}>
+                  {stat.value.toLocaleString()}
+                </p>
+                <p className="text-xs font-medium" style={{ color: 'var(--foreground-muted)' }}>
+                  {stat.label}
+                </p>
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
+
+        {/* Bio Link Card */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="grid grid-cols-2 sm:grid-cols-4 gap-4"
+          className="relative mb-8"
+        >
+          <div
+            className="absolute inset-0 rounded-2xl blur-xl opacity-30"
+            style={{ background: 'linear-gradient(135deg, var(--primary), var(--accent))' }}
+          />
+          <div
+            className="relative p-6 rounded-2xl"
+            style={{ 
+              background: 'rgba(var(--card-rgb, 30, 30, 30), 0.9)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+            }}
+          >
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <div 
+                  className="w-14 h-14 rounded-xl flex items-center justify-center"
+                  style={{ background: 'linear-gradient(135deg, var(--primary), var(--accent))' }}
+                >
+                  <Globe size={28} className="text-white" />
+                </div>
+                <div>
+                  <p className="font-bold text-lg" style={{ color: 'var(--foreground)' }}>
+                    Your Bio Page
+                  </p>
+                  <p className="text-sm font-mono" style={{ color: 'var(--primary)' }}>
+                    eziox.link/{currentUser.username}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <motion.button
+                  onClick={() => copyToClipboard(bioUrl, 'bio')}
+                  className="flex items-center gap-2 px-5 py-3 rounded-xl font-medium"
+                  style={{ 
+                    background: 'var(--background-secondary)', 
+                    color: copiedField === 'bio' ? '#22c55e' : 'var(--foreground)',
+                    border: '1px solid var(--border)',
+                  }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  {copiedField === 'bio' ? <Check size={18} /> : <Copy size={18} />}
+                  {copiedField === 'bio' ? 'Copied!' : 'Copy'}
+                </motion.button>
+                <motion.a
+                  href={`/${currentUser.username}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 px-5 py-3 rounded-xl font-semibold text-white"
+                  style={{ 
+                    background: 'linear-gradient(135deg, var(--primary), var(--accent))',
+                    boxShadow: '0 10px 30px rgba(99, 102, 241, 0.3)'
+                  }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <ExternalLink size={18} />
+                  View
+                </motion.a>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Quick Actions Grid */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"
         >
           {[
-            { label: 'Home', href: '/', icon: Globe },
-            { label: 'Archive', href: '/archive', icon: FileText },
-            { label: 'About', href: '/about', icon: User },
-            { label: 'Sign Out', href: '/sign-out', icon: ExternalLink },
-          ].map((link) => (
-            <Link
-              key={link.label}
-              to={link.href}
-              className="flex items-center justify-center gap-2 p-4 rounded-2xl text-sm font-medium transition-all hover:scale-[1.02]"
-              style={{
-                background: 'var(--card)',
-                border: '1px solid var(--border)',
-                color: 'var(--foreground)',
-              }}
+            { label: 'Manage Links', href: '/links', icon: LinkIcon, description: 'Edit your bio links' },
+            { label: 'Referrals', href: '/referrals', icon: Gift, description: 'Invite friends' },
+            { label: 'Analytics', href: '/links', icon: TrendingUp, description: 'View statistics' },
+            { label: 'Settings', href: '/profile', icon: Settings, description: 'Account settings' },
+          ].map((action, index) => (
+            <motion.div
+              key={action.label}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 + index * 0.05 }}
             >
-              <link.icon size={18} />
-              {link.label}
-            </Link>
+              <Link
+                to={action.href}
+                className="block p-5 rounded-2xl transition-all hover:scale-[1.02] group"
+                style={{ 
+                  background: 'var(--card)',
+                  border: '1px solid var(--border)',
+                }}
+              >
+                <div 
+                  className="w-12 h-12 mb-4 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110"
+                  style={{ background: 'var(--background-secondary)' }}
+                >
+                  <action.icon size={24} style={{ color: 'var(--primary)' }} />
+                </div>
+                <p className="font-semibold mb-1" style={{ color: 'var(--foreground)' }}>
+                  {action.label}
+                </p>
+                <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>
+                  {action.description}
+                </p>
+              </Link>
+            </motion.div>
           ))}
         </motion.div>
-      </div>
 
-      {/* CSS for gradient animation */}
-      <style>{`
-        @keyframes gradientShift {
-          0%, 100% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-        }
-      `}</style>
+        {/* Account Details */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="rounded-2xl overflow-hidden"
+          style={{ background: 'var(--card)', border: '1px solid var(--border)' }}
+        >
+          <div className="p-6 border-b" style={{ borderColor: 'var(--border)' }}>
+            <h2 className="text-xl font-bold" style={{ color: 'var(--foreground)' }}>
+              Account Details
+            </h2>
+            <p className="text-sm" style={{ color: 'var(--foreground-muted)' }}>
+              Your account information
+            </p>
+          </div>
+          
+          <div className="p-6 space-y-4">
+            {[
+              { label: 'Email', value: currentUser.email, icon: Mail, key: 'email' },
+              { label: 'Username', value: `@${currentUser.username}`, icon: AtSign, key: 'username' },
+              { label: 'User ID', value: currentUser.id, icon: User, key: 'id' },
+              { label: 'Member Since', value: memberSince, icon: Calendar, key: 'member' },
+              { label: 'Account Type', value: currentUser.role === 'admin' ? 'Admin' : 'Standard', icon: Sparkles, key: 'tier' },
+            ].map((item) => (
+              <motion.button
+                key={item.key}
+                onClick={() => copyToClipboard(item.value || '', item.key)}
+                className="w-full flex items-center justify-between p-4 rounded-xl transition-all hover:bg-white/5 group"
+                style={{ background: 'var(--background-secondary)' }}
+                whileHover={{ scale: 1.01 }}
+                whileTap={{ scale: 0.99 }}
+              >
+                <div className="flex items-center gap-4">
+                  <div
+                    className="w-10 h-10 rounded-lg flex items-center justify-center"
+                    style={{ background: 'var(--card)' }}
+                  >
+                    <item.icon size={18} style={{ color: 'var(--primary)' }} />
+                  </div>
+                  <div className="text-left">
+                    <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>
+                      {item.label}
+                    </p>
+                    <p className="font-medium" style={{ color: 'var(--foreground)' }}>
+                      {item.value}
+                    </p>
+                  </div>
+                </div>
+                <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                  {copiedField === item.key ? (
+                    <Check size={18} className="text-green-500" />
+                  ) : (
+                    <Copy size={18} style={{ color: 'var(--foreground-muted)' }} />
+                  )}
+                </div>
+              </motion.button>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Owner Section */}
+        {isOwner && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            className="mt-8 p-6 rounded-2xl"
+            style={{ 
+              background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(217, 119, 6, 0.1))',
+              border: '1px solid rgba(245, 158, 11, 0.3)',
+            }}
+          >
+            <div className="flex items-center gap-3 mb-4">
+              <Crown size={24} style={{ color: '#f59e0b' }} />
+              <h3 className="text-lg font-bold" style={{ color: '#f59e0b' }}>
+                Owner Privileges
+              </h3>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {[
+                { label: 'Full Access', description: 'All platform features', icon: Zap },
+                { label: 'User Management', description: 'Manage all users', icon: Users },
+                { label: 'Site Settings', description: 'Full control', icon: Settings },
+              ].map((priv) => (
+                <div
+                  key={priv.label}
+                  className="flex items-center gap-3 p-4 rounded-xl"
+                  style={{ background: 'var(--card)' }}
+                >
+                  <priv.icon size={20} style={{ color: '#f59e0b' }} />
+                  <div>
+                    <p className="font-medium" style={{ color: 'var(--foreground)' }}>
+                      {priv.label}
+                    </p>
+                    <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>
+                      {priv.description}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+
+        {/* Activity Indicator */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.6 }}
+          className="mt-8 text-center"
+        >
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full" style={{ background: 'var(--background-secondary)' }}>
+            <motion.div
+              className="w-2 h-2 rounded-full"
+              style={{ background: '#22c55e' }}
+              animate={{ scale: [1, 1.3, 1], opacity: [1, 0.7, 1] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            />
+            <span className="text-sm" style={{ color: 'var(--foreground-muted)' }}>
+              <Clock size={14} className="inline mr-1" />
+              Last active: Just now
+            </span>
+          </div>
+        </motion.div>
+      </div>
     </div>
   )
 }
