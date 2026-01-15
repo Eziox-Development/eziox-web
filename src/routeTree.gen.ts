@@ -15,6 +15,7 @@ import { Route as BioRouteImport } from './routes/_bio'
 import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
 import { Route as PublicLeaderboardRouteImport } from './routes/_public/leaderboard'
+import { Route as PublicCreatorsRouteImport } from './routes/_public/creators'
 import { Route as PublicChangelogRouteImport } from './routes/_public/changelog'
 import { Route as PublicAboutRouteImport } from './routes/_public/about'
 import { Route as ProtectedReferralsRouteImport } from './routes/_protected/referrals'
@@ -55,6 +56,11 @@ const PublicIndexRoute = PublicIndexRouteImport.update({
 const PublicLeaderboardRoute = PublicLeaderboardRouteImport.update({
   id: '/leaderboard',
   path: '/leaderboard',
+  getParentRoute: () => PublicRoute,
+} as any)
+const PublicCreatorsRoute = PublicCreatorsRouteImport.update({
+  id: '/creators',
+  path: '/creators',
   getParentRoute: () => PublicRoute,
 } as any)
 const PublicChangelogRoute = PublicChangelogRouteImport.update({
@@ -147,6 +153,7 @@ export interface FileRoutesByFullPath {
   '/referrals': typeof ProtectedReferralsRoute
   '/about': typeof PublicAboutRoute
   '/changelog': typeof PublicChangelogRoute
+  '/creators': typeof PublicCreatorsRoute
   '/leaderboard': typeof PublicLeaderboardRoute
   '/': typeof PublicIndexRoute
   '/join/$code': typeof PublicJoinCodeRoute
@@ -166,6 +173,7 @@ export interface FileRoutesByTo {
   '/referrals': typeof ProtectedReferralsRoute
   '/about': typeof PublicAboutRoute
   '/changelog': typeof PublicChangelogRoute
+  '/creators': typeof PublicCreatorsRoute
   '/leaderboard': typeof PublicLeaderboardRoute
   '/': typeof PublicIndexRoute
   '/join/$code': typeof PublicJoinCodeRoute
@@ -190,6 +198,7 @@ export interface FileRoutesById {
   '/_protected/referrals': typeof ProtectedReferralsRoute
   '/_public/about': typeof PublicAboutRoute
   '/_public/changelog': typeof PublicChangelogRoute
+  '/_public/creators': typeof PublicCreatorsRoute
   '/_public/leaderboard': typeof PublicLeaderboardRoute
   '/_public/': typeof PublicIndexRoute
   '/_public/join/$code': typeof PublicJoinCodeRoute
@@ -211,6 +220,7 @@ export interface FileRouteTypes {
     | '/referrals'
     | '/about'
     | '/changelog'
+    | '/creators'
     | '/leaderboard'
     | '/'
     | '/join/$code'
@@ -230,6 +240,7 @@ export interface FileRouteTypes {
     | '/referrals'
     | '/about'
     | '/changelog'
+    | '/creators'
     | '/leaderboard'
     | '/'
     | '/join/$code'
@@ -253,6 +264,7 @@ export interface FileRouteTypes {
     | '/_protected/referrals'
     | '/_public/about'
     | '/_public/changelog'
+    | '/_public/creators'
     | '/_public/leaderboard'
     | '/_public/'
     | '/_public/join/$code'
@@ -311,6 +323,13 @@ declare module '@tanstack/react-router' {
       path: '/leaderboard'
       fullPath: '/leaderboard'
       preLoaderRoute: typeof PublicLeaderboardRouteImport
+      parentRoute: typeof PublicRoute
+    }
+    '/_public/creators': {
+      id: '/_public/creators'
+      path: '/creators'
+      fullPath: '/creators'
+      preLoaderRoute: typeof PublicCreatorsRouteImport
       parentRoute: typeof PublicRoute
     }
     '/_public/changelog': {
@@ -466,6 +485,7 @@ const ProtectedRouteWithChildren = ProtectedRoute._addFileChildren(
 interface PublicRouteChildren {
   PublicAboutRoute: typeof PublicAboutRoute
   PublicChangelogRoute: typeof PublicChangelogRoute
+  PublicCreatorsRoute: typeof PublicCreatorsRoute
   PublicLeaderboardRoute: typeof PublicLeaderboardRoute
   PublicIndexRoute: typeof PublicIndexRoute
   PublicJoinCodeRoute: typeof PublicJoinCodeRoute
@@ -475,6 +495,7 @@ interface PublicRouteChildren {
 const PublicRouteChildren: PublicRouteChildren = {
   PublicAboutRoute: PublicAboutRoute,
   PublicChangelogRoute: PublicChangelogRoute,
+  PublicCreatorsRoute: PublicCreatorsRoute,
   PublicLeaderboardRoute: PublicLeaderboardRoute,
   PublicIndexRoute: PublicIndexRoute,
   PublicJoinCodeRoute: PublicJoinCodeRoute,

@@ -14,7 +14,6 @@ import {
   Home,
   FileText,
   Info,
-  Trophy,
   LayoutDashboard,
   Globe,
   Shield,
@@ -24,7 +23,7 @@ import { useAuth } from '@/hooks/use-auth'
 
 const NAV_ITEMS = [
   { href: '/', label: 'Home', icon: Home },
-  { href: '/leaderboard', label: 'Creators', icon: Trophy },
+  { href: '/creators', label: 'Creators', icon: Sparkles },
   { href: '/changelog', label: 'Updates', icon: FileText },
   { href: '/about', label: 'About', icon: Info },
 ] as const

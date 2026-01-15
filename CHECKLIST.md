@@ -107,15 +107,15 @@
 ### Phase 2: Creator Features (Priority: HIGH)
 
 #### 4. Creator/Partner Page
-- [ ] New route: `/creators` or `/partners`
-- [ ] Showcase referred creators (VTubers, Streamers)
-- [ ] Creator cards with:
-  - [ ] Avatar, name, bio
-  - [ ] Platform links (Twitch, YouTube, etc.)
-  - [ ] Special partner badge
-  - [ ] "Joined via [Owner]'s referral"
-- [ ] Featured creators section
-- [ ] Filter by category (VTuber, Streamer, Artist, etc.)
+- [x] New route: `/creators` or `/partners`
+- [x] Showcase referred creators (VTubers, Streamers)
+- [x] Creator cards with:
+  - [x] Avatar, name, bio
+  - [x] Platform links (Twitch, YouTube, etc.)
+  - [x] Special partner badge
+  - [x] "Joined via [Owner]'s referral"
+- [x] Featured creators section
+- [x] Filter by category (VTuber, Streamer, Artist, etc.)
 
 #### 5. Spotify Integration
 - [ ] Spotify OAuth connection
