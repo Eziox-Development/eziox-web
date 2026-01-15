@@ -264,6 +264,10 @@ export const getCurrentUser = createServerFn({ method: 'GET' }).handler(
           badges: userData.profile.badges,
           socials: userData.profile.socials,
           isPublic: userData.profile.isPublic,
+          showActivity: userData.profile.showActivity,
+          birthday: userData.profile.birthday?.toISOString() || null,
+          creatorType: userData.profile.creatorType,
+          referralCode: userData.profile.referralCode,
         } : null,
         stats: userData.stats ? {
           profileViews: userData.stats.profileViews,
@@ -305,6 +309,10 @@ export const updateProfileFn = createServerFn({ method: 'POST' })
       pronouns: z.string().max(50).optional(),
       accentColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(),
       isPublic: z.boolean().optional(),
+      showActivity: z.boolean().optional(),
+      birthday: z.string().optional(), // ISO date string
+      creatorType: z.string().max(50).optional(),
+      socials: z.record(z.string(), z.string()).optional(), // { twitter: "@handle", instagram: "handle", etc. }
     })
   )
   .handler(async ({ data }) => {
@@ -347,6 +355,10 @@ export const updateProfileFn = createServerFn({ method: 'POST' })
         pronouns: data.pronouns,
         accentColor: data.accentColor,
         isPublic: data.isPublic,
+        showActivity: data.showActivity,
+        birthday: data.birthday ? new Date(data.birthday) : undefined,
+        creatorType: data.creatorType,
+        socials: data.socials,
       })
 
       return { success: true, message: 'Profile updated successfully' }

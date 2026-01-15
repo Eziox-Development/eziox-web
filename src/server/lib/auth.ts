@@ -212,6 +212,9 @@ export async function updateProfile(
     accentColor: string
     isPublic: boolean
     showActivity: boolean
+    birthday: Date
+    creatorType: string
+    socials: Record<string, string>
   }>
 ) {
   const [updated] = await db
