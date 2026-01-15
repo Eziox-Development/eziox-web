@@ -3,8 +3,8 @@
  * Only accessible by owner/admin roles
  */
 
-import { createFileRoute, redirect } from '@tanstack/react-router'
-import { useState } from 'react'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { useAuth } from '@/hooks/use-auth'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
@@ -19,12 +19,6 @@ import {
 import * as LucideIcons from 'lucide-react'
 
 export const Route = createFileRoute('/_protected/admin')({
-  beforeLoad: async ({ context }) => {
-    const { currentUser } = context as { currentUser?: { role?: string } }
-    if (!currentUser || (currentUser.role !== 'admin' && currentUser.role !== 'owner')) {
-      throw redirect({ to: '/profile' })
-    }
-  },
   head: () => ({
     meta: [
       { title: 'Admin Panel | Eziox' },
@@ -36,6 +30,7 @@ export const Route = createFileRoute('/_protected/admin')({
 
 function AdminPage() {
   const { currentUser } = useAuth()
+  const navigate = useNavigate()
   const queryClient = useQueryClient()
   const getAllUsers = useServerFn(getAllUsersWithBadgesFn)
   const assignBadge = useServerFn(assignBadgeFn)
@@ -45,6 +40,14 @@ function AdminPage() {
   const [selectedUser, setSelectedUser] = useState<string | null>(null)
   const [isAssigning, setIsAssigning] = useState(false)
   const [actionResult, setActionResult] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
+
+  const isAdmin = currentUser?.role === 'admin' || currentUser?.role === 'owner'
+
+  useEffect(() => {
+    if (currentUser && !isAdmin) {
+      void navigate({ to: '/profile' })
+    }
+  }, [currentUser, isAdmin, navigate])
 
   const { data: usersData, isLoading } = useQuery({
     queryKey: ['admin-users'],
@@ -85,8 +88,31 @@ function AdminPage() {
     }
   }
 
-  if (!currentUser || (currentUser.role !== 'admin' && currentUser.role !== 'owner')) {
-    return null
+  if (!currentUser) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-10 h-10 animate-spin" style={{ color: 'var(--primary)' }} />
+      </div>
+    )
+  }
+
+  if (!isAdmin) {
+    return (
+      <div className="min-h-screen pt-24 pb-12 px-4">
+        <div className="max-w-md mx-auto text-center">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center" style={{ background: 'rgba(239, 68, 68, 0.15)' }}>
+            <Shield size={32} style={{ color: '#ef4444' }} />
+          </div>
+          <h1 className="text-2xl font-bold mb-2" style={{ color: 'var(--foreground)' }}>Access Denied</h1>
+          <p className="mb-4" style={{ color: 'var(--foreground-muted)' }}>
+            You need admin or owner privileges to access this page.
+          </p>
+          <p className="text-sm" style={{ color: 'var(--foreground-muted)' }}>
+            Your current role: <code className="px-2 py-1 rounded" style={{ background: 'var(--background-secondary)' }}>{currentUser.role || 'user'}</code>
+          </p>
+        </div>
+      </div>
+    )
   }
 
   return (
