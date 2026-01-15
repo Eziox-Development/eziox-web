@@ -29,8 +29,6 @@ import { Route as ApiRssRouteImport } from './routes/_api/rss'
 import { Route as ApiHelloRouteImport } from './routes/_api/hello'
 import { Route as PublicSCodeRouteImport } from './routes/_public/s.$code'
 import { Route as PublicJoinCodeRouteImport } from './routes/_public/join.$code'
-import { Route as BioUsernameFollowingRouteImport } from './routes/_bio/$username_.following'
-import { Route as BioUsernameFollowersRouteImport } from './routes/_bio/$username_.followers'
 
 const PublicRoute = PublicRouteImport.update({
   id: '/_public',
@@ -128,16 +126,6 @@ const PublicJoinCodeRoute = PublicJoinCodeRouteImport.update({
   path: '/join/$code',
   getParentRoute: () => PublicRoute,
 } as any)
-const BioUsernameFollowingRoute = BioUsernameFollowingRouteImport.update({
-  id: '/$username_/following',
-  path: '/$username/following',
-  getParentRoute: () => BioRoute,
-} as any)
-const BioUsernameFollowersRoute = BioUsernameFollowersRouteImport.update({
-  id: '/$username_/followers',
-  path: '/$username/followers',
-  getParentRoute: () => BioRoute,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/hello': typeof ApiHelloRoute
@@ -154,8 +142,6 @@ export interface FileRoutesByFullPath {
   '/changelog': typeof PublicChangelogRoute
   '/leaderboard': typeof PublicLeaderboardRoute
   '/': typeof PublicIndexRoute
-  '/$username/followers': typeof BioUsernameFollowersRoute
-  '/$username/following': typeof BioUsernameFollowingRoute
   '/join/$code': typeof PublicJoinCodeRoute
   '/s/$code': typeof PublicSCodeRoute
 }
@@ -174,8 +160,6 @@ export interface FileRoutesByTo {
   '/changelog': typeof PublicChangelogRoute
   '/leaderboard': typeof PublicLeaderboardRoute
   '/': typeof PublicIndexRoute
-  '/$username/followers': typeof BioUsernameFollowersRoute
-  '/$username/following': typeof BioUsernameFollowingRoute
   '/join/$code': typeof PublicJoinCodeRoute
   '/s/$code': typeof PublicSCodeRoute
 }
@@ -199,8 +183,6 @@ export interface FileRoutesById {
   '/_public/changelog': typeof PublicChangelogRoute
   '/_public/leaderboard': typeof PublicLeaderboardRoute
   '/_public/': typeof PublicIndexRoute
-  '/_bio/$username_/followers': typeof BioUsernameFollowersRoute
-  '/_bio/$username_/following': typeof BioUsernameFollowingRoute
   '/_public/join/$code': typeof PublicJoinCodeRoute
   '/_public/s/$code': typeof PublicSCodeRoute
 }
@@ -221,8 +203,6 @@ export interface FileRouteTypes {
     | '/changelog'
     | '/leaderboard'
     | '/'
-    | '/$username/followers'
-    | '/$username/following'
     | '/join/$code'
     | '/s/$code'
   fileRoutesByTo: FileRoutesByTo
@@ -241,8 +221,6 @@ export interface FileRouteTypes {
     | '/changelog'
     | '/leaderboard'
     | '/'
-    | '/$username/followers'
-    | '/$username/following'
     | '/join/$code'
     | '/s/$code'
   id:
@@ -265,8 +243,6 @@ export interface FileRouteTypes {
     | '/_public/changelog'
     | '/_public/leaderboard'
     | '/_public/'
-    | '/_bio/$username_/followers'
-    | '/_bio/$username_/following'
     | '/_public/join/$code'
     | '/_public/s/$code'
   fileRoutesById: FileRoutesById
@@ -423,20 +399,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicJoinCodeRouteImport
       parentRoute: typeof PublicRoute
     }
-    '/_bio/$username_/following': {
-      id: '/_bio/$username_/following'
-      path: '/$username/following'
-      fullPath: '/$username/following'
-      preLoaderRoute: typeof BioUsernameFollowingRouteImport
-      parentRoute: typeof BioRoute
-    }
-    '/_bio/$username_/followers': {
-      id: '/_bio/$username_/followers'
-      path: '/$username/followers'
-      fullPath: '/$username/followers'
-      preLoaderRoute: typeof BioUsernameFollowersRouteImport
-      parentRoute: typeof BioRoute
-    }
   }
 }
 
@@ -456,14 +418,10 @@ const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
 interface BioRouteChildren {
   BioUsernameRoute: typeof BioUsernameRoute
-  BioUsernameFollowersRoute: typeof BioUsernameFollowersRoute
-  BioUsernameFollowingRoute: typeof BioUsernameFollowingRoute
 }
 
 const BioRouteChildren: BioRouteChildren = {
   BioUsernameRoute: BioUsernameRoute,
-  BioUsernameFollowersRoute: BioUsernameFollowersRoute,
-  BioUsernameFollowingRoute: BioUsernameFollowingRoute,
 }
 
 const BioRouteWithChildren = BioRoute._addFileChildren(BioRouteChildren)

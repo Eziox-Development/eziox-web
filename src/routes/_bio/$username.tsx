@@ -39,6 +39,7 @@ import {
 } from 'react-icons/lu'
 import { FaDiscord, FaTiktok, FaTwitch } from 'react-icons/fa'
 import type { ComponentType } from 'react'
+import { FollowModal } from '@/components/bio/FollowModal'
 
 const socialIconMap: Record<string, ComponentType<{ size?: number }>> = {
   twitter: LuTwitter,
@@ -125,6 +126,10 @@ function BioPage() {
   const routerState = useRouterState()
   const bioMatch = routerState.matches.find((m: { routeId: string }) => m.routeId === '/_bio')
   const currentUser = (bioMatch?.loaderData as { currentUser?: { id: string; username: string } } | undefined)?.currentUser
+
+  // Modal state
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [modalTab, setModalTab] = useState<'followers' | 'following'>('followers')
 
   const getProfile = useServerFn(getPublicProfileFn)
   const trackClick = useServerFn(trackLinkClickFn)
@@ -472,9 +477,11 @@ function BioPage() {
               </div>
               <span className="text-xs" style={{ color: 'var(--foreground-muted)' }}>clicks</span>
             </div>
-            <Link
-              to="/$username/followers"
-              params={{ username }}
+            <button
+              onClick={() => {
+                setModalTab('followers')
+                setIsModalOpen(true)
+              }}
               className="text-center hover:opacity-80 transition-opacity cursor-pointer"
             >
               <div className="flex items-center justify-center gap-1 mb-0.5">
@@ -484,10 +491,12 @@ function BioPage() {
                 </span>
               </div>
               <span className="text-xs" style={{ color: 'var(--foreground-muted)' }}>followers</span>
-            </Link>
-            <Link
-              to="/$username/following"
-              params={{ username }}
+            </button>
+            <button
+              onClick={() => {
+                setModalTab('following')
+                setIsModalOpen(true)
+              }}
               className="text-center hover:opacity-80 transition-opacity cursor-pointer"
             >
               <div className="flex items-center justify-center gap-1 mb-0.5">
@@ -497,7 +506,7 @@ function BioPage() {
                 </span>
               </div>
               <span className="text-xs" style={{ color: 'var(--foreground-muted)' }}>following</span>
-            </Link>
+            </button>
           </div>
 
           {/* Follow Button - for authenticated users viewing other profiles */}
@@ -693,6 +702,19 @@ function BioPage() {
           </Link>
         </motion.div>
       </div>
+
+      {/* Follow Modal */}
+      {profile?.user?.id && (
+        <FollowModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          username={username}
+          userId={profile.user.id}
+          initialTab={modalTab}
+          currentUserId={currentUser?.id}
+          accentColor={accentColor}
+        />
+      )}
     </div>
   )
 }
