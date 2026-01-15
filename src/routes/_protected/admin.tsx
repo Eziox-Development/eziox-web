@@ -16,6 +16,7 @@ import {
   Shield, Search, Loader2, Plus, X, Check, Users,
   ChevronDown, Award, AlertCircle,
 } from 'lucide-react'
+import * as LucideIcons from 'lucide-react'
 
 export const Route = createFileRoute('/_protected/admin')({
   beforeLoad: async ({ context }) => {
@@ -257,7 +258,10 @@ function AdminPage() {
                                 className="flex items-center gap-3 p-3 rounded-xl"
                                 style={{ background: 'var(--background-secondary)' }}
                               >
-                                <span className="text-xl">{badge.icon}</span>
+                                {(() => {
+                                  const IconComponent = (LucideIcons as any)[badge.icon]
+                                  return IconComponent ? <IconComponent size={20} style={{ color: hasBadge ? badge.color : 'var(--foreground-muted)' }} /> : null
+                                })()}
                                 <div className="flex-1">
                                   <p className="text-sm font-medium" style={{ color: hasBadge ? badge.color : 'var(--foreground)' }}>
                                     {badge.name}

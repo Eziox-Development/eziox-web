@@ -8,6 +8,7 @@ import { useServerFn } from '@tanstack/react-start'
 import { checkAndAwardBadgesFn } from '@/server/functions/badges'
 import { BADGE_LIST, getBadgeConfigs, sortBadgesByRarity, type BadgeConfig } from '@/lib/badges'
 import { Award, Sparkles, Lock, CheckCircle, Loader2 } from 'lucide-react'
+import * as LucideIcons from 'lucide-react'
 import { useState } from 'react'
 
 interface BadgesTabProps {
@@ -207,7 +208,12 @@ function BadgeCard({ badge, earned, delay = 0 }: BadgeCardProps) {
         border: `1px solid ${earned ? badge.color + '30' : 'var(--border)'}`,
       }}
     >
-      <div className="text-3xl mb-2">{badge.icon}</div>
+      <div className="mb-2">
+        {(() => {
+          const IconComponent = (LucideIcons as any)[badge.icon]
+          return IconComponent ? <IconComponent size={32} style={{ color: earned ? badge.color : 'var(--foreground-muted)' }} className="mx-auto" /> : null
+        })()}
+      </div>
       <p className="font-semibold text-sm" style={{ color: earned ? badge.color : 'var(--foreground-muted)' }}>
         {badge.name}
       </p>
@@ -241,10 +247,13 @@ function ProgressBadge({ badge, earned, description, progress, progressText, loc
     >
       <div className="flex items-start gap-3">
         <div
-          className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl ${earned ? '' : 'grayscale opacity-60'}`}
+          className={`w-12 h-12 rounded-xl flex items-center justify-center ${earned ? '' : 'grayscale opacity-60'}`}
           style={{ background: badge.bgColor }}
         >
-          {badge.icon}
+          {(() => {
+            const IconComponent = (LucideIcons as any)[badge.icon]
+            return IconComponent ? <IconComponent size={24} style={{ color: badge.color }} /> : null
+          })()}
         </div>
         <div className="flex-1">
           <div className="flex items-center gap-2">

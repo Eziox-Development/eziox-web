@@ -5,6 +5,7 @@
 
 import { motion } from 'motion/react'
 import { getBadgeConfigs, sortBadgesByRarity, type BadgeConfig } from '@/lib/badges'
+import * as LucideIcons from 'lucide-react'
 
 interface BadgeDisplayProps {
   badges: string[]
@@ -81,7 +82,10 @@ function BadgeIcon({ badge, size, showTooltip, delay = 0 }: BadgeIconProps) {
       style={{ background: badge.bgColor, border: `1px solid ${badge.color}30` }}
       title={showTooltip ? `${badge.name}: ${badge.description}` : undefined}
     >
-      <span style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))' }}>{badge.icon}</span>
+      {(() => {
+        const IconComponent = (LucideIcons as any)[badge.icon]
+        return IconComponent ? <IconComponent size={size === 'sm' ? 12 : size === 'md' ? 14 : 16} style={{ color: badge.color }} /> : null
+      })()}
       
       {showTooltip && (
         <div
@@ -125,7 +129,10 @@ export function BadgeList({ badges, className = '' }: BadgeListProps) {
           className="flex items-center gap-2 px-3 py-1.5 rounded-full"
           style={{ background: badge.bgColor, border: `1px solid ${badge.color}30` }}
         >
-          <span>{badge.icon}</span>
+          {(() => {
+            const IconComponent = (LucideIcons as any)[badge.icon]
+            return IconComponent ? <IconComponent size={16} style={{ color: badge.color }} /> : null
+          })()}
           <span className="text-sm font-medium" style={{ color: badge.color }}>{badge.name}</span>
         </motion.div>
       ))}
