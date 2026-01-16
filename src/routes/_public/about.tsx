@@ -1,20 +1,10 @@
-/**
- * About Page
- * Modern design showcasing the platform and team
- */
-
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { motion } from 'motion/react'
 import { useQuery } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
 import { getPlatformStatsFn } from '@/server/functions/stats'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   Sparkles,
-  Zap,
   Heart,
   Globe,
   Users,
@@ -23,19 +13,26 @@ import {
   Target,
   Code,
   ArrowRight,
-  CheckCircle,
   Crown,
+  Zap,
+  Palette,
+  Gamepad2,
+  Cat,
+  MonitorPlay,
+  Brush,
+  Code2,
+  Minimize2,
+  Star,
+  Lock,
+  Sliders,
+  RotateCcw,
+  Grid3X3,
 } from 'lucide-react'
-import { SiGithub } from 'react-icons/si'
+import { SiGithub, SiReact, SiTypescript, SiTailwindcss, SiPostgresql, SiVercel } from 'react-icons/si'
+import { useTheme } from '@/components/portfolio/ThemeProvider'
 
-const DiscordIcon = ({ size = 20, className = '' }: { size?: number; className?: string }) => (
-  <svg
-    width={size}
-    height={size}
-    viewBox="0 0 24 24"
-    fill="currentColor"
-    className={className}
-  >
+const DiscordIcon = ({ size = 20 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
     <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
   </svg>
 )
@@ -44,432 +41,384 @@ export const Route = createFileRoute('/_public/about')({
   head: () => ({
     meta: [
       { title: 'About Eziox - Our Story & Mission' },
-      { name: 'description', content: 'Learn about Eziox, the modern bio link platform. Discover our mission to help creators share their content in one beautiful place.' },
+      { name: 'description', content: 'Learn about Eziox, the modern bio link platform with 25+ themes and advanced security.' },
       { property: 'og:title', content: 'About Eziox - Our Story & Mission' },
-      { property: 'og:description', content: 'Learn about Eziox, the modern bio link platform. Discover our mission to help creators share their content in one beautiful place.' },
+      { property: 'og:description', content: 'Learn about Eziox, the modern bio link platform with 25+ themes and advanced security.' },
       { name: 'twitter:card', content: 'summary' },
     ],
   }),
   component: AboutPage,
 })
 
+const themeCategories = [
+  { icon: Gamepad2, label: 'Gamer', color: '#00ff00' },
+  { icon: Cat, label: 'VTuber', color: '#ff6b9d' },
+  { icon: Sparkles, label: 'Anime', color: '#ff4500' },
+  { icon: Code2, label: 'Developer', color: '#58a6ff' },
+  { icon: MonitorPlay, label: 'Streamer', color: '#9146ff' },
+  { icon: Brush, label: 'Artist', color: '#e8a87c' },
+  { icon: Minimize2, label: 'Minimal', color: '#888888' },
+]
+
+const securityFeatures = [
+  { icon: Sliders, label: 'Slider Challenge', desc: 'Precise position verification' },
+  { icon: RotateCcw, label: 'Rotate Challenge', desc: 'Angle-based verification' },
+  { icon: Grid3X3, label: 'Pattern Challenge', desc: 'Sequence recognition' },
+]
+
+const techStack = [
+  { icon: SiReact, name: 'React 19', color: '#61dafb' },
+  { icon: SiTypescript, name: 'TypeScript', color: '#3178c6' },
+  { icon: SiTailwindcss, name: 'Tailwind CSS', color: '#06b6d4' },
+  { icon: SiPostgresql, name: 'PostgreSQL', color: '#336791' },
+  { icon: SiVercel, name: 'Vercel', color: '#ffffff' },
+]
+
 function AboutPage() {
+  const { theme, themes } = useTheme()
   const getPlatformStats = useServerFn(getPlatformStatsFn)
-  
+
   const { data: platformStats } = useQuery({
     queryKey: ['platformStats'],
     queryFn: () => getPlatformStats(),
   })
 
-  const values = [
-    {
-      icon: Heart,
-      title: 'User First',
-      description: 'Everything we build starts with our users. Your success is our success.',
-      gradient: 'from-pink-500 to-rose-500',
-    },
-    {
-      icon: Shield,
-      title: 'Privacy & Security',
-      description: 'Your data is yours. We never sell or share your personal information.',
-      gradient: 'from-blue-500 to-cyan-500',
-    },
-    {
-      icon: Zap,
-      title: 'Performance',
-      description: 'Speed matters. We optimize every millisecond of your experience.',
-      gradient: 'from-amber-500 to-orange-500',
-    },
-    {
-      icon: Code,
-      title: 'Open Innovation',
-      description: 'We embrace modern technology and continuously improve our platform.',
-      gradient: 'from-green-500 to-emerald-500',
-    },
-  ]
-
   const stats = [
-    { value: platformStats?.totalUsers?.toLocaleString() || '0', label: 'Active Users' },
-    { value: platformStats?.totalLinks?.toLocaleString() || '0', label: 'Links Created' },
-    { value: platformStats?.totalCountries?.toLocaleString() || '0', label: 'Countries' },
-    { value: '99.9%', label: 'Uptime' },
+    { value: platformStats?.totalUsers?.toLocaleString() || '0', label: 'Creators', icon: Users },
+    { value: platformStats?.totalLinks?.toLocaleString() || '0', label: 'Links', icon: Globe },
+    { value: themes.length.toString(), label: 'Themes', icon: Palette },
+    { value: '99.9%', label: 'Uptime', icon: Zap },
   ]
 
-  const team = [
-    {
-      name: 'Saito',
-      role: 'Founder & Developer',
-      avatar: 'https://eziox.link/images/avatars/saito.png',
-      bio: 'Full-stack developer passionate about creating beautiful, functional web experiences.',
-      isOwner: true,
-      links: {
-        github: 'https://github.com/XSaitoKungX',
-        website: 'https://eziox.link',
-        discord: 'https://discord.com/invite/KD84DmNA89',
-      },
-    },
+  const values = [
+    { icon: Heart, title: 'User First', description: 'Everything starts with our users. Your success is our success.', color: '#ec4899' },
+    { icon: Shield, title: 'Security', description: 'Cloudflare-inspired bot protection keeps your account safe.', color: '#6366f1' },
+    { icon: Zap, title: 'Performance', description: 'Optimized for speed. Every millisecond matters.', color: '#f59e0b' },
+    { icon: Code, title: 'Innovation', description: 'Modern tech stack with continuous improvements.', color: '#22c55e' },
   ]
 
   return (
-    <div className="min-h-screen pt-24 pb-12 px-4">
-      {/* Background Effects */}
-      <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
+    <div className="min-h-screen py-20 px-4">
+      <div className="absolute inset-0 pointer-events-none -z-10 overflow-hidden">
         <motion.div
-          className="absolute top-20 right-1/4 w-[500px] h-[500px] rounded-full blur-3xl"
-          style={{ background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(139, 92, 246, 0.08))' }}
-          animate={{ scale: [1, 1.2, 1], x: [0, 50, 0] }}
-          transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
+          className="absolute top-20 right-1/4 w-[600px] h-[600px] rounded-full blur-[150px] opacity-20"
+          style={{ background: theme.colors.primary }}
+          animate={{ scale: [1, 1.1, 1], x: [0, 30, 0] }}
+          transition={{ duration: 20, repeat: Infinity }}
         />
         <motion.div
-          className="absolute bottom-20 left-1/4 w-[400px] h-[400px] rounded-full blur-3xl"
-          style={{ background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.08), rgba(99, 102, 241, 0.08))' }}
-          animate={{ scale: [1.2, 1, 1.2], y: [0, -30, 0] }}
-          transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut' }}
+          className="absolute bottom-40 left-1/4 w-[500px] h-[500px] rounded-full blur-[120px] opacity-15"
+          style={{ background: theme.colors.accent }}
+          animate={{ scale: [1.1, 1, 1.1], y: [0, -30, 0] }}
+          transition={{ duration: 25, repeat: Infinity }}
         />
       </div>
 
       <div className="max-w-6xl mx-auto">
-        {/* Hero Section */}
         <motion.div
-          initial={{ opacity: 0, y: -20 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-20"
+          className="text-center mb-16"
         >
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ type: 'spring', stiffness: 200, damping: 15 }}
-            className="w-20 h-20 mx-auto mb-6 rounded-2xl flex items-center justify-center relative"
-            style={{ 
-              background: 'linear-gradient(135deg, var(--primary), var(--accent))',
-              boxShadow: '0 20px 40px rgba(99, 102, 241, 0.4)'
-            }}
+            className="w-20 h-20 mx-auto mb-6 rounded-2xl flex items-center justify-center"
+            style={{ background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`, boxShadow: `0 20px 40px ${theme.colors.primary}40` }}
           >
             <Sparkles className="w-10 h-10 text-white" />
           </motion.div>
-          
-          <Badge variant="outline" className="mb-4">About Us</Badge>
-          
-          <h1 className="text-4xl md:text-6xl font-bold mb-6" style={{ color: 'var(--foreground)' }}>
+
+          <div
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6"
+            style={{ background: `${theme.colors.primary}15`, border: `1px solid ${theme.colors.primary}30` }}
+          >
+            <Target size={14} style={{ color: theme.colors.primary }} />
+            <span className="text-sm font-medium" style={{ color: theme.colors.foreground }}>About Us</span>
+          </div>
+
+          <h1
+            className="text-4xl lg:text-6xl font-bold mb-6"
+            style={{ color: theme.colors.foreground, fontFamily: 'var(--font-display)' }}
+          >
             Building the Future of{' '}
-            <span 
-              className="bg-clip-text text-transparent"
-              style={{ backgroundImage: 'linear-gradient(135deg, var(--primary), var(--accent))' }}
-            >
+            <span className="bg-clip-text text-transparent" style={{ backgroundImage: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})` }}>
               Bio Links
             </span>
           </h1>
-          
-          <p className="text-xl max-w-3xl mx-auto mb-8" style={{ color: 'var(--foreground-muted)' }}>
-            Eziox is a modern bio link platform that helps creators, influencers, and businesses 
-            share everything they create, curate, and sell from one simple link.
+
+          <p className="text-lg max-w-3xl mx-auto mb-12" style={{ color: theme.colors.foregroundMuted }}>
+            Eziox is a modern bio link platform that helps creators, influencers, and businesses
+            share everything they create from one beautiful, customizable link.
           </p>
 
-          {/* Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
-            {stats.map((stat, index) => (
+            {stats.map((stat, i) => (
               <motion.div
                 key={stat.label}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 + index * 0.1 }}
-                className="p-4 rounded-2xl text-center"
-                style={{ background: 'var(--card)', border: '1px solid var(--border)' }}
+                transition={{ delay: 0.1 + i * 0.05 }}
+                className="p-5 rounded-2xl text-center"
+                style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}` }}
               >
-                <p className="text-3xl font-bold" style={{ color: 'var(--primary)' }}>
-                  {stat.value}
-                </p>
-                <p className="text-sm" style={{ color: 'var(--foreground-muted)' }}>
-                  {stat.label}
-                </p>
+                <stat.icon size={24} className="mx-auto mb-2" style={{ color: theme.colors.primary }} />
+                <p className="text-2xl font-bold" style={{ color: theme.colors.foreground }}>{stat.value}</p>
+                <p className="text-xs" style={{ color: theme.colors.foregroundMuted }}>{stat.label}</p>
               </motion.div>
             ))}
           </div>
         </motion.div>
 
-        {/* Mission Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="mb-20"
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="mb-16 p-6 rounded-3xl"
+          style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}` }}
         >
-          <div className="relative">
-            <div
-              className="absolute inset-0 rounded-3xl blur-2xl opacity-40"
-              style={{ background: 'linear-gradient(135deg, var(--primary), var(--accent))' }}
-            />
-            <Card className="relative overflow-hidden">
-              <CardContent className="p-8 md:p-12">
-                <div className="grid md:grid-cols-2 gap-8 items-center">
-                  <div>
-                    <Badge variant="outline" className="mb-4">
-                      <Target size={14} className="mr-1" />
-                      Our Mission
-                    </Badge>
-                    <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ color: 'var(--foreground)' }}>
-                      Empowering Creators Worldwide
-                    </h2>
-                    <p className="text-lg mb-6" style={{ color: 'var(--foreground-muted)' }}>
-                      We believe everyone deserves a beautiful, professional online presence. 
-                      Our mission is to make it easy for anyone to create and share their digital identity.
-                    </p>
-                    <ul className="space-y-3">
-                      {[
-                        'Free for everyone, forever',
-                        'No coding required',
-                        'Works on all devices',
-                        'Real-time analytics',
-                      ].map((item) => (
-                        <li key={item} className="flex items-center gap-3">
-                          <CheckCircle size={20} style={{ color: 'var(--primary)' }} />
-                          <span style={{ color: 'var(--foreground)' }}>{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div className="flex justify-center">
-                    <motion.div
-                      className="w-64 h-64 rounded-3xl flex items-center justify-center"
-                      style={{ background: 'linear-gradient(135deg, var(--primary), var(--accent))' }}
-                      animate={{ rotate: [0, 5, -5, 0] }}
-                      transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
-                    >
-                      <Rocket size={100} className="text-white" />
-                    </motion.div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})` }}>
+              <Palette size={24} className="text-white" />
+            </div>
+            <div>
+              <h3 className="text-xl font-bold" style={{ color: theme.colors.foreground }}>Theme System</h3>
+              <p className="text-sm" style={{ color: theme.colors.foregroundMuted }}>{themes.length}+ themes across 8 categories</p>
+            </div>
+          </div>
+          <div className="grid grid-cols-4 sm:grid-cols-7 gap-3">
+            {themeCategories.map((cat) => (
+              <motion.div
+                key={cat.label}
+                className="flex flex-col items-center gap-2 p-4 rounded-xl transition-all"
+                style={{ background: theme.colors.backgroundSecondary }}
+                whileHover={{ scale: 1.05, y: -2 }}
+              >
+                <cat.icon size={24} style={{ color: cat.color }} />
+                <span className="text-xs font-medium" style={{ color: theme.colors.foregroundMuted }}>{cat.label}</span>
+              </motion.div>
+            ))}
           </div>
         </motion.div>
 
-        {/* Values Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="mb-20"
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25 }}
+          className="mb-16 p-6 rounded-3xl"
+          style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}` }}
         >
-          <div className="text-center mb-12">
-            <Badge variant="outline" className="mb-4">
-              <Heart size={14} className="mr-1" />
-              Our Values
-            </Badge>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ color: 'var(--foreground)' }}>
-              What We Stand For
-            </h2>
-            <p className="text-lg max-w-2xl mx-auto" style={{ color: 'var(--foreground-muted)' }}>
-              Our core values guide everything we do, from product decisions to how we treat our community.
-            </p>
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)' }}>
+              <Lock size={24} className="text-white" />
+            </div>
+            <div>
+              <h3 className="text-xl font-bold" style={{ color: theme.colors.foreground }}>Cloudflare-Style Security</h3>
+              <p className="text-sm" style={{ color: theme.colors.foregroundMuted }}>Advanced bot protection without annoying CAPTCHAs</p>
+            </div>
+          </div>
+          <div className="grid grid-cols-3 gap-4">
+            {securityFeatures.map((feat) => (
+              <motion.div
+                key={feat.label}
+                className="flex flex-col items-center gap-2 p-5 rounded-xl text-center"
+                style={{ background: theme.colors.backgroundSecondary }}
+                whileHover={{ scale: 1.02 }}
+              >
+                <div className="w-14 h-14 rounded-xl flex items-center justify-center" style={{ background: 'rgba(99, 102, 241, 0.15)' }}>
+                  <feat.icon size={28} style={{ color: '#6366f1' }} />
+                </div>
+                <span className="text-sm font-semibold" style={{ color: theme.colors.foreground }}>{feat.label}</span>
+                <span className="text-[11px]" style={{ color: theme.colors.foregroundMuted }}>{feat.desc}</span>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="mb-16"
+        >
+          <div className="text-center mb-10">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-4" style={{ background: `${theme.colors.primary}15`, border: `1px solid ${theme.colors.primary}30` }}>
+              <Heart size={14} style={{ color: theme.colors.primary }} />
+              <span className="text-sm font-medium" style={{ color: theme.colors.foreground }}>Our Values</span>
+            </div>
+            <h2 className="text-3xl font-bold" style={{ color: theme.colors.foreground }}>What We Stand For</h2>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {values.map((value, index) => (
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {values.map((value, i) => (
               <motion.div
                 key={value.title}
                 initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.35 + i * 0.05 }}
+                className="p-6 rounded-2xl text-center"
+                style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}` }}
+                whileHover={{ scale: 1.02, y: -4 }}
               >
-                <Card className="h-full hover:scale-[1.02] transition-transform">
-                  <CardContent className="p-6 text-center">
-                    <div className={`w-16 h-16 mx-auto mb-4 rounded-xl flex items-center justify-center bg-gradient-to-br ${value.gradient}`}>
-                      <value.icon size={32} className="text-white" />
-                    </div>
-                    <h3 className="text-xl font-semibold mb-2" style={{ color: 'var(--foreground)' }}>
-                      {value.title}
-                    </h3>
-                    <p style={{ color: 'var(--foreground-muted)' }}>
-                      {value.description}
-                    </p>
-                  </CardContent>
-                </Card>
+                <div className="w-14 h-14 mx-auto mb-4 rounded-xl flex items-center justify-center" style={{ background: `${value.color}20` }}>
+                  <value.icon size={28} style={{ color: value.color }} />
+                </div>
+                <h3 className="text-lg font-bold mb-2" style={{ color: theme.colors.foreground }}>{value.title}</h3>
+                <p className="text-sm" style={{ color: theme.colors.foregroundMuted }}>{value.description}</p>
               </motion.div>
             ))}
           </div>
         </motion.div>
 
-        {/* Team Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="mb-20"
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="mb-16"
         >
-          <div className="text-center mb-12">
-            <Badge variant="outline" className="mb-4">
-              <Users size={14} className="mr-1" />
-              Our Team
-            </Badge>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ color: 'var(--foreground)' }}>
-              Meet the Creator
-            </h2>
-            <p className="text-lg max-w-2xl mx-auto" style={{ color: 'var(--foreground-muted)' }}>
-              Eziox is built with passion by a solo developer dedicated to creating the best bio link experience.
+          <div className="text-center mb-10">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-4" style={{ background: `${theme.colors.primary}15`, border: `1px solid ${theme.colors.primary}30` }}>
+              <Users size={14} style={{ color: theme.colors.primary }} />
+              <span className="text-sm font-medium" style={{ color: theme.colors.foreground }}>The Creator</span>
+            </div>
+            <h2 className="text-3xl font-bold" style={{ color: theme.colors.foreground }}>Meet Saito</h2>
+          </div>
+
+          <motion.div
+            className="max-w-md mx-auto p-8 rounded-3xl text-center"
+            style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}` }}
+            whileHover={{ scale: 1.01 }}
+          >
+            <div className="relative inline-block mb-6">
+              <div className="w-32 h-32 rounded-full overflow-hidden" style={{ boxShadow: `0 0 0 4px ${theme.colors.primary}` }}>
+                <img src="https://eziox.link/images/avatars/saito.png" alt="Saito" className="w-full h-full object-cover" />
+              </div>
+              <div className="absolute -top-2 -right-2 w-10 h-10 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #f59e0b, #d97706)' }}>
+                <Crown size={20} className="text-white" />
+              </div>
+            </div>
+
+            <h3 className="text-2xl font-bold mb-1" style={{ color: theme.colors.foreground }}>Saito</h3>
+            <p className="text-sm mb-4" style={{ color: theme.colors.primary }}>Founder & Developer</p>
+            <p className="mb-6" style={{ color: theme.colors.foregroundMuted }}>
+              Full-stack developer passionate about creating beautiful, functional web experiences for creators worldwide.
             </p>
+
+            <div className="flex justify-center gap-3">
+              <motion.a
+                href="https://github.com/XSaitoKungX"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-12 h-12 rounded-xl flex items-center justify-center"
+                style={{ background: theme.colors.backgroundSecondary }}
+                whileHover={{ scale: 1.1, y: -2 }}
+              >
+                <SiGithub size={22} style={{ color: theme.colors.foreground }} />
+              </motion.a>
+              <motion.a
+                href="https://discord.com/invite/KD84DmNA89"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-12 h-12 rounded-xl flex items-center justify-center"
+                style={{ background: theme.colors.backgroundSecondary }}
+                whileHover={{ scale: 1.1, y: -2 }}
+              >
+                <DiscordIcon size={22} />
+              </motion.a>
+            </div>
+          </motion.div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.45 }}
+          className="mb-16 p-6 rounded-3xl"
+          style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}` }}
+        >
+          <div className="text-center mb-6">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-4" style={{ background: `${theme.colors.primary}15`, border: `1px solid ${theme.colors.primary}30` }}>
+              <Code size={14} style={{ color: theme.colors.primary }} />
+              <span className="text-sm font-medium" style={{ color: theme.colors.foreground }}>Tech Stack</span>
+            </div>
+            <h2 className="text-2xl font-bold" style={{ color: theme.colors.foreground }}>Built with Modern Technology</h2>
           </div>
 
-          <div className="max-w-md mx-auto">
-            {team.map((member) => (
+          <div className="flex flex-wrap justify-center gap-4">
+            {techStack.map((tech) => (
               <motion.div
-                key={member.name}
-                initial={{ opacity: 0, scale: 0.95 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
+                key={tech.name}
+                className="flex items-center gap-3 px-5 py-3 rounded-xl"
+                style={{ background: theme.colors.backgroundSecondary }}
+                whileHover={{ scale: 1.05, y: -2 }}
               >
-                <Card className="overflow-hidden">
-                  <CardContent className="p-8 text-center">
-                    <div className="relative inline-block mb-4">
-                      <Avatar className="w-32 h-32 mx-auto">
-                        <AvatarImage src={member.avatar || undefined} />
-                        <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white text-4xl font-bold">
-                          {member.name.charAt(0)}
-                        </AvatarFallback>
-                      </Avatar>
-                      {member.isOwner && (
-                        <div 
-                          className="absolute -top-2 -right-2 w-10 h-10 rounded-full flex items-center justify-center"
-                          style={{ background: 'linear-gradient(135deg, #f59e0b, #d97706)' }}
-                        >
-                          <Crown size={20} className="text-white" />
-                        </div>
-                      )}
-                    </div>
-                    
-                    <h3 className="text-2xl font-bold mb-1" style={{ color: 'var(--foreground)' }}>
-                      {member.name}
-                    </h3>
-                    <p className="text-sm mb-4" style={{ color: 'var(--primary)' }}>
-                      {member.role}
-                    </p>
-                    <p className="mb-6" style={{ color: 'var(--foreground-muted)' }}>
-                      {member.bio}
-                    </p>
-                    
-                    <div className="flex justify-center gap-3">
-                      {member.links.github && (
-                        <motion.a
-                          href={member.links.github}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="w-10 h-10 rounded-lg flex items-center justify-center"
-                          style={{ background: 'var(--background-secondary)' }}
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.95 }}
-                        >
-                          <SiGithub size={20} style={{ color: 'var(--foreground)' }} />
-                        </motion.a>
-                      )}
-                      {member.links.discord && (
-                        <motion.a
-                          href={member.links.discord}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="w-10 h-10 rounded-lg flex items-center justify-center"
-                          style={{ background: 'var(--background-secondary)' }}
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.95 }}
-                        >
-                          <DiscordIcon size={20} />
-                        </motion.a>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
+                <tech.icon size={24} style={{ color: tech.color }} />
+                <span className="font-medium" style={{ color: theme.colors.foreground }}>{tech.name}</span>
               </motion.div>
             ))}
           </div>
         </motion.div>
 
-        {/* Tech Stack Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="mb-20"
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="relative"
         >
-          <Card>
-            <CardContent className="p-8">
-              <div className="text-center mb-8">
-                <Badge variant="outline" className="mb-4">
-                  <Code size={14} className="mr-1" />
-                  Tech Stack
-                </Badge>
-                <h2 className="text-2xl font-bold" style={{ color: 'var(--foreground)' }}>
-                  Built with Modern Technology
-                </h2>
-              </div>
-              
-              <div className="flex flex-wrap justify-center gap-4">
-                {[
-                  'React', 'TypeScript', 'TanStack Router', 'TanStack Query',
-                  'Tailwind CSS', 'Drizzle ORM', 'PostgreSQL', 'Vercel',
-                ].map((tech) => (
-                  <motion.div
-                    key={tech}
-                    className="px-4 py-2 rounded-lg"
-                    style={{ background: 'var(--background-secondary)', border: '1px solid var(--border)' }}
-                    whileHover={{ scale: 1.05 }}
-                  >
-                    <span className="font-medium" style={{ color: 'var(--foreground)' }}>
-                      {tech}
-                    </span>
-                  </motion.div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+          <div className="absolute inset-0 rounded-3xl blur-2xl opacity-40" style={{ background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})` }} />
+          <div className="relative p-12 rounded-3xl text-center" style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}` }}>
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: 'spring', stiffness: 200, damping: 15, delay: 0.55 }}
+              className="w-20 h-20 mx-auto mb-6 rounded-2xl flex items-center justify-center"
+              style={{ background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})` }}
+            >
+              <Rocket size={40} className="text-white" />
+            </motion.div>
+
+            <h2 className="text-3xl font-bold mb-4" style={{ color: theme.colors.foreground }}>Ready to Join?</h2>
+            <p className="text-lg mb-8 max-w-xl mx-auto" style={{ color: theme.colors.foregroundMuted }}>
+              Create your free bio link page today and join thousands of creators worldwide.
+            </p>
+
+            <div className="flex flex-wrap justify-center gap-4">
+              <Link to="/sign-up">
+                <motion.button
+                  className="flex items-center gap-2 px-8 py-4 rounded-2xl font-semibold text-white"
+                  style={{ background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`, boxShadow: `0 10px 40px ${theme.colors.primary}40` }}
+                  whileHover={{ scale: 1.02, y: -2 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  Get Started Free
+                  <ArrowRight size={20} />
+                </motion.button>
+              </Link>
+              <Link to="/changelog">
+                <motion.button
+                  className="flex items-center gap-2 px-8 py-4 rounded-2xl font-semibold"
+                  style={{ background: theme.colors.backgroundSecondary, border: `1px solid ${theme.colors.border}`, color: theme.colors.foreground }}
+                  whileHover={{ scale: 1.02, y: -2 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <Star size={20} style={{ color: theme.colors.primary }} />
+                  View Changelog
+                </motion.button>
+              </Link>
+            </div>
+          </div>
         </motion.div>
 
-        {/* CTA Section */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.6 }}
+          className="mt-12 text-center"
         >
-          <div className="relative">
-            <div
-              className="absolute inset-0 rounded-3xl blur-2xl opacity-50"
-              style={{ background: 'linear-gradient(135deg, var(--primary), var(--accent))' }}
-            />
-            <Card className="relative overflow-hidden">
-              <CardContent className="p-12 text-center">
-                <motion.div
-                  initial={{ scale: 0 }}
-                  whileInView={{ scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ type: 'spring', stiffness: 200, damping: 15 }}
-                  className="w-20 h-20 mx-auto mb-6 rounded-2xl flex items-center justify-center"
-                  style={{ background: 'linear-gradient(135deg, var(--primary), var(--accent))' }}
-                >
-                  <Globe size={40} className="text-white" />
-                </motion.div>
-                
-                <h2 className="text-3xl font-bold mb-4" style={{ color: 'var(--foreground)' }}>
-                  Ready to Join Us?
-                </h2>
-                <p className="text-lg mb-8 max-w-xl mx-auto" style={{ color: 'var(--foreground-muted)' }}>
-                  Create your free bio link page today and join thousands of creators worldwide.
-                </p>
-                
-                <Link to="/sign-up">
-                  <Button 
-                    size="lg" 
-                    className="text-lg px-8 py-6 rounded-xl font-semibold"
-                    style={{ 
-                      background: 'linear-gradient(135deg, var(--primary), var(--accent))',
-                      boxShadow: '0 10px 40px rgba(99, 102, 241, 0.4)'
-                    }}
-                  >
-                    Get Started Free
-                    <ArrowRight className="ml-2" size={20} />
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
-          </div>
+          <p className="text-sm" style={{ color: theme.colors.foregroundMuted }}>
+            Version 1.5.0 • Made with <Heart size={12} className="inline mx-1" style={{ color: '#ef4444' }} /> by Saito
+          </p>
         </motion.div>
       </div>
     </div>
