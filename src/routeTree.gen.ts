@@ -14,6 +14,7 @@ import { Route as ProtectedRouteImport } from './routes/_protected'
 import { Route as BioRouteImport } from './routes/_bio'
 import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
+import { Route as ApiSpotifyCallbackRouteImport } from './routes/api/spotify-callback'
 import { Route as PublicTermsRouteImport } from './routes/_public/terms'
 import { Route as PublicPrivacyRouteImport } from './routes/_public/privacy'
 import { Route as PublicPartnersRouteImport } from './routes/_public/partners'
@@ -29,7 +30,6 @@ import { Route as BioUsernameRouteImport } from './routes/_bio/$username'
 import { Route as AuthSignUpRouteImport } from './routes/_auth/sign-up'
 import { Route as AuthSignOutRouteImport } from './routes/_auth/sign-out'
 import { Route as AuthSignInRouteImport } from './routes/_auth/sign-in'
-import { Route as ApiSpotifyCallbackRouteImport } from './routes/_api/spotify-callback'
 import { Route as ApiSitemapRouteImport } from './routes/_api/sitemap'
 import { Route as ApiRssRouteImport } from './routes/_api/rss'
 import { Route as ApiHelloRouteImport } from './routes/_api/hello'
@@ -58,6 +58,11 @@ const PublicIndexRoute = PublicIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => PublicRoute,
+} as any)
+const ApiSpotifyCallbackRoute = ApiSpotifyCallbackRouteImport.update({
+  id: '/api/spotify-callback',
+  path: '/api/spotify-callback',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const PublicTermsRoute = PublicTermsRouteImport.update({
   id: '/terms',
@@ -134,11 +139,6 @@ const AuthSignInRoute = AuthSignInRouteImport.update({
   path: '/sign-in',
   getParentRoute: () => AuthRoute,
 } as any)
-const ApiSpotifyCallbackRoute = ApiSpotifyCallbackRouteImport.update({
-  id: '/_api/spotify-callback',
-  path: '/spotify-callback',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ApiSitemapRoute = ApiSitemapRouteImport.update({
   id: '/_api/sitemap',
   path: '/sitemap',
@@ -180,7 +180,6 @@ export interface FileRoutesByFullPath {
   '/hello': typeof ApiHelloRoute
   '/rss': typeof ApiRssRoute
   '/sitemap': typeof ApiSitemapRoute
-  '/spotify-callback': typeof ApiSpotifyCallbackRoute
   '/sign-in': typeof AuthSignInRoute
   '/sign-out': typeof AuthSignOutRoute
   '/sign-up': typeof AuthSignUpRoute
@@ -196,6 +195,7 @@ export interface FileRoutesByFullPath {
   '/partners': typeof PublicPartnersRoute
   '/privacy': typeof PublicPrivacyRoute
   '/terms': typeof PublicTermsRoute
+  '/api/spotify-callback': typeof ApiSpotifyCallbackRoute
   '/': typeof PublicIndexRoute
   '/admin/partner-applications': typeof ProtectedAdminPartnerApplicationsRoute
   '/join/$code': typeof PublicJoinCodeRoute
@@ -206,7 +206,6 @@ export interface FileRoutesByTo {
   '/hello': typeof ApiHelloRoute
   '/rss': typeof ApiRssRoute
   '/sitemap': typeof ApiSitemapRoute
-  '/spotify-callback': typeof ApiSpotifyCallbackRoute
   '/sign-in': typeof AuthSignInRoute
   '/sign-out': typeof AuthSignOutRoute
   '/sign-up': typeof AuthSignUpRoute
@@ -222,6 +221,7 @@ export interface FileRoutesByTo {
   '/partners': typeof PublicPartnersRoute
   '/privacy': typeof PublicPrivacyRoute
   '/terms': typeof PublicTermsRoute
+  '/api/spotify-callback': typeof ApiSpotifyCallbackRoute
   '/': typeof PublicIndexRoute
   '/admin/partner-applications': typeof ProtectedAdminPartnerApplicationsRoute
   '/join/$code': typeof PublicJoinCodeRoute
@@ -237,7 +237,6 @@ export interface FileRoutesById {
   '/_api/hello': typeof ApiHelloRoute
   '/_api/rss': typeof ApiRssRoute
   '/_api/sitemap': typeof ApiSitemapRoute
-  '/_api/spotify-callback': typeof ApiSpotifyCallbackRoute
   '/_auth/sign-in': typeof AuthSignInRoute
   '/_auth/sign-out': typeof AuthSignOutRoute
   '/_auth/sign-up': typeof AuthSignUpRoute
@@ -253,6 +252,7 @@ export interface FileRoutesById {
   '/_public/partners': typeof PublicPartnersRoute
   '/_public/privacy': typeof PublicPrivacyRoute
   '/_public/terms': typeof PublicTermsRoute
+  '/api/spotify-callback': typeof ApiSpotifyCallbackRoute
   '/_public/': typeof PublicIndexRoute
   '/_protected/admin/partner-applications': typeof ProtectedAdminPartnerApplicationsRoute
   '/_public/join/$code': typeof PublicJoinCodeRoute
@@ -265,7 +265,6 @@ export interface FileRouteTypes {
     | '/hello'
     | '/rss'
     | '/sitemap'
-    | '/spotify-callback'
     | '/sign-in'
     | '/sign-out'
     | '/sign-up'
@@ -281,6 +280,7 @@ export interface FileRouteTypes {
     | '/partners'
     | '/privacy'
     | '/terms'
+    | '/api/spotify-callback'
     | '/'
     | '/admin/partner-applications'
     | '/join/$code'
@@ -291,7 +291,6 @@ export interface FileRouteTypes {
     | '/hello'
     | '/rss'
     | '/sitemap'
-    | '/spotify-callback'
     | '/sign-in'
     | '/sign-out'
     | '/sign-up'
@@ -307,6 +306,7 @@ export interface FileRouteTypes {
     | '/partners'
     | '/privacy'
     | '/terms'
+    | '/api/spotify-callback'
     | '/'
     | '/admin/partner-applications'
     | '/join/$code'
@@ -321,7 +321,6 @@ export interface FileRouteTypes {
     | '/_api/hello'
     | '/_api/rss'
     | '/_api/sitemap'
-    | '/_api/spotify-callback'
     | '/_auth/sign-in'
     | '/_auth/sign-out'
     | '/_auth/sign-up'
@@ -337,6 +336,7 @@ export interface FileRouteTypes {
     | '/_public/partners'
     | '/_public/privacy'
     | '/_public/terms'
+    | '/api/spotify-callback'
     | '/_public/'
     | '/_protected/admin/partner-applications'
     | '/_public/join/$code'
@@ -391,6 +391,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof PublicIndexRouteImport
       parentRoute: typeof PublicRoute
+    }
+    '/api/spotify-callback': {
+      id: '/api/spotify-callback'
+      path: '/api/spotify-callback'
+      fullPath: '/api/spotify-callback'
+      preLoaderRoute: typeof ApiSpotifyCallbackRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_public/terms': {
       id: '/_public/terms'
@@ -496,13 +503,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/sign-in'
       preLoaderRoute: typeof AuthSignInRouteImport
       parentRoute: typeof AuthRoute
-    }
-    '/_api/spotify-callback': {
-      id: '/_api/spotify-callback'
-      path: '/spotify-callback'
-      fullPath: '/spotify-callback'
-      preLoaderRoute: typeof ApiSpotifyCallbackRouteImport
-      parentRoute: typeof rootRouteImport
     }
     '/_api/sitemap': {
       id: '/_api/sitemap'
