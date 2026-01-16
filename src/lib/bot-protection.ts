@@ -9,64 +9,121 @@ export type BotCheckResult = {
   }
 }
 
+export type ImageCategory = 'car' | 'tree' | 'house' | 'cat' | 'dog' | 'flower' | 'mountain' | 'ocean' | 'bird' | 'food'
+
+export type ChallengeImage = {
+  id: string
+  category: ImageCategory
+  emoji: string
+}
+
 export type ChallengeData = {
-  question: string
-  answer: number
-  options: number[]
+  targetCategory: ImageCategory
+  targetLabel: string
+  images: ChallengeImage[]
+  correctIds: string[]
+}
+
+const CATEGORY_EMOJIS: Record<ImageCategory, string[]> = {
+  car: ['🚗', '🚙', '🏎️', '🚕', '🚐'],
+  tree: ['🌲', '🌳', '🌴', '🎄', '🌿'],
+  house: ['🏠', '🏡', '🏘️', '🏚️', '🛖'],
+  cat: ['🐱', '😺', '😸', '🐈', '😻'],
+  dog: ['🐕', '🐶', '🦮', '🐕‍🦺', '🐩'],
+  flower: ['🌸', '🌺', '🌻', '🌹', '💐'],
+  mountain: ['⛰️', '🏔️', '🗻', '🌋', '🏞️'],
+  ocean: ['🌊', '🏖️', '🐚', '🦀', '🐠'],
+  bird: ['🐦', '🦅', '🦆', '🦉', '🐧'],
+  food: ['🍕', '🍔', '🍟', '🌮', '🍣'],
+}
+
+const CATEGORY_LABELS: Record<ImageCategory, string> = {
+  car: 'cars',
+  tree: 'trees',
+  house: 'houses',
+  cat: 'cats',
+  dog: 'dogs',
+  flower: 'flowers',
+  mountain: 'mountains',
+  ocean: 'ocean/beach',
+  bird: 'birds',
+  food: 'food',
+}
+
+function shuffleArray<T>(array: T[]): T[] {
+  const shuffled = [...array]
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    const temp = shuffled[i]
+    shuffled[i] = shuffled[j]!
+    shuffled[j] = temp!
+  }
+  return shuffled
+}
+
+function getRandomEmoji(category: ImageCategory): string {
+  const emojis = CATEGORY_EMOJIS[category]
+  return emojis[Math.floor(Math.random() * emojis.length)]!
 }
 
 export function generateChallenge(): ChallengeData {
-  const operations = [
-    () => {
-      const a = Math.floor(Math.random() * 10) + 1
-      const b = Math.floor(Math.random() * 10) + 1
-      return { question: `${a} + ${b}`, answer: a + b }
-    },
-    () => {
-      const a = Math.floor(Math.random() * 10) + 5
-      const b = Math.floor(Math.random() * 5) + 1
-      return { question: `${a} - ${b}`, answer: a - b }
-    },
-    () => {
-      const a = Math.floor(Math.random() * 5) + 2
-      const b = Math.floor(Math.random() * 5) + 2
-      return { question: `${a} × ${b}`, answer: a * b }
-    },
-  ]
-
-  const opIndex = Math.floor(Math.random() * operations.length)
-  const selectedOp = operations[opIndex]
-  if (!selectedOp) {
-    return { question: '2 + 2', answer: 4, options: [3, 4, 5, 6] }
+  const categories = Object.keys(CATEGORY_EMOJIS) as ImageCategory[]
+  const targetCategory = categories[Math.floor(Math.random() * categories.length)]!
+  
+  const correctCount = 2 + Math.floor(Math.random() * 2)
+  const totalImages = 9
+  const incorrectCount = totalImages - correctCount
+  
+  const images: ChallengeImage[] = []
+  const correctIds: string[] = []
+  
+  for (let i = 0; i < correctCount; i++) {
+    const id = `correct-${i}-${Date.now()}`
+    correctIds.push(id)
+    images.push({
+      id,
+      category: targetCategory,
+      emoji: getRandomEmoji(targetCategory),
+    })
   }
-  const { question, answer } = selectedOp()
-
-  const options = new Set<number>([answer])
-  while (options.size < 4) {
-    const offset = Math.floor(Math.random() * 10) - 5
-    if (offset !== 0) options.add(answer + offset)
+  
+  const otherCategories = categories.filter(c => c !== targetCategory)
+  for (let i = 0; i < incorrectCount; i++) {
+    const randomCat = otherCategories[Math.floor(Math.random() * otherCategories.length)]!
+    images.push({
+      id: `incorrect-${i}-${Date.now()}`,
+      category: randomCat,
+      emoji: getRandomEmoji(randomCat),
+    })
   }
-
+  
   return {
-    question,
-    answer,
-    options: Array.from(options).sort(() => Math.random() - 0.5),
+    targetCategory,
+    targetLabel: CATEGORY_LABELS[targetCategory],
+    images: shuffleArray(images),
+    correctIds,
   }
+}
+
+export function validateImageChallenge(selectedIds: string[], correctIds: string[]): boolean {
+  if (selectedIds.length !== correctIds.length) return false
+  const sortedSelected = [...selectedIds].sort()
+  const sortedCorrect = [...correctIds].sort()
+  return sortedSelected.every((id, i) => id === sortedCorrect[i])
 }
 
 export function validateBotCheck(data: {
   honeypotValue: string
   startTime: number
-  challengeAnswer: number | null
-  correctAnswer: number
+  challengePassed: boolean
   interactionCount: number
   mouseMovements: number
 }): BotCheckResult {
   const checks = {
     honeypot: data.honeypotValue === '',
-    timing: Date.now() - data.startTime >= 2000,
-    challenge: data.challengeAnswer === data.correctAnswer,
-    interaction: data.interactionCount >= 3 || data.mouseMovements >= 5,
+    timing: Date.now() - data.startTime >= 1500,
+    challenge: data.challengePassed,
+    interaction: data.interactionCount >= 2 || data.mouseMovements >= 3,
   }
 
   const score = Object.values(checks).filter(Boolean).length

@@ -32,12 +32,12 @@ import {
   BarChart3,
   Palette,
   Globe,
-  Calculator,
   CheckCircle2,
   XCircle,
-  MousePointer2,
+  ShieldCheck,
+  RotateCcw,
 } from 'lucide-react'
-import { generateChallenge, validateBotCheck, getDeviceType, type ChallengeData } from '@/lib/bot-protection'
+import { generateChallenge, validateImageChallenge, validateBotCheck, getDeviceType, type ChallengeData } from '@/lib/bot-protection'
 
 const searchSchema = z.object({
   redirect: z.string().optional(),
@@ -100,9 +100,10 @@ function SignUpPage() {
   const [deviceType, setDeviceType] = useState<'mobile' | 'tablet' | 'desktop'>('desktop')
   
   const [challenge, setChallenge] = useState<ChallengeData | null>(null)
-  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null)
+  const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [botCheckPassed, setBotCheckPassed] = useState(false)
   const [botCheckFailed, setBotCheckFailed] = useState(false)
+  const [showChallenge, setShowChallenge] = useState(false)
   const [honeypot, setHoneypot] = useState('')
   const startTimeRef = useRef(Date.now())
   const interactionCountRef = useRef(0)
@@ -126,34 +127,39 @@ function SignUpPage() {
     }
   }, [])
 
-  const handleChallengeAnswer = useCallback((answer: number) => {
-    if (!challenge || botCheckPassed) return
-    
-    setSelectedAnswer(answer)
-    
-    setTimeout(() => {
-      const result = validateBotCheck({
-        honeypotValue: honeypot,
-        startTime: startTimeRef.current,
-        challengeAnswer: answer,
-        correctAnswer: challenge.answer,
-        interactionCount: interactionCountRef.current,
-        mouseMovements: mouseMovementsRef.current,
-      })
-      
-      if (result.passed) {
-        setBotCheckPassed(true)
+  const toggleImageSelection = useCallback((id: string) => {
+    setSelectedIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id])
+  }, [])
+
+  const handleVerify = useCallback(() => {
+    if (!challenge) return
+    const isCorrect = validateImageChallenge(selectedIds, challenge.correctIds)
+    const result = validateBotCheck({
+      honeypotValue: honeypot,
+      startTime: startTimeRef.current,
+      challengePassed: isCorrect,
+      interactionCount: interactionCountRef.current,
+      mouseMovements: mouseMovementsRef.current,
+    })
+    if (result.passed) {
+      setBotCheckPassed(true)
+      setBotCheckFailed(false)
+      setShowChallenge(false)
+    } else {
+      setBotCheckFailed(true)
+      setSelectedIds([])
+      setTimeout(() => {
+        setChallenge(generateChallenge())
         setBotCheckFailed(false)
-      } else {
-        setBotCheckFailed(true)
-        setSelectedAnswer(null)
-        setTimeout(() => {
-          setChallenge(generateChallenge())
-          setBotCheckFailed(false)
-        }, 1500)
-      }
-    }, 500)
-  }, [challenge, honeypot, botCheckPassed])
+      }, 1500)
+    }
+  }, [challenge, selectedIds, honeypot])
+
+  const resetChallenge = useCallback(() => {
+    setChallenge(generateChallenge())
+    setSelectedIds([])
+    setBotCheckFailed(false)
+  }, [])
 
   const form = useForm<SignUpFormData>({
     resolver: zodResolver(signUpSchema),
@@ -426,54 +432,95 @@ function SignUpPage() {
               </motion.div>
             )}
 
-            <motion.div
-              className="p-4 rounded-2xl"
-              style={{
-                background: botCheckPassed ? 'rgba(34, 197, 94, 0.08)' : botCheckFailed ? 'rgba(239, 68, 68, 0.08)' : 'rgba(99, 102, 241, 0.05)',
-                border: `1px solid ${botCheckPassed ? 'rgba(34, 197, 94, 0.3)' : botCheckFailed ? 'rgba(239, 68, 68, 0.3)' : 'rgba(99, 102, 241, 0.15)'}`,
-              }}
-            >
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: botCheckPassed ? 'rgba(34, 197, 94, 0.15)' : 'rgba(99, 102, 241, 0.15)' }}>
-                  {botCheckPassed ? <CheckCircle2 size={18} style={{ color: '#22c55e' }} /> : botCheckFailed ? <XCircle size={18} style={{ color: '#ef4444' }} /> : <Calculator size={18} style={{ color: '#6366f1' }} />}
-                </div>
-                <div className="flex-1">
-                  <p className="font-semibold text-sm" style={{ color: 'var(--foreground)' }}>
-                    {botCheckPassed ? 'Verified!' : botCheckFailed ? 'Try again' : 'Security Check'}
-                  </p>
-                  <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>
-                    {botCheckPassed ? 'Human verified' : botCheckFailed ? 'Wrong answer' : `Solve: ${challenge?.question || '...'}`}
-                  </p>
-                </div>
-                {!botCheckPassed && (
-                  <div className="flex items-center gap-1 text-xs" style={{ color: 'var(--foreground-muted)' }}>
-                    <MousePointer2 size={10} />
+            <div className="space-y-3">
+              <motion.div
+                className="p-4 rounded-2xl cursor-pointer transition-all"
+                style={{
+                  background: botCheckPassed ? 'rgba(34, 197, 94, 0.08)' : 'rgba(99, 102, 241, 0.05)',
+                  border: `1px solid ${botCheckPassed ? 'rgba(34, 197, 94, 0.3)' : 'rgba(99, 102, 241, 0.15)'}`,
+                }}
+                onClick={() => !botCheckPassed && setShowChallenge(true)}
+                whileHover={{ scale: botCheckPassed ? 1 : 1.01 }}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: botCheckPassed ? 'rgba(34, 197, 94, 0.15)' : 'rgba(99, 102, 241, 0.15)' }}>
+                    {botCheckPassed ? <CheckCircle2 size={18} style={{ color: '#22c55e' }} /> : <ShieldCheck size={18} style={{ color: '#6366f1' }} />}
                   </div>
-                )}
-              </div>
-              {!botCheckPassed && challenge && (
-                <div className="grid grid-cols-4 gap-2">
-                  {challenge.options.map((opt) => (
-                    <motion.button
-                      key={opt}
-                      type="button"
-                      onClick={() => handleChallengeAnswer(opt)}
-                      disabled={selectedAnswer !== null}
-                      className="py-2.5 rounded-lg font-bold text-sm disabled:opacity-50"
-                      style={{
-                        background: selectedAnswer === opt ? (opt === challenge.answer ? 'rgba(34, 197, 94, 0.2)' : 'rgba(239, 68, 68, 0.2)') : 'rgba(255, 255, 255, 0.05)',
-                        border: `1px solid ${selectedAnswer === opt ? (opt === challenge.answer ? 'rgba(34, 197, 94, 0.5)' : 'rgba(239, 68, 68, 0.5)') : 'rgba(255, 255, 255, 0.1)'}`,
-                        color: 'var(--foreground)',
-                      }}
-                      whileHover={{ scale: selectedAnswer === null ? 1.05 : 1 }}
-                      whileTap={{ scale: selectedAnswer === null ? 0.95 : 1 }}
-                    >
-                      {opt}
-                    </motion.button>
-                  ))}
+                  <div className="flex-1">
+                    <p className="font-semibold text-sm" style={{ color: 'var(--foreground)' }}>
+                      {botCheckPassed ? 'Verified!' : "I'm not a robot"}
+                    </p>
+                    <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>
+                      {botCheckPassed ? 'Human verified' : 'Click to verify'}
+                    </p>
+                  </div>
+                  {!botCheckPassed && <div className="w-5 h-5 rounded border-2" style={{ borderColor: 'rgba(99, 102, 241, 0.4)' }} />}
                 </div>
-              )}
-            </motion.div>
+              </motion.div>
+
+              <AnimatePresence>
+                {showChallenge && !botCheckPassed && challenge && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="rounded-2xl overflow-hidden"
+                    style={{ background: 'var(--background-secondary)', border: '1px solid var(--border)' }}
+                  >
+                    <div className="p-3 flex items-center justify-between" style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)' }}>
+                      <p className="text-sm font-semibold text-white">Select all {challenge.targetLabel}</p>
+                      <button type="button" onClick={resetChallenge} className="p-1.5 rounded-lg bg-white/20 hover:bg-white/30 transition-colors">
+                        <RotateCcw size={14} className="text-white" />
+                      </button>
+                    </div>
+                    <div className="p-3">
+                      <div className="grid grid-cols-3 gap-2 mb-3">
+                        {challenge.images.map((img) => {
+                          const isSelected = selectedIds.includes(img.id)
+                          return (
+                            <motion.button
+                              key={img.id}
+                              type="button"
+                              onClick={() => toggleImageSelection(img.id)}
+                              className="aspect-square rounded-xl text-3xl flex items-center justify-center transition-all relative"
+                              style={{
+                                background: isSelected ? 'rgba(99, 102, 241, 0.2)' : 'rgba(255, 255, 255, 0.05)',
+                                border: `2px solid ${isSelected ? '#6366f1' : 'transparent'}`,
+                              }}
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                            >
+                              {img.emoji}
+                              {isSelected && (
+                                <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="absolute top-1 right-1 w-4 h-4 rounded-full flex items-center justify-center" style={{ background: '#6366f1' }}>
+                                  <Check size={10} className="text-white" />
+                                </motion.div>
+                              )}
+                            </motion.button>
+                          )
+                        })}
+                      </div>
+                      {botCheckFailed && (
+                        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-xs text-red-400 text-center mb-2 flex items-center justify-center gap-1">
+                          <XCircle size={12} /> Incorrect, try again
+                        </motion.p>
+                      )}
+                      <motion.button
+                        type="button"
+                        onClick={handleVerify}
+                        disabled={selectedIds.length === 0}
+                        className="w-full py-2 rounded-xl font-semibold text-sm text-white disabled:opacity-50"
+                        style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)' }}
+                        whileHover={{ scale: 1.01 }}
+                        whileTap={{ scale: 0.99 }}
+                      >
+                        Verify ({selectedIds.length} selected)
+                      </motion.button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
 
             <label className="flex items-start gap-3 cursor-pointer">
               <div className="relative mt-0.5">
