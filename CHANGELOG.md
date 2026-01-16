@@ -7,6 +7,64 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+---
+
+## [1.4.0] - 2026-01-16
+
+### Added
+- **Enhanced Partner Application System** - Professional multi-category partner program
+  - 11 specialized categories: Streamer, VTuber, Content Creator, Gamer, Developer, Game Creator, Artist, Musician, Brand, Agency, Other
+  - Dynamic form fields that adapt based on selected category
+  - 3-step application wizard with category selection, details, and about sections
+  - Category-specific data collection:
+    - **Streamers/Content Creators**: Platform selection (TikTok, Twitch, YouTube, etc.), follower ranges, content types
+    - **VTubers**: Model types (2D/3D/PNG), platform integration
+    - **Gamers**: Main gamer tag, top 50 games selection, gaming platform profiles
+    - **Developers**: Developer types (Fullstack, Backend, Frontend, etc.), programming languages, portfolio links
+    - **Game Creators**: Game engine selection (Unity, Unreal, Godot, etc.), languages
+    - **Artists**: Art types (Digital, Traditional, 3D, etc.), portfolio integration
+    - **Musicians**: Musician types, music platform links (Spotify, SoundCloud, etc.)
+  - Comprehensive constants library with 50+ games, 15+ programming languages, streaming platforms with brand colors
+  - JSONB storage for flexible category-specific data
+  - Modern glassmorphism UI with gradient accents
+  - Real-time form validation with Zod schemas
+- **Partner Categories Constants** (`partner-categories.ts`)
+  - Streaming platforms with brand colors and URL prefixes
+  - Follower ranges from micro (< 1K) to celebrity (10M+)
+  - Top 50 games list for gamer applications
+  - Gaming platforms (Steam, Xbox, PlayStation, etc.)
+  - Developer specializations with descriptions
+  - Programming languages and game engines
+  - Artist and musician type classifications
+  - Music platforms with URL structures
+  - Content types and VTuber model types
+
+### Changed
+- **Database Schema** - Extended `partner_applications` table
+  - Added `subcategory` varchar field for more specific categorization
+  - Added `categoryData` JSONB field for dynamic category-specific data
+  - Updated category enum to include all 11 new categories
+  - Migration generated and applied successfully
+- **Partner Application Server Functions** - Enhanced validation and data handling
+  - Extended `submitPartnerApplicationFn` with new category support
+  - Added comprehensive Zod schema for category data validation
+  - Support for arrays, records, and complex nested data structures
+- **Partners Page** - Complete UI redesign
+  - Separated application form into reusable component
+  - Improved partner display with official and featured sections
+  - Enhanced stats display with real-time updates
+  - Better empty states and loading indicators
+
+### Technical
+- Database migration: `0001_boring_ricochet.sql`
+- New component: `PartnerApplicationForm.tsx` (900+ lines)
+- Updated server functions with extended type safety
+- Build optimization: Partners bundle 45.73 kB (9.31 kB gzip)
+
+---
+
+## [1.3.0] - 2026-01-15
+
 ### Added
 - **FollowModal Component** - Modern modal-based followers/following UI (2026-01-15)
   - Glass-morphism design with backdrop blur and gradient header
@@ -129,5 +187,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/Eziox-Development/eziox-web/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/Eziox-Development/eziox-web/compare/v1.4.0...HEAD
+[1.4.0]: https://github.com/Eziox-Development/eziox-web/compare/v1.3.0...v1.4.0
+[1.3.0]: https://github.com/Eziox-Development/eziox-web/compare/v1.0.0...v1.3.0
 [1.0.0]: https://github.com/Eziox-Development/eziox-web/releases/tag/v1.0.0

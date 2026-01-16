@@ -346,6 +346,8 @@ export const partnerApplications = pgTable('partner_applications', {
   website: varchar('website', { length: 255 }),
   socialLinks: jsonb('social_links').$type<Record<string, string>>().default({}),
   category: varchar('category', { length: 50 }).notNull(),
+  subcategory: varchar('subcategory', { length: 50 }),
+  categoryData: jsonb('category_data').$type<Record<string, string | string[] | number | boolean | null>>().default({}),
   audienceSize: varchar('audience_size', { length: 50 }),
   description: text('description').notNull(),
   whyPartner: text('why_partner').notNull(),

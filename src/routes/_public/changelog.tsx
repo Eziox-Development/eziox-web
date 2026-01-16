@@ -43,6 +43,27 @@ interface ChangelogEntry {
 
 const changelog: ChangelogEntry[] = [
   {
+    version: '1.4.0',
+    date: 'January 16, 2026',
+    title: 'Enhanced Partner Application System',
+    description: 'Professional multi-category partner program with dynamic forms and comprehensive data collection.',
+    icon: Sparkles,
+    type: 'feature',
+    items: [
+      '11 specialized partner categories: Streamer, VTuber, Content Creator, Gamer, Developer, Game Creator, Artist, Musician, Brand, Agency, Other',
+      '3-step application wizard with category selection, details, and about sections',
+      'Dynamic form fields that adapt based on selected category',
+      'Streamers/Content Creators: Platform selection (TikTok, Twitch, YouTube), follower ranges, content types',
+      'Gamers: Main gamer tag, top 50 games selection, gaming platform profiles',
+      'Developers: Developer types (Fullstack, Backend, Frontend), programming languages, portfolio links',
+      'Game Creators: Game engine selection (Unity, Unreal, Godot), languages',
+      'Artists & Musicians: Type classifications, portfolio/platform integrations',
+      'Comprehensive constants library: 50+ games, 15+ programming languages, streaming platforms with brand colors',
+      'JSONB storage for flexible category-specific data with extended database schema',
+      'Modern glassmorphism UI with gradient accents and real-time Zod validation',
+    ],
+  },
+  {
     version: '1.3.0',
     date: 'January 15, 2026',
     title: 'Modern Modal System & Complete UI Overhaul',

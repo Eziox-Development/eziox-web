@@ -103,14 +103,39 @@ export const getMyApplicationFn = createServerFn({ method: 'GET' })
     return application || null
   })
 
+const categoryDataSchema = z.object({
+  platform: z.string().optional(),
+  platformUrl: z.string().optional(),
+  followerRange: z.string().optional(),
+  contentTypes: z.array(z.string()).optional(),
+  modelType: z.string().optional(),
+  mainGamerTag: z.string().optional(),
+  games: z.array(z.string()).optional(),
+  gamePlatforms: z.record(z.string(), z.string()).optional(),
+  developerType: z.string().optional(),
+  languages: z.array(z.string()).optional(),
+  gameEngine: z.string().optional(),
+  artistType: z.string().optional(),
+  portfolioUrl: z.string().optional(),
+  musicianType: z.string().optional(),
+  musicPlatforms: z.record(z.string(), z.string()).optional(),
+  genres: z.array(z.string()).optional(),
+}).passthrough()
+
 export const submitPartnerApplicationFn = createServerFn({ method: 'POST' })
   .inputValidator(
     z.object({
       companyName: z.string().max(200).optional(),
       website: z.string().url().optional().or(z.literal('')),
       socialLinks: z.record(z.string(), z.string()).optional(),
-      category: z.enum(['creator', 'brand', 'agency', 'developer', 'other']),
-      audienceSize: z.enum(['small', 'medium', 'large', 'enterprise']).optional(),
+      category: z.enum([
+        'streamer', 'vtuber', 'content_creator', 'gamer', 
+        'developer', 'game_creator', 'artist', 'musician', 
+        'brand', 'agency', 'other'
+      ]),
+      subcategory: z.string().max(50).optional(),
+      categoryData: categoryDataSchema.optional(),
+      audienceSize: z.enum(['micro', 'small', 'medium', 'large', 'mega', 'celebrity']).optional(),
       description: z.string().min(50).max(2000),
       whyPartner: z.string().min(50).max(2000),
     })
@@ -147,6 +172,8 @@ export const submitPartnerApplicationFn = createServerFn({ method: 'POST' })
         website: data.website || null,
         socialLinks: (data.socialLinks || {}) as Record<string, string>,
         category: data.category,
+        subcategory: data.subcategory || null,
+        categoryData: (data.categoryData || {}) as Record<string, string | string[] | number | boolean | null>,
         audienceSize: data.audienceSize || null,
         description: data.description,
         whyPartner: data.whyPartner,

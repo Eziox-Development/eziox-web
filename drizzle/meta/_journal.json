@@ -8,6 +8,13 @@
       "when": 1768565199866,
       "tag": "0000_heavy_miss_america",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1768567223606,
+      "tag": "0001_boring_ricochet",
+      "breakpoints": true
     }
   ]
 }
