@@ -9,16 +9,18 @@
   ],
 
   "compilerOptions": {
-    /* Language and Environment */
-    "target": "ES2022",
-    "jsx": "react-jsx",
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
-    "types": ["vite/client", "bun"],
-    "useDefineForClassFields": true,
-
-    /* Modules */
+    /* Environment Settings */
+    "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "bundler",
+    "moduleDetection": "force",
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "types": ["vite/client", "bun"],
+
+    /* JSX */
+    "jsx": "react-jsx",
+
+    /* Modules */
     "resolveJsonModule": true,
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": false,
@@ -33,7 +35,7 @@
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
 
-    /* Type Checking */
+    /* Stricter Type Checking */
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,

@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, useNavigate, Link } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { useAuth } from '@/hooks/use-auth'
@@ -10,6 +10,7 @@ import { BadgeDisplay } from '@/components/ui/BadgeDisplay'
 import {
   ShieldCheck, Search, Loader2, Plus, Minus, CheckCircle2, XCircle,
   Users2, Crown, Sparkles, TrendingUp, Activity, UserCheck, Filter,
+  Handshake, ChevronRight,
 } from 'lucide-react'
 import * as LucideIcons from 'lucide-react'
 
@@ -262,6 +263,32 @@ function AdminPage() {
               </div>
             </motion.div>
           ))}
+        </motion.div>
+
+        {/* Admin Quick Links */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
+          className="mb-8"
+        >
+          <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--foreground)' }}>Quick Actions</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <Link
+              to="/admin/partner-applications"
+              className="group p-4 rounded-2xl flex items-center gap-4 transition-all hover:scale-[1.02]"
+              style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.08)' }}
+            >
+              <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, rgba(20, 184, 166, 0.2), rgba(139, 92, 246, 0.2))' }}>
+                <Handshake size={24} style={{ color: '#14b8a6' }} />
+              </div>
+              <div className="flex-1">
+                <p className="font-semibold" style={{ color: 'var(--foreground)' }}>Partner Applications</p>
+                <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>Review & manage applications</p>
+              </div>
+              <ChevronRight size={18} className="opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: 'var(--foreground-muted)' }} />
+            </Link>
+          </div>
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">

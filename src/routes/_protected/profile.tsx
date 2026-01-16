@@ -21,7 +21,7 @@ import {
   ExternalLink, Eye, MousePointerClick, Users, Heart,
   Settings, Gift, TrendingUp, Shield, Lock,
   Twitter, Instagram, Youtube, Twitch, Github,
-  Music2, MessageCircle, UserCircle, ChevronRight,
+  Music2, MessageCircle, UserCircle, ChevronRight, Handshake, Crown,
 } from 'lucide-react'
 import { ProfileTab } from '@/components/profile/tabs/ProfileTab'
 import { LinksTab } from '@/components/profile/tabs/LinksTab'
@@ -284,6 +284,32 @@ function ProfilePage() {
                   <span style={{ color: 'var(--foreground)' }}>Leaderboard</span>
                 </Link>
               </nav>
+
+              {/* Admin Quick Links */}
+              {(currentUser.role === 'admin' || currentUser.role === 'owner') && (
+                <div className="p-4 border-t" style={{ borderColor: 'var(--border)' }}>
+                  <p className="text-xs font-medium mb-2 flex items-center gap-1.5" style={{ color: '#ef4444' }}>
+                    <Crown size={12} />
+                    Admin
+                  </p>
+                  <nav className="space-y-1">
+                    <Link to="/admin" className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-red-500/10 transition-colors">
+                      <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'rgba(239, 68, 68, 0.1)' }}>
+                        <Shield size={16} style={{ color: '#ef4444' }} />
+                      </div>
+                      <span className="text-sm" style={{ color: 'var(--foreground)' }}>Admin Panel</span>
+                      <ChevronRight size={14} className="ml-auto" style={{ color: 'var(--foreground-muted)' }} />
+                    </Link>
+                    <Link to="/admin/partner-applications" className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-teal-500/10 transition-colors">
+                      <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'rgba(20, 184, 166, 0.1)' }}>
+                        <Handshake size={16} style={{ color: '#14b8a6' }} />
+                      </div>
+                      <span className="text-sm" style={{ color: 'var(--foreground)' }}>Partner Apps</span>
+                      <ChevronRight size={14} className="ml-auto" style={{ color: 'var(--foreground-muted)' }} />
+                    </Link>
+                  </nav>
+                </div>
+              )}
 
               <div className="p-4 border-t" style={{ borderColor: 'var(--border)' }}>
                 <p className="text-xs font-medium mb-2" style={{ color: 'var(--foreground-muted)' }}>Your Bio Link</p>

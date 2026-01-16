@@ -41,7 +41,7 @@ const config = defineConfig({
     strictPort: false,
   },
   build: {
-    target: 'es2022',
+    target: 'esnext',
     sourcemap: isDev ? 'inline' : true,
     minify: isDev ? false : 'esbuild',
     cssMinify: !isDev,
@@ -49,15 +49,28 @@ const config = defineConfig({
       output: {
         manualChunks: (id) => {
           if (id.includes('node_modules')) {
-            if (id.includes('react') || id.includes('react-dom')) {
+            // React core - largest chunk, split separately
+            if (id.includes('react-dom')) {
+              return 'react-dom'
+            }
+            if (id.includes('react') && !id.includes('react-dom')) {
               return 'react-vendor'
             }
-            if (
-              id.includes('@tanstack/react-router') ||
-              id.includes('@tanstack/react-query')
-            ) {
+            // TanStack ecosystem
+            if (id.includes('@tanstack/react-router')) {
+              return 'tanstack-router'
+            }
+            if (id.includes('@tanstack/react-query')) {
+              return 'tanstack-query'
+            }
+            if (id.includes('@tanstack')) {
               return 'tanstack-vendor'
             }
+            // Motion/animation library
+            if (id.includes('motion')) {
+              return 'motion-vendor'
+            }
+            // UI utilities
             if (
               id.includes('lucide-react') ||
               id.includes('class-variance-authority') ||
@@ -66,12 +79,24 @@ const config = defineConfig({
             ) {
               return 'ui-vendor'
             }
+            // Radix UI components
+            if (id.includes('@radix-ui')) {
+              return 'radix-vendor'
+            }
+            // Form/validation
+            if (id.includes('zod') || id.includes('react-hook-form')) {
+              return 'form-vendor'
+            }
+            // Date utilities
+            if (id.includes('date-fns')) {
+              return 'date-vendor'
+            }
           }
           return undefined
         },
       },
     },
-    chunkSizeWarningLimit: 1000,
+    chunkSizeWarningLimit: 600,
   },
   optimizeDeps: {
     exclude: ['react', 'react-dom'],

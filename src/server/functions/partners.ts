@@ -103,7 +103,7 @@ export const getMyApplicationFn = createServerFn({ method: 'GET' })
     return application || null
   })
 
-const categoryDataSchema = z.object({
+const categoryDataSchema = z.looseObject({
   platform: z.string().optional(),
   platformUrl: z.string().optional(),
   followerRange: z.string().optional(),
@@ -120,7 +120,7 @@ const categoryDataSchema = z.object({
   musicianType: z.string().optional(),
   musicPlatforms: z.record(z.string(), z.string()).optional(),
   genres: z.array(z.string()).optional(),
-}).passthrough()
+})
 
 export const submitPartnerApplicationFn = createServerFn({ method: 'POST' })
   .inputValidator(
