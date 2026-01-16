@@ -48,8 +48,7 @@
     /* Completeness */
     "skipLibCheck": true,
 
-    /* Path Mapping */
-    "baseUrl": ".",
+    /* Path Mapping (TS 6.0+ compatible - no baseUrl) */
     "paths": {
       "@/*": ["./src/*"],
       "@/components/*": ["./src/components/*"],

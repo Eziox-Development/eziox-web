@@ -2,16 +2,14 @@ import { Link } from '@tanstack/react-router'
 import { siteConfig } from '@/lib/site-config'
 import { motion } from 'motion/react'
 import {
-  LuTwitter,
-  LuGithub,
-  LuLinkedin,
-  LuInstagram,
-  LuDribbble,
-  LuYoutube,
-  LuMail,
-  LuGlobe,
-} from 'react-icons/lu'
-import { FaDiscord } from 'react-icons/fa'
+  SiX,
+  SiGithub,
+  SiLinkedin,
+  SiInstagram,
+  SiDribbble,
+  SiYoutube,
+  SiDiscord,
+} from 'react-icons/si'
 import {
   Heart,
   Sparkles,
@@ -27,15 +25,15 @@ import {
 } from 'lucide-react'
 
 const iconMap: Record<string, React.ComponentType<{ size?: number }>> = {
-  twitter: LuTwitter,
-  github: LuGithub,
-  linkedin: LuLinkedin,
-  instagram: LuInstagram,
-  dribbble: LuDribbble,
-  youtube: LuYoutube,
-  mail: LuMail,
-  globe: LuGlobe,
-  discord: FaDiscord,
+  twitter: SiX,
+  github: SiGithub,
+  linkedin: SiLinkedin,
+  instagram: SiInstagram,
+  dribbble: SiDribbble,
+  youtube: SiYoutube,
+  mail: Mail,
+  globe: Globe,
+  discord: SiDiscord,
 }
 
 const footerLinks = {
@@ -146,7 +144,7 @@ export function Footer() {
             {/* Social Links */}
             <div className="flex flex-wrap gap-2 pt-2">
               {siteConfig.owner.socialLinks.slice(0, 5).map((social) => {
-                const Icon = iconMap[social.icon.toLowerCase()] || LuGlobe
+                const Icon = iconMap[social.icon.toLowerCase()] || Globe
                 return (
                   <motion.a
                     key={social.platform}

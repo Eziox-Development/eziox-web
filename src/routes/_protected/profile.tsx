@@ -20,9 +20,11 @@ import {
   Copy, Check, Globe, Sparkles, Link as LinkIcon, AtSign,
   ExternalLink, Eye, MousePointerClick, Users, Heart,
   Settings, Gift, TrendingUp, Shield, Lock,
-  Twitter, Instagram, Youtube, Twitch, Github,
-  Music2, MessageCircle, UserCircle, ChevronRight, Handshake, Crown,
+  UserCircle, ChevronRight, Handshake, Crown,
 } from 'lucide-react'
+import {
+  SiX, SiInstagram, SiYoutube, SiTwitch, SiGithub, SiTiktok, SiDiscord,
+} from 'react-icons/si'
 import { ProfileTab } from '@/components/profile/tabs/ProfileTab'
 import { LinksTab } from '@/components/profile/tabs/LinksTab'
 import { ReferralsTab } from '@/components/profile/tabs/ReferralsTab'
@@ -45,13 +47,13 @@ export const Route = createFileRoute('/_protected/profile')({
 export type TabType = 'profile' | 'links' | 'referrals' | 'badges' | 'settings' | 'privacy'
 
 export const SOCIAL_PLATFORMS = [
-  { key: 'twitter', label: 'Twitter / X', icon: Twitter, placeholder: '@username', color: '#1DA1F2' },
-  { key: 'instagram', label: 'Instagram', icon: Instagram, placeholder: '@username', color: '#E4405F' },
-  { key: 'youtube', label: 'YouTube', icon: Youtube, placeholder: 'channel', color: '#FF0000' },
-  { key: 'twitch', label: 'Twitch', icon: Twitch, placeholder: 'username', color: '#9146FF' },
-  { key: 'github', label: 'GitHub', icon: Github, placeholder: 'username', color: '#333' },
-  { key: 'tiktok', label: 'TikTok', icon: Music2, placeholder: '@username', color: '#000' },
-  { key: 'discord', label: 'Discord', icon: MessageCircle, placeholder: 'user', color: '#5865F2' },
+  { key: 'twitter', label: 'Twitter / X', icon: SiX, placeholder: '@username', color: '#000000' },
+  { key: 'instagram', label: 'Instagram', icon: SiInstagram, placeholder: '@username', color: '#E4405F' },
+  { key: 'youtube', label: 'YouTube', icon: SiYoutube, placeholder: 'channel', color: '#FF0000' },
+  { key: 'twitch', label: 'Twitch', icon: SiTwitch, placeholder: 'username', color: '#9146FF' },
+  { key: 'github', label: 'GitHub', icon: SiGithub, placeholder: 'username', color: '#181717' },
+  { key: 'tiktok', label: 'TikTok', icon: SiTiktok, placeholder: '@username', color: '#000000' },
+  { key: 'discord', label: 'Discord', icon: SiDiscord, placeholder: 'user', color: '#5865F2' },
 ]
 
 export const CREATOR_TYPES = [

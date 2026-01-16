@@ -30,26 +30,28 @@ import {
 } from 'lucide-react'
 import { BadgeDisplay } from '@/components/ui/BadgeDisplay'
 import {
-  LuTwitter,
-  LuGithub,
-  LuLinkedin,
-  LuInstagram,
-  LuYoutube,
-} from 'react-icons/lu'
-import { FaDiscord, FaTiktok, FaTwitch } from 'react-icons/fa'
+  SiX,
+  SiGithub,
+  SiLinkedin,
+  SiInstagram,
+  SiYoutube,
+  SiDiscord,
+  SiTiktok,
+  SiTwitch,
+} from 'react-icons/si'
 import type { ComponentType } from 'react'
 import { FollowModal } from '@/components/bio/FollowModal'
 import { getSocialUrl } from '@/lib/social-links'
 
 const socialIconMap: Record<string, ComponentType<{ size?: number }>> = {
-  twitter: LuTwitter,
-  github: LuGithub,
-  linkedin: LuLinkedin,
-  instagram: LuInstagram,
-  youtube: LuYoutube,
-  discord: FaDiscord,
-  tiktok: FaTiktok,
-  twitch: FaTwitch,
+  twitter: SiX,
+  github: SiGithub,
+  linkedin: SiLinkedin,
+  instagram: SiInstagram,
+  youtube: SiYoutube,
+  discord: SiDiscord,
+  tiktok: SiTiktok,
+  twitch: SiTwitch,
 }
 
 // Reserved paths that should not be treated as usernames

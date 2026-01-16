@@ -22,11 +22,11 @@ import {
   Rocket,
   Target,
   Code,
-  Github,
   ArrowRight,
   CheckCircle,
   Crown,
 } from 'lucide-react'
+import { SiGithub } from 'react-icons/si'
 
 const DiscordIcon = ({ size = 20, className = '' }: { size?: number; className?: string }) => (
   <svg
@@ -359,7 +359,7 @@ function AboutPage() {
                           whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.95 }}
                         >
-                          <Github size={20} style={{ color: 'var(--foreground)' }} />
+                          <SiGithub size={20} style={{ color: 'var(--foreground)' }} />
                         </motion.a>
                       )}
                       {member.links.discord && (
