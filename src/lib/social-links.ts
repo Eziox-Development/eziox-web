@@ -46,13 +46,17 @@ export const SOCIAL_PLATFORMS = {
   },
   steam: {
     name: 'Steam',
-    baseUrl: 'https://steamcommunity.com/id/',
+    baseUrl: 'https://steamcommunity.com/profiles/',
     format: (username: string) => username.replace('@', ''),
   },
   epicgames: {
     name: 'Epic Games',
-    baseUrl: 'https://store.epicgames.com/u/',
-    format: (username: string) => username.replace('@', ''),
+    baseUrl: 'https://store.epicgames.com/',
+    format: () => {
+      // Epic Games doesn't have public profiles
+      // Just redirect to the main store
+      return ''
+    },
   },
   playstation: {
     name: 'PlayStation',
