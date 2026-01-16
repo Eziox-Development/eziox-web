@@ -295,9 +295,11 @@ export function Footer() {
           <div className="flex flex-wrap items-center justify-center gap-4 text-xs" style={{ color: 'var(--foreground-muted)' }}>
             <span>© {currentYear} {siteConfig.metadata.title}. All rights reserved.</span>
             <span className="hidden md:inline">•</span>
-            <Link to="/about" className="hover:text-[var(--primary)] transition-colors">Privacy Policy</Link>
+            <Link to="/privacy" className="hover:text-primary transition-colors">Privacy Policy</Link>
             <span className="hidden md:inline">•</span>
-            <Link to="/about" className="hover:text-[var(--primary)] transition-colors">Terms of Service</Link>
+            <Link to="/terms" className="hover:text-primary transition-colors">Terms of Service</Link>
+            <span className="hidden md:inline">•</span>
+            <Link to="/cookies" className="hover:text-primary transition-colors">Cookies</Link>
           </div>
 
           <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--foreground-muted)' }}>

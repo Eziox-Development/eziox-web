@@ -14,9 +14,12 @@ import { Route as ProtectedRouteImport } from './routes/_protected'
 import { Route as BioRouteImport } from './routes/_bio'
 import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
+import { Route as PublicTermsRouteImport } from './routes/_public/terms'
+import { Route as PublicPrivacyRouteImport } from './routes/_public/privacy'
 import { Route as PublicPartnersRouteImport } from './routes/_public/partners'
 import { Route as PublicLeaderboardRouteImport } from './routes/_public/leaderboard'
 import { Route as PublicCreatorsRouteImport } from './routes/_public/creators'
+import { Route as PublicCookiesRouteImport } from './routes/_public/cookies'
 import { Route as PublicChangelogRouteImport } from './routes/_public/changelog'
 import { Route as PublicAboutRouteImport } from './routes/_public/about'
 import { Route as ProtectedReferralsRouteImport } from './routes/_protected/referrals'
@@ -55,6 +58,16 @@ const PublicIndexRoute = PublicIndexRouteImport.update({
   path: '/',
   getParentRoute: () => PublicRoute,
 } as any)
+const PublicTermsRoute = PublicTermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => PublicRoute,
+} as any)
+const PublicPrivacyRoute = PublicPrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => PublicRoute,
+} as any)
 const PublicPartnersRoute = PublicPartnersRouteImport.update({
   id: '/partners',
   path: '/partners',
@@ -68,6 +81,11 @@ const PublicLeaderboardRoute = PublicLeaderboardRouteImport.update({
 const PublicCreatorsRoute = PublicCreatorsRouteImport.update({
   id: '/creators',
   path: '/creators',
+  getParentRoute: () => PublicRoute,
+} as any)
+const PublicCookiesRoute = PublicCookiesRouteImport.update({
+  id: '/cookies',
+  path: '/cookies',
   getParentRoute: () => PublicRoute,
 } as any)
 const PublicChangelogRoute = PublicChangelogRouteImport.update({
@@ -165,9 +183,12 @@ export interface FileRoutesByFullPath {
   '/referrals': typeof ProtectedReferralsRoute
   '/about': typeof PublicAboutRoute
   '/changelog': typeof PublicChangelogRoute
+  '/cookies': typeof PublicCookiesRoute
   '/creators': typeof PublicCreatorsRoute
   '/leaderboard': typeof PublicLeaderboardRoute
   '/partners': typeof PublicPartnersRoute
+  '/privacy': typeof PublicPrivacyRoute
+  '/terms': typeof PublicTermsRoute
   '/': typeof PublicIndexRoute
   '/admin/partner-applications': typeof ProtectedAdminPartnerApplicationsRoute
   '/join/$code': typeof PublicJoinCodeRoute
@@ -187,9 +208,12 @@ export interface FileRoutesByTo {
   '/referrals': typeof ProtectedReferralsRoute
   '/about': typeof PublicAboutRoute
   '/changelog': typeof PublicChangelogRoute
+  '/cookies': typeof PublicCookiesRoute
   '/creators': typeof PublicCreatorsRoute
   '/leaderboard': typeof PublicLeaderboardRoute
   '/partners': typeof PublicPartnersRoute
+  '/privacy': typeof PublicPrivacyRoute
+  '/terms': typeof PublicTermsRoute
   '/': typeof PublicIndexRoute
   '/admin/partner-applications': typeof ProtectedAdminPartnerApplicationsRoute
   '/join/$code': typeof PublicJoinCodeRoute
@@ -214,9 +238,12 @@ export interface FileRoutesById {
   '/_protected/referrals': typeof ProtectedReferralsRoute
   '/_public/about': typeof PublicAboutRoute
   '/_public/changelog': typeof PublicChangelogRoute
+  '/_public/cookies': typeof PublicCookiesRoute
   '/_public/creators': typeof PublicCreatorsRoute
   '/_public/leaderboard': typeof PublicLeaderboardRoute
   '/_public/partners': typeof PublicPartnersRoute
+  '/_public/privacy': typeof PublicPrivacyRoute
+  '/_public/terms': typeof PublicTermsRoute
   '/_public/': typeof PublicIndexRoute
   '/_protected/admin/partner-applications': typeof ProtectedAdminPartnerApplicationsRoute
   '/_public/join/$code': typeof PublicJoinCodeRoute
@@ -238,9 +265,12 @@ export interface FileRouteTypes {
     | '/referrals'
     | '/about'
     | '/changelog'
+    | '/cookies'
     | '/creators'
     | '/leaderboard'
     | '/partners'
+    | '/privacy'
+    | '/terms'
     | '/'
     | '/admin/partner-applications'
     | '/join/$code'
@@ -260,9 +290,12 @@ export interface FileRouteTypes {
     | '/referrals'
     | '/about'
     | '/changelog'
+    | '/cookies'
     | '/creators'
     | '/leaderboard'
     | '/partners'
+    | '/privacy'
+    | '/terms'
     | '/'
     | '/admin/partner-applications'
     | '/join/$code'
@@ -286,9 +319,12 @@ export interface FileRouteTypes {
     | '/_protected/referrals'
     | '/_public/about'
     | '/_public/changelog'
+    | '/_public/cookies'
     | '/_public/creators'
     | '/_public/leaderboard'
     | '/_public/partners'
+    | '/_public/privacy'
+    | '/_public/terms'
     | '/_public/'
     | '/_protected/admin/partner-applications'
     | '/_public/join/$code'
@@ -343,6 +379,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicIndexRouteImport
       parentRoute: typeof PublicRoute
     }
+    '/_public/terms': {
+      id: '/_public/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof PublicTermsRouteImport
+      parentRoute: typeof PublicRoute
+    }
+    '/_public/privacy': {
+      id: '/_public/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PublicPrivacyRouteImport
+      parentRoute: typeof PublicRoute
+    }
     '/_public/partners': {
       id: '/_public/partners'
       path: '/partners'
@@ -362,6 +412,13 @@ declare module '@tanstack/react-router' {
       path: '/creators'
       fullPath: '/creators'
       preLoaderRoute: typeof PublicCreatorsRouteImport
+      parentRoute: typeof PublicRoute
+    }
+    '/_public/cookies': {
+      id: '/_public/cookies'
+      path: '/cookies'
+      fullPath: '/cookies'
+      preLoaderRoute: typeof PublicCookiesRouteImport
       parentRoute: typeof PublicRoute
     }
     '/_public/changelog': {
@@ -527,9 +584,12 @@ const ProtectedRouteWithChildren = ProtectedRoute._addFileChildren(
 interface PublicRouteChildren {
   PublicAboutRoute: typeof PublicAboutRoute
   PublicChangelogRoute: typeof PublicChangelogRoute
+  PublicCookiesRoute: typeof PublicCookiesRoute
   PublicCreatorsRoute: typeof PublicCreatorsRoute
   PublicLeaderboardRoute: typeof PublicLeaderboardRoute
   PublicPartnersRoute: typeof PublicPartnersRoute
+  PublicPrivacyRoute: typeof PublicPrivacyRoute
+  PublicTermsRoute: typeof PublicTermsRoute
   PublicIndexRoute: typeof PublicIndexRoute
   PublicJoinCodeRoute: typeof PublicJoinCodeRoute
   PublicSCodeRoute: typeof PublicSCodeRoute
@@ -538,9 +598,12 @@ interface PublicRouteChildren {
 const PublicRouteChildren: PublicRouteChildren = {
   PublicAboutRoute: PublicAboutRoute,
   PublicChangelogRoute: PublicChangelogRoute,
+  PublicCookiesRoute: PublicCookiesRoute,
   PublicCreatorsRoute: PublicCreatorsRoute,
   PublicLeaderboardRoute: PublicLeaderboardRoute,
   PublicPartnersRoute: PublicPartnersRoute,
+  PublicPrivacyRoute: PublicPrivacyRoute,
+  PublicTermsRoute: PublicTermsRoute,
   PublicIndexRoute: PublicIndexRoute,
   PublicJoinCodeRoute: PublicJoinCodeRoute,
   PublicSCodeRoute: PublicSCodeRoute,
