@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { handleSpotifyCallbackFn } from '@/server/functions/spotify'
 
-export const Route = createFileRoute('/_api/spotify/callback')({
+export const Route = createFileRoute('/_api/spotify-callback')({
   server: {
     handlers: {
       GET: async ({ request }) => {
