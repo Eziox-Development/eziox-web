@@ -14,7 +14,7 @@ import {
 } from 'lucide-react'
 import * as LucideIcons from 'lucide-react'
 
-export const Route = createFileRoute('/_protected/admin')({
+export const Route = createFileRoute('/_protected/admin/')({
   head: () => ({
     meta: [
       { title: 'Admin Panel | Eziox' },
