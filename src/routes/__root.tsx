@@ -7,6 +7,7 @@ import appCss from '../styles.css?url'
 
 import type { QueryClient } from '@tanstack/react-query'
 import { Toaster } from '@/components/ui/sonner'
+import { CookieConsent } from '@/components/CookieConsent'
 import { ThemeProvider as PortfolioThemeProvider } from '@/components/portfolio/ThemeProvider'
 import { siteConfig } from '@/lib/site-config'
 import { authMiddleware } from '@/server/functions/auth'
@@ -116,6 +117,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
             <main className="flex-1">{children}</main>
           </div>
           <Toaster position="bottom-right" richColors closeButton />
+          <CookieConsent />
         </PortfolioThemeProvider>
         <Scripts />
       </body>

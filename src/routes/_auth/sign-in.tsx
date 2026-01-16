@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import {
   createFileRoute,
@@ -28,6 +28,9 @@ import {
   Users,
   TrendingUp,
   Globe,
+  Bot,
+  CheckCircle2,
+  Fingerprint,
 } from 'lucide-react'
 
 const searchSchema = z.object({
@@ -54,6 +57,8 @@ export const Route = createFileRoute('/_auth/sign-in')({
 const signInSchema = z.object({
   email: z.email({ error: 'Please enter a valid email address' }),
   password: z.string().min(1, 'Password is required'),
+  acceptTerms: z.boolean().refine(val => val === true, { message: 'You must accept the terms' }),
+  botCheck: z.boolean().refine(val => val === true, { message: 'Please verify you are human' }),
 })
 
 type SignInFormData = z.infer<typeof signInSchema>
@@ -66,14 +71,29 @@ function SignInPage() {
   const signIn = useServerFn(signInFn)
   const [showPassword, setShowPassword] = useState(false)
   const [focusedField, setFocusedField] = useState<string | null>(null)
+  const [botVerified, setBotVerified] = useState(false)
+  const [botVerifying, setBotVerifying] = useState(false)
 
   const form = useForm<SignInFormData>({
     resolver: zodResolver(signInSchema),
     defaultValues: {
       email: '',
       password: '',
+      acceptTerms: false,
+      botCheck: false,
     },
   })
+
+  const handleBotVerification = useCallback(() => {
+    if (botVerified) return
+    setBotVerifying(true)
+    const delay = 800 + Math.random() * 700
+    setTimeout(() => {
+      setBotVerified(true)
+      setBotVerifying(false)
+      form.setValue('botCheck', true)
+    }, delay)
+  }, [botVerified, form])
 
   const signInMutation = useMutation({
     mutationFn: async (data: SignInFormData) => {
@@ -366,16 +386,94 @@ function SignInPage() {
               )}
             </div>
 
-            {/* Forgot password link */}
-            <div className="flex justify-end">
-              <a
-                href="#"
-                className="text-sm font-medium hover:underline"
-                style={{ color: 'var(--primary)' }}
-              >
-                Forgot password?
-              </a>
-            </div>
+            {/* Bot Verification */}
+            <motion.div
+              className="p-4 rounded-2xl cursor-pointer transition-all"
+              style={{
+                background: botVerified ? 'rgba(34, 197, 94, 0.1)' : 'rgba(139, 92, 246, 0.05)',
+                border: `2px solid ${botVerified ? 'rgba(34, 197, 94, 0.3)' : form.formState.errors.botCheck ? 'rgba(239, 68, 68, 0.5)' : 'rgba(139, 92, 246, 0.2)'}`,
+              }}
+              onClick={handleBotVerification}
+              whileHover={{ scale: botVerified ? 1 : 1.01 }}
+              whileTap={{ scale: botVerified ? 1 : 0.99 }}
+            >
+              <div className="flex items-center gap-4">
+                <div
+                  className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-all"
+                  style={{
+                    background: botVerified ? 'rgba(34, 197, 94, 0.2)' : 'rgba(139, 92, 246, 0.15)',
+                  }}
+                >
+                  {botVerifying ? (
+                    <Loader2 className="w-6 h-6 animate-spin" style={{ color: '#a78bfa' }} />
+                  ) : botVerified ? (
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ type: 'spring', stiffness: 500, damping: 25 }}
+                    >
+                      <CheckCircle2 className="w-6 h-6" style={{ color: '#22c55e' }} />
+                    </motion.div>
+                  ) : (
+                    <Fingerprint className="w-6 h-6" style={{ color: '#a78bfa' }} />
+                  )}
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold text-sm" style={{ color: 'var(--foreground)' }}>
+                      {botVerified ? 'Verified Human' : 'Verify you\'re human'}
+                    </span>
+                    {!botVerified && (
+                      <Bot size={14} style={{ color: 'var(--foreground-muted)' }} />
+                    )}
+                  </div>
+                  <span className="text-xs" style={{ color: 'var(--foreground-muted)' }}>
+                    {botVerifying ? 'Verifying...' : botVerified ? 'Bot protection passed' : 'Click to verify'}
+                  </span>
+                </div>
+                {!botVerified && !botVerifying && (
+                  <div
+                    className="w-6 h-6 rounded-md border-2 flex items-center justify-center"
+                    style={{ borderColor: 'rgba(139, 92, 246, 0.4)' }}
+                  />
+                )}
+              </div>
+            </motion.div>
+            {form.formState.errors.botCheck && (
+              <p className="text-xs text-red-400 -mt-3">{form.formState.errors.botCheck.message}</p>
+            )}
+
+            {/* Terms & Privacy Checkbox */}
+            <label className="flex items-start gap-3 cursor-pointer group">
+              <div className="relative mt-0.5">
+                <input
+                  type="checkbox"
+                  {...form.register('acceptTerms')}
+                  className="sr-only peer"
+                />
+                <div
+                  className="w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all peer-checked:border-purple-500 peer-checked:bg-purple-500"
+                  style={{ borderColor: form.formState.errors.acceptTerms ? 'rgba(239, 68, 68, 0.5)' : 'var(--border)' }}
+                >
+                  <motion.div
+                    initial={false}
+                    animate={{ scale: form.watch('acceptTerms') ? 1 : 0 }}
+                    transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                  >
+                    <CheckCircle2 className="w-3.5 h-3.5 text-white" />
+                  </motion.div>
+                </div>
+              </div>
+              <span className="text-sm leading-tight" style={{ color: 'var(--foreground-muted)' }}>
+                I agree to the{' '}
+                <Link to="/terms" className="font-medium underline hover:no-underline" style={{ color: 'var(--primary)' }}>Terms of Service</Link>
+                {' '}and{' '}
+                <Link to="/privacy" className="font-medium underline hover:no-underline" style={{ color: 'var(--primary)' }}>Privacy Policy</Link>
+              </span>
+            </label>
+            {form.formState.errors.acceptTerms && (
+              <p className="text-xs text-red-400 -mt-3">{form.formState.errors.acceptTerms.message}</p>
+            )}
 
             {/* Submit button */}
             <motion.button

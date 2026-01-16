@@ -1,9 +1,78 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { motion } from 'motion/react'
+import { Fragment } from 'react'
 import {
   Cookie, Shield, Settings, Eye, Clock, Globe,
   Mail, ChevronRight, CheckCircle, Info,
 } from 'lucide-react'
+
+function renderContent(text: string) {
+  const parts: React.ReactNode[] = []
+  const lines = text.split('\n')
+  
+  lines.forEach((line, lineIndex) => {
+    if (lineIndex > 0) parts.push(<br key={`br-${lineIndex}`} />)
+    
+    let remaining = line
+    let partIndex = 0
+    
+    while (remaining.length > 0) {
+      const boldMatch = remaining.match(/\*\*([^*]+)\*\*/)
+      const linkMatch = remaining.match(/\[([^\]]+)\]\(([^)]+)\)/)
+      const bulletMatch = remaining.match(/^• /)
+      
+      if (bulletMatch && remaining.startsWith('• ')) {
+        parts.push(<span key={`bullet-${lineIndex}-${partIndex}`} className="text-amber-400">• </span>)
+        remaining = remaining.slice(2)
+        partIndex++
+        continue
+      }
+      
+      let nextMatch: { index: number; type: 'bold' | 'link'; length: number } | null = null
+      
+      if (boldMatch?.index !== undefined) {
+        nextMatch = { index: boldMatch.index, type: 'bold', length: boldMatch[0].length }
+      }
+      if (linkMatch?.index !== undefined && (!nextMatch || linkMatch.index < nextMatch.index)) {
+        nextMatch = { index: linkMatch.index, type: 'link', length: linkMatch[0].length }
+      }
+      
+      if (!nextMatch) {
+        parts.push(<Fragment key={`text-${lineIndex}-${partIndex}`}>{remaining}</Fragment>)
+        break
+      }
+      
+      if (nextMatch.index > 0) {
+        parts.push(<Fragment key={`pre-${lineIndex}-${partIndex}`}>{remaining.slice(0, nextMatch.index)}</Fragment>)
+        partIndex++
+      }
+      
+      if (nextMatch.type === 'bold' && boldMatch) {
+        parts.push(
+          <strong key={`bold-${lineIndex}-${partIndex}`} style={{ color: 'var(--foreground)' }}>
+            {boldMatch[1]}
+          </strong>
+        )
+      } else if (nextMatch.type === 'link' && linkMatch) {
+        parts.push(
+          <Link
+            key={`link-${lineIndex}-${partIndex}`}
+            to={linkMatch[2] as '/'}
+            className="underline hover:no-underline"
+            style={{ color: '#f59e0b' }}
+          >
+            {linkMatch[1]}
+          </Link>
+        )
+      }
+      
+      remaining = remaining.slice(nextMatch.index + nextMatch.length)
+      partIndex++
+    }
+  })
+  
+  return parts
+}
 
 export const Route = createFileRoute('/_public/cookies')({
   head: () => ({
@@ -326,15 +395,11 @@ function CookiesPage() {
                 <h2 className="text-xl font-bold" style={{ color: 'var(--foreground)' }}>{section.title}</h2>
               </div>
               <div 
-                className="prose prose-invert max-w-none text-sm leading-relaxed"
+                className="prose prose-invert max-w-none text-sm leading-relaxed space-y-3"
                 style={{ color: 'var(--foreground-muted)' }}
               >
                 {section.content.split('\n\n').map((paragraph, i) => (
-                  <p key={i} className="mb-4 whitespace-pre-line">
-                    {paragraph.split('**').map((part, j) => 
-                      j % 2 === 1 ? <strong key={j} style={{ color: 'var(--foreground)' }}>{part}</strong> : part
-                    )}
-                  </p>
+                  <p key={i}>{renderContent(paragraph)}</p>
                 ))}
               </div>
             </motion.section>
