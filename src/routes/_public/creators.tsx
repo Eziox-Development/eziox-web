@@ -8,8 +8,18 @@ import { BadgeDisplay } from '@/components/ui/BadgeDisplay'
 import {
   Sparkles, Search, Loader2, Users2, Star, TrendingUp, Activity,
   Filter, Eye, Heart, ArrowRight, Video, Radio, Brush, Music,
-  Gamepad2, Code2, MoreHorizontal, Crown, ExternalLink,
+  Gamepad2, Code2, MoreHorizontal, Crown, ExternalLink, ArrowUpDown,
 } from 'lucide-react'
+
+type SortOption = 'name_asc' | 'name_desc' | 'views' | 'followers' | 'newest'
+
+const SORT_OPTIONS: { id: SortOption; label: string }[] = [
+  { id: 'name_asc', label: 'A → Z' },
+  { id: 'name_desc', label: 'Z → A' },
+  { id: 'views', label: 'Most Views' },
+  { id: 'followers', label: 'Most Followers' },
+  { id: 'newest', label: 'Newest' },
+]
 
 export const Route = createFileRoute('/_public/creators')({
   head: () => ({
@@ -38,6 +48,7 @@ function CreatorsPage() {
 
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
+  const [sortBy, setSortBy] = useState<SortOption>('name_asc')
 
   const { data: creatorsData, isLoading, dataUpdatedAt } = useQuery({
     queryKey: ['creators', selectedCategory],
@@ -62,8 +73,27 @@ function CreatorsPage() {
     (c.user.name?.toLowerCase() || '').includes(searchQuery.toLowerCase())
   )
 
-  const featuredCreators = filteredCreators.filter(c => c.profile.isFeatured)
-  const regularCreators = filteredCreators.filter(c => !c.profile.isFeatured)
+  const sortCreators = <T extends typeof filteredCreators[0]>(list: T[]): T[] => {
+    return [...list].sort((a, b) => {
+      switch (sortBy) {
+        case 'name_asc':
+          return (a.user.name || a.user.username).localeCompare(b.user.name || b.user.username)
+        case 'name_desc':
+          return (b.user.name || b.user.username).localeCompare(a.user.name || a.user.username)
+        case 'views':
+          return (b.stats?.profileViews || 0) - (a.stats?.profileViews || 0)
+        case 'followers':
+          return (b.stats?.followers || 0) - (a.stats?.followers || 0)
+        case 'newest':
+          return new Date(b.user.createdAt || 0).getTime() - new Date(a.user.createdAt || 0).getTime()
+        default:
+          return 0
+      }
+    })
+  }
+
+  const featuredCreators = sortCreators(filteredCreators.filter(c => c.profile.isFeatured))
+  const regularCreators = sortCreators(filteredCreators.filter(c => !c.profile.isFeatured))
 
   const stats = {
     total: statsData?.totalCreators || 0,
@@ -203,8 +233,8 @@ function CreatorsPage() {
                   <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>{filteredCreators.length} creators found</p>
                 </div>
               </div>
-              <div className="flex-1">
-                <div className="relative">
+              <div className="flex-1 flex gap-3">
+                <div className="relative flex-1">
                   <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--foreground-muted)' }} />
                   <input
                     type="text"
@@ -214,6 +244,19 @@ function CreatorsPage() {
                     className="w-full pl-10 pr-4 py-2.5 rounded-xl text-sm transition-all focus:ring-2 focus:ring-purple-500/30"
                     style={{ background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.08)', color: 'var(--foreground)' }}
                   />
+                </div>
+                <div className="relative">
+                  <ArrowUpDown size={16} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--foreground-muted)' }} />
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value as SortOption)}
+                    className="pl-10 pr-8 py-2.5 rounded-xl text-sm appearance-none cursor-pointer"
+                    style={{ background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.08)', color: 'var(--foreground)' }}
+                  >
+                    {SORT_OPTIONS.map((opt) => (
+                      <option key={opt.id} value={opt.id}>{opt.label}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
             </div>
@@ -389,7 +432,7 @@ function CreatorsPage() {
                       <Link
                         to="/$username"
                         params={{ username: creator.user.username }}
-                        className="block rounded-2xl overflow-hidden group"
+                        className="block rounded-2xl group"
                         style={{
                           background: 'rgba(255, 255, 255, 0.02)',
                           backdropFilter: 'blur(10px)',

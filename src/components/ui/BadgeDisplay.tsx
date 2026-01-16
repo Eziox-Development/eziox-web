@@ -55,10 +55,37 @@ export function BadgeDisplay({
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
-          className={`${sizeClasses[size]} rounded-full flex items-center justify-center font-medium`}
+          className={`${sizeClasses[size]} rounded-full flex items-center justify-center font-medium cursor-default relative group/more`}
           style={{ background: 'var(--background-secondary)', color: 'var(--foreground-muted)' }}
         >
           +{remainingCount}
+          <div
+            className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 rounded-xl text-xs opacity-0 group-hover/more:opacity-100 transition-opacity pointer-events-none z-50 min-w-max"
+            style={{
+              background: 'var(--card)',
+              border: '1px solid var(--border)',
+              boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
+            }}
+          >
+            <div className="font-semibold mb-2" style={{ color: 'var(--foreground)' }}>More Badges</div>
+            <div className="flex flex-col gap-1.5">
+              {badgeConfigs.slice(maxDisplay).map((badge) => {
+                const IconComponent = LucideIcons[badge.icon as keyof typeof LucideIcons] as React.ComponentType<{ size?: number; style?: React.CSSProperties }>
+                return (
+                  <div key={badge.id} className="flex items-center gap-2">
+                    <div className="w-4 h-4 rounded-full flex items-center justify-center" style={{ background: badge.bgColor }}>
+                      {IconComponent && <IconComponent size={10} style={{ color: badge.color }} />}
+                    </div>
+                    <span style={{ color: badge.color }}>{badge.name}</span>
+                  </div>
+                )
+              })}
+            </div>
+            <div
+              className="absolute top-full left-1/2 -translate-x-1/2 w-2 h-2 rotate-45 -mt-1"
+              style={{ background: 'var(--card)', borderRight: '1px solid var(--border)', borderBottom: '1px solid var(--border)' }}
+            />
+          </div>
         </motion.div>
       )}
     </div>

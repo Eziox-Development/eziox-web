@@ -178,8 +178,8 @@ export const BADGES: Record<BadgeId, BadgeConfig> = {
   },
   other: {
     id: 'other',
-    name: 'Creator',
-    description: 'Content creator',
+    name: 'Other',
+    description: 'Other content type',
     icon: 'Wand2',
     color: '#94a3b8',
     bgColor: 'rgba(148, 163, 184, 0.15)',
