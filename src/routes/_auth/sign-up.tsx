@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import {
   createFileRoute,
@@ -32,10 +32,12 @@ import {
   BarChart3,
   Palette,
   Globe,
-  Bot,
+  Calculator,
   CheckCircle2,
-  Fingerprint,
+  XCircle,
+  MousePointer2,
 } from 'lucide-react'
+import { generateChallenge, validateBotCheck, getDeviceType, type ChallengeData } from '@/lib/bot-protection'
 
 const searchSchema = z.object({
   redirect: z.string().optional(),
@@ -46,9 +48,7 @@ export const Route = createFileRoute('/_auth/sign-up')({
   head: () => ({
     meta: [
       { title: 'Sign Up | Eziox' },
-      { name: 'description', content: 'Create your free Eziox account and start sharing your links in one beautiful place' },
-      { property: 'og:title', content: 'Sign Up | Eziox' },
-      { property: 'og:description', content: 'Create your free Eziox account and start sharing your links in one beautiful place' },
+      { name: 'description', content: 'Create your free Eziox account' },
       { name: 'robots', content: 'noindex, nofollow' },
     ],
   }),
@@ -61,33 +61,31 @@ export const Route = createFileRoute('/_auth/sign-up')({
 })
 
 const signUpSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters').optional(),
+  name: z.string().min(2, 'Min 2 characters').optional(),
   username: z.string()
-    .min(3, 'Username must be at least 3 characters')
-    .max(30, 'Username is too long')
-    .regex(/^[a-zA-Z0-9_-]+$/, 'Only letters, numbers, underscores, and hyphens'),
-  email: z.email({ error: 'Please enter a valid email address' }),
-  password: z
-    .string()
-    .min(8, 'Password must be at least 8 characters')
-    .regex(/[A-Z]/, 'Must contain uppercase letter')
-    .regex(/[a-z]/, 'Must contain lowercase letter')
-    .regex(/[0-9]/, 'Must contain a number'),
-  confirmPassword: z.string().min(1, 'Please confirm your password'),
-  acceptTerms: z.boolean().refine(val => val === true, { message: 'You must accept the terms' }),
-  botCheck: z.boolean().refine(val => val === true, { message: 'Please verify you are human' }),
+    .min(3, 'Min 3 characters')
+    .max(30, 'Max 30 characters')
+    .regex(/^[a-zA-Z0-9_-]+$/, 'Letters, numbers, _ and - only'),
+  email: z.email({ error: 'Invalid email' }),
+  password: z.string()
+    .min(8, 'Min 8 characters')
+    .regex(/[A-Z]/, 'Need uppercase')
+    .regex(/[a-z]/, 'Need lowercase')
+    .regex(/[0-9]/, 'Need number'),
+  confirmPassword: z.string().min(1, 'Confirm password'),
+  acceptTerms: z.boolean().refine(val => val, { message: 'Required' }),
 }).refine((data) => data.password === data.confirmPassword, {
-  message: 'Passwords do not match',
+  message: 'Passwords don\'t match',
   path: ['confirmPassword'],
 })
 
 type SignUpFormData = z.infer<typeof signUpSchema>
 
 const features = [
-  { icon: LinkIcon, title: 'One Link for Everything', description: 'Share all your content with a single bio link' },
-  { icon: BarChart3, title: 'Real-time Analytics', description: 'Track views, clicks, and engagement' },
-  { icon: Palette, title: 'Full Customization', description: 'Make your page uniquely yours' },
-  { icon: Globe, title: 'Custom Domains', description: 'Use your own domain for branding' },
+  { icon: LinkIcon, title: 'One Link', desc: 'All your content in one place' },
+  { icon: BarChart3, title: 'Analytics', desc: 'Track views and clicks' },
+  { icon: Palette, title: 'Customize', desc: 'Make it yours' },
+  { icon: Globe, title: 'Global', desc: 'Reach worldwide' },
 ]
 
 function SignUpPage() {
@@ -96,11 +94,66 @@ function SignUpPage() {
   const navigate = useNavigate()
   const router = useRouter()
   const signUp = useServerFn(signUpFn)
+  
   const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [focusedField, setFocusedField] = useState<string | null>(null)
-  const [botVerified, setBotVerified] = useState(false)
-  const [botVerifying, setBotVerifying] = useState(false)
+  const [showConfirm, setShowConfirm] = useState(false)
+  const [deviceType, setDeviceType] = useState<'mobile' | 'tablet' | 'desktop'>('desktop')
+  
+  const [challenge, setChallenge] = useState<ChallengeData | null>(null)
+  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null)
+  const [botCheckPassed, setBotCheckPassed] = useState(false)
+  const [botCheckFailed, setBotCheckFailed] = useState(false)
+  const [honeypot, setHoneypot] = useState('')
+  const startTimeRef = useRef(Date.now())
+  const interactionCountRef = useRef(0)
+  const mouseMovementsRef = useRef(0)
+
+  useEffect(() => {
+    setDeviceType(getDeviceType())
+    setChallenge(generateChallenge())
+    
+    const handleMouseMove = () => { mouseMovementsRef.current++ }
+    const handleInteraction = () => { interactionCountRef.current++ }
+    
+    window.addEventListener('mousemove', handleMouseMove)
+    window.addEventListener('click', handleInteraction)
+    window.addEventListener('keydown', handleInteraction)
+    
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove)
+      window.removeEventListener('click', handleInteraction)
+      window.removeEventListener('keydown', handleInteraction)
+    }
+  }, [])
+
+  const handleChallengeAnswer = useCallback((answer: number) => {
+    if (!challenge || botCheckPassed) return
+    
+    setSelectedAnswer(answer)
+    
+    setTimeout(() => {
+      const result = validateBotCheck({
+        honeypotValue: honeypot,
+        startTime: startTimeRef.current,
+        challengeAnswer: answer,
+        correctAnswer: challenge.answer,
+        interactionCount: interactionCountRef.current,
+        mouseMovements: mouseMovementsRef.current,
+      })
+      
+      if (result.passed) {
+        setBotCheckPassed(true)
+        setBotCheckFailed(false)
+      } else {
+        setBotCheckFailed(true)
+        setSelectedAnswer(null)
+        setTimeout(() => {
+          setChallenge(generateChallenge())
+          setBotCheckFailed(false)
+        }, 1500)
+      }
+    }, 500)
+  }, [challenge, honeypot, botCheckPassed])
 
   const form = useForm<SignUpFormData>({
     resolver: zodResolver(signUpSchema),
@@ -111,21 +164,9 @@ function SignUpPage() {
       password: '',
       confirmPassword: '',
       acceptTerms: false,
-      botCheck: false,
     },
     mode: 'onChange',
   })
-
-  const handleBotVerification = useCallback(() => {
-    if (botVerified) return
-    setBotVerifying(true)
-    const delay = 800 + Math.random() * 700
-    setTimeout(() => {
-      setBotVerified(true)
-      setBotVerifying(false)
-      form.setValue('botCheck', true)
-    }, delay)
-  }, [botVerified, form])
 
   const password = form.watch('password')
   const username = form.watch('username')
@@ -140,36 +181,29 @@ function SignUpPage() {
     if (/[^A-Za-z0-9]/.test(password)) score++
 
     const levels = [
-      { label: 'Very weak', color: '#ef4444' },
+      { label: 'Weak', color: '#ef4444' },
       { label: 'Weak', color: '#f97316' },
       { label: 'Fair', color: '#eab308' },
       { label: 'Good', color: '#22c55e' },
       { label: 'Strong', color: '#10b981' },
-      { label: 'Very strong', color: '#06b6d4' },
+      { label: 'Very Strong', color: '#06b6d4' },
     ]
     return { score, ...levels[score] }
   }, [password])
 
-  const passwordRequirements = [
-    { label: '8+ characters', met: password?.length >= 8 },
-    { label: 'Uppercase', met: /[A-Z]/.test(password || '') },
-    { label: 'Lowercase', met: /[a-z]/.test(password || '') },
-    { label: 'Number', met: /[0-9]/.test(password || '') },
+  const requirements = [
+    { label: '8+ chars', met: password?.length >= 8 },
+    { label: 'A-Z', met: /[A-Z]/.test(password || '') },
+    { label: 'a-z', met: /[a-z]/.test(password || '') },
+    { label: '0-9', met: /[0-9]/.test(password || '') },
   ]
 
   const signUpMutation = useMutation({
     mutationFn: async (data: SignUpFormData) => {
-      // Get referral code from URL query param (set by /join/{code} redirect)
-      const referralCode = search.referral || undefined
-      
-      const result = await signUp({ 
-        data: { 
-          ...data, 
-          referralCode
-        } 
-      })
-      
-      return result
+      if (!botCheckPassed) {
+        throw { message: 'Complete security check', status: 400 }
+      }
+      return await signUp({ data: { ...data, referralCode: search.referral } })
     },
     onSuccess: async () => {
       await router.invalidate()
@@ -181,217 +215,134 @@ function SignUpPage() {
         await navigate({ to: search.redirect || '/' })
         return
       }
-      form.setError('root', {
-        message: error.message || 'Failed to create account',
-      })
+      form.setError('root', { message: error.message || 'Failed to create account' })
     },
   })
 
   const onSubmit = form.handleSubmit((data) => signUpMutation.mutate(data))
+  const isMobile = deviceType === 'mobile'
 
   return (
-    <div className="min-h-[calc(100vh-80px)] flex">
-      {/* Left Side - Branding & Features */}
-      <div className="hidden lg:flex lg:w-1/2 xl:w-[55%] relative overflow-hidden">
-        {/* Gradient Background */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(139, 92, 246, 0.1), rgba(99, 102, 241, 0.05))',
-          }}
-        />
-        
-        {/* Animated Orbs */}
-        <motion.div
-          className="absolute top-20 left-20 w-72 h-72 rounded-full blur-3xl opacity-30"
-          style={{ background: 'var(--primary)' }}
-          animate={{ scale: [1, 1.2, 1], x: [0, 30, 0], y: [0, -20, 0] }}
-          transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut' }}
-        />
-        <motion.div
-          className="absolute bottom-20 right-20 w-96 h-96 rounded-full blur-3xl opacity-20"
-          style={{ background: 'var(--accent)' }}
-          animate={{ scale: [1.2, 1, 1.2], x: [0, -40, 0], y: [0, 30, 0] }}
-          transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
-        />
-        <motion.div
-          className="absolute top-1/2 left-1/3 w-64 h-64 rounded-full blur-3xl opacity-20"
-          style={{ background: 'linear-gradient(135deg, var(--primary), var(--accent))' }}
-          animate={{ rotate: [0, 360] }}
-          transition={{ duration: 30, repeat: Infinity, ease: 'linear' }}
-        />
-
-        {/* Content */}
-        <div className="relative z-10 flex flex-col justify-center px-12 xl:px-20 py-12">
-          {/* Logo */}
+    <div className="min-h-[calc(100vh-80px)] flex flex-col lg:flex-row">
+      {!isMobile && (
+        <div className="hidden lg:flex lg:w-1/2 xl:w-[55%] relative overflow-hidden">
+          <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(139, 92, 246, 0.08))' }} />
+          
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-12"
-          >
-            <Link to="/" className="inline-flex items-center gap-3">
-              <div
-                className="w-12 h-12 rounded-xl overflow-hidden"
-                style={{ boxShadow: '0 0 30px rgba(99, 102, 241, 0.4)' }}
-              >
-                <img src="/icon.png" alt="Eziox" className="w-full h-full object-cover" />
-              </div>
-              <div>
-                <span className="text-2xl font-bold" style={{ color: 'var(--foreground)' }}>Eziox</span>
-                <span className="block text-xs" style={{ color: 'var(--primary)' }}>Bio Link Platform</span>
-              </div>
-            </Link>
-          </motion.div>
-
-          {/* Headline */}
+            className="absolute top-1/3 left-1/4 w-72 h-72 rounded-full blur-3xl"
+            style={{ background: 'rgba(99, 102, 241, 0.2)' }}
+            animate={{ scale: [1, 1.2, 1], x: [0, 20, 0] }}
+            transition={{ duration: 12, repeat: Infinity }}
+          />
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="mb-12"
-          >
-            <h1
-              className="text-4xl xl:text-5xl font-black mb-4 leading-tight"
-              style={{ color: 'var(--foreground)' }}
-            >
-              Create your
-              <br />
-              <span
-                style={{
-                  background: 'linear-gradient(135deg, var(--primary), var(--accent))',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                }}
-              >
-                digital identity
-              </span>
-            </h1>
-            <p className="text-lg" style={{ color: 'var(--foreground-muted)' }}>
-              Join {stats.totalUsers.toLocaleString()}+ creators sharing their world through one simple link.
-            </p>
-          </motion.div>
+            className="absolute bottom-1/3 right-1/4 w-80 h-80 rounded-full blur-3xl"
+            style={{ background: 'rgba(139, 92, 246, 0.15)' }}
+            animate={{ scale: [1.1, 1, 1.1], y: [0, -20, 0] }}
+            transition={{ duration: 15, repeat: Infinity }}
+          />
 
-          {/* Features Grid */}
-          <div className="grid grid-cols-2 gap-4">
-            {features.map((feature, index) => (
-              <motion.div
-                key={feature.title}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 + index * 0.1 }}
-                className="p-4 rounded-2xl backdrop-blur-sm"
-                style={{
-                  background: 'rgba(var(--card-rgb, 20, 20, 30), 0.5)',
-                  border: '1px solid rgba(var(--border-rgb, 255, 255, 255), 0.1)',
-                }}
-              >
-                <div
-                  className="w-10 h-10 rounded-xl flex items-center justify-center mb-3"
-                  style={{ background: 'rgba(99, 102, 241, 0.2)' }}
-                >
-                  <feature.icon size={20} style={{ color: 'var(--primary)' }} />
+          <div className="relative z-10 flex flex-col justify-center px-12 xl:px-20 py-12 w-full">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-12">
+              <Link to="/" className="inline-flex items-center gap-4 group">
+                <div className="w-14 h-14 rounded-2xl overflow-hidden ring-2 ring-white/10 group-hover:ring-indigo-500/50 transition-all">
+                  <img src="/icon.png" alt="Eziox" className="w-full h-full object-cover" />
                 </div>
-                <h3 className="font-semibold text-sm mb-1" style={{ color: 'var(--foreground)' }}>
-                  {feature.title}
-                </h3>
-                <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>
-                  {feature.description}
-                </p>
-              </motion.div>
-            ))}
-          </div>
+                <div>
+                  <span className="text-3xl font-black" style={{ color: 'var(--foreground)' }}>Eziox</span>
+                  <span className="block text-sm font-medium" style={{ color: 'var(--primary)' }}>Bio Link Platform</span>
+                </div>
+              </Link>
+            </motion.div>
 
-          {/* Preview URL */}
-          {username && username.length >= 3 && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mt-8 p-4 rounded-2xl"
-              style={{
-                background: 'rgba(var(--card-rgb, 20, 20, 30), 0.6)',
-                border: '1px solid rgba(99, 102, 241, 0.3)',
-              }}
-            >
-              <p className="text-xs mb-2" style={{ color: 'var(--foreground-muted)' }}>
-                Your bio page will be:
-              </p>
-              <p className="font-mono text-lg" style={{ color: 'var(--primary)' }}>
-                eziox.link/<span className="font-bold">{username}</span>
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="mb-12">
+              <h1 className="text-5xl xl:text-6xl font-black mb-4 leading-[1.1]" style={{ color: 'var(--foreground)' }}>
+                Create your
+                <br />
+                <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                  digital identity
+                </span>
+              </h1>
+              <p className="text-xl" style={{ color: 'var(--foreground-muted)' }}>
+                Join {stats.totalUsers.toLocaleString()}+ creators worldwide
               </p>
             </motion.div>
-          )}
-        </div>
-      </div>
 
-      {/* Right Side - Form */}
-      <div className="w-full lg:w-1/2 xl:w-[45%] flex items-center justify-center p-6 lg:p-12">
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5 }}
-          className="w-full max-w-lg"
-        >
-          {/* Header */}
-          <div className="mb-8">
-            {search.referral ? (
+            <div className="grid grid-cols-2 gap-4 mb-8">
+              {features.map((f, i) => (
+                <motion.div
+                  key={f.title}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 + i * 0.05 }}
+                  className="p-4 rounded-2xl backdrop-blur-xl"
+                  style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.08)' }}
+                >
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-3" style={{ background: 'rgba(99, 102, 241, 0.15)' }}>
+                    <f.icon size={20} style={{ color: 'var(--primary)' }} />
+                  </div>
+                  <h3 className="font-bold text-sm mb-1" style={{ color: 'var(--foreground)' }}>{f.title}</h3>
+                  <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>{f.desc}</p>
+                </motion.div>
+              ))}
+            </div>
+
+            {username && username.length >= 3 && (
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-4"
-                style={{
-                  background: 'rgba(34, 197, 94, 0.1)',
-                  border: '1px solid rgba(34, 197, 94, 0.3)',
-                }}
+                className="p-4 rounded-2xl"
+                style={{ background: 'rgba(99, 102, 241, 0.1)', border: '1px solid rgba(99, 102, 241, 0.2)' }}
               >
-                <Sparkles size={14} style={{ color: '#22c55e' }} />
-                <span className="text-xs font-medium" style={{ color: '#22c55e' }}>
-                  Referral: {search.referral}
-                </span>
-              </motion.div>
-            ) : (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-4"
-                style={{
-                  background: 'rgba(99, 102, 241, 0.1)',
-                  border: '1px solid rgba(99, 102, 241, 0.2)',
-                }}
-              >
-                <Sparkles size={14} style={{ color: 'var(--primary)' }} />
-                <span className="text-xs font-medium" style={{ color: 'var(--primary)' }}>
-                  Free to get started
-                </span>
+                <p className="text-xs mb-1" style={{ color: 'var(--foreground-muted)' }}>Your bio page:</p>
+                <p className="font-mono text-lg" style={{ color: 'var(--primary)' }}>
+                  eziox.link/<span className="font-bold">{username}</span>
+                </p>
               </motion.div>
             )}
-            <h2 className="text-3xl font-bold mb-2" style={{ color: 'var(--foreground)' }}>
-              Create your account
-            </h2>
+          </div>
+        </div>
+      )}
+
+      <div className={`flex-1 flex items-center justify-center p-6 ${isMobile ? 'pt-8' : 'lg:p-12'}`}>
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-lg">
+          {isMobile && (
+            <Link to="/" className="inline-flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 rounded-xl overflow-hidden">
+                <img src="/icon.png" alt="Eziox" className="w-full h-full object-cover" />
+              </div>
+              <span className="text-xl font-bold" style={{ color: 'var(--foreground)' }}>Eziox</span>
+            </Link>
+          )}
+
+          <div className="mb-6">
+            {search.referral ? (
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-4" style={{ background: 'rgba(34, 197, 94, 0.1)', border: '1px solid rgba(34, 197, 94, 0.2)' }}>
+                <Sparkles size={14} style={{ color: '#22c55e' }} />
+                <span className="text-xs font-semibold" style={{ color: '#22c55e' }}>Referral: {search.referral}</span>
+              </div>
+            ) : (
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-4" style={{ background: 'rgba(99, 102, 241, 0.1)', border: '1px solid rgba(99, 102, 241, 0.2)' }}>
+                <Sparkles size={14} style={{ color: 'var(--primary)' }} />
+                <span className="text-xs font-semibold" style={{ color: 'var(--primary)' }}>Free forever</span>
+              </div>
+            )}
+            <h2 className="text-3xl font-bold mb-2" style={{ color: 'var(--foreground)' }}>Create account</h2>
             <p style={{ color: 'var(--foreground-muted)' }}>
-              Already have an account?{' '}
-              <Link
-                to="/sign-in"
-                search={search.redirect ? { redirect: search.redirect } : undefined}
-                className="font-medium hover:underline"
-                style={{ color: 'var(--primary)' }}
-              >
+              Have an account?{' '}
+              <Link to="/sign-in" search={search.redirect ? { redirect: search.redirect } : undefined} className="font-semibold hover:underline" style={{ color: 'var(--primary)' }}>
                 Sign in
               </Link>
             </p>
           </div>
 
-          {/* Error message */}
           <AnimatePresence>
             {form.formState.errors.root && (
               <motion.div
                 initial={{ opacity: 0, y: -10, height: 0 }}
                 animate={{ opacity: 1, y: 0, height: 'auto' }}
                 exit={{ opacity: 0, y: -10, height: 0 }}
-                className="mb-6 p-4 rounded-xl flex items-center gap-3"
-                style={{
-                  background: 'rgba(239, 68, 68, 0.1)',
-                  border: '1px solid rgba(239, 68, 68, 0.3)',
-                }}
+                className="mb-6 p-4 rounded-2xl flex items-center gap-3"
+                style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)' }}
               >
                 <AlertCircle className="w-5 h-5 text-red-400 shrink-0" />
                 <p className="text-sm text-red-400">{form.formState.errors.root.message}</p>
@@ -399,321 +350,153 @@ function SignUpPage() {
             )}
           </AnimatePresence>
 
-          {/* Form */}
-          <form onSubmit={onSubmit} className="space-y-5">
-            {/* Name & Username Row */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* Name field */}
+          <form onSubmit={onSubmit} className="space-y-4">
+            <input type="text" name="website" value={honeypot} onChange={(e) => setHoneypot(e.target.value)} className="absolute -left-[9999px] opacity-0" tabIndex={-1} autoComplete="off" />
+
+            <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-2" style={{ color: 'var(--foreground)' }}>
-                  Display Name
-                </label>
-                <div
-                  className="relative"
-                  onFocus={() => setFocusedField('name')}
-                  onBlur={() => setFocusedField(null)}
-                >
-                  <User
-                    className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 transition-colors"
-                    style={{ color: focusedField === 'name' ? 'var(--primary)' : 'var(--foreground-muted)' }}
-                  />
-                  <input
-                    {...form.register('name')}
-                    type="text"
-                    placeholder="John Doe"
-                    className="w-full pl-12 pr-4 py-3.5 rounded-xl outline-none transition-all"
-                    style={{
-                      background: 'var(--background-secondary)',
-                      border: `2px solid ${focusedField === 'name' ? 'var(--primary)' : 'var(--border)'}`,
-                      color: 'var(--foreground)',
-                    }}
-                  />
+                <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--foreground)' }}>Name</label>
+                <div className="relative">
+                  <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: 'var(--foreground-muted)' }} />
+                  <input {...form.register('name')} type="text" placeholder="John" className="w-full pl-11 pr-4 py-3.5 rounded-xl outline-none transition-all focus:ring-2 focus:ring-purple-500/50 text-sm" style={{ background: 'var(--background-secondary)', border: '1px solid var(--border)', color: 'var(--foreground)' }} />
                 </div>
               </div>
-
-              {/* Username field */}
               <div>
-                <label className="block text-sm font-medium mb-2" style={{ color: 'var(--foreground)' }}>
-                  Username <span className="text-red-400">*</span>
-                </label>
-                <div
-                  className="relative"
-                  onFocus={() => setFocusedField('username')}
-                  onBlur={() => setFocusedField(null)}
-                >
-                  <span
-                    className="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-medium transition-colors"
-                    style={{ color: focusedField === 'username' ? 'var(--primary)' : 'var(--foreground-muted)' }}
-                  >
-                    @
-                  </span>
-                  <input
-                    {...form.register('username')}
-                    type="text"
-                    placeholder="username"
-                    className="w-full pl-10 pr-4 py-3.5 rounded-xl outline-none transition-all"
-                    style={{
-                      background: 'var(--background-secondary)',
-                      border: `2px solid ${form.formState.errors.username ? 'rgba(239, 68, 68, 0.5)' : focusedField === 'username' ? 'var(--primary)' : 'var(--border)'}`,
-                      color: 'var(--foreground)',
-                    }}
-                  />
+                <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--foreground)' }}>Username <span className="text-red-400">*</span></label>
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-medium" style={{ color: 'var(--foreground-muted)' }}>@</span>
+                  <input {...form.register('username')} type="text" placeholder="username" className="w-full pl-9 pr-4 py-3.5 rounded-xl outline-none transition-all focus:ring-2 focus:ring-purple-500/50 text-sm" style={{ background: 'var(--background-secondary)', border: '1px solid var(--border)', color: 'var(--foreground)' }} />
                 </div>
-                {form.formState.errors.username && (
-                  <p className="mt-1.5 text-xs text-red-400">{form.formState.errors.username.message}</p>
-                )}
+                {form.formState.errors.username && <p className="mt-1 text-xs text-red-400">{form.formState.errors.username.message}</p>}
               </div>
             </div>
 
-            {/* Email field */}
             <div>
-              <label className="block text-sm font-medium mb-2" style={{ color: 'var(--foreground)' }}>
-                Email Address <span className="text-red-400">*</span>
-              </label>
-              <div
-                className="relative"
-                onFocus={() => setFocusedField('email')}
-                onBlur={() => setFocusedField(null)}
-              >
-                <Mail
-                  className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 transition-colors"
-                  style={{ color: focusedField === 'email' ? 'var(--primary)' : 'var(--foreground-muted)' }}
-                />
-                <input
-                  {...form.register('email')}
-                  type="email"
-                  placeholder="you@example.com"
-                  className="w-full pl-12 pr-4 py-3.5 rounded-xl outline-none transition-all"
-                  style={{
-                    background: 'var(--background-secondary)',
-                    border: `2px solid ${form.formState.errors.email ? 'rgba(239, 68, 68, 0.5)' : focusedField === 'email' ? 'var(--primary)' : 'var(--border)'}`,
-                    color: 'var(--foreground)',
-                  }}
-                />
+              <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--foreground)' }}>Email <span className="text-red-400">*</span></label>
+              <div className="relative">
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: 'var(--foreground-muted)' }} />
+                <input {...form.register('email')} type="email" placeholder="you@example.com" className="w-full pl-11 pr-4 py-3.5 rounded-xl outline-none transition-all focus:ring-2 focus:ring-purple-500/50 text-sm" style={{ background: 'var(--background-secondary)', border: '1px solid var(--border)', color: 'var(--foreground)' }} />
               </div>
-              {form.formState.errors.email && (
-                <p className="mt-1.5 text-xs text-red-400">{form.formState.errors.email.message}</p>
-              )}
+              {form.formState.errors.email && <p className="mt-1 text-xs text-red-400">{form.formState.errors.email.message}</p>}
             </div>
 
-            {/* Password Row */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* Password field */}
+            <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-2" style={{ color: 'var(--foreground)' }}>
-                  Password <span className="text-red-400">*</span>
-                </label>
-                <div
-                  className="relative"
-                  onFocus={() => setFocusedField('password')}
-                  onBlur={() => setFocusedField(null)}
-                >
-                  <Lock
-                    className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 transition-colors"
-                    style={{ color: focusedField === 'password' ? 'var(--primary)' : 'var(--foreground-muted)' }}
-                  />
-                  <input
-                    {...form.register('password')}
-                    type={showPassword ? 'text' : 'password'}
-                    placeholder="••••••••"
-                    className="w-full pl-12 pr-12 py-3.5 rounded-xl outline-none transition-all"
-                    style={{
-                      background: 'var(--background-secondary)',
-                      border: `2px solid ${form.formState.errors.password ? 'rgba(239, 68, 68, 0.5)' : focusedField === 'password' ? 'var(--primary)' : 'var(--border)'}`,
-                      color: 'var(--foreground)',
-                    }}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 p-1"
-                    style={{ color: 'var(--foreground-muted)' }}
-                  >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--foreground)' }}>Password <span className="text-red-400">*</span></label>
+                <div className="relative">
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: 'var(--foreground-muted)' }} />
+                  <input {...form.register('password')} type={showPassword ? 'text' : 'password'} placeholder="••••••••" className="w-full pl-11 pr-10 py-3.5 rounded-xl outline-none transition-all focus:ring-2 focus:ring-purple-500/50 text-sm" style={{ background: 'var(--background-secondary)', border: '1px solid var(--border)', color: 'var(--foreground)' }} />
+                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--foreground-muted)' }}>
+                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
                 </div>
               </div>
-
-              {/* Confirm Password field */}
               <div>
-                <label className="block text-sm font-medium mb-2" style={{ color: 'var(--foreground)' }}>
-                  Confirm <span className="text-red-400">*</span>
-                </label>
-                <div
-                  className="relative"
-                  onFocus={() => setFocusedField('confirmPassword')}
-                  onBlur={() => setFocusedField(null)}
-                >
-                  <Lock
-                    className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 transition-colors"
-                    style={{ color: focusedField === 'confirmPassword' ? 'var(--primary)' : 'var(--foreground-muted)' }}
-                  />
-                  <input
-                    {...form.register('confirmPassword')}
-                    type={showConfirmPassword ? 'text' : 'password'}
-                    placeholder="••••••••"
-                    className="w-full pl-12 pr-12 py-3.5 rounded-xl outline-none transition-all"
-                    style={{
-                      background: 'var(--background-secondary)',
-                      border: `2px solid ${form.formState.errors.confirmPassword ? 'rgba(239, 68, 68, 0.5)' : focusedField === 'confirmPassword' ? 'var(--primary)' : 'var(--border)'}`,
-                      color: 'var(--foreground)',
-                    }}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 p-1"
-                    style={{ color: 'var(--foreground-muted)' }}
-                  >
-                    {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--foreground)' }}>Confirm <span className="text-red-400">*</span></label>
+                <div className="relative">
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: 'var(--foreground-muted)' }} />
+                  <input {...form.register('confirmPassword')} type={showConfirm ? 'text' : 'password'} placeholder="••••••••" className="w-full pl-11 pr-10 py-3.5 rounded-xl outline-none transition-all focus:ring-2 focus:ring-purple-500/50 text-sm" style={{ background: 'var(--background-secondary)', border: '1px solid var(--border)', color: 'var(--foreground)' }} />
+                  <button type="button" onClick={() => setShowConfirm(!showConfirm)} className="absolute right-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--foreground-muted)' }}>
+                    {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
                 </div>
-                {form.formState.errors.confirmPassword && (
-                  <p className="mt-1.5 text-xs text-red-400">{form.formState.errors.confirmPassword.message}</p>
-                )}
+                {form.formState.errors.confirmPassword && <p className="mt-1 text-xs text-red-400">{form.formState.errors.confirmPassword.message}</p>}
               </div>
             </div>
 
-            {/* Password strength */}
             {password && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                className="p-4 rounded-xl"
-                style={{ background: 'var(--background-secondary)' }}
-              >
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-xs font-medium" style={{ color: 'var(--foreground-muted)' }}>
-                    Password Strength
-                  </span>
-                  <span className="text-xs font-bold" style={{ color: passwordStrength.color }}>
-                    {passwordStrength.label}
-                  </span>
+              <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="p-4 rounded-xl" style={{ background: 'var(--background-secondary)' }}>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-medium" style={{ color: 'var(--foreground-muted)' }}>Strength</span>
+                  <span className="text-xs font-bold" style={{ color: passwordStrength.color }}>{passwordStrength.label}</span>
                 </div>
                 <div className="flex gap-1 mb-3">
-                  {[1, 2, 3, 4, 5].map((level) => (
-                    <div
-                      key={level}
-                      className="flex-1 h-1.5 rounded-full transition-all"
-                      style={{
-                        background: level <= passwordStrength.score ? passwordStrength.color : 'var(--border)',
-                      }}
-                    />
+                  {[1, 2, 3, 4, 5].map((l) => (
+                    <div key={l} className="flex-1 h-1 rounded-full transition-all" style={{ background: l <= passwordStrength.score ? passwordStrength.color : 'var(--border)' }} />
                   ))}
                 </div>
                 <div className="flex flex-wrap gap-3">
-                  {passwordRequirements.map((req) => (
-                    <div key={req.label} className="flex items-center gap-1.5 text-xs" style={{ color: 'var(--foreground-muted)' }}>
-                      {req.met ? (
-                        <Check className="w-3.5 h-3.5 text-green-400" />
-                      ) : (
-                        <X className="w-3.5 h-3.5 text-red-400" />
-                      )}
-                      {req.label}
+                  {requirements.map((r) => (
+                    <div key={r.label} className="flex items-center gap-1 text-xs" style={{ color: 'var(--foreground-muted)' }}>
+                      {r.met ? <Check className="w-3 h-3 text-green-400" /> : <X className="w-3 h-3 text-red-400" />}
+                      {r.label}
                     </div>
                   ))}
                 </div>
               </motion.div>
             )}
 
-            {/* Bot Verification */}
             <motion.div
-              className="p-4 rounded-2xl cursor-pointer transition-all"
+              className="p-4 rounded-2xl"
               style={{
-                background: botVerified ? 'rgba(34, 197, 94, 0.1)' : 'rgba(99, 102, 241, 0.05)',
-                border: `2px solid ${botVerified ? 'rgba(34, 197, 94, 0.3)' : form.formState.errors.botCheck ? 'rgba(239, 68, 68, 0.5)' : 'rgba(99, 102, 241, 0.2)'}`,
+                background: botCheckPassed ? 'rgba(34, 197, 94, 0.08)' : botCheckFailed ? 'rgba(239, 68, 68, 0.08)' : 'rgba(99, 102, 241, 0.05)',
+                border: `1px solid ${botCheckPassed ? 'rgba(34, 197, 94, 0.3)' : botCheckFailed ? 'rgba(239, 68, 68, 0.3)' : 'rgba(99, 102, 241, 0.15)'}`,
               }}
-              onClick={handleBotVerification}
-              whileHover={{ scale: botVerified ? 1 : 1.01 }}
-              whileTap={{ scale: botVerified ? 1 : 0.99 }}
             >
-              <div className="flex items-center gap-4">
-                <div
-                  className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-all"
-                  style={{
-                    background: botVerified ? 'rgba(34, 197, 94, 0.2)' : 'rgba(99, 102, 241, 0.15)',
-                  }}
-                >
-                  {botVerifying ? (
-                    <Loader2 className="w-6 h-6 animate-spin" style={{ color: '#818cf8' }} />
-                  ) : botVerified ? (
-                    <motion.div
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{ type: 'spring', stiffness: 500, damping: 25 }}
-                    >
-                      <CheckCircle2 className="w-6 h-6" style={{ color: '#22c55e' }} />
-                    </motion.div>
-                  ) : (
-                    <Fingerprint className="w-6 h-6" style={{ color: '#818cf8' }} />
-                  )}
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: botCheckPassed ? 'rgba(34, 197, 94, 0.15)' : 'rgba(99, 102, 241, 0.15)' }}>
+                  {botCheckPassed ? <CheckCircle2 size={18} style={{ color: '#22c55e' }} /> : botCheckFailed ? <XCircle size={18} style={{ color: '#ef4444' }} /> : <Calculator size={18} style={{ color: '#6366f1' }} />}
                 </div>
                 <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className="font-semibold text-sm" style={{ color: 'var(--foreground)' }}>
-                      {botVerified ? 'Verified Human' : 'Verify you\'re human'}
-                    </span>
-                    {!botVerified && (
-                      <Bot size={14} style={{ color: 'var(--foreground-muted)' }} />
-                    )}
-                  </div>
-                  <span className="text-xs" style={{ color: 'var(--foreground-muted)' }}>
-                    {botVerifying ? 'Verifying...' : botVerified ? 'Bot protection passed' : 'Click to verify'}
-                  </span>
+                  <p className="font-semibold text-sm" style={{ color: 'var(--foreground)' }}>
+                    {botCheckPassed ? 'Verified!' : botCheckFailed ? 'Try again' : 'Security Check'}
+                  </p>
+                  <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>
+                    {botCheckPassed ? 'Human verified' : botCheckFailed ? 'Wrong answer' : `Solve: ${challenge?.question || '...'}`}
+                  </p>
                 </div>
-                {!botVerified && !botVerifying && (
-                  <div
-                    className="w-6 h-6 rounded-md border-2 flex items-center justify-center"
-                    style={{ borderColor: 'rgba(99, 102, 241, 0.4)' }}
-                  />
+                {!botCheckPassed && (
+                  <div className="flex items-center gap-1 text-xs" style={{ color: 'var(--foreground-muted)' }}>
+                    <MousePointer2 size={10} />
+                  </div>
                 )}
               </div>
+              {!botCheckPassed && challenge && (
+                <div className="grid grid-cols-4 gap-2">
+                  {challenge.options.map((opt) => (
+                    <motion.button
+                      key={opt}
+                      type="button"
+                      onClick={() => handleChallengeAnswer(opt)}
+                      disabled={selectedAnswer !== null}
+                      className="py-2.5 rounded-lg font-bold text-sm disabled:opacity-50"
+                      style={{
+                        background: selectedAnswer === opt ? (opt === challenge.answer ? 'rgba(34, 197, 94, 0.2)' : 'rgba(239, 68, 68, 0.2)') : 'rgba(255, 255, 255, 0.05)',
+                        border: `1px solid ${selectedAnswer === opt ? (opt === challenge.answer ? 'rgba(34, 197, 94, 0.5)' : 'rgba(239, 68, 68, 0.5)') : 'rgba(255, 255, 255, 0.1)'}`,
+                        color: 'var(--foreground)',
+                      }}
+                      whileHover={{ scale: selectedAnswer === null ? 1.05 : 1 }}
+                      whileTap={{ scale: selectedAnswer === null ? 0.95 : 1 }}
+                    >
+                      {opt}
+                    </motion.button>
+                  ))}
+                </div>
+              )}
             </motion.div>
-            {form.formState.errors.botCheck && (
-              <p className="text-xs text-red-400 -mt-3">{form.formState.errors.botCheck.message}</p>
-            )}
 
-            {/* Terms & Privacy Checkbox */}
-            <label className="flex items-start gap-3 cursor-pointer group">
+            <label className="flex items-start gap-3 cursor-pointer">
               <div className="relative mt-0.5">
-                <input
-                  type="checkbox"
-                  {...form.register('acceptTerms')}
-                  className="sr-only peer"
-                />
-                <div
-                  className="w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all peer-checked:border-indigo-500 peer-checked:bg-indigo-500"
-                  style={{ borderColor: form.formState.errors.acceptTerms ? 'rgba(239, 68, 68, 0.5)' : 'var(--border)' }}
-                >
-                  <motion.div
-                    initial={false}
-                    animate={{ scale: form.watch('acceptTerms') ? 1 : 0 }}
-                    transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                  >
+                <input type="checkbox" {...form.register('acceptTerms')} className="sr-only peer" />
+                <div className="w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all peer-checked:border-indigo-500 peer-checked:bg-indigo-500" style={{ borderColor: 'var(--border)' }}>
+                  <motion.div initial={false} animate={{ scale: form.watch('acceptTerms') ? 1 : 0 }}>
                     <Check className="w-3.5 h-3.5 text-white" />
                   </motion.div>
                 </div>
               </div>
-              <span className="text-sm leading-tight" style={{ color: 'var(--foreground-muted)' }}>
+              <span className="text-sm" style={{ color: 'var(--foreground-muted)' }}>
                 I agree to the{' '}
-                <Link to="/terms" className="font-medium underline hover:no-underline" style={{ color: 'var(--primary)' }}>Terms of Service</Link>
-                {' '}and{' '}
-                <Link to="/privacy" className="font-medium underline hover:no-underline" style={{ color: 'var(--primary)' }}>Privacy Policy</Link>
+                <Link to="/terms" className="font-medium underline" style={{ color: 'var(--primary)' }}>Terms</Link>
+                {' & '}
+                <Link to="/privacy" className="font-medium underline" style={{ color: 'var(--primary)' }}>Privacy</Link>
               </span>
             </label>
-            {form.formState.errors.acceptTerms && (
-              <p className="text-xs text-red-400 -mt-3">{form.formState.errors.acceptTerms.message}</p>
-            )}
 
-            {/* Submit button */}
             <motion.button
               type="submit"
-              disabled={signUpMutation.isPending}
-              className="w-full py-4 rounded-xl font-semibold text-white relative overflow-hidden group disabled:opacity-70"
-              style={{
-                background: 'linear-gradient(135deg, var(--primary), var(--accent))',
-                boxShadow: '0 10px 40px rgba(99, 102, 241, 0.3)',
-              }}
+              disabled={signUpMutation.isPending || !botCheckPassed}
+              className="w-full py-4 rounded-2xl font-bold text-white relative overflow-hidden group disabled:opacity-60"
+              style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', boxShadow: '0 8px 32px rgba(99, 102, 241, 0.3)' }}
               whileHover={{ scale: 1.01 }}
               whileTap={{ scale: 0.99 }}
             >
@@ -721,7 +504,7 @@ function SignUpPage() {
                 {signUpMutation.isPending ? (
                   <>
                     <Loader2 className="w-5 h-5 animate-spin" />
-                    Creating your page...
+                    Creating...
                   </>
                 ) : (
                   <>
@@ -733,19 +516,18 @@ function SignUpPage() {
             </motion.button>
           </form>
 
-          {/* Trust badges */}
-          <div className="mt-8 pt-6 border-t flex flex-wrap items-center justify-center gap-6" style={{ borderColor: 'var(--border)' }}>
-            <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--foreground-muted)' }}>
-              <Shield size={16} style={{ color: 'var(--primary)' }} />
-              <span>Secure & Encrypted</span>
+          <div className="mt-6 flex items-center justify-center gap-6 text-xs" style={{ color: 'var(--foreground-muted)' }}>
+            <div className="flex items-center gap-2">
+              <Shield size={14} style={{ color: 'var(--primary)' }} />
+              <span>Secure</span>
             </div>
-            <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--foreground-muted)' }}>
-              <Zap size={16} style={{ color: 'var(--accent)' }} />
-              <span>Instant Setup</span>
+            <div className="flex items-center gap-2">
+              <Zap size={14} style={{ color: 'var(--accent)' }} />
+              <span>Instant</span>
             </div>
-            <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--foreground-muted)' }}>
-              <Sparkles size={16} style={{ color: 'var(--primary)' }} />
-              <span>Free Forever</span>
+            <div className="flex items-center gap-2">
+              <Sparkles size={14} style={{ color: 'var(--primary)' }} />
+              <span>Free</span>
             </div>
           </div>
         </motion.div>
