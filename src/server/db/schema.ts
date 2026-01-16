@@ -334,6 +334,41 @@ export const shortLinksRelations = relations(shortLinks, ({ one }) => ({
 }))
 
 // ============================================================================
+// PARTNER APPLICATIONS TABLE
+// ============================================================================
+
+export const partnerApplications = pgTable('partner_applications', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  companyName: varchar('company_name', { length: 200 }),
+  website: varchar('website', { length: 255 }),
+  socialLinks: jsonb('social_links').$type<Record<string, string>>().default({}),
+  category: varchar('category', { length: 50 }).notNull(),
+  audienceSize: varchar('audience_size', { length: 50 }),
+  description: text('description').notNull(),
+  whyPartner: text('why_partner').notNull(),
+  status: varchar('status', { length: 20 }).default('pending').notNull(),
+  adminNotes: text('admin_notes'),
+  reviewedBy: uuid('reviewed_by').references(() => users.id, { onDelete: 'set null' }),
+  reviewedAt: timestamp('reviewed_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+})
+
+export const partnerApplicationsRelations = relations(partnerApplications, ({ one }) => ({
+  user: one(users, {
+    fields: [partnerApplications.userId],
+    references: [users.id],
+  }),
+  reviewer: one(users, {
+    fields: [partnerApplications.reviewedBy],
+    references: [users.id],
+  }),
+}))
+
+// ============================================================================
 // TYPE EXPORTS
 // ============================================================================
 
@@ -355,3 +390,5 @@ export type Project = typeof projects.$inferSelect
 export type NewProject = typeof projects.$inferInsert
 export type ShortLink = typeof shortLinks.$inferSelect
 export type NewShortLink = typeof shortLinks.$inferInsert
+export type PartnerApplication = typeof partnerApplications.$inferSelect
+export type NewPartnerApplication = typeof partnerApplications.$inferInsert
