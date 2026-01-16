@@ -46,6 +46,9 @@ code, kbd, samp, pre {
   
   --theme-transition: 250ms ease-out;
   --radius: 0.75rem;
+  --glow-intensity: 0.4;
+  --card-style: glass;
+  --animation-speed: 250ms;
   
   --destructive: #ef4444;
   --destructive-foreground: #fafafa;
@@ -174,11 +177,24 @@ code, kbd, samp, pre {
   }
 
   .glow-primary {
-    box-shadow: 0 0 30px rgba(var(--primary-rgb), 0.4);
+    box-shadow: 0 0 30px rgba(var(--primary-rgb), var(--glow-intensity));
   }
   
   .glow-accent {
-    box-shadow: 0 0 30px rgba(var(--accent-rgb), 0.4);
+    box-shadow: 0 0 30px rgba(var(--accent-rgb), var(--glow-intensity));
+  }
+
+  .theme-glow {
+    box-shadow: 0 0 20px rgba(var(--primary-rgb), var(--glow-intensity));
+  }
+
+  .theme-card {
+    border-radius: var(--radius);
+    transition: all var(--animation-speed) ease-out;
+  }
+
+  .theme-animation {
+    transition-duration: var(--animation-speed);
   }
 
   .gradient-border {

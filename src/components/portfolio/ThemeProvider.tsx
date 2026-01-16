@@ -37,7 +37,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     if (!mounted) return
 
     const root = document.documentElement
-    const { colors, typography } = theme
+    const { colors, typography, effects } = theme
+
+    const glowValues = { none: '0', subtle: '0.2', medium: '0.4', strong: '0.6' }
+    const radiusValues = { sharp: '0.25rem', rounded: '0.75rem', pill: '9999px' }
+    const animationValues = { slow: '400ms', normal: '250ms', fast: '150ms' }
 
     const vars: Record<string, string> = {
       '--background': colors.background,
@@ -58,6 +62,10 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       '--font-display': typography.displayFont,
       '--font-body': typography.bodyFont,
       '--theme-transition': `${TRANSITION_MS}ms ease-out`,
+      '--glow-intensity': glowValues[effects.glowIntensity],
+      '--radius': radiusValues[effects.borderRadius],
+      '--card-style': effects.cardStyle,
+      '--animation-speed': animationValues[effects.animationSpeed],
     }
 
     Object.entries(vars).forEach(([k, v]) => root.style.setProperty(k, v))

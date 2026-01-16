@@ -40,7 +40,7 @@ export interface ThemeEffects {
   animationSpeed: 'slow' | 'normal' | 'fast'
 }
 
-export type ThemeCategory = 'general' | 'gamer' | 'vtuber' | 'developer' | 'streamer' | 'artist' | 'minimal'
+export type ThemeCategory = 'general' | 'gamer' | 'vtuber' | 'anime' | 'developer' | 'streamer' | 'artist' | 'minimal'
 
 export interface Theme {
   id: string
@@ -420,6 +420,86 @@ Besides development, I enjoy experimenting with hosting setups, automation, and 
         bodyFontUrl: 'https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap',
       },
       effects: { glowIntensity: 'medium', borderRadius: 'rounded', cardStyle: 'glass', animationSpeed: 'normal' },
+    },
+
+    // === ANIME ===
+    {
+      id: 'shonen-fire',
+      name: 'Shonen Fire',
+      category: 'anime',
+      description: 'Intense and fiery like your favorite battle anime',
+      colors: {
+        background: '#0f0808',
+        backgroundSecondary: '#1a0f0f',
+        foreground: '#fff5f0',
+        foregroundMuted: '#d4a090',
+        primary: '#ff4500',
+        primaryForeground: '#ffffff',
+        accent: '#ffd700',
+        accentForeground: '#0f0808',
+        border: '#3d2020',
+        card: '#1a0f0f',
+        cardForeground: '#fff5f0',
+      },
+      typography: {
+        displayFont: "'Bangers', cursive",
+        bodyFont: "'Roboto', sans-serif",
+        displayFontUrl: 'https://fonts.googleapis.com/css2?family=Bangers&display=swap',
+        bodyFontUrl: 'https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap',
+      },
+      effects: { glowIntensity: 'strong', borderRadius: 'sharp', cardStyle: 'neon', animationSpeed: 'fast' },
+    },
+    {
+      id: 'slice-of-life',
+      name: 'Slice of Life',
+      category: 'anime',
+      description: 'Calm and cozy everyday aesthetics',
+      colors: {
+        background: '#f5f0e8',
+        backgroundSecondary: '#ebe5d8',
+        foreground: '#2d2a26',
+        foregroundMuted: '#6b6560',
+        primary: '#7eb8a2',
+        primaryForeground: '#ffffff',
+        accent: '#e8a87c',
+        accentForeground: '#2d2a26',
+        border: '#d4cfc2',
+        card: '#ebe5d8',
+        cardForeground: '#2d2a26',
+      },
+      typography: {
+        displayFont: "'Kosugi Maru', sans-serif",
+        bodyFont: "'Zen Maru Gothic', sans-serif",
+        displayFontUrl: 'https://fonts.googleapis.com/css2?family=Kosugi+Maru&display=swap',
+        bodyFontUrl: 'https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@300;400;500;700&display=swap',
+      },
+      effects: { glowIntensity: 'none', borderRadius: 'rounded', cardStyle: 'flat', animationSpeed: 'slow' },
+    },
+    {
+      id: 'mecha-chrome',
+      name: 'Mecha Chrome',
+      category: 'anime',
+      description: 'Futuristic mecha and sci-fi inspired',
+      colors: {
+        background: '#0a0c10',
+        backgroundSecondary: '#12151c',
+        foreground: '#e0e5f0',
+        foregroundMuted: '#8090a5',
+        primary: '#00d4ff',
+        primaryForeground: '#000000',
+        accent: '#ff3366',
+        accentForeground: '#ffffff',
+        border: '#2a3040',
+        card: '#12151c',
+        cardForeground: '#e0e5f0',
+      },
+      typography: {
+        displayFont: "'Orbitron', sans-serif",
+        bodyFont: "'Exo 2', sans-serif",
+        displayFontUrl: 'https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800&display=swap',
+        bodyFontUrl: 'https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700&display=swap',
+      },
+      effects: { glowIntensity: 'strong', borderRadius: 'sharp', cardStyle: 'neon', animationSpeed: 'fast' },
     },
 
     // === DEVELOPER ===

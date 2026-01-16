@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react'
 import { useTheme } from './ThemeProvider'
-import { Paintbrush, Check, Gamepad2, Tv, Code2, Radio, Palette, Minus, Sparkles, X } from 'lucide-react'
+import { Paintbrush, Check, Gamepad2, Tv, Code2, Radio, Palette, Minus, Sparkles, X, Star } from 'lucide-react'
 import { motion, AnimatePresence } from 'motion/react'
 import type { ThemeCategory } from '@/lib/site-config'
 
@@ -8,8 +8,9 @@ const CATEGORIES: { id: ThemeCategory; label: string; icon: typeof Gamepad2 }[] 
   { id: 'general', label: 'General', icon: Sparkles },
   { id: 'gamer', label: 'Gamer', icon: Gamepad2 },
   { id: 'vtuber', label: 'VTuber', icon: Tv },
+  { id: 'anime', label: 'Anime', icon: Star },
   { id: 'developer', label: 'Dev', icon: Code2 },
-  { id: 'streamer', label: 'Streamer', icon: Radio },
+  { id: 'streamer', label: 'Stream', icon: Radio },
   { id: 'artist', label: 'Artist', icon: Palette },
   { id: 'minimal', label: 'Minimal', icon: Minus },
 ]
@@ -77,30 +78,33 @@ export function ThemeSwitcher() {
                 </button>
               </div>
 
-              <div className="p-2 flex gap-1 overflow-x-auto scrollbar-hide" style={{ borderBottom: '1px solid var(--border)' }}>
-                {CATEGORIES.map((cat) => {
-                  const isActive = activeCategory === cat.id
-                  const count = themes.filter(t => t.category === cat.id).length
-                  return (
-                    <motion.button
-                      key={cat.id}
-                      onClick={() => setActiveCategory(cat.id)}
-                      className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium whitespace-nowrap transition-all"
-                      style={{
-                        background: isActive ? 'linear-gradient(135deg, var(--primary), var(--accent))' : 'transparent',
-                        color: isActive ? 'white' : 'var(--foreground-muted)',
-                      }}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      <cat.icon size={14} />
-                      <span>{cat.label}</span>
-                      <span className="px-1.5 py-0.5 rounded text-[10px]" style={{ background: isActive ? 'rgba(255,255,255,0.2)' : 'var(--background-secondary)' }}>
-                        {count}
-                      </span>
-                    </motion.button>
-                  )
-                })}
+              <div className="relative" style={{ borderBottom: '1px solid var(--border)' }}>
+                <div className="p-2 flex gap-1 overflow-x-auto scrollbar-hide scroll-smooth" id="category-tabs">
+                  {CATEGORIES.map((cat) => {
+                    const isActive = activeCategory === cat.id
+                    const count = themes.filter(t => t.category === cat.id).length
+                    if (count === 0) return null
+                    return (
+                      <motion.button
+                        key={cat.id}
+                        onClick={() => setActiveCategory(cat.id)}
+                        className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all flex-shrink-0"
+                        style={{
+                          background: isActive ? 'linear-gradient(135deg, var(--primary), var(--accent))' : 'transparent',
+                          color: isActive ? 'white' : 'var(--foreground-muted)',
+                        }}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        <cat.icon size={12} />
+                        <span>{cat.label}</span>
+                        <span className="px-1 py-0.5 rounded text-[9px]" style={{ background: isActive ? 'rgba(255,255,255,0.2)' : 'var(--background-secondary)' }}>
+                          {count}
+                        </span>
+                      </motion.button>
+                    )
+                  })}
+                </div>
               </div>
 
               <div className="p-2">
