@@ -9,6 +9,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.5.0] - 2026-01-16
+
+### Added
+- **Spotify Integration** - Complete OAuth flow with real-time playback display
+  - OAuth 2.0 authentication with automatic token refresh
+  - `spotify_connections` database table for secure token storage
+  - Server functions for OAuth flow, token management, and API calls
+  - **SpotifyConnect Component** - Connect/disconnect Spotify account in settings
+    - Connection status indicator with live dot animation
+    - Privacy toggle to show/hide activity on profile
+    - Theme-aware styling with modern UI
+  - **NowPlaying Component** - Real-time playback widget on bio pages
+    - Album art with blur background effect
+    - Live progress bar with smooth animations
+    - Sound bars animation when playing
+    - "Offline/Not listening" state with breathing animation
+    - Direct link to Spotify track
+    - Auto-refresh every 10 seconds
+  - API route: `/api/spotify-callback` for OAuth redirect handling
+  - Privacy controls in profile settings
+  - Conditional display based on user preferences
+
+### Fixed
+- **API Route Structure** - Moved Spotify callback from `_api` to `api` directory
+  - Fixed 404 errors on callback route
+  - TanStack Router pathless routes (`_api`) don't create URL paths
+  - Proper route registration for production deployment
+
+### Technical
+- New files:
+  - `src/server/functions/spotify.ts` (404 lines)
+  - `src/components/spotify/SpotifyConnect.tsx` (218 lines)
+  - `src/components/spotify/NowPlaying.tsx` (282 lines)
+  - `src/routes/api/spotify-callback.tsx`
+- Database migration: `drizzle/0002_tidy_inhumans.sql`
+- Environment variables: `SPOTIFY_CLIENT_ID`, `SPOTIFY_CLIENT_SECRET`, `SPOTIFY_REDIRECT_URI`
+
+---
+
 ## [1.4.1] - 2026-01-16
 
 ### Changed

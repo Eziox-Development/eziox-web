@@ -17,7 +17,16 @@
 - [x] Profile view tracking
 - [x] RSS feed & Sitemap
 
-### Recent Updates (2026-01-15)
+### Recent Updates (2026-01-16)
+- [x] **Spotify Integration** - Complete OAuth flow with real-time playback
+  - [x] OAuth authentication with token refresh
+  - [x] NowPlaying widget on bio pages
+  - [x] Live progress bar with animations
+  - [x] Offline/Not listening state
+  - [x] Privacy toggle in settings
+  - [x] SpotifyConnect component
+
+### Previous Updates (2026-01-15)
 - [x] **FollowModal Component** - Modern modal-based UI for followers/following
 - [x] **Dynamic Page Titles & SEO** - Enhanced metadata across all pages
 - [x] **Profile Page Redesign** - 2-column layout with sidebar
@@ -117,18 +126,18 @@
 - [x] Featured creators section
 - [x] Filter by category (VTuber, Streamer, Artist, etc.)
 
-#### 5. Spotify Integration
-- [ ] Spotify OAuth connection
-- [ ] New table: `spotify_connections` (user_id, access_token, refresh_token, expires_at)
-- [ ] Display "Currently Listening" on bio page
-- [ ] Show:
-  - [ ] Song title & artist
-  - [ ] Album art
-  - [ ] Progress bar (optional)
-  - [ ] "Not playing" state
-- [ ] Spotify link to song
-- [ ] Auto-refresh token handling
-- [ ] Privacy toggle (show/hide activity)
+#### 5. Spotify Integration ✅ COMPLETED
+- [x] Spotify OAuth connection
+- [x] New table: `spotify_connections` (user_id, access_token, refresh_token, expires_at)
+- [x] Display "Currently Listening" on bio page
+- [x] Show:
+  - [x] Song title & artist
+  - [x] Album art
+  - [x] Progress bar with live updates
+  - [x] "Offline/Not listening" state with animation
+- [x] Spotify link to song
+- [x] Auto-refresh token handling
+- [x] Privacy toggle (show/hide activity in settings)
 
 ### Phase 3: Analytics & Engagement (Priority: MEDIUM)
 
@@ -306,5 +315,5 @@ ALTER TABLE user_stats ADD COLUMN referral_count INTEGER DEFAULT 0;
 
 ---
 
-**Last Updated**: 2026-01-15  
+**Last Updated**: 2026-01-16  
 **Next Review**: Before each major feature release

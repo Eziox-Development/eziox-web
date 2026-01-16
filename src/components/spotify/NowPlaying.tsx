@@ -97,14 +97,19 @@ export function NowPlaying({ userId, theme, compact = false, showRecentIfNotPlay
         animate={{ opacity: 1, y: 0 }}
       >
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: `${theme.colors.foregroundMuted}15` }}>
+          <motion.div 
+            className="w-12 h-12 rounded-xl flex items-center justify-center" 
+            style={{ background: `${theme.colors.foregroundMuted}15` }}
+            animate={{ opacity: [0.5, 1, 0.5] }}
+            transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+          >
             <Music size={20} style={{ color: theme.colors.foregroundMuted }} />
-          </div>
-          <div>
-            <p className="text-sm font-medium" style={{ color: theme.colors.foregroundMuted }}>Not playing</p>
+          </motion.div>
+          <div className="flex-1">
+            <p className="text-sm font-medium" style={{ color: theme.colors.foreground }}>Offline</p>
             <div className="flex items-center gap-1.5">
-              <SiSpotify size={12} style={{ color: '#1DB954' }} />
-              <span className="text-xs" style={{ color: theme.colors.foregroundMuted }}>Spotify</span>
+              <SiSpotify size={12} style={{ color: theme.colors.foregroundMuted }} />
+              <span className="text-xs" style={{ color: theme.colors.foregroundMuted }}>Not listening right now</span>
             </div>
           </div>
         </div>
