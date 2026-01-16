@@ -347,7 +347,7 @@ function CreatorsPage() {
                             <div className="flex items-center gap-2 flex-wrap">
                               <span className="font-bold truncate" style={{ color: 'var(--foreground)' }}>{creator.user.name || creator.user.username}</span>
                               {creator.profile.badges && creator.profile.badges.length > 0 && (
-                                <BadgeDisplay badges={creator.profile.badges} size="sm" maxDisplay={2} />
+                                <BadgeDisplay badges={creator.profile.badges} size="sm" maxDisplay={4} />
                               )}
                             </div>
                             <p className="text-sm" style={{ color: 'var(--foreground-muted)' }}>@{creator.user.username}</p>
@@ -464,7 +464,7 @@ function CreatorsPage() {
                                   {creator.user.name || creator.user.username}
                                 </span>
                                 {creator.profile.badges && creator.profile.badges.length > 0 && (
-                                  <BadgeDisplay badges={creator.profile.badges} size="sm" maxDisplay={2} />
+                                  <BadgeDisplay badges={creator.profile.badges} size="sm" maxDisplay={4} />
                                 )}
                               </div>
                               <p className="text-sm mb-2" style={{ color: 'var(--foreground-muted)' }}>@{creator.user.username}</p>
