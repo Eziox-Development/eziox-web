@@ -16,7 +16,7 @@ import { validateSession } from '../lib/auth'
 // ============================================================================
 
 export const isFollowingFn = createServerFn({ method: 'GET' })
-  .inputValidator(z.object({ targetUserId: z.string().uuid() }))
+  .inputValidator(z.object({ targetUserId: z.uuid() }))
   .handler(async ({ data }) => {
     const token = getCookie('session-token')
     if (!token) {
@@ -57,7 +57,7 @@ export const isFollowingFn = createServerFn({ method: 'GET' })
 // ============================================================================
 
 export const followUserFn = createServerFn({ method: 'POST' })
-  .inputValidator(z.object({ targetUserId: z.string().uuid() }))
+  .inputValidator(z.object({ targetUserId: z.uuid() }))
   .handler(async ({ data }) => {
     const token = getCookie('session-token')
     if (!token) {
@@ -134,7 +134,7 @@ export const followUserFn = createServerFn({ method: 'POST' })
 // ============================================================================
 
 export const unfollowUserFn = createServerFn({ method: 'POST' })
-  .inputValidator(z.object({ targetUserId: z.string().uuid() }))
+  .inputValidator(z.object({ targetUserId: z.uuid() }))
   .handler(async ({ data }) => {
     const token = getCookie('session-token')
     if (!token) {
@@ -200,7 +200,7 @@ export const unfollowUserFn = createServerFn({ method: 'POST' })
 
 export const getFollowersFn = createServerFn({ method: 'GET' })
   .inputValidator(z.object({ 
-    userId: z.string().uuid(),
+    userId: z.uuid(),
     limit: z.number().int().min(1).max(100).default(50),
     offset: z.number().int().min(0).default(0),
   }))
@@ -274,7 +274,7 @@ export const getFollowersFn = createServerFn({ method: 'GET' })
 
 export const getFollowingFn = createServerFn({ method: 'GET' })
   .inputValidator(z.object({ 
-    userId: z.string().uuid(),
+    userId: z.uuid(),
     limit: z.number().int().min(1).max(100).default(50),
     offset: z.number().int().min(0).default(0),
   }))
@@ -347,7 +347,7 @@ export const getFollowingFn = createServerFn({ method: 'GET' })
 // ============================================================================
 
 export const getFollowStatsFn = createServerFn({ method: 'GET' })
-  .inputValidator(z.object({ userId: z.string().uuid() }))
+  .inputValidator(z.object({ userId: z.uuid() }))
   .handler(async ({ data }) => {
     const [stats] = await db
       .select({

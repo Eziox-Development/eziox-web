@@ -72,7 +72,7 @@ export const getPublicProfileFn = createServerFn({ method: 'GET' })
 
 export const trackProfileViewFn = createServerFn({ method: 'POST' })
   .inputValidator(z.object({ 
-    userId: z.string().uuid(),
+    userId: z.uuid(),
     sessionId: z.string(),
   }))
   .handler(async ({ data }) => {

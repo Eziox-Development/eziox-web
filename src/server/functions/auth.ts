@@ -312,7 +312,7 @@ export const updateProfileFn = createServerFn({ method: 'POST' })
       username: usernameSchema.optional(),
       bio: z.string().max(500).optional(),
       location: z.string().max(100).optional(),
-      website: z.string().url().optional().or(z.literal('')),
+      website: z.url().optional().or(z.literal('')),
       pronouns: z.string().max(50).optional(),
       accentColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(),
       isPublic: z.boolean().optional(),

@@ -157,7 +157,7 @@ export const validateReferralCodeFn = createServerFn({ method: 'GET' })
  */
 export const processReferralFn = createServerFn({ method: 'POST' })
   .inputValidator(z.object({ 
-    newUserId: z.string().uuid(),
+    newUserId: z.uuid(),
     referralCode: z.string().min(1).max(20)
   }))
   .handler(async ({ data }) => {

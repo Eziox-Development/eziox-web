@@ -32,6 +32,7 @@ import { Route as ApiRssRouteImport } from './routes/_api/rss'
 import { Route as ApiHelloRouteImport } from './routes/_api/hello'
 import { Route as PublicSCodeRouteImport } from './routes/_public/s.$code'
 import { Route as PublicJoinCodeRouteImport } from './routes/_public/join.$code'
+import { Route as ProtectedAdminPartnerApplicationsRouteImport } from './routes/_protected/admin/partner-applications'
 
 const PublicRoute = PublicRouteImport.update({
   id: '/_public',
@@ -144,6 +145,12 @@ const PublicJoinCodeRoute = PublicJoinCodeRouteImport.update({
   path: '/join/$code',
   getParentRoute: () => PublicRoute,
 } as any)
+const ProtectedAdminPartnerApplicationsRoute =
+  ProtectedAdminPartnerApplicationsRouteImport.update({
+    id: '/partner-applications',
+    path: '/partner-applications',
+    getParentRoute: () => ProtectedAdminRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/hello': typeof ApiHelloRoute
@@ -153,7 +160,7 @@ export interface FileRoutesByFullPath {
   '/sign-out': typeof AuthSignOutRoute
   '/sign-up': typeof AuthSignUpRoute
   '/$username': typeof BioUsernameRoute
-  '/admin': typeof ProtectedAdminRoute
+  '/admin': typeof ProtectedAdminRouteWithChildren
   '/links': typeof ProtectedLinksRoute
   '/profile': typeof ProtectedProfileRoute
   '/referrals': typeof ProtectedReferralsRoute
@@ -163,6 +170,7 @@ export interface FileRoutesByFullPath {
   '/leaderboard': typeof PublicLeaderboardRoute
   '/partners': typeof PublicPartnersRoute
   '/': typeof PublicIndexRoute
+  '/admin/partner-applications': typeof ProtectedAdminPartnerApplicationsRoute
   '/join/$code': typeof PublicJoinCodeRoute
   '/s/$code': typeof PublicSCodeRoute
 }
@@ -174,7 +182,7 @@ export interface FileRoutesByTo {
   '/sign-out': typeof AuthSignOutRoute
   '/sign-up': typeof AuthSignUpRoute
   '/$username': typeof BioUsernameRoute
-  '/admin': typeof ProtectedAdminRoute
+  '/admin': typeof ProtectedAdminRouteWithChildren
   '/links': typeof ProtectedLinksRoute
   '/profile': typeof ProtectedProfileRoute
   '/referrals': typeof ProtectedReferralsRoute
@@ -184,6 +192,7 @@ export interface FileRoutesByTo {
   '/leaderboard': typeof PublicLeaderboardRoute
   '/partners': typeof PublicPartnersRoute
   '/': typeof PublicIndexRoute
+  '/admin/partner-applications': typeof ProtectedAdminPartnerApplicationsRoute
   '/join/$code': typeof PublicJoinCodeRoute
   '/s/$code': typeof PublicSCodeRoute
 }
@@ -200,7 +209,7 @@ export interface FileRoutesById {
   '/_auth/sign-out': typeof AuthSignOutRoute
   '/_auth/sign-up': typeof AuthSignUpRoute
   '/_bio/$username': typeof BioUsernameRoute
-  '/_protected/admin': typeof ProtectedAdminRoute
+  '/_protected/admin': typeof ProtectedAdminRouteWithChildren
   '/_protected/links': typeof ProtectedLinksRoute
   '/_protected/profile': typeof ProtectedProfileRoute
   '/_protected/referrals': typeof ProtectedReferralsRoute
@@ -210,6 +219,7 @@ export interface FileRoutesById {
   '/_public/leaderboard': typeof PublicLeaderboardRoute
   '/_public/partners': typeof PublicPartnersRoute
   '/_public/': typeof PublicIndexRoute
+  '/_protected/admin/partner-applications': typeof ProtectedAdminPartnerApplicationsRoute
   '/_public/join/$code': typeof PublicJoinCodeRoute
   '/_public/s/$code': typeof PublicSCodeRoute
 }
@@ -233,6 +243,7 @@ export interface FileRouteTypes {
     | '/leaderboard'
     | '/partners'
     | '/'
+    | '/admin/partner-applications'
     | '/join/$code'
     | '/s/$code'
   fileRoutesByTo: FileRoutesByTo
@@ -254,6 +265,7 @@ export interface FileRouteTypes {
     | '/leaderboard'
     | '/partners'
     | '/'
+    | '/admin/partner-applications'
     | '/join/$code'
     | '/s/$code'
   id:
@@ -279,6 +291,7 @@ export interface FileRouteTypes {
     | '/_public/leaderboard'
     | '/_public/partners'
     | '/_public/'
+    | '/_protected/admin/partner-applications'
     | '/_public/join/$code'
     | '/_public/s/$code'
   fileRoutesById: FileRoutesById
@@ -456,6 +469,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicJoinCodeRouteImport
       parentRoute: typeof PublicRoute
     }
+    '/_protected/admin/partner-applications': {
+      id: '/_protected/admin/partner-applications'
+      path: '/partner-applications'
+      fullPath: '/admin/partner-applications'
+      preLoaderRoute: typeof ProtectedAdminPartnerApplicationsRouteImport
+      parentRoute: typeof ProtectedAdminRoute
+    }
   }
 }
 
@@ -483,15 +503,28 @@ const BioRouteChildren: BioRouteChildren = {
 
 const BioRouteWithChildren = BioRoute._addFileChildren(BioRouteChildren)
 
+interface ProtectedAdminRouteChildren {
+  ProtectedAdminPartnerApplicationsRoute: typeof ProtectedAdminPartnerApplicationsRoute
+}
+
+const ProtectedAdminRouteChildren: ProtectedAdminRouteChildren = {
+  ProtectedAdminPartnerApplicationsRoute:
+    ProtectedAdminPartnerApplicationsRoute,
+}
+
+const ProtectedAdminRouteWithChildren = ProtectedAdminRoute._addFileChildren(
+  ProtectedAdminRouteChildren,
+)
+
 interface ProtectedRouteChildren {
-  ProtectedAdminRoute: typeof ProtectedAdminRoute
+  ProtectedAdminRoute: typeof ProtectedAdminRouteWithChildren
   ProtectedLinksRoute: typeof ProtectedLinksRoute
   ProtectedProfileRoute: typeof ProtectedProfileRoute
   ProtectedReferralsRoute: typeof ProtectedReferralsRoute
 }
 
 const ProtectedRouteChildren: ProtectedRouteChildren = {
-  ProtectedAdminRoute: ProtectedAdminRoute,
+  ProtectedAdminRoute: ProtectedAdminRouteWithChildren,
   ProtectedLinksRoute: ProtectedLinksRoute,
   ProtectedProfileRoute: ProtectedProfileRoute,
   ProtectedReferralsRoute: ProtectedReferralsRoute,

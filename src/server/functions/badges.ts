@@ -38,7 +38,7 @@ async function requireAdmin() {
 export const assignBadgeFn = createServerFn({ method: 'POST' })
   .inputValidator(
     z.object({
-      userId: z.string().uuid(),
+      userId: z.uuid(),
       badgeId: z.enum(BADGE_IDS as [BadgeId, ...BadgeId[]]),
     })
   )
@@ -80,7 +80,7 @@ export const assignBadgeFn = createServerFn({ method: 'POST' })
 export const removeBadgeFn = createServerFn({ method: 'POST' })
   .inputValidator(
     z.object({
-      userId: z.string().uuid(),
+      userId: z.uuid(),
       badgeId: z.enum(BADGE_IDS as [BadgeId, ...BadgeId[]]),
     })
   )
@@ -114,7 +114,7 @@ export const removeBadgeFn = createServerFn({ method: 'POST' })
   })
 
 export const getUserBadgesFn = createServerFn({ method: 'GET' })
-  .inputValidator(z.object({ userId: z.string().uuid() }))
+  .inputValidator(z.object({ userId: z.uuid() }))
   .handler(async ({ data }) => {
     const [profile] = await db
       .select({ badges: profiles.badges })
@@ -126,7 +126,7 @@ export const getUserBadgesFn = createServerFn({ method: 'GET' })
   })
 
 export const checkAndAwardBadgesFn = createServerFn({ method: 'POST' })
-  .inputValidator(z.object({ userId: z.string().uuid() }).optional())
+  .inputValidator(z.object({ userId: z.uuid() }).optional())
   .handler(async ({ data }) => {
     const currentUser = await requireAuth()
     const targetUserId = data?.userId || currentUser.id
@@ -246,7 +246,7 @@ export const getAllUsersWithBadgesFn = createServerFn({ method: 'GET' })
 export const bulkAwardBadgeFn = createServerFn({ method: 'POST' })
   .inputValidator(
     z.object({
-      userIds: z.array(z.string().uuid()).min(1).max(100),
+      userIds: z.array(z.uuid()).min(1).max(100),
       badgeId: z.enum(BADGE_IDS as [BadgeId, ...BadgeId[]]),
     })
   )

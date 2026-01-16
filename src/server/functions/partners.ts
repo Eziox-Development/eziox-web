@@ -126,7 +126,7 @@ export const submitPartnerApplicationFn = createServerFn({ method: 'POST' })
   .inputValidator(
     z.object({
       companyName: z.string().max(200).optional(),
-      website: z.string().url().optional().or(z.literal('')),
+      website: z.url().optional().or(z.literal('')),
       socialLinks: z.record(z.string(), z.string()).optional(),
       category: z.enum([
         'streamer', 'vtuber', 'content_creator', 'gamer', 
@@ -187,7 +187,7 @@ export const submitPartnerApplicationFn = createServerFn({ method: 'POST' })
 export const updateApplicationStatusFn = createServerFn({ method: 'POST' })
   .inputValidator(
     z.object({
-      applicationId: z.string().uuid(),
+      applicationId: z.uuid(),
       status: z.enum(['pending', 'reviewing', 'approved', 'rejected']),
       adminNotes: z.string().max(1000).optional(),
     })

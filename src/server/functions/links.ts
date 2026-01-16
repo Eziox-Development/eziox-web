@@ -17,7 +17,7 @@ import { validateSession } from '../lib/auth'
 
 const createLinkSchema = z.object({
   title: z.string().min(1, 'Title is required').max(100),
-  url: z.string().url('Invalid URL'),
+  url: z.url({ error: 'Invalid URL' }),
   icon: z.string().max(50).optional(),
   description: z.string().max(255).optional(),
   backgroundColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(),
@@ -25,9 +25,9 @@ const createLinkSchema = z.object({
 })
 
 const updateLinkSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   title: z.string().min(1).max(100).optional(),
-  url: z.string().url().optional(),
+  url: z.url().optional(),
   icon: z.string().max(50).optional(),
   description: z.string().max(255).optional(),
   backgroundColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(),
@@ -37,12 +37,12 @@ const updateLinkSchema = z.object({
 })
 
 const deleteLinkSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
 })
 
 const reorderLinksSchema = z.object({
   links: z.array(z.object({
-    id: z.string().uuid(),
+    id: z.uuid(),
     order: z.number().int().min(0),
   })),
 })
@@ -52,7 +52,7 @@ const reorderLinksSchema = z.object({
 // ============================================================================
 
 export const getUserLinksFn = createServerFn({ method: 'GET' })
-  .inputValidator(z.object({ userId: z.string().uuid() }))
+  .inputValidator(z.object({ userId: z.uuid() }))
   .handler(async ({ data }) => {
     const links = await db
       .select()
@@ -247,7 +247,7 @@ export const reorderLinksFn = createServerFn({ method: 'POST' })
 // ============================================================================
 
 export const trackLinkClickFn = createServerFn({ method: 'POST' })
-  .inputValidator(z.object({ linkId: z.string().uuid() }))
+  .inputValidator(z.object({ linkId: z.uuid() }))
   .handler(async ({ data }) => {
     try {
       // Get link first to verify it exists and get userId

@@ -16,15 +16,15 @@ import { validateSession } from '../lib/auth'
 // ============================================================================
 
 const createShortLinkSchema = z.object({
-  targetUrl: z.string().url('Invalid URL'),
+  targetUrl: z.url({ error: 'Invalid URL' }),
   title: z.string().max(100).optional(),
   customCode: z.string().min(3).max(20).regex(/^[a-zA-Z0-9_-]+$/).optional(),
   expiresAt: z.string().datetime().optional(),
 })
 
 const updateShortLinkSchema = z.object({
-  id: z.string().uuid(),
-  targetUrl: z.string().url().optional(),
+  id: z.uuid(),
+  targetUrl: z.url().optional(),
   title: z.string().max(100).optional(),
   isActive: z.boolean().optional(),
 })
@@ -182,7 +182,7 @@ export const updateShortLinkFn = createServerFn({ method: 'POST' })
 // ============================================================================
 
 export const deleteShortLinkFn = createServerFn({ method: 'POST' })
-  .inputValidator(z.object({ id: z.string().uuid() }))
+  .inputValidator(z.object({ id: z.uuid() }))
   .handler(async ({ data }) => {
     const token = getCookie('session-token')
     if (!token) {
@@ -257,7 +257,7 @@ export const resolveShortLinkFn = createServerFn({ method: 'GET' })
 // ============================================================================
 
 export const getShortLinkStatsFn = createServerFn({ method: 'GET' })
-  .inputValidator(z.object({ id: z.string().uuid() }))
+  .inputValidator(z.object({ id: z.uuid() }))
   .handler(async ({ data }) => {
     const token = getCookie('session-token')
     if (!token) {
