@@ -177,10 +177,17 @@ function PartnersPage() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-12"
+            className="mb-12"
           >
-            <h2 className="text-3xl font-bold mb-4" style={{ color: 'var(--foreground)' }}>Partner Benefits</h2>
-            <p style={{ color: 'var(--foreground-muted)' }}>Exclusive perks for our partners</p>
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-12 h-12 rounded-2xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #14b8a6, #8b5cf6)' }}>
+                <Gift size={24} className="text-white" />
+              </div>
+              <div>
+                <h2 className="text-3xl font-bold" style={{ color: 'var(--foreground)' }}>Partner Benefits</h2>
+                <p style={{ color: 'var(--foreground-muted)' }}>Exclusive perks for our partners</p>
+              </div>
+            </div>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -191,10 +198,15 @@ function PartnersPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
-                className="p-6 rounded-2xl"
-                style={{ background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.08)' }}
+                className="p-6 rounded-2xl group hover:scale-[1.02] transition-all"
+                style={{ 
+                  background: 'rgba(255, 255, 255, 0.02)', 
+                  backdropFilter: 'blur(20px)',
+                  border: '1px solid rgba(255, 255, 255, 0.08)' 
+                }}
+                whileHover={{ y: -5 }}
               >
-                <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-4" style={{ background: 'linear-gradient(135deg, rgba(20, 184, 166, 0.2), rgba(139, 92, 246, 0.2))' }}>
+                <div className="w-14 h-14 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform" style={{ background: 'linear-gradient(135deg, rgba(20, 184, 166, 0.2), rgba(139, 92, 246, 0.2))' }}>
                   <benefit.icon size={24} style={{ color: '#14b8a6' }} />
                 </div>
                 <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--foreground)' }}>{benefit.title}</h3>
@@ -210,123 +222,179 @@ function PartnersPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Official Partners */}
           {partnersData?.officialPartners && partnersData.officialPartners.length > 0 && (
-            <div className="mb-16">
-              <div className="flex items-center gap-3 mb-8">
-                <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #14b8a6, #8b5cf6)' }}>
-                  <Shield size={20} className="text-white" />
-                </div>
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-16"
+            >
+              <div className="flex items-center gap-4 mb-8">
+                <motion.div 
+                  className="w-14 h-14 rounded-2xl flex items-center justify-center relative" 
+                  style={{ background: 'linear-gradient(135deg, #14b8a6, #8b5cf6)' }}
+                  whileHover={{ scale: 1.05, rotate: 5 }}
+                >
+                  <Shield size={24} className="text-white" />
+                  <motion.div
+                    className="absolute inset-0 rounded-2xl"
+                    style={{ background: 'linear-gradient(135deg, #14b8a6, #8b5cf6)' }}
+                    animate={{ opacity: [0.5, 0, 0.5] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  />
+                </motion.div>
                 <div>
-                  <h2 className="text-2xl font-bold" style={{ color: 'var(--foreground)' }}>Official Partners</h2>
-                  <p className="text-sm" style={{ color: 'var(--foreground-muted)' }}>Verified partner badge holders</p>
+                  <h2 className="text-3xl font-bold" style={{ color: 'var(--foreground)' }}>Official Partners</h2>
+                  <p className="text-sm" style={{ color: 'var(--foreground-muted)' }}>{partnersData.officialPartners.length} verified partner badge holders</p>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {partnersData.officialPartners.map((partner, i) => (
                   <motion.div
                     key={partner.user.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: i * 0.05 }}
                   >
                     <Link
                       to="/$username"
                       params={{ username: partner.user.username }}
-                      className="block p-4 rounded-2xl transition-all hover:scale-[1.02]"
-                      style={{ background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.08)' }}
+                      className="block group"
                     >
-                      <div className="flex items-start gap-3">
-                        <div className="relative">
-                          <img
-                            src={partner.profile?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${partner.user.username}`}
-                            alt={partner.user.name || partner.user.username}
-                            className="w-14 h-14 rounded-xl object-cover"
-                          />
-                          <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #14b8a6, #8b5cf6)' }}>
-                            <Handshake size={10} className="text-white" />
-                          </div>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2">
-                            <h3 className="font-semibold truncate" style={{ color: 'var(--foreground)' }}>{partner.user.name}</h3>
-                            {partner.user.role === 'owner' && <Crown size={14} style={{ color: '#f59e0b' }} />}
-                          </div>
-                          <p className="text-sm truncate" style={{ color: 'var(--foreground-muted)' }}>@{partner.user.username}</p>
-                          {partner.profile?.badges && partner.profile.badges.length > 0 && (
-                            <div className="mt-2">
-                              <BadgeDisplay badges={partner.profile.badges as string[]} maxDisplay={3} size="sm" />
+                      <motion.div
+                        className="p-5 rounded-3xl transition-all"
+                        style={{ 
+                          background: 'rgba(255, 255, 255, 0.02)', 
+                          backdropFilter: 'blur(20px)',
+                          border: '1px solid rgba(255, 255, 255, 0.08)' 
+                        }}
+                        whileHover={{ y: -8, scale: 1.02 }}
+                      >
+                        <div className="flex items-start gap-4 mb-4">
+                          <div className="relative">
+                            <img
+                              src={partner.profile?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${partner.user.username}`}
+                              alt={partner.user.name || partner.user.username}
+                              className="w-16 h-16 rounded-2xl object-cover ring-2 ring-white/10"
+                            />
+                            <div className="absolute -bottom-1.5 -right-1.5 w-6 h-6 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #14b8a6, #8b5cf6)' }}>
+                              <Handshake size={12} className="text-white" />
                             </div>
-                          )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <h3 className="font-bold text-lg truncate" style={{ color: 'var(--foreground)' }}>{partner.user.name}</h3>
+                              {partner.user.role === 'owner' && <Crown size={16} style={{ color: '#f59e0b' }} />}
+                            </div>
+                            <p className="text-sm truncate" style={{ color: 'var(--foreground-muted)' }}>@{partner.user.username}</p>
+                          </div>
                         </div>
-                      </div>
-                      {partner.profile?.bio && (
-                        <p className="text-xs mt-3 line-clamp-2" style={{ color: 'var(--foreground-muted)' }}>{partner.profile.bio}</p>
-                      )}
-                      <div className="flex items-center justify-between mt-3 pt-3" style={{ borderTop: '1px solid rgba(255, 255, 255, 0.05)' }}>
-                        <div className="flex items-center gap-3 text-xs" style={{ color: 'var(--foreground-muted)' }}>
-                          <span className="flex items-center gap-1">
-                            <Eye size={12} />
-                            {partner.stats?.profileViews || 0}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <Heart size={12} />
-                            {partner.stats?.followers || 0}
-                          </span>
+                        
+                        {partner.profile?.badges && partner.profile.badges.length > 0 && (
+                          <div className="mb-3">
+                            <BadgeDisplay badges={partner.profile.badges as string[]} maxDisplay={4} size="sm" />
+                          </div>
+                        )}
+                        
+                        {partner.profile?.bio && (
+                          <p className="text-sm mb-4 line-clamp-2" style={{ color: 'var(--foreground-muted)' }}>{partner.profile.bio}</p>
+                        )}
+                        
+                        <div className="flex items-center justify-between pt-4" style={{ borderTop: '1px solid rgba(255, 255, 255, 0.06)' }}>
+                          <div className="flex items-center gap-4 text-sm" style={{ color: 'var(--foreground-muted)' }}>
+                            <span className="flex items-center gap-1.5">
+                              <Eye size={14} />
+                              {partner.stats?.profileViews || 0}
+                            </span>
+                            <span className="flex items-center gap-1.5">
+                              <Heart size={14} />
+                              {partner.stats?.followers || 0}
+                            </span>
+                          </div>
+                          <motion.div
+                            className="flex items-center gap-1 text-sm font-medium"
+                            style={{ color: '#14b8a6' }}
+                            animate={{ x: [0, 4, 0] }}
+                            transition={{ duration: 1.5, repeat: Infinity }}
+                          >
+                            View
+                            <ChevronRight size={16} />
+                          </motion.div>
                         </div>
-                        <ChevronRight size={14} style={{ color: 'var(--foreground-muted)' }} />
-                      </div>
+                      </motion.div>
                     </Link>
                   </motion.div>
                 ))}
               </div>
-            </div>
+            </motion.div>
           )}
 
           {/* Featured Creators */}
           {partnersData?.featuredPartners && partnersData.featuredPartners.length > 0 && (
-            <div>
-              <div className="flex items-center gap-3 mb-8">
-                <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #f59e0b, #ec4899)' }}>
-                  <Star size={20} className="text-white" />
-                </div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <div className="flex items-center gap-4 mb-8">
+                <motion.div 
+                  className="w-14 h-14 rounded-2xl flex items-center justify-center relative" 
+                  style={{ background: 'linear-gradient(135deg, #f59e0b, #ec4899)' }}
+                  whileHover={{ scale: 1.05, rotate: -5 }}
+                >
+                  <Star size={24} className="text-white" />
+                  <motion.div
+                    className="absolute inset-0 rounded-2xl"
+                    style={{ background: 'linear-gradient(135deg, #f59e0b, #ec4899)' }}
+                    animate={{ opacity: [0.5, 0, 0.5] }}
+                    transition={{ duration: 2, repeat: Infinity, delay: 1 }}
+                  />
+                </motion.div>
                 <div>
-                  <h2 className="text-2xl font-bold" style={{ color: 'var(--foreground)' }}>Featured Creators</h2>
-                  <p className="text-sm" style={{ color: 'var(--foreground-muted)' }}>Highlighted community members</p>
+                  <h2 className="text-3xl font-bold" style={{ color: 'var(--foreground)' }}>Featured Creators</h2>
+                  <p className="text-sm" style={{ color: 'var(--foreground-muted)' }}>{partnersData.featuredPartners.length} highlighted community members</p>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                 {partnersData.featuredPartners.map((partner, i) => (
                   <motion.div
                     key={partner.user.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: i * 0.05 }}
                   >
                     <Link
                       to="/$username"
                       params={{ username: partner.user.username }}
-                      className="block p-4 rounded-2xl transition-all hover:scale-[1.02]"
-                      style={{ background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.08)' }}
+                      className="block group"
                     >
-                      <div className="flex items-start gap-3">
-                        <img
-                          src={partner.profile?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${partner.user.username}`}
-                          alt={partner.user.name || partner.user.username}
-                          className="w-12 h-12 rounded-xl object-cover"
-                        />
-                        <div className="flex-1 min-w-0">
-                          <h3 className="font-semibold truncate" style={{ color: 'var(--foreground)' }}>{partner.user.name}</h3>
-                          <p className="text-sm truncate" style={{ color: 'var(--foreground-muted)' }}>@{partner.user.username}</p>
+                      <motion.div
+                        className="p-4 rounded-2xl transition-all text-center"
+                        style={{ 
+                          background: 'rgba(255, 255, 255, 0.02)', 
+                          backdropFilter: 'blur(20px)',
+                          border: '1px solid rgba(255, 255, 255, 0.08)' 
+                        }}
+                        whileHover={{ y: -5, scale: 1.05 }}
+                      >
+                        <div className="relative inline-block mb-3">
+                          <img
+                            src={partner.profile?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${partner.user.username}`}
+                            alt={partner.user.name || partner.user.username}
+                            className="w-16 h-16 rounded-2xl object-cover ring-2 ring-white/10 mx-auto"
+                          />
+                          <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #f59e0b, #ec4899)' }}>
+                            <Star size={10} className="text-white" />
+                          </div>
                         </div>
-                      </div>
+                        <h3 className="font-semibold text-sm truncate" style={{ color: 'var(--foreground)' }}>{partner.user.name}</h3>
+                        <p className="text-xs truncate" style={{ color: 'var(--foreground-muted)' }}>@{partner.user.username}</p>
+                      </motion.div>
                     </Link>
                   </motion.div>
                 ))}
               </div>
-            </div>
+            </motion.div>
           )}
 
           {/* Empty State */}
