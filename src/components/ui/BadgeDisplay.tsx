@@ -78,9 +78,8 @@ function BadgeIcon({ badge, size, showTooltip, delay = 0 }: BadgeIconProps) {
       initial={{ opacity: 0, scale: 0.8 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ delay, type: 'spring', stiffness: 300 }}
-      className={`${sizeClasses[size]} rounded-full flex items-center justify-center cursor-default relative group`}
+      className={`${sizeClasses[size]} rounded-full flex items-center justify-center cursor-default relative group/badge`}
       style={{ background: badge.bgColor, border: `1px solid ${badge.color}30` }}
-      title={showTooltip ? `${badge.name}: ${badge.description}` : undefined}
     >
       {(() => {
         const IconComponent = LucideIcons[badge.icon as keyof typeof LucideIcons] as React.ComponentType<{ size?: number; style?: React.CSSProperties }>
@@ -89,7 +88,7 @@ function BadgeIcon({ badge, size, showTooltip, delay = 0 }: BadgeIconProps) {
       
       {showTooltip && (
         <div
-          className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 rounded-xl text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50"
+          className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 rounded-xl text-xs whitespace-nowrap opacity-0 group-hover/badge:opacity-100 transition-opacity pointer-events-none z-50"
           style={{
             background: 'var(--card)',
             border: '1px solid var(--border)',

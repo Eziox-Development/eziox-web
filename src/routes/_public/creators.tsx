@@ -375,77 +375,95 @@ function CreatorsPage() {
                 <p style={{ color: 'var(--foreground-muted)' }}>Try adjusting your search or filters</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px" style={{ background: 'rgba(255, 255, 255, 0.03)' }}>
+              <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {regularCreators.map((creator, index) => {
                   const catConfig = getCategoryConfig(creator.profile.creatorType)
                   return (
                     <motion.div
                       key={creator.user.id}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: index * 0.02 }}
-                      style={{ background: 'var(--background)' }}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.03 }}
+                      whileHover={{ y: -4 }}
                     >
                       <Link
                         to="/$username"
                         params={{ username: creator.user.username }}
-                        className="block p-4 transition-all hover:bg-white/5 group"
+                        className="block rounded-2xl overflow-hidden group"
+                        style={{
+                          background: 'rgba(255, 255, 255, 0.02)',
+                          backdropFilter: 'blur(10px)',
+                          border: '1px solid rgba(255, 255, 255, 0.08)',
+                        }}
                       >
-                        <div className="flex items-start gap-3">
-                          <div className="relative">
-                            <div
-                              className="w-14 h-14 rounded-xl flex items-center justify-center text-white font-bold text-lg overflow-hidden"
-                              style={{
-                                background: creator.profile.avatar
-                                  ? `url(${creator.profile.avatar}) center/cover`
-                                  : `linear-gradient(135deg, ${creator.profile.accentColor || '#8b5cf6'}, #ec4899)`,
-                              }}
-                            >
-                              {!creator.profile.avatar && (creator.user.name ?? creator.user.username).charAt(0).toUpperCase()}
-                            </div>
-                            {creator.user.role === 'owner' && (
-                              <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center" style={{ background: '#fbbf24', border: '2px solid var(--background)' }}>
-                                <Crown size={10} className="text-black" />
+                        <div className="p-4">
+                          <div className="flex items-start gap-3 mb-3">
+                            <div className="relative">
+                              <div
+                                className="w-16 h-16 rounded-xl flex items-center justify-center text-white font-bold text-xl overflow-hidden"
+                                style={{
+                                  background: creator.profile.avatar
+                                    ? `url(${creator.profile.avatar}) center/cover`
+                                    : `linear-gradient(135deg, ${creator.profile.accentColor || '#8b5cf6'}, #ec4899)`,
+                                }}
+                              >
+                                {!creator.profile.avatar && (creator.user.name ?? creator.user.username).charAt(0).toUpperCase()}
                               </div>
-                            )}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <span className="font-semibold" style={{ color: 'var(--foreground)' }}>
-                                {creator.user.name || creator.user.username}
-                              </span>
-                              {creator.profile.badges && creator.profile.badges.length > 0 && (
-                                <BadgeDisplay badges={creator.profile.badges} size="sm" maxDisplay={2} />
+                              {creator.user.role === 'owner' && (
+                                <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full flex items-center justify-center" style={{ background: '#fbbf24', border: '2px solid var(--background)' }}>
+                                  <Crown size={12} className="text-black" />
+                                </div>
                               )}
                             </div>
-                            <p className="text-sm" style={{ color: 'var(--foreground-muted)' }}>@{creator.user.username}</p>
-                            <div className="flex items-center gap-3 mt-2">
-                              <div className="flex items-center gap-1">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 flex-wrap mb-1">
+                                <span className="font-bold truncate" style={{ color: 'var(--foreground)' }}>
+                                  {creator.user.name || creator.user.username}
+                                </span>
+                                {creator.profile.badges && creator.profile.badges.length > 0 && (
+                                  <BadgeDisplay badges={creator.profile.badges} size="sm" maxDisplay={2} />
+                                )}
+                              </div>
+                              <p className="text-sm mb-2" style={{ color: 'var(--foreground-muted)' }}>@{creator.user.username}</p>
+                              <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg w-fit" style={{ background: `${catConfig.color}15` }}>
                                 <catConfig.icon size={12} style={{ color: catConfig.color }} />
-                                <span className="text-xs" style={{ color: catConfig.color }}>{catConfig.label}</span>
-                              </div>
-                              <div className="flex items-center gap-1">
-                                <Eye size={12} style={{ color: 'var(--foreground-muted)' }} />
-                                <span className="text-xs" style={{ color: 'var(--foreground-muted)' }}>{creator.stats?.profileViews || 0}</span>
-                              </div>
-                              <div className="flex items-center gap-1">
-                                <Heart size={12} style={{ color: 'var(--foreground-muted)' }} />
-                                <span className="text-xs" style={{ color: 'var(--foreground-muted)' }}>{creator.stats?.followers || 0}</span>
+                                <span className="text-xs font-medium" style={{ color: catConfig.color }}>{catConfig.label}</span>
                               </div>
                             </div>
-                            {creator.referrer && (
-                              <div className="flex items-center gap-1 mt-2">
-                                <ExternalLink size={10} style={{ color: 'var(--foreground-muted)' }} />
-                                <span className="text-xs" style={{ color: 'var(--foreground-muted)' }}>via @{creator.referrer.username}</span>
-                              </div>
-                            )}
                           </div>
-                          <motion.div
-                            className="opacity-0 group-hover:opacity-100 transition-opacity"
-                            whileHover={{ x: 2 }}
-                          >
-                            <ArrowRight size={18} style={{ color: 'var(--foreground-muted)' }} />
-                          </motion.div>
+                          
+                          {creator.profile.bio && (
+                            <p className="text-sm line-clamp-2 mb-3" style={{ color: 'var(--foreground-muted)' }}>
+                              {creator.profile.bio}
+                            </p>
+                          )}
+
+                          <div className="flex items-center justify-between pt-3" style={{ borderTop: '1px solid rgba(255, 255, 255, 0.06)' }}>
+                            <div className="flex items-center gap-3">
+                              <div className="flex items-center gap-1.5">
+                                <Eye size={14} style={{ color: 'var(--foreground-muted)' }} />
+                                <span className="text-sm" style={{ color: 'var(--foreground-muted)' }}>{creator.stats?.profileViews || 0}</span>
+                              </div>
+                              <div className="flex items-center gap-1.5">
+                                <Heart size={14} style={{ color: 'var(--foreground-muted)' }} />
+                                <span className="text-sm" style={{ color: 'var(--foreground-muted)' }}>{creator.stats?.followers || 0}</span>
+                              </div>
+                            </div>
+                            <motion.div
+                              className="flex items-center gap-1 text-sm font-medium group-hover:gap-2 transition-all"
+                              style={{ color: 'var(--primary)' }}
+                            >
+                              <span>View</span>
+                              <ArrowRight size={14} />
+                            </motion.div>
+                          </div>
+
+                          {creator.referrer && (
+                            <div className="flex items-center gap-1.5 mt-3 pt-3" style={{ borderTop: '1px solid rgba(255, 255, 255, 0.06)' }}>
+                              <ExternalLink size={12} style={{ color: 'var(--foreground-muted)' }} />
+                              <span className="text-xs" style={{ color: 'var(--foreground-muted)' }}>Joined via @{creator.referrer.username}</span>
+                            </div>
+                          )}
                         </div>
                       </Link>
                     </motion.div>
