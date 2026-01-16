@@ -60,7 +60,7 @@ export function ThemeSwitcher() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 8, scale: 0.95 }}
               transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }}
-              className="absolute right-0 top-full mt-2 z-50 w-80 rounded-2xl overflow-hidden"
+              className="absolute right-0 top-full mt-2 z-50 w-[420px] rounded-2xl overflow-hidden"
               style={{ background: 'var(--card)', border: '1px solid var(--border)', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)' }}
             >
               <div className="p-4 flex items-center justify-between" style={{ borderBottom: '1px solid var(--border)' }}>
@@ -78,8 +78,8 @@ export function ThemeSwitcher() {
                 </button>
               </div>
 
-              <div className="relative" style={{ borderBottom: '1px solid var(--border)' }}>
-                <div className="p-2 flex gap-1 overflow-x-auto scrollbar-hide scroll-smooth" id="category-tabs">
+              <div className="p-3" style={{ borderBottom: '1px solid var(--border)' }}>
+                <div className="grid grid-cols-4 gap-1.5">
                   {CATEGORIES.map((cat) => {
                     const isActive = activeCategory === cat.id
                     const count = themes.filter(t => t.category === cat.id).length
@@ -88,34 +88,36 @@ export function ThemeSwitcher() {
                       <motion.button
                         key={cat.id}
                         onClick={() => setActiveCategory(cat.id)}
-                        className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all flex-shrink-0"
+                        className="flex flex-col items-center gap-1 px-2 py-2.5 rounded-xl text-xs font-medium transition-all"
                         style={{
-                          background: isActive ? 'linear-gradient(135deg, var(--primary), var(--accent))' : 'transparent',
+                          background: isActive ? 'linear-gradient(135deg, var(--primary), var(--accent))' : 'var(--background-secondary)',
                           color: isActive ? 'white' : 'var(--foreground-muted)',
                         }}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
+                        whileHover={{ scale: 1.03 }}
+                        whileTap={{ scale: 0.97 }}
                       >
-                        <cat.icon size={12} />
-                        <span>{cat.label}</span>
-                        <span className="px-1 py-0.5 rounded text-[9px]" style={{ background: isActive ? 'rgba(255,255,255,0.2)' : 'var(--background-secondary)' }}>
-                          {count}
-                        </span>
+                        <cat.icon size={16} />
+                        <span className="text-[10px]">{cat.label}</span>
                       </motion.button>
                     )
                   })}
                 </div>
               </div>
 
-              <div className="p-2">
-                <div className="flex items-center gap-2 px-2 py-1.5 mb-2">
-                  {currentCategoryInfo && <currentCategoryInfo.icon size={14} style={{ color: 'var(--primary)' }} />}
-                  <span className="text-xs font-semibold" style={{ color: 'var(--foreground-muted)' }}>
-                    {currentCategoryInfo?.label} Themes
+              <div className="p-3">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    {currentCategoryInfo && <currentCategoryInfo.icon size={16} style={{ color: 'var(--primary)' }} />}
+                    <span className="text-sm font-semibold" style={{ color: 'var(--foreground)' }}>
+                      {currentCategoryInfo?.label} Themes
+                    </span>
+                  </div>
+                  <span className="text-xs px-2 py-1 rounded-full" style={{ background: 'var(--background-secondary)', color: 'var(--foreground-muted)' }}>
+                    {filteredThemes.length} available
                   </span>
                 </div>
 
-                <div className="space-y-1 max-h-64 overflow-y-auto pr-1">
+                <div className="grid grid-cols-2 gap-2 max-h-72 overflow-y-auto pr-1">
                   {filteredThemes.map((t) => {
                     const isActive = theme.id === t.id
                     return (
@@ -123,42 +125,42 @@ export function ThemeSwitcher() {
                         key={t.id}
                         onClick={() => { setTheme(t.id); setIsOpen(false) }}
                         disabled={isTransitioning}
-                        className="w-full flex items-center gap-3 px-3 py-3 rounded-xl transition-all group"
+                        className="relative flex flex-col p-3 rounded-xl transition-all"
                         style={{ 
-                          background: isActive ? 'linear-gradient(135deg, var(--primary), var(--accent))' : 'transparent',
+                          background: isActive ? 'linear-gradient(135deg, var(--primary), var(--accent))' : 'var(--background-secondary)',
+                          border: isActive ? 'none' : '1px solid var(--border)',
                         }}
-                        whileHover={{ backgroundColor: isActive ? undefined : 'rgba(255,255,255,0.03)' }}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
                       >
-                        <div className="flex gap-0.5">
-                          {[t.colors.primary, t.colors.accent, t.colors.background].map((color, i) => (
-                            <div
-                              key={i}
-                              className="w-5 h-5 first:rounded-l-lg last:rounded-r-lg"
-                              style={{ 
-                                backgroundColor: color, 
-                                boxShadow: isActive ? '0 2px 8px rgba(0,0,0,0.3)' : 'inset 0 0 0 1px rgba(255,255,255,0.1)',
-                              }}
-                            />
-                          ))}
-                        </div>
-                        <div className="flex-1 text-left">
-                          <p className="text-sm font-semibold" style={{ color: isActive ? 'white' : 'var(--foreground)' }}>
-                            {t.name}
-                          </p>
-                          <p className="text-[10px] truncate" style={{ color: isActive ? 'rgba(255,255,255,0.7)' : 'var(--foreground-muted)' }}>
-                            {t.description}
-                          </p>
-                        </div>
                         {isActive && (
                           <motion.div
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
-                            className="w-6 h-6 rounded-full flex items-center justify-center"
-                            style={{ background: 'rgba(255,255,255,0.2)' }}
+                            className="absolute top-2 right-2 w-5 h-5 rounded-full flex items-center justify-center"
+                            style={{ background: 'rgba(255,255,255,0.25)' }}
                           >
-                            <Check size={14} className="text-white" />
+                            <Check size={12} className="text-white" />
                           </motion.div>
                         )}
+                        <div className="flex gap-1 mb-2">
+                          {[t.colors.primary, t.colors.accent, t.colors.background].map((color, i) => (
+                            <div
+                              key={i}
+                              className="w-6 h-6 rounded-lg"
+                              style={{ 
+                                backgroundColor: color, 
+                                boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)',
+                              }}
+                            />
+                          ))}
+                        </div>
+                        <p className="text-sm font-semibold text-left" style={{ color: isActive ? 'white' : 'var(--foreground)' }}>
+                          {t.name}
+                        </p>
+                        <p className="text-[10px] text-left truncate w-full" style={{ color: isActive ? 'rgba(255,255,255,0.7)' : 'var(--foreground-muted)' }}>
+                          {t.description}
+                        </p>
                       </motion.button>
                     )
                   })}
