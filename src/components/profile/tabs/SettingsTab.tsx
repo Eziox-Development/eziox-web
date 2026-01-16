@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import { motion } from 'motion/react'
-import { Palette, Shield, Eye, EyeOff, Mail, AtSign, User, Calendar, Sparkles, Check, Copy } from 'lucide-react'
+import { Palette, Shield, Eye, EyeOff, Mail, AtSign, User, Calendar, Sparkles, Check, Copy, Music } from 'lucide-react'
 import { ACCENT_COLORS, type ProfileFormData } from '@/routes/_protected/profile'
+import { SpotifyConnect } from '@/components/spotify'
+import { useTheme } from '@/components/portfolio/ThemeProvider'
 
 interface SettingsTabProps {
   formData: ProfileFormData
@@ -13,6 +15,7 @@ interface SettingsTabProps {
 
 export function SettingsTab({ formData, updateField, currentUser, copyToClipboard, copiedField }: SettingsTabProps) {
   const [isInfoBlurred, setIsInfoBlurred] = useState(true)
+  const { theme } = useTheme()
 
   const memberSince = currentUser.createdAt 
     ? new Date(currentUser.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
@@ -20,6 +23,18 @@ export function SettingsTab({ formData, updateField, currentUser, copyToClipboar
 
   return (
     <motion.div key="settings" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="space-y-6">
+      <div className="rounded-2xl overflow-hidden" style={{ background: 'var(--card)', border: '1px solid var(--border)' }}>
+        <div className="p-5 border-b" style={{ borderColor: 'var(--border)' }}>
+          <div className="flex items-center gap-2">
+            <Music size={20} style={{ color: '#1DB954' }} />
+            <h2 className="text-lg font-bold" style={{ color: 'var(--foreground)' }}>Integrations</h2>
+          </div>
+        </div>
+        <div className="p-5">
+          <SpotifyConnect theme={theme} />
+        </div>
+      </div>
+
       {/* Appearance */}
       <div className="rounded-2xl overflow-hidden" style={{ background: 'var(--card)', border: '1px solid var(--border)' }}>
         <div className="p-5 border-b" style={{ borderColor: 'var(--border)' }}>

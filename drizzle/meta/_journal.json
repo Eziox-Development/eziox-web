@@ -15,6 +15,13 @@
       "when": 1768567223606,
       "tag": "0001_boring_ricochet",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1768602086989,
+      "tag": "0002_tidy_inhumans",
+      "breakpoints": true
     }
   ]
 }

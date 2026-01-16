@@ -42,6 +42,9 @@ import {
 import type { ComponentType } from 'react'
 import { FollowModal } from '@/components/bio/FollowModal'
 import { getSocialUrl } from '@/lib/social-links'
+import { SpotifyWidget } from '@/components/spotify'
+import { useTheme } from '@/components/portfolio/ThemeProvider'
+import { checkSpotifyConnectionFn } from '@/server/functions/spotify'
 
 const socialIconMap: Record<string, ComponentType<{ size?: number }>> = {
   twitter: SiX,
@@ -52,6 +55,11 @@ const socialIconMap: Record<string, ComponentType<{ size?: number }>> = {
   discord: SiDiscord,
   tiktok: SiTiktok,
   twitch: SiTwitch,
+}
+
+interface SpotifyConnectionStatus {
+  connected: boolean
+  showOnProfile: boolean
 }
 
 // Reserved paths that should not be treated as usernames
@@ -123,6 +131,7 @@ function BioPage() {
   const params = Route.useParams()
   const username = params.username as string
   const queryClient = useQueryClient()
+  const { theme } = useTheme()
   
   // Get currentUser from parent layout loader via router state
   const routerState = useRouterState()
@@ -139,10 +148,17 @@ function BioPage() {
   const checkFollowing = useServerFn(isFollowingFn)
   const followUser = useServerFn(followUserFn)
   const unfollowUser = useServerFn(unfollowUserFn)
+  const checkSpotifyConnection = useServerFn(checkSpotifyConnectionFn)
 
   const { data: profile, isLoading, error } = useQuery({
     queryKey: ['publicProfile', username],
     queryFn: () => getProfile({ data: { username } }),
+  })
+
+  const { data: spotifyStatus } = useQuery<SpotifyConnectionStatus>({
+    queryKey: ['spotifyConnection', profile?.user?.id],
+    queryFn: () => checkSpotifyConnection({ data: { userId: profile!.user.id } }),
+    enabled: !!profile?.user?.id,
   })
 
   // Determine follow status based on currentUser from SSR
@@ -575,6 +591,13 @@ function BioPage() {
               )
             })}
           </motion.div>
+        )}
+
+        {/* Spotify Now Playing */}
+        {spotifyStatus?.connected && spotifyStatus.showOnProfile && profile?.user?.id && (
+          <div className="mb-8">
+            <SpotifyWidget userId={profile.user.id} theme={theme} />
+          </div>
         )}
 
         {/* Links */}

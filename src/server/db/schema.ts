@@ -371,6 +371,32 @@ export const partnerApplicationsRelations = relations(partnerApplications, ({ on
 }))
 
 // ============================================================================
+// SPOTIFY CONNECTIONS TABLE
+// ============================================================================
+
+export const spotifyConnections = pgTable('spotify_connections', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' })
+    .unique(),
+  accessToken: text('access_token').notNull(),
+  refreshToken: text('refresh_token').notNull(),
+  expiresAt: timestamp('expires_at').notNull(),
+  scope: text('scope'),
+  showOnProfile: boolean('show_on_profile').default(true),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+})
+
+export const spotifyConnectionsRelations = relations(spotifyConnections, ({ one }) => ({
+  user: one(users, {
+    fields: [spotifyConnections.userId],
+    references: [users.id],
+  }),
+}))
+
+// ============================================================================
 // TYPE EXPORTS
 // ============================================================================
 
@@ -394,3 +420,5 @@ export type ShortLink = typeof shortLinks.$inferSelect
 export type NewShortLink = typeof shortLinks.$inferInsert
 export type PartnerApplication = typeof partnerApplications.$inferSelect
 export type NewPartnerApplication = typeof partnerApplications.$inferInsert
+export type SpotifyConnection = typeof spotifyConnections.$inferSelect
+export type NewSpotifyConnection = typeof spotifyConnections.$inferInsert
