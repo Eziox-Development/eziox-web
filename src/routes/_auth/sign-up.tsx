@@ -37,7 +37,7 @@ import {
   ShieldCheck,
   RotateCcw,
 } from 'lucide-react'
-import { generateChallenge, validateImageChallenge, validateBotCheck, getDeviceType, type ChallengeData } from '@/lib/bot-protection'
+import { generateChallenge, validateChallenge, validateBotCheck, getDeviceType, type ChallengeData } from '@/lib/bot-protection'
 
 const searchSchema = z.object({
   redirect: z.string().optional(),
@@ -100,11 +100,15 @@ function SignUpPage() {
   const [deviceType, setDeviceType] = useState<'mobile' | 'tablet' | 'desktop'>('desktop')
   
   const [challenge, setChallenge] = useState<ChallengeData | null>(null)
-  const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [botCheckPassed, setBotCheckPassed] = useState(false)
   const [botCheckFailed, setBotCheckFailed] = useState(false)
   const [showChallenge, setShowChallenge] = useState(false)
   const [honeypot, setHoneypot] = useState('')
+  const [sliderValue, setSliderValue] = useState(0)
+  const [rotateAngle, setRotateAngle] = useState(0)
+  const [patternInput, setPatternInput] = useState<number[]>([])
+  const [isDragging, setIsDragging] = useState(false)
+  const sliderRef = useRef<HTMLDivElement>(null)
   const startTimeRef = useRef(Date.now())
   const interactionCountRef = useRef(0)
   const mouseMovementsRef = useRef(0)
@@ -127,13 +131,46 @@ function SignUpPage() {
     }
   }, [])
 
-  const toggleImageSelection = useCallback((id: string) => {
-    setSelectedIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id])
+  const handleSliderMove = useCallback((clientX: number) => {
+    if (!sliderRef.current || !isDragging) return
+    const rect = sliderRef.current.getBoundingClientRect()
+    const x = Math.max(0, Math.min(clientX - rect.left, rect.width))
+    setSliderValue((x / rect.width) * 100)
+  }, [isDragging])
+
+  useEffect(() => {
+    if (!isDragging) return
+
+    const handleMove = (e: MouseEvent | TouchEvent) => {
+      const clientX = 'touches' in e ? e.touches[0]!.clientX : e.clientX
+      handleSliderMove(clientX)
+    }
+    const handleUp = () => setIsDragging(false)
+    window.addEventListener('mousemove', handleMove)
+    window.addEventListener('mouseup', handleUp)
+    window.addEventListener('touchmove', handleMove)
+    window.addEventListener('touchend', handleUp)
+    return () => {
+      window.removeEventListener('mousemove', handleMove)
+      window.removeEventListener('mouseup', handleUp)
+      window.removeEventListener('touchmove', handleMove)
+      window.removeEventListener('touchend', handleUp)
+    }
+  }, [isDragging, handleSliderMove])
+
+  const handlePatternClick = useCallback((index: number) => {
+    setPatternInput(prev => prev.includes(index) ? prev : [...prev, index])
   }, [])
 
   const handleVerify = useCallback(() => {
     if (!challenge) return
-    const isCorrect = validateImageChallenge(selectedIds, challenge.correctIds)
+    let userInput: number | number[]
+    if (challenge.type === 'slider') userInput = sliderValue
+    else if (challenge.type === 'rotate') userInput = rotateAngle
+    else if (challenge.type === 'pattern') userInput = patternInput
+    else return
+
+    const isCorrect = validateChallenge(challenge, userInput)
     const result = validateBotCheck({
       honeypotValue: honeypot,
       startTime: startTimeRef.current,
@@ -147,17 +184,18 @@ function SignUpPage() {
       setShowChallenge(false)
     } else {
       setBotCheckFailed(true)
-      setSelectedIds([])
       setTimeout(() => {
-        setChallenge(generateChallenge())
+        resetChallenge()
         setBotCheckFailed(false)
       }, 1500)
     }
-  }, [challenge, selectedIds, honeypot])
+  }, [challenge, sliderValue, rotateAngle, patternInput, honeypot])
 
   const resetChallenge = useCallback(() => {
     setChallenge(generateChallenge())
-    setSelectedIds([])
+    setSliderValue(0)
+    setRotateAngle(0)
+    setPatternInput([])
     setBotCheckFailed(false)
   }, [])
 
@@ -468,53 +506,84 @@ function SignUpPage() {
                     style={{ background: 'var(--background-secondary)', border: '1px solid var(--border)' }}
                   >
                     <div className="p-3 flex items-center justify-between" style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)' }}>
-                      <p className="text-sm font-semibold text-white">Select all {challenge.targetLabel}</p>
+                      <div className="flex items-center gap-2">
+                        <Shield size={16} className="text-white" />
+                        <p className="text-sm font-semibold text-white">Security Check</p>
+                      </div>
                       <button type="button" onClick={resetChallenge} className="p-1.5 rounded-lg bg-white/20 hover:bg-white/30 transition-colors">
                         <RotateCcw size={14} className="text-white" />
                       </button>
                     </div>
-                    <div className="p-3">
-                      <div className="grid grid-cols-3 gap-2 mb-3">
-                        {challenge.images.map((img) => {
-                          const isSelected = selectedIds.includes(img.id)
-                          return (
-                            <motion.button
-                              key={img.id}
-                              type="button"
-                              onClick={() => toggleImageSelection(img.id)}
-                              className="aspect-square rounded-xl text-3xl flex items-center justify-center transition-all relative"
-                              style={{
-                                background: isSelected ? 'rgba(99, 102, 241, 0.2)' : 'rgba(255, 255, 255, 0.05)',
-                                border: `2px solid ${isSelected ? '#6366f1' : 'transparent'}`,
+                    <div className="p-4">
+                      {challenge.type === 'slider' && (
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between text-sm">
+                            <span style={{ color: 'var(--foreground)' }}>Slide to position</span>
+                            <span className="font-mono px-2 py-0.5 rounded text-xs" style={{ background: 'rgba(99, 102, 241, 0.2)', color: '#6366f1' }}>{challenge.targetPosition}%</span>
+                          </div>
+                          <div
+                            ref={sliderRef}
+                            className="relative h-10 rounded-xl cursor-pointer select-none"
+                            style={{ background: 'var(--background)', border: '1px solid var(--border)' }}
+                            onMouseDown={(e) => { setIsDragging(true); handleSliderMove(e.clientX) }}
+                            onTouchStart={(e) => { setIsDragging(true); handleSliderMove(e.touches[0]!.clientX) }}
+                          >
+                            <div className="absolute top-0 bottom-0 left-0 rounded-l-xl" style={{ width: `${sliderValue}%`, background: 'linear-gradient(90deg, #6366f1, #8b5cf6)' }} />
+                            <div className="absolute top-1 bottom-1 w-0.5 rounded-full" style={{ left: `${challenge.targetPosition}%`, background: 'rgba(255,255,255,0.4)', transform: 'translateX(-50%)' }} />
+                            <motion.div className="absolute top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg flex items-center justify-center shadow-lg cursor-grab active:cursor-grabbing bg-white" style={{ left: `${sliderValue}%`, transform: 'translate(-50%, -50%)' }}>
+                              <div className="flex flex-col gap-0.5">
+                                <div className="w-3 h-0.5 rounded-full bg-gray-400" />
+                                <div className="w-3 h-0.5 rounded-full bg-gray-400" />
+                              </div>
+                            </motion.div>
+                          </div>
+                          <p className="text-[10px] text-center" style={{ color: 'var(--foreground-muted)' }}>{Math.round(sliderValue)}% / {challenge.targetPosition}%</p>
+                        </div>
+                      )}
+                      {challenge.type === 'rotate' && (
+                        <div className="space-y-3">
+                          <p className="text-sm text-center" style={{ color: 'var(--foreground)' }}>Rotate to <span className="font-bold" style={{ color: '#6366f1' }}>{challenge.targetAngle}°</span></p>
+                          <div className="flex justify-center">
+                            <div
+                              className="relative w-28 h-28 rounded-full cursor-pointer"
+                              style={{ background: 'var(--background)', border: '2px solid var(--border)' }}
+                              onClick={(e) => {
+                                const rect = e.currentTarget.getBoundingClientRect()
+                                const angle = Math.atan2(e.clientY - rect.top - rect.height/2, e.clientX - rect.left - rect.width/2) * (180 / Math.PI) + 90
+                                setRotateAngle(((angle % 360) + 360) % 360)
                               }}
-                              whileHover={{ scale: 1.05 }}
-                              whileTap={{ scale: 0.95 }}
                             >
-                              {img.emoji}
-                              {isSelected && (
-                                <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="absolute top-1 right-1 w-4 h-4 rounded-full flex items-center justify-center" style={{ background: '#6366f1' }}>
-                                  <Check size={10} className="text-white" />
-                                </motion.div>
-                              )}
-                            </motion.button>
-                          )
-                        })}
-                      </div>
+                              <motion.div className="absolute inset-2 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)' }} animate={{ rotate: rotateAngle }}>
+                                <div className="absolute top-2 w-1.5 h-5 rounded-full bg-white" />
+                              </motion.div>
+                            </div>
+                          </div>
+                          <p className="text-[10px] text-center" style={{ color: 'var(--foreground-muted)' }}>{Math.round(rotateAngle)}° / {challenge.targetAngle}°</p>
+                        </div>
+                      )}
+                      {challenge.type === 'pattern' && (
+                        <div className="space-y-3">
+                          <p className="text-sm text-center" style={{ color: 'var(--foreground)' }}>Pattern: <span className="font-mono font-bold" style={{ color: '#6366f1' }}>{challenge.pattern.map(n => n + 1).join('→')}</span></p>
+                          <div className="grid grid-cols-3 gap-1.5 max-w-[140px] mx-auto">
+                            {Array.from({ length: 9 }).map((_, i) => {
+                              const idx = patternInput.indexOf(i)
+                              return (
+                                <motion.button key={i} type="button" onClick={() => handlePatternClick(i)} className="aspect-square rounded-lg flex items-center justify-center text-sm font-bold" style={{ background: idx !== -1 ? 'linear-gradient(135deg, #6366f1, #8b5cf6)' : 'var(--background)', border: `1px solid ${idx !== -1 ? '#6366f1' : 'var(--border)'}`, color: idx !== -1 ? 'white' : 'var(--foreground-muted)' }} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                                  {idx !== -1 ? idx + 1 : i + 1}
+                                </motion.button>
+                              )
+                            })}
+                          </div>
+                          <p className="text-[10px] text-center" style={{ color: 'var(--foreground-muted)' }}>{patternInput.length > 0 ? patternInput.map(n => n + 1).join('→') : 'Click in order'}</p>
+                        </div>
+                      )}
                       {botCheckFailed && (
-                        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-xs text-red-400 text-center mb-2 flex items-center justify-center gap-1">
+                        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-xs text-red-400 text-center mt-3 flex items-center justify-center gap-1">
                           <XCircle size={12} /> Incorrect, try again
                         </motion.p>
                       )}
-                      <motion.button
-                        type="button"
-                        onClick={handleVerify}
-                        disabled={selectedIds.length === 0}
-                        className="w-full py-2 rounded-xl font-semibold text-sm text-white disabled:opacity-50"
-                        style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)' }}
-                        whileHover={{ scale: 1.01 }}
-                        whileTap={{ scale: 0.99 }}
-                      >
-                        Verify ({selectedIds.length} selected)
+                      <motion.button type="button" onClick={handleVerify} className="w-full mt-3 py-2 rounded-xl font-semibold text-sm text-white" style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)' }} whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
+                        Verify
                       </motion.button>
                     </div>
                   </motion.div>

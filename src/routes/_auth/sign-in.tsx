@@ -32,7 +32,7 @@ import {
   RotateCcw,
   Fingerprint,
 } from 'lucide-react'
-import { generateChallenge, validateImageChallenge, validateBotCheck, getDeviceType, type ChallengeData } from '@/lib/bot-protection'
+import { generateChallenge, validateChallenge, validateBotCheck, getDeviceType, type ChallengeData } from '@/lib/bot-protection'
 
 const searchSchema = z.object({
   redirect: z.string().optional(),
@@ -68,16 +68,20 @@ function SignInPage() {
   const navigate = useNavigate()
   const router = useRouter()
   const signIn = useServerFn(signInFn)
-  
+
   const [showPassword, setShowPassword] = useState(false)
   const [deviceType, setDeviceType] = useState<'mobile' | 'tablet' | 'desktop'>('desktop')
-  
+
   const [challenge, setChallenge] = useState<ChallengeData | null>(null)
-  const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [botCheckPassed, setBotCheckPassed] = useState(false)
   const [botCheckFailed, setBotCheckFailed] = useState(false)
   const [showChallenge, setShowChallenge] = useState(false)
   const [honeypot, setHoneypot] = useState('')
+  const [sliderValue, setSliderValue] = useState(0)
+  const [rotateAngle, setRotateAngle] = useState(0)
+  const [patternInput, setPatternInput] = useState<number[]>([])
+  const [isDragging, setIsDragging] = useState(false)
+  const sliderRef = useRef<HTMLDivElement>(null)
   const startTimeRef = useRef(Date.now())
   const interactionCountRef = useRef(0)
   const mouseMovementsRef = useRef(0)
@@ -85,14 +89,14 @@ function SignInPage() {
   useEffect(() => {
     setDeviceType(getDeviceType())
     setChallenge(generateChallenge())
-    
+
     const handleMouseMove = () => { mouseMovementsRef.current++ }
     const handleInteraction = () => { interactionCountRef.current++ }
-    
+
     window.addEventListener('mousemove', handleMouseMove)
     window.addEventListener('click', handleInteraction)
     window.addEventListener('keydown', handleInteraction)
-    
+
     return () => {
       window.removeEventListener('mousemove', handleMouseMove)
       window.removeEventListener('click', handleInteraction)
@@ -100,17 +104,63 @@ function SignInPage() {
     }
   }, [])
 
-  const toggleImageSelection = useCallback((id: string) => {
-    setSelectedIds(prev => 
-      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
-    )
+  const handleSliderMove = useCallback((clientX: number) => {
+    if (!sliderRef.current || !isDragging) return
+    const rect = sliderRef.current.getBoundingClientRect()
+    const x = Math.max(0, Math.min(clientX - rect.left, rect.width))
+    const percent = (x / rect.width) * 100
+    setSliderValue(percent)
+  }, [isDragging])
+
+  const handleSliderEnd = useCallback(() => {
+    setIsDragging(false)
+  }, [])
+
+  useEffect(() => {
+    if (!isDragging) return
+
+    const handleMove = (e: MouseEvent | TouchEvent) => {
+      const clientX = 'touches' in e ? e.touches[0]!.clientX : e.clientX
+      handleSliderMove(clientX)
+    }
+    const handleUp = () => handleSliderEnd()
+
+    window.addEventListener('mousemove', handleMove)
+    window.addEventListener('mouseup', handleUp)
+    window.addEventListener('touchmove', handleMove)
+    window.addEventListener('touchend', handleUp)
+
+    return () => {
+      window.removeEventListener('mousemove', handleMove)
+      window.removeEventListener('mouseup', handleUp)
+      window.removeEventListener('touchmove', handleMove)
+      window.removeEventListener('touchend', handleUp)
+    }
+  }, [isDragging, handleSliderMove, handleSliderEnd])
+
+  const handlePatternClick = useCallback((index: number) => {
+    setPatternInput(prev => {
+      if (prev.includes(index)) return prev
+      return [...prev, index]
+    })
   }, [])
 
   const handleVerify = useCallback(() => {
     if (!challenge) return
-    
-    const isCorrect = validateImageChallenge(selectedIds, challenge.correctIds)
-    
+
+    let userInput: number | number[]
+    if (challenge.type === 'slider') {
+      userInput = sliderValue
+    } else if (challenge.type === 'rotate') {
+      userInput = rotateAngle
+    } else if (challenge.type === 'pattern') {
+      userInput = patternInput
+    } else {
+      return
+    }
+
+    const isCorrect = validateChallenge(challenge, userInput)
+
     const result = validateBotCheck({
       honeypotValue: honeypot,
       startTime: startTimeRef.current,
@@ -118,24 +168,25 @@ function SignInPage() {
       interactionCount: interactionCountRef.current,
       mouseMovements: mouseMovementsRef.current,
     })
-    
+
     if (result.passed) {
       setBotCheckPassed(true)
       setBotCheckFailed(false)
       setShowChallenge(false)
     } else {
       setBotCheckFailed(true)
-      setSelectedIds([])
       setTimeout(() => {
-        setChallenge(generateChallenge())
+        resetChallenge()
         setBotCheckFailed(false)
       }, 1500)
     }
-  }, [challenge, selectedIds, honeypot])
+  }, [challenge, sliderValue, rotateAngle, patternInput, honeypot])
 
   const resetChallenge = useCallback(() => {
     setChallenge(generateChallenge())
-    setSelectedIds([])
+    setSliderValue(0)
+    setRotateAngle(0)
+    setPatternInput([])
     setBotCheckFailed(false)
   }, [])
 
@@ -173,6 +224,135 @@ function SignInPage() {
 
   const isMobile = deviceType === 'mobile'
 
+  const renderChallenge = () => {
+    if (!challenge) return null
+
+    if (challenge.type === 'slider') {
+      return (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between text-sm">
+            <span style={{ color: 'var(--foreground)' }}>Slide to the marked position</span>
+            <span className="font-mono px-2 py-1 rounded" style={{ background: 'rgba(99, 102, 241, 0.2)', color: '#6366f1' }}>
+              {challenge.targetPosition}%
+            </span>
+          </div>
+          <div
+            ref={sliderRef}
+            className="relative h-12 rounded-xl cursor-pointer select-none"
+            style={{ background: 'var(--background-secondary)', border: '1px solid var(--border)' }}
+            onMouseDown={(e) => {
+              setIsDragging(true)
+              handleSliderMove(e.clientX)
+            }}
+            onTouchStart={(e) => {
+              setIsDragging(true)
+              handleSliderMove(e.touches[0]!.clientX)
+            }}
+          >
+            <div
+              className="absolute top-0 bottom-0 left-0 rounded-l-xl transition-all"
+              style={{ width: `${sliderValue}%`, background: 'linear-gradient(90deg, #6366f1, #8b5cf6)' }}
+            />
+            <div
+              className="absolute top-1 bottom-1 w-1 rounded-full"
+              style={{ left: `${challenge.targetPosition}%`, background: 'rgba(255,255,255,0.5)', transform: 'translateX(-50%)' }}
+            />
+            <motion.div
+              className="absolute top-1/2 -translate-y-1/2 w-10 h-10 rounded-xl flex items-center justify-center shadow-lg cursor-grab active:cursor-grabbing"
+              style={{ left: `${sliderValue}%`, transform: 'translate(-50%, -50%)', background: 'white' }}
+              whileHover={{ scale: 1.05 }}
+            >
+              <div className="flex flex-col gap-0.5">
+                <div className="w-4 h-0.5 rounded-full bg-gray-400" />
+                <div className="w-4 h-0.5 rounded-full bg-gray-400" />
+                <div className="w-4 h-0.5 rounded-full bg-gray-400" />
+              </div>
+            </motion.div>
+          </div>
+          <p className="text-xs text-center" style={{ color: 'var(--foreground-muted)' }}>
+            Current: {Math.round(sliderValue)}% | Target: {challenge.targetPosition}%
+          </p>
+        </div>
+      )
+    }
+
+    if (challenge.type === 'rotate') {
+      return (
+        <div className="space-y-4">
+          <p className="text-sm text-center" style={{ color: 'var(--foreground)' }}>
+            Rotate to <span className="font-bold" style={{ color: '#6366f1' }}>{challenge.targetAngle}°</span>
+          </p>
+          <div className="flex justify-center">
+            <div
+              className="relative w-32 h-32 rounded-full cursor-pointer"
+              style={{ background: 'var(--background-secondary)', border: '2px solid var(--border)' }}
+              onClick={(e) => {
+                const rect = e.currentTarget.getBoundingClientRect()
+                const centerX = rect.left + rect.width / 2
+                const centerY = rect.top + rect.height / 2
+                const angle = Math.atan2(e.clientY - centerY, e.clientX - centerX) * (180 / Math.PI) + 90
+                setRotateAngle(((angle % 360) + 360) % 360)
+              }}
+            >
+              <motion.div
+                className="absolute inset-2 rounded-full flex items-center justify-center"
+                style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)' }}
+                animate={{ rotate: rotateAngle }}
+              >
+                <div className="absolute top-2 w-2 h-6 rounded-full bg-white" />
+              </motion.div>
+              <div
+                className="absolute top-0 left-1/2 -translate-x-1/2 w-1 h-4 rounded-full"
+                style={{ background: '#22c55e', transform: `translateX(-50%) rotate(${challenge.targetAngle}deg)`, transformOrigin: '50% 64px' }}
+              />
+            </div>
+          </div>
+          <p className="text-xs text-center" style={{ color: 'var(--foreground-muted)' }}>
+            Current: {Math.round(rotateAngle)}° | Target: {challenge.targetAngle}°
+          </p>
+        </div>
+      )
+    }
+
+    if (challenge.type === 'pattern') {
+      return (
+        <div className="space-y-4">
+          <p className="text-sm text-center" style={{ color: 'var(--foreground)' }}>
+            Repeat the pattern: <span className="font-mono font-bold" style={{ color: '#6366f1' }}>{challenge.pattern.map(n => n + 1).join(' → ')}</span>
+          </p>
+          <div className="grid grid-cols-3 gap-2 max-w-[180px] mx-auto">
+            {Array.from({ length: challenge.gridSize * challenge.gridSize }).map((_, i) => {
+              const patternIndex = patternInput.indexOf(i)
+              const isInPattern = patternIndex !== -1
+              return (
+                <motion.button
+                  key={i}
+                  type="button"
+                  onClick={() => handlePatternClick(i)}
+                  className="aspect-square rounded-xl flex items-center justify-center text-lg font-bold transition-all"
+                  style={{
+                    background: isInPattern ? 'linear-gradient(135deg, #6366f1, #8b5cf6)' : 'var(--background-secondary)',
+                    border: `2px solid ${isInPattern ? '#6366f1' : 'var(--border)'}`,
+                    color: isInPattern ? 'white' : 'var(--foreground-muted)',
+                  }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  {isInPattern ? patternIndex + 1 : i + 1}
+                </motion.button>
+              )
+            })}
+          </div>
+          <p className="text-xs text-center" style={{ color: 'var(--foreground-muted)' }}>
+            Your input: {patternInput.length > 0 ? patternInput.map(n => n + 1).join(' → ') : 'Click cells in order'}
+          </p>
+        </div>
+      )
+    }
+
+    return null
+  }
+
   return (
     <div className="min-h-[calc(100vh-80px)] flex flex-col lg:flex-row">
       {!isMobile && (
@@ -181,7 +361,7 @@ function SignInPage() {
             className="absolute inset-0"
             style={{ background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(139, 92, 246, 0.08), rgba(168, 85, 247, 0.05))' }}
           />
-          
+
           <motion.div
             className="absolute top-1/4 right-1/4 w-80 h-80 rounded-full blur-3xl"
             style={{ background: 'rgba(139, 92, 246, 0.2)' }}
@@ -379,65 +559,37 @@ function SignInPage() {
                     style={{ background: 'var(--background-secondary)', border: '1px solid var(--border)' }}
                   >
                     <div className="p-3 flex items-center justify-between" style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)' }}>
-                      <p className="text-sm font-semibold text-white">Select all {challenge.targetLabel}</p>
+                      <div className="flex items-center gap-2">
+                        <Shield size={16} className="text-white" />
+                        <p className="text-sm font-semibold text-white">Security Check</p>
+                      </div>
                       <button type="button" onClick={resetChallenge} className="p-1.5 rounded-lg bg-white/20 hover:bg-white/30 transition-colors">
                         <RotateCcw size={14} className="text-white" />
                       </button>
                     </div>
-                    
-                    <div className="p-3">
-                      <div className="grid grid-cols-3 gap-2 mb-3">
-                        {challenge.images.map((img) => {
-                          const isSelected = selectedIds.includes(img.id)
-                          return (
-                            <motion.button
-                              key={img.id}
-                              type="button"
-                              onClick={() => toggleImageSelection(img.id)}
-                              className="aspect-square rounded-xl text-4xl flex items-center justify-center transition-all relative"
-                              style={{
-                                background: isSelected ? 'rgba(99, 102, 241, 0.2)' : 'rgba(255, 255, 255, 0.05)',
-                                border: `2px solid ${isSelected ? '#6366f1' : 'transparent'}`,
-                              }}
-                              whileHover={{ scale: 1.05 }}
-                              whileTap={{ scale: 0.95 }}
-                            >
-                              {img.emoji}
-                              {isSelected && (
-                                <motion.div
-                                  initial={{ scale: 0 }}
-                                  animate={{ scale: 1 }}
-                                  className="absolute top-1 right-1 w-5 h-5 rounded-full flex items-center justify-center"
-                                  style={{ background: '#6366f1' }}
-                                >
-                                  <CheckCircle2 size={12} className="text-white" />
-                                </motion.div>
-                              )}
-                            </motion.button>
-                          )
-                        })}
-                      </div>
-                      
+
+                    <div className="p-4">
+                      {renderChallenge()}
+
                       {botCheckFailed && (
                         <motion.p
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
-                          className="text-xs text-red-400 text-center mb-2 flex items-center justify-center gap-1"
+                          className="text-xs text-red-400 text-center mt-3 flex items-center justify-center gap-1"
                         >
-                          <XCircle size={12} /> Incorrect selection, try again
+                          <XCircle size={12} /> Incorrect, try again
                         </motion.p>
                       )}
-                      
+
                       <motion.button
                         type="button"
                         onClick={handleVerify}
-                        disabled={selectedIds.length === 0}
-                        className="w-full py-2.5 rounded-xl font-semibold text-sm text-white disabled:opacity-50"
+                        className="w-full mt-4 py-2.5 rounded-xl font-semibold text-sm text-white"
                         style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)' }}
                         whileHover={{ scale: 1.01 }}
                         whileTap={{ scale: 0.99 }}
                       >
-                        Verify ({selectedIds.length} selected)
+                        Verify
                       </motion.button>
                     </div>
                   </motion.div>

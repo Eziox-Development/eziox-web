@@ -60,7 +60,7 @@ export function ThemeSwitcher() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 8, scale: 0.95 }}
               transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }}
-              className="absolute right-0 top-full mt-2 z-50 w-[420px] rounded-2xl overflow-hidden"
+              className="absolute right-0 top-full mt-2 z-50 w-[520px] rounded-2xl overflow-hidden"
               style={{ background: 'var(--card)', border: '1px solid var(--border)', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)' }}
             >
               <div className="p-4 flex items-center justify-between" style={{ borderBottom: '1px solid var(--border)' }}>
@@ -117,7 +117,7 @@ export function ThemeSwitcher() {
                   </span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2 max-h-72 overflow-y-auto pr-1">
+                <div className="grid grid-cols-2 gap-3 max-h-[400px] overflow-y-auto pr-1">
                   {filteredThemes.map((t) => {
                     const isActive = theme.id === t.id
                     return (

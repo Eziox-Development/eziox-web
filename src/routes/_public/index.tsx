@@ -125,10 +125,10 @@ function HomePage() {
                 </span>
               </motion.div>
 
-              <h1 className="text-5xl lg:text-7xl font-bold mb-6 leading-[1.1]" style={{ color: theme.colors.foreground, fontFamily: 'var(--font-display)' }}>
+              <h1 className="text-5xl lg:text-7xl font-bold mb-6 leading-[1.1] relative z-10" style={{ color: theme.colors.foreground, fontFamily: 'var(--font-display)' }}>
                 Your Digital
                 <br />
-                <span style={{ background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                <span className="bg-clip-text text-transparent" style={{ backgroundImage: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})` }}>
                   Identity
                 </span>
                 <br />
