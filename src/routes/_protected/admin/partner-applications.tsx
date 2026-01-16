@@ -10,6 +10,7 @@ import {
   type PartnerApplicationWithUser,
 } from '@/server/functions/partners'
 import { CATEGORIES } from '@/lib/partner-categories'
+import { getSocialUrl } from '@/lib/social-links'
 import {
   Handshake, Search, Filter, Clock, Eye, CheckCircle2, XCircle,
   ChevronDown, ChevronRight, Mail, Globe, Calendar,
@@ -153,16 +154,22 @@ function PartnerApplicationsPage() {
               <div key={key}>
                 <span className="text-xs font-medium" style={{ color: 'var(--foreground-muted)' }}>{label}:</span>
                 <div className="space-y-1 mt-1">
-                  {Object.entries(value as Record<string, string>).map(([k, v]) => (
-                    v && (
+                  {Object.entries(value as Record<string, string>).map(([k, v]) => {
+                    if (!v) return null
+                    
+                    // Convert platform name and username to full URL
+                    const platformKey = k.toLowerCase().replace(/\s+/g, '')
+                    const fullUrl = v.startsWith('http') ? v : getSocialUrl(platformKey, v)
+                    
+                    return (
                       <div key={k} className="flex items-center gap-2">
                         <span className="text-xs" style={{ color: 'var(--foreground-muted)' }}>{k}:</span>
-                        <a href={v} target="_blank" rel="noopener noreferrer" className="text-xs underline" style={{ color: '#3b82f6' }}>
-                          {v.length > 40 ? v.substring(0, 40) + '...' : v}
+                        <a href={fullUrl} target="_blank" rel="noopener noreferrer" className="text-xs underline hover:text-blue-400 transition-colors" style={{ color: '#3b82f6' }}>
+                          {v}
                         </a>
                       </div>
                     )
-                  ))}
+                  })}
                 </div>
               </div>
             )
