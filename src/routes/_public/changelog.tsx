@@ -16,6 +16,7 @@ import {
   Rocket,
   Bell,
   CheckCircle,
+  Wrench,
 } from 'lucide-react'
 
 export const Route = createFileRoute('/_public/changelog')({
@@ -42,6 +43,25 @@ interface ChangelogEntry {
 }
 
 const changelog: ChangelogEntry[] = [
+  {
+    version: '1.4.1',
+    date: 'January 16, 2026',
+    title: 'TypeScript 6.0+ & Icon Migration',
+    description: 'Future-proof TypeScript configuration and modern brand icon implementation.',
+    icon: Wrench,
+    type: 'improvement',
+    items: [
+      'TypeScript 6.0+ compatibility: Removed deprecated baseUrl from tsconfig.json',
+      'Migrated to explicit path mappings with full relative paths',
+      'Replaced deprecated Lucide brand icons with react-icons/si (Simple Icons)',
+      'Updated Twitter, Instagram, YouTube, Twitch, GitHub, TikTok, Discord icons',
+      'Created centralized social-icons.tsx for icon management',
+      'Updated brand colors to match official guidelines',
+      'Fixed Vite build warnings: Removed NODE_ENV from .env',
+      'Removed conflicting esbuild config (oxc is now default minifier)',
+      'Cleaner build output without deprecation warnings',
+    ],
+  },
   {
     version: '1.4.0',
     date: 'January 16, 2026',

@@ -111,9 +111,6 @@ const config = defineConfig({
       '@': '/src',
     },
   },
-  esbuild: {
-    logOverride: { 'this-is-undefined-in-esm': 'silent' },
-  },
 })
 
 export default config

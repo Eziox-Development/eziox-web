@@ -9,6 +9,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.4.1] - 2026-01-16
+
+### Changed
+- **TypeScript 6.0+ Compatibility** - Removed deprecated `baseUrl` from tsconfig.json
+  - Migrated to explicit path mappings for future TypeScript compatibility
+  - Paths now use full relative paths (e.g., `./src/*`) instead of relying on baseUrl
+- **Brand Icons Migration** - Replaced deprecated Lucide brand icons with react-icons/si
+  - Migrated Twitter, Instagram, YouTube, Twitch, GitHub, TikTok, Discord icons
+  - Using Simple Icons (react-icons/si) for modern, maintained brand icons
+  - Updated brand colors to match official guidelines
+  - Created centralized social-icons.tsx for icon management
+
+### Fixed
+- **Build Configuration** - Cleaned up Vite build warnings
+  - Removed `NODE_ENV=production` from .env file (not supported by Vite)
+  - Removed conflicting esbuild config (oxc is now the default minifier)
+  - Cleaner build output without warnings
+
+### Technical
+- Updated 4 route files with new icon imports
+- Created `src/lib/social-icons.tsx` for centralized icon management
+- All deprecated Lucide brand icons replaced across the codebase
+
+---
+
 ## [1.4.0] - 2026-01-16
 
 ### Added
@@ -187,7 +212,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/Eziox-Development/eziox-web/compare/v1.4.0...HEAD
+[Unreleased]: https://github.com/Eziox-Development/eziox-web/compare/v1.4.1...HEAD
+[1.4.1]: https://github.com/Eziox-Development/eziox-web/compare/v1.4.0...v1.4.1
 [1.4.0]: https://github.com/Eziox-Development/eziox-web/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/Eziox-Development/eziox-web/compare/v1.0.0...v1.3.0
 [1.0.0]: https://github.com/Eziox-Development/eziox-web/releases/tag/v1.0.0
