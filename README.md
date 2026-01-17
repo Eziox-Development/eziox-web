@@ -31,7 +31,9 @@
 | Feature | Description |
 |---------|-------------|
 | 🔗 **Bio Links** | Linktree-style customizable link pages |
-| 📊 **Analytics** | Track profile views, link clicks, engagement |
+| 📊 **Analytics Dashboard** | Track views, clicks, top links, referrers with charts |
+| 🔔 **Notifications** | Real-time notification center with bell icon |
+| 🎵 **Spotify Integration** | Display currently playing music on bio page |
 | 🏆 **Leaderboard** | User ranking system with podium display |
 | 👤 **Profiles** | Custom avatars, banners, bios, social links |
 | 🔐 **Auth** | Secure session-based authentication |
@@ -72,9 +74,15 @@ bun run dev
 DATABASE_URL=postgresql://...@ep-xxx.neon.tech/neondb?sslmode=require
 AUTH_SECRET=your-super-secret-key
 VITE_OWNER_EMAIL=your-email@example.com
+
+# Optional: Spotify Integration
+SPOTIFY_CLIENT_ID=your-spotify-client-id
+SPOTIFY_CLIENT_SECRET=your-spotify-client-secret
+SPOTIFY_REDIRECT_URI=https://your-domain.com/api/spotify-callback
 ```
 
-> Get your `DATABASE_URL` from [console.neon.tech](https://console.neon.tech)
+> Get your `DATABASE_URL` from [console.neon.tech](https://console.neon.tech)  
+> Get Spotify credentials from [developer.spotify.com](https://developer.spotify.com/dashboard)
 
 ## 📜 Scripts
 

@@ -25,10 +25,16 @@ User → Vercel Edge → TanStack Start SSR → Neon PostgreSQL
 ## Environment Variables
 
 ```bash
+# Required
 DATABASE_URL=postgresql://user:password@ep-xxx.neon.tech/neondb?sslmode=require
 AUTH_SECRET=your-super-secret-key  # Generate: openssl rand -base64 32
 VITE_OWNER_EMAIL=your-email@example.com
 NODE_ENV=production
+
+# Optional: Spotify Integration
+SPOTIFY_CLIENT_ID=your-spotify-client-id
+SPOTIFY_CLIENT_SECRET=your-spotify-client-secret
+SPOTIFY_REDIRECT_URI=https://eziox.link/api/spotify-callback
 ```
 
 ## Deploy to Vercel
@@ -65,6 +71,9 @@ vercel --prod
 | `user_stats` | Views, clicks, score |
 | `follows` | Follower relationships |
 | `short_links` | URL shortener |
+| `spotify_connections` | Spotify OAuth tokens |
+| `notifications` | User notifications |
+| `analytics_daily` | Aggregated daily analytics |
 
 ## Continuous Deployment
 
