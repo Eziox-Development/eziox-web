@@ -24,6 +24,7 @@ import {
   Handshake,
   Trophy,
   Zap,
+  BarChart3,
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'motion/react'
 import { useAuth } from '@/hooks/use-auth'
@@ -332,6 +333,7 @@ export function Nav() {
                         <div className="p-2">
                           {[
                             { to: '/profile', icon: LayoutDashboard, label: 'Dashboard', color: theme.colors.foregroundMuted },
+                            { to: '/analytics', icon: BarChart3, label: 'Analytics', color: theme.colors.foregroundMuted },
                             { href: `https://${bioLink}`, icon: Globe, label: 'View Bio Page', external: true, color: theme.colors.foregroundMuted },
                             ...(currentUser.role === 'owner' || currentUser.role === 'admin' ? [{ to: '/admin', icon: Shield, label: 'Admin Panel', color: '#ef4444' }] : []),
                           ].map((item, i) => (

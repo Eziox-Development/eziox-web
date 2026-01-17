@@ -20,7 +20,7 @@ import {
   Copy, Check, Globe, Sparkles, Link as LinkIcon, AtSign,
   ExternalLink, Eye, MousePointerClick, Users, Heart,
   Settings, Gift, TrendingUp, Shield, Lock,
-  UserCircle, ChevronRight, Handshake, Crown,
+  UserCircle, ChevronRight, Handshake, Crown, BarChart3,
 } from 'lucide-react'
 import {
   SiX, SiInstagram, SiYoutube, SiTwitch, SiGithub, SiTiktok, SiDiscord,
@@ -280,6 +280,10 @@ function ProfilePage() {
                   <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: 'var(--background-secondary)' }}><Globe size={18} style={{ color: 'var(--foreground-muted)' }} /></div>
                   <span style={{ color: 'var(--foreground)' }}>My Bio Page</span>
                   <ExternalLink size={14} style={{ color: 'var(--foreground-muted)' }} />
+                </Link>
+                <Link to="/analytics" className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/5">
+                  <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: 'var(--background-secondary)' }}><BarChart3 size={18} style={{ color: 'var(--foreground-muted)' }} /></div>
+                  <span style={{ color: 'var(--foreground)' }}>Analytics</span>
                 </Link>
                 <Link to="/leaderboard" className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/5">
                   <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: 'var(--background-secondary)' }}><TrendingUp size={18} style={{ color: 'var(--foreground-muted)' }} /></div>
