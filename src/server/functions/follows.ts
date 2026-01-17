@@ -10,6 +10,7 @@ import { db } from '../db'
 import { follows, users, profiles, userStats } from '../db/schema'
 import { eq, and, sql, desc } from 'drizzle-orm'
 import { validateSession } from '../lib/auth'
+import { createFollowerNotification } from './notifications'
 
 // ============================================================================
 // Check if Following
@@ -121,6 +122,9 @@ export const followUserFn = createServerFn({ method: 'POST' })
       .from(userStats)
       .where(eq(userStats.userId, data.targetUserId))
       .limit(1)
+
+    // Create notification for the followed user
+    await createFollowerNotification(user.id, data.targetUserId)
 
     return { 
       success: true, 

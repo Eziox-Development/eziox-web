@@ -126,6 +126,14 @@ export const clearAllNotificationsFn = createServerFn({ method: 'POST' }).handle
 })
 
 export async function createFollowerNotification(followerId: string, followedUserId: string) {
+  const [targetProfile] = await db
+    .select({ notifyNewFollower: profiles.notifyNewFollower })
+    .from(profiles)
+    .where(eq(profiles.userId, followedUserId))
+    .limit(1)
+
+  if (targetProfile?.notifyNewFollower === false) return
+
   const follower = await db
     .select({
       username: users.username,
@@ -160,6 +168,14 @@ export async function createMilestoneNotification(
   milestone: number,
   linkTitle?: string
 ) {
+  const [userProfile] = await db
+    .select({ notifyMilestones: profiles.notifyMilestones })
+    .from(profiles)
+    .where(eq(profiles.userId, userId))
+    .limit(1)
+
+  if (userProfile?.notifyMilestones === false) return
+
   const title = type === 'profile_milestone' ? 'Profile Milestone!' : 'Link Milestone!'
 
   const message =
@@ -218,3 +234,63 @@ export async function checkLinkMilestone(userId: string, linkTitle: string, curr
     }
   }
 }
+
+export const getNotificationSettingsFn = createServerFn({ method: 'GET' }).handler(async () => {
+  const user = await getAuthenticatedUser()
+
+  const [profile] = await db
+    .select({
+      notifyNewFollower: profiles.notifyNewFollower,
+      notifyMilestones: profiles.notifyMilestones,
+      notifySystemUpdates: profiles.notifySystemUpdates,
+      lastSeenChangelog: profiles.lastSeenChangelog,
+    })
+    .from(profiles)
+    .where(eq(profiles.userId, user.id))
+    .limit(1)
+
+  return {
+    notifyNewFollower: profile?.notifyNewFollower ?? true,
+    notifyMilestones: profile?.notifyMilestones ?? true,
+    notifySystemUpdates: profile?.notifySystemUpdates ?? true,
+    lastSeenChangelog: profile?.lastSeenChangelog || null,
+  }
+})
+
+export const updateNotificationSettingsFn = createServerFn({ method: 'POST' })
+  .inputValidator(
+    z.object({
+      notifyNewFollower: z.boolean().optional(),
+      notifyMilestones: z.boolean().optional(),
+      notifySystemUpdates: z.boolean().optional(),
+    })
+  )
+  .handler(async ({ data }) => {
+    const user = await getAuthenticatedUser()
+
+    await db
+      .update(profiles)
+      .set({
+        ...data,
+        updatedAt: new Date(),
+      })
+      .where(eq(profiles.userId, user.id))
+
+    return { success: true }
+  })
+
+export const updateLastSeenChangelogFn = createServerFn({ method: 'POST' })
+  .inputValidator(z.object({ version: z.string() }))
+  .handler(async ({ data }) => {
+    const user = await getAuthenticatedUser()
+
+    await db
+      .update(profiles)
+      .set({
+        lastSeenChangelog: data.version,
+        updatedAt: new Date(),
+      })
+      .where(eq(profiles.userId, user.id))
+
+    return { success: true }
+  })

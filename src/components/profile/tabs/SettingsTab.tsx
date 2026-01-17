@@ -1,9 +1,12 @@
 import { useState } from 'react'
 import { motion } from 'motion/react'
-import { Palette, Shield, Eye, EyeOff, Mail, AtSign, User, Calendar, Sparkles, Check, Copy, Music } from 'lucide-react'
+import { Palette, Shield, Eye, EyeOff, Mail, AtSign, User, Calendar, Sparkles, Check, Copy, Music, Bell, UserPlus, Trophy, Megaphone } from 'lucide-react'
 import { ACCENT_COLORS, type ProfileFormData } from '@/routes/_protected/profile'
 import { SpotifyConnect } from '@/components/spotify'
 import { useTheme } from '@/components/portfolio/ThemeProvider'
+import { useServerFn } from '@tanstack/react-start'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { getNotificationSettingsFn, updateNotificationSettingsFn } from '@/server/functions/notifications'
 
 interface SettingsTabProps {
   formData: ProfileFormData
@@ -16,6 +19,28 @@ interface SettingsTabProps {
 export function SettingsTab({ formData, updateField, currentUser, copyToClipboard, copiedField }: SettingsTabProps) {
   const [isInfoBlurred, setIsInfoBlurred] = useState(true)
   const { theme } = useTheme()
+  const queryClient = useQueryClient()
+
+  const getSettings = useServerFn(getNotificationSettingsFn)
+  const updateSettings = useServerFn(updateNotificationSettingsFn)
+
+  const { data: notificationSettings, isLoading: settingsLoading } = useQuery({
+    queryKey: ['notificationSettings'],
+    queryFn: () => getSettings(),
+  })
+
+  const updateSettingsMutation = useMutation({
+    mutationFn: (data: { notifyNewFollower?: boolean; notifyMilestones?: boolean; notifySystemUpdates?: boolean }) =>
+      updateSettings({ data }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['notificationSettings'] })
+    },
+  })
+
+  const handleToggleSetting = (key: 'notifyNewFollower' | 'notifyMilestones' | 'notifySystemUpdates') => {
+    if (!notificationSettings) return
+    updateSettingsMutation.mutate({ [key]: !notificationSettings[key] })
+  }
 
   const memberSince = currentUser.createdAt 
     ? new Date(currentUser.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
@@ -59,6 +84,54 @@ export function SettingsTab({ formData, updateField, currentUser, copyToClipboar
         </div>
       </div>
 
+      {/* Notifications */}
+      <div className="rounded-2xl overflow-hidden" style={{ background: 'var(--card)', border: '1px solid var(--border)' }}>
+        <div className="p-5 border-b" style={{ borderColor: 'var(--border)' }}>
+          <div className="flex items-center gap-2">
+            <Bell size={20} style={{ color: formData.accentColor }} />
+            <h2 className="text-lg font-bold" style={{ color: 'var(--foreground)' }}>Notifications</h2>
+          </div>
+          <p className="text-sm mt-1" style={{ color: 'var(--foreground-muted)' }}>Choose what you want to be notified about</p>
+        </div>
+        <div className="p-5 space-y-4">
+          {settingsLoading ? (
+            <div className="flex items-center justify-center py-4">
+              <div className="w-6 h-6 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor: formData.accentColor, borderTopColor: 'transparent' }} />
+            </div>
+          ) : (
+            <>
+              <NotificationToggle
+                icon={UserPlus}
+                title="New Followers"
+                description="Get notified when someone follows you"
+                enabled={notificationSettings?.notifyNewFollower ?? true}
+                onToggle={() => handleToggleSetting('notifyNewFollower')}
+                accentColor={formData.accentColor}
+                isPending={updateSettingsMutation.isPending}
+              />
+              <NotificationToggle
+                icon={Trophy}
+                title="Milestones"
+                description="Profile views and link click milestones"
+                enabled={notificationSettings?.notifyMilestones ?? true}
+                onToggle={() => handleToggleSetting('notifyMilestones')}
+                accentColor={formData.accentColor}
+                isPending={updateSettingsMutation.isPending}
+              />
+              <NotificationToggle
+                icon={Megaphone}
+                title="System Updates"
+                description="Platform updates and announcements"
+                enabled={notificationSettings?.notifySystemUpdates ?? true}
+                onToggle={() => handleToggleSetting('notifySystemUpdates')}
+                accentColor={formData.accentColor}
+                isPending={updateSettingsMutation.isPending}
+              />
+            </>
+          )}
+        </div>
+      </div>
+
       {/* Account */}
       <div className="rounded-2xl overflow-hidden" style={{ background: 'var(--card)', border: '1px solid var(--border)' }}>
         <div className="p-5 border-b flex items-center justify-between" style={{ borderColor: 'var(--border)' }}>
@@ -97,5 +170,43 @@ export function SettingsTab({ formData, updateField, currentUser, copyToClipboar
         </div>
       </div>
     </motion.div>
+  )
+}
+
+interface NotificationToggleProps {
+  icon: React.ElementType
+  title: string
+  description: string
+  enabled: boolean
+  onToggle: () => void
+  accentColor: string
+  isPending: boolean
+}
+
+function NotificationToggle({ icon: Icon, title, description, enabled, onToggle, accentColor, isPending }: NotificationToggleProps) {
+  return (
+    <div className="flex items-center justify-between p-4 rounded-xl" style={{ background: 'var(--background-secondary)' }}>
+      <div className="flex items-center gap-3">
+        <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: `${accentColor}20` }}>
+          <Icon size={20} style={{ color: accentColor }} />
+        </div>
+        <div>
+          <p className="font-medium text-sm" style={{ color: 'var(--foreground)' }}>{title}</p>
+          <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>{description}</p>
+        </div>
+      </div>
+      <button
+        onClick={onToggle}
+        disabled={isPending}
+        className="relative w-12 h-7 rounded-full transition-all duration-300"
+        style={{ background: enabled ? accentColor : 'var(--border)' }}
+      >
+        <motion.div
+          className="absolute top-1 w-5 h-5 rounded-full bg-white shadow-md"
+          animate={{ left: enabled ? '1.5rem' : '0.25rem' }}
+          transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+        />
+      </button>
+    </div>
   )
 }

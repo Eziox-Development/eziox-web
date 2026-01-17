@@ -61,10 +61,14 @@ export const profiles = pgTable('profiles', {
   socials: jsonb('socials').$type<Record<string, string>>().default({}),
   isPublic: boolean('is_public').default(true),
   showActivity: boolean('show_activity').default(true),
-  referralCode: varchar('referral_code', { length: 20 }), // Referral code
-  referredBy: uuid('referred_by').references(() => users.id, { onDelete: 'set null' }), // Who referred this user
-  creatorType: varchar('creator_type', { length: 50 }), // vtuber, streamer, artist, etc.
-  isFeatured: boolean('is_featured').default(false), // Featured on creators page
+  referralCode: varchar('referral_code', { length: 20 }),
+  referredBy: uuid('referred_by').references(() => users.id, { onDelete: 'set null' }),
+  creatorType: varchar('creator_type', { length: 50 }),
+  isFeatured: boolean('is_featured').default(false),
+  notifyNewFollower: boolean('notify_new_follower').default(true),
+  notifyMilestones: boolean('notify_milestones').default(true),
+  notifySystemUpdates: boolean('notify_system_updates').default(true),
+  lastSeenChangelog: varchar('last_seen_changelog', { length: 20 }),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 })
