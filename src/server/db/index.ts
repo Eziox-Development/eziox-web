@@ -4,11 +4,34 @@
  */
 
 import { neon } from '@neondatabase/serverless'
-import { drizzle } from 'drizzle-orm/neon-http'
+import { drizzle, type NeonHttpDatabase } from 'drizzle-orm/neon-http'
 import * as schema from './schema'
 
-const sql = neon(process.env.DATABASE_URL!)
+let _db: NeonHttpDatabase<typeof schema> | null = null
 
-export const db = drizzle(sql, { schema })
+function getDb(): NeonHttpDatabase<typeof schema> {
+  if (_db) return _db
+  
+  // Only initialize on server-side
+  if (typeof window !== 'undefined') {
+    throw new Error('Database cannot be accessed on the client side')
+  }
+  
+  const databaseUrl = process.env.DATABASE_URL
+  if (!databaseUrl) {
+    throw new Error('DATABASE_URL environment variable is not set')
+  }
+  
+  const sql = neon(databaseUrl)
+  _db = drizzle(sql, { schema })
+  return _db
+}
 
-export type Database = typeof db
+// Proxy to lazily initialize db on first access
+export const db = new Proxy({} as NeonHttpDatabase<typeof schema>, {
+  get(_, prop) {
+    return getDb()[prop as keyof NeonHttpDatabase<typeof schema>]
+  },
+})
+
+export type Database = NeonHttpDatabase<typeof schema>
