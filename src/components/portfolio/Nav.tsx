@@ -1,9 +1,10 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, lazy, Suspense } from 'react'
 import { Link, useLocation, useRouter } from '@tanstack/react-router'
 import { siteConfig } from '@/lib/site-config'
 import { ThemeSwitcher } from './ThemeSwitcher'
 import { useTheme } from './ThemeProvider'
-import { NotificationBell } from '@/components/notifications'
+
+const NotificationBell = lazy(() => import('@/components/notifications/NotificationBell').then(m => ({ default: m.NotificationBell })))
 import {
   Menu,
   X,
@@ -416,7 +417,11 @@ export function Nav() {
               )}
             </div>
 
-            {currentUser && <NotificationBell />}
+            {currentUser && (
+              <Suspense fallback={null}>
+                <NotificationBell />
+              </Suspense>
+            )}
             <ThemeSwitcher />
 
             <motion.button
