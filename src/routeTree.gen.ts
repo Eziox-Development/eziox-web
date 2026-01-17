@@ -26,6 +26,7 @@ import { Route as PublicAboutRouteImport } from './routes/_public/about'
 import { Route as ProtectedReferralsRouteImport } from './routes/_protected/referrals'
 import { Route as ProtectedProfileRouteImport } from './routes/_protected/profile'
 import { Route as ProtectedLinksRouteImport } from './routes/_protected/links'
+import { Route as ProtectedAnalyticsRouteImport } from './routes/_protected/analytics'
 import { Route as BioUsernameRouteImport } from './routes/_bio/$username'
 import { Route as AuthSignUpRouteImport } from './routes/_auth/sign-up'
 import { Route as AuthSignOutRouteImport } from './routes/_auth/sign-out'
@@ -119,6 +120,11 @@ const ProtectedLinksRoute = ProtectedLinksRouteImport.update({
   path: '/links',
   getParentRoute: () => ProtectedRoute,
 } as any)
+const ProtectedAnalyticsRoute = ProtectedAnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => ProtectedRoute,
+} as any)
 const BioUsernameRoute = BioUsernameRouteImport.update({
   id: '/$username',
   path: '/$username',
@@ -184,6 +190,7 @@ export interface FileRoutesByFullPath {
   '/sign-out': typeof AuthSignOutRoute
   '/sign-up': typeof AuthSignUpRoute
   '/$username': typeof BioUsernameRoute
+  '/analytics': typeof ProtectedAnalyticsRoute
   '/links': typeof ProtectedLinksRoute
   '/profile': typeof ProtectedProfileRoute
   '/referrals': typeof ProtectedReferralsRoute
@@ -210,6 +217,7 @@ export interface FileRoutesByTo {
   '/sign-out': typeof AuthSignOutRoute
   '/sign-up': typeof AuthSignUpRoute
   '/$username': typeof BioUsernameRoute
+  '/analytics': typeof ProtectedAnalyticsRoute
   '/links': typeof ProtectedLinksRoute
   '/profile': typeof ProtectedProfileRoute
   '/referrals': typeof ProtectedReferralsRoute
@@ -241,6 +249,7 @@ export interface FileRoutesById {
   '/_auth/sign-out': typeof AuthSignOutRoute
   '/_auth/sign-up': typeof AuthSignUpRoute
   '/_bio/$username': typeof BioUsernameRoute
+  '/_protected/analytics': typeof ProtectedAnalyticsRoute
   '/_protected/links': typeof ProtectedLinksRoute
   '/_protected/profile': typeof ProtectedProfileRoute
   '/_protected/referrals': typeof ProtectedReferralsRoute
@@ -269,6 +278,7 @@ export interface FileRouteTypes {
     | '/sign-out'
     | '/sign-up'
     | '/$username'
+    | '/analytics'
     | '/links'
     | '/profile'
     | '/referrals'
@@ -295,6 +305,7 @@ export interface FileRouteTypes {
     | '/sign-out'
     | '/sign-up'
     | '/$username'
+    | '/analytics'
     | '/links'
     | '/profile'
     | '/referrals'
@@ -325,6 +336,7 @@ export interface FileRouteTypes {
     | '/_auth/sign-out'
     | '/_auth/sign-up'
     | '/_bio/$username'
+    | '/_protected/analytics'
     | '/_protected/links'
     | '/_protected/profile'
     | '/_protected/referrals'
@@ -476,6 +488,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedLinksRouteImport
       parentRoute: typeof ProtectedRoute
     }
+    '/_protected/analytics': {
+      id: '/_protected/analytics'
+      path: '/analytics'
+      fullPath: '/analytics'
+      preLoaderRoute: typeof ProtectedAnalyticsRouteImport
+      parentRoute: typeof ProtectedRoute
+    }
     '/_bio/$username': {
       id: '/_bio/$username'
       path: '/$username'
@@ -581,6 +600,7 @@ const BioRouteChildren: BioRouteChildren = {
 const BioRouteWithChildren = BioRoute._addFileChildren(BioRouteChildren)
 
 interface ProtectedRouteChildren {
+  ProtectedAnalyticsRoute: typeof ProtectedAnalyticsRoute
   ProtectedLinksRoute: typeof ProtectedLinksRoute
   ProtectedProfileRoute: typeof ProtectedProfileRoute
   ProtectedReferralsRoute: typeof ProtectedReferralsRoute
@@ -589,6 +609,7 @@ interface ProtectedRouteChildren {
 }
 
 const ProtectedRouteChildren: ProtectedRouteChildren = {
+  ProtectedAnalyticsRoute: ProtectedAnalyticsRoute,
   ProtectedLinksRoute: ProtectedLinksRoute,
   ProtectedProfileRoute: ProtectedProfileRoute,
   ProtectedReferralsRoute: ProtectedReferralsRoute,

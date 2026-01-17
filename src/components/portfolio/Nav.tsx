@@ -3,6 +3,7 @@ import { Link, useLocation, useRouter } from '@tanstack/react-router'
 import { siteConfig } from '@/lib/site-config'
 import { ThemeSwitcher } from './ThemeSwitcher'
 import { useTheme } from './ThemeProvider'
+import { NotificationBell } from '@/components/notifications'
 import {
   Menu,
   X,
@@ -415,6 +416,7 @@ export function Nav() {
               )}
             </div>
 
+            {currentUser && <NotificationBell />}
             <ThemeSwitcher />
 
             <motion.button

@@ -9,6 +9,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.6.0] - 2026-01-17
+
+### Added
+- **Enhanced Analytics Dashboard** - Comprehensive profile performance tracking
+  - Overview stats: total views, link clicks, followers with change indicators
+  - Interactive bar chart for daily activity (views & clicks)
+  - Top performing links with click percentages
+  - Referrer tracking to see traffic sources
+  - Time range selector (7D, 30D, 90D, 1Y)
+  - CSV/JSON export functionality
+  - New route: `/analytics` (protected)
+
+- **Notifications System** - Real-time notification center
+  - NotificationBell component in navbar for logged-in users
+  - Notification types: new_follower, profile_milestone, link_milestone, badge_earned, system
+  - Mark as read (individual and all)
+  - Delete notifications (individual and clear all)
+  - Unread count badge with auto-refresh (30s)
+  - Animated dropdown with smooth transitions
+
+- **Database Schema Extensions**
+  - `notifications` table for user notifications
+  - `analytics_daily` table for aggregated daily stats
+
+### Technical
+- New files:
+  - `src/server/functions/notifications.ts` - Notification CRUD operations
+  - `src/server/functions/analytics.ts` - Analytics data aggregation
+  - `src/components/notifications/NotificationBell.tsx` - Notification UI
+  - `src/routes/_protected/analytics.tsx` - Analytics dashboard page
+- Server functions with Zod validation and authentication
+- Theme-aware components with motion/react animations
+
+---
+
 ## [1.5.0] - 2026-01-16
 
 ### Added

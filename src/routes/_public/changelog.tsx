@@ -21,6 +21,7 @@ import {
   RotateCcw,
   Sliders,
   Grid3X3,
+  BarChart3,
 } from 'lucide-react'
 import { useTheme } from '@/components/portfolio/ThemeProvider'
 
@@ -62,6 +63,29 @@ const typeConfig: Record<ChangeType, { label: string; color: string; bgColor: st
 }
 
 const changelog: ChangelogEntry[] = [
+  {
+    version: '1.6.0',
+    date: 'January 17, 2026',
+    title: 'Analytics Dashboard & Notifications System',
+    description: 'Comprehensive profile analytics and real-time notification center for enhanced user engagement.',
+    icon: BarChart3,
+    type: 'feature',
+    highlights: [
+      'Full analytics dashboard with charts and exports',
+      'Real-time notification system in navbar',
+      'Track profile performance over time',
+    ],
+    changes: [
+      { type: 'feature', text: 'Analytics Dashboard with overview stats, daily charts, and top links' },
+      { type: 'feature', text: 'Time range selector (7D, 30D, 90D, 1Y) for analytics' },
+      { type: 'feature', text: 'CSV and JSON export functionality for analytics data' },
+      { type: 'feature', text: 'NotificationBell component with unread count badge' },
+      { type: 'feature', text: 'Multiple notification types: followers, milestones, badges, system' },
+      { type: 'feature', text: 'Mark as read and delete notifications (individual and bulk)' },
+      { type: 'improvement', text: 'New database tables for notifications and daily analytics' },
+      { type: 'improvement', text: 'Theme-aware components with smooth animations' },
+    ],
+  },
   {
     version: '1.5.0',
     date: 'January 16, 2026',

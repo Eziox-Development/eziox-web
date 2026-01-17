@@ -371,6 +371,58 @@ export const partnerApplicationsRelations = relations(partnerApplications, ({ on
 }))
 
 // ============================================================================
+// NOTIFICATIONS TABLE
+// ============================================================================
+
+export const notifications = pgTable('notifications', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  type: varchar('type', { length: 50 }).notNull(), // new_follower, profile_milestone, link_milestone, system
+  title: varchar('title', { length: 255 }).notNull(),
+  message: text('message'),
+  data: jsonb('data').$type<Record<string, unknown>>().default({}), // Additional data (e.g., follower info, milestone count)
+  isRead: boolean('is_read').default(false),
+  actionUrl: text('action_url'), // Optional URL to navigate to
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+})
+
+export const notificationsRelations = relations(notifications, ({ one }) => ({
+  user: one(users, {
+    fields: [notifications.userId],
+    references: [users.id],
+  }),
+}))
+
+// ============================================================================
+// ANALYTICS DAILY TABLE (Aggregated daily stats for performance)
+// ============================================================================
+
+export const analyticsDaily = pgTable('analytics_daily', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  date: timestamp('date').notNull(), // Date of the analytics (start of day)
+  profileViews: integer('profile_views').default(0),
+  linkClicks: integer('link_clicks').default(0),
+  newFollowers: integer('new_followers').default(0),
+  uniqueVisitors: integer('unique_visitors').default(0),
+  topLinks: jsonb('top_links').$type<{ linkId: string; clicks: number }[]>().default([]),
+  referrers: jsonb('referrers').$type<{ source: string; count: number }[]>().default([]),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+})
+
+export const analyticsDailyRelations = relations(analyticsDaily, ({ one }) => ({
+  user: one(users, {
+    fields: [analyticsDaily.userId],
+    references: [users.id],
+  }),
+}))
+
+// ============================================================================
 // SPOTIFY CONNECTIONS TABLE
 // ============================================================================
 
@@ -422,3 +474,7 @@ export type PartnerApplication = typeof partnerApplications.$inferSelect
 export type NewPartnerApplication = typeof partnerApplications.$inferInsert
 export type SpotifyConnection = typeof spotifyConnections.$inferSelect
 export type NewSpotifyConnection = typeof spotifyConnections.$inferInsert
+export type Notification = typeof notifications.$inferSelect
+export type NewNotification = typeof notifications.$inferInsert
+export type AnalyticsDaily = typeof analyticsDaily.$inferSelect
+export type NewAnalyticsDaily = typeof analyticsDaily.$inferInsert

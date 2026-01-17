@@ -17,7 +17,20 @@
 - [x] Profile view tracking
 - [x] RSS feed & Sitemap
 
-### Recent Updates (2026-01-16)
+### Recent Updates (2026-01-17)
+- [x] **Enhanced Analytics Dashboard** - Profile performance tracking
+  - [x] Overview stats with change indicators
+  - [x] Interactive daily activity chart
+  - [x] Top links and referrer tracking
+  - [x] Time range selector (7D-1Y)
+  - [x] CSV/JSON export
+- [x] **Notifications System** - Real-time notification center
+  - [x] NotificationBell in navbar
+  - [x] Multiple notification types
+  - [x] Mark as read / delete functionality
+  - [x] Unread count badge
+
+### Previous Updates (2026-01-16)
 - [x] **Spotify Integration** - Complete OAuth flow with real-time playback
   - [x] OAuth authentication with token refresh
   - [x] NowPlaying widget on bio pages
