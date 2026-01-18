@@ -17,14 +17,16 @@ async function updateUserBadgesForTier(userId: string, tier: TierType) {
   if (!profile) return
 
   const currentBadges = (profile.badges || []) as string[]
-  const premiumBadges = ['pro_subscriber', 'creator_subscriber']
+  const premiumBadges = ['pro_subscriber', 'creator_subscriber', 'lifetime_subscriber']
   
   const newBadges = currentBadges.filter(b => !premiumBadges.includes(b))
   
-  if (tier === 'pro') {
-    newBadges.push('pro_subscriber')
+  if (tier === 'lifetime') {
+    newBadges.push('lifetime_subscriber')
   } else if (tier === 'creator') {
     newBadges.push('creator_subscriber')
+  } else if (tier === 'pro') {
+    newBadges.push('pro_subscriber')
   }
 
   await db
@@ -97,7 +99,7 @@ export const getCurrentSubscriptionFn = createServerFn({ method: 'GET' }).handle
 })
 
 export const createCheckoutSessionFn = createServerFn({ method: 'POST' })
-  .inputValidator(z.object({ tier: z.enum(['pro', 'creator']) }))
+  .inputValidator(z.object({ tier: z.enum(['pro', 'creator', 'lifetime']) }))
   .handler(async ({ data }) => {
     if (!stripe) {
       throw { message: 'Stripe is not configured', status: 500 }
@@ -139,30 +141,30 @@ export const createCheckoutSessionFn = createServerFn({ method: 'POST' })
     }
 
     const baseUrl = process.env.VITE_APP_URL || 'http://localhost:5173'
+    const isLifetime = data.tier === 'lifetime'
 
-    const session = await stripe.checkout.sessions.create({
-      customer: customerId,
-      mode: 'subscription',
-      payment_method_types: ['card'],
-      line_items: [
-        {
-          price: tierConfig.priceId,
-          quantity: 1,
-        },
-      ],
-      success_url: `${baseUrl}/profile?tab=subscription&success=true`,
-      cancel_url: `${baseUrl}/profile?tab=subscription&canceled=true`,
-      metadata: {
-        userId: user.id,
-        tier: data.tier,
-      },
-      subscription_data: {
-        metadata: {
-          userId: user.id,
-          tier: data.tier,
-        },
-      },
-    })
+    const session = isLifetime
+      ? await stripe.checkout.sessions.create({
+          customer: customerId,
+          mode: 'payment',
+          payment_method_types: ['card'],
+          line_items: [{ price: tierConfig.priceId, quantity: 1 }],
+          success_url: `${baseUrl}/profile?tab=subscription&success=true`,
+          cancel_url: `${baseUrl}/profile?tab=subscription&canceled=true`,
+          metadata: { userId: user.id, tier: data.tier },
+        })
+      : await stripe.checkout.sessions.create({
+          customer: customerId,
+          mode: 'subscription',
+          payment_method_types: ['card'],
+          line_items: [{ price: tierConfig.priceId, quantity: 1 }],
+          success_url: `${baseUrl}/profile?tab=subscription&success=true`,
+          cancel_url: `${baseUrl}/profile?tab=subscription&canceled=true`,
+          metadata: { userId: user.id, tier: data.tier },
+          subscription_data: {
+            metadata: { userId: user.id, tier: data.tier },
+          },
+        })
 
     return { url: session.url }
   })

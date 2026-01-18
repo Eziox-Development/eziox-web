@@ -182,10 +182,14 @@
 ### Phase 4: Premium Features (Priority: MEDIUM)
 
 #### 8. Premium Tiers
+> Philosophy:  
+> Free is fully usable. Paid tiers improve comfort, control, and polish — not access.
 - [ ] Tier system:
-  - [ ] **Free** - Basic features, limited links
-  - [ ] **Pro** - Unlimited links, analytics, custom themes
-  - [ ] **Creator** - All Pro + Spotify, priority support
+  - [ ] **Free - Eziox Core** - Unlimited links, Spotify, SoundCloud & YouTube embeds, profile picture & banner, multiple layouts, custom username (e.g. `eziox.me/username`), mobile-optimized layout, public & private links, basic analytics (total views, total clicks).
+    - [ ] Limitations: Small Eziox branding, analytics with delay (e.g. 24h), no custom CSS, no custom domain.
+  - [ ] **Pro** - Includes everything from Free plus: Disable Eziox branding, extended premium themes, custom backgrounds (color, gradient, image), layout fine-tuning (spacing, radius, animations), realtime analytics, per-link click tracking, top links overview, referrer & date range filters, priority CDN, improved embed quality, profile backups & rollbacks.
+  - [ ] **Creator** - Includes everything from Pro plus: Custom CSS (sandboxed), custom font uploads, animated profiles & micro-interactions, advanced embed controls, highlighted / featured links, link scheduling (e.g. releases), A/B testing for links, UTM parameter support, custom social previews (Open Graph), priority support, feature voting access, early access to new features.
+  - [ ] **Lifetime** - Creator tier with lifetime access, all future Creator features, lifetime badge on profile, internal supporter status, one-time payment with no renewals.
 - [ ] Stripe integration for payments
 - [ ] Subscription management
 - [ ] Premium badge display

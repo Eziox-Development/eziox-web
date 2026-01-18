@@ -10,6 +10,7 @@ export type BadgeId =
   | 'premium'
   | 'pro_subscriber'
   | 'creator_subscriber'
+  | 'lifetime_subscriber'
   | 'early_adopter'
   | 'referral_master'
   | 'creator'
@@ -98,6 +99,17 @@ export const BADGES: Record<BadgeId, BadgeConfig> = {
     color: '#f59e0b',
     bgColor: 'rgba(245, 158, 11, 0.15)',
     rarity: 'epic',
+    autoAwarded: true,
+    adminOnly: false,
+  },
+  lifetime_subscriber: {
+    id: 'lifetime_subscriber',
+    name: 'Lifetime',
+    description: 'Lifetime supporter',
+    icon: 'Gem',
+    color: '#ec4899',
+    bgColor: 'rgba(236, 72, 153, 0.15)',
+    rarity: 'legendary',
     autoAwarded: true,
     adminOnly: false,
   },

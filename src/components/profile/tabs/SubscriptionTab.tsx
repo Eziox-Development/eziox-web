@@ -23,6 +23,7 @@ import {
   ExternalLink,
   Loader2,
   Star,
+  Gem,
 } from 'lucide-react'
 import type { TierType, TierConfig } from '@/server/lib/stripe'
 
@@ -30,12 +31,14 @@ const tierIcons: Record<TierType, React.ElementType> = {
   free: Zap,
   pro: Star,
   creator: Crown,
+  lifetime: Gem,
 }
 
 const tierColors: Record<TierType, { primary: string; gradient: string }> = {
   free: { primary: '#6b7280', gradient: 'linear-gradient(135deg, #6b7280, #9ca3af)' },
   pro: { primary: '#3b82f6', gradient: 'linear-gradient(135deg, #3b82f6, #8b5cf6)' },
   creator: { primary: '#f59e0b', gradient: 'linear-gradient(135deg, #f59e0b, #ef4444)' },
+  lifetime: { primary: '#ec4899', gradient: 'linear-gradient(135deg, #ec4899, #8b5cf6)' },
 }
 
 export function SubscriptionTab() {
@@ -62,7 +65,7 @@ export function SubscriptionTab() {
   })
 
   const checkoutMutation = useMutation({
-    mutationFn: (tier: 'pro' | 'creator') => createCheckout({ data: { tier } }),
+    mutationFn: (tier: 'pro' | 'creator' | 'lifetime') => createCheckout({ data: { tier } }),
     onSuccess: (data) => {
       if (data.url) {
         window.location.href = data.url
@@ -216,15 +219,18 @@ export function SubscriptionTab() {
       </div>
 
       {/* Pricing Cards */}
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {tiers &&
-          (['free', 'pro', 'creator'] as TierType[]).map((tier) => {
+          (['free', 'pro', 'creator', 'lifetime'] as TierType[]).map((tier) => {
             const config = tiers[tier]
             const Icon = tierIcons[tier]
             const colors = tierColors[tier]
             const isCurrentTier = currentTier === tier
-            const isUpgrade = tier !== 'free' && (currentTier === 'free' || (currentTier === 'pro' && tier === 'creator'))
-            const isDowngrade = (tier === 'free' && currentTier !== 'free') || (tier === 'pro' && currentTier === 'creator')
+            const tierLevel = { free: 0, pro: 1, creator: 2, lifetime: 3 }
+            const isUpgrade = tierLevel[tier] > tierLevel[currentTier]
+            const isDowngrade = tierLevel[tier] < tierLevel[currentTier] && tier !== 'free'
+            const isLifetime = tier === 'lifetime'
+            const isLifetimeUser = currentTier === 'lifetime'
 
             return (
               <motion.div
@@ -237,12 +243,20 @@ export function SubscriptionTab() {
                 whileHover={{ scale: 1.02 }}
                 transition={{ type: 'spring', stiffness: 300, damping: 20 }}
               >
-                {tier === 'creator' && (
+                {config.popular && (
                   <div
                     className="absolute top-0 right-0 px-3 py-1 text-xs font-bold text-white rounded-bl-xl"
                     style={{ background: colors.gradient }}
                   >
                     POPULAR
+                  </div>
+                )}
+                {isLifetime && (
+                  <div
+                    className="absolute top-0 right-0 px-3 py-1 text-xs font-bold text-white rounded-bl-xl"
+                    style={{ background: colors.gradient }}
+                  >
+                    BEST VALUE
                   </div>
                 )}
 
@@ -259,7 +273,7 @@ export function SubscriptionTab() {
                         {config.name}
                       </h3>
                       <p className="text-xs" style={{ color: theme.colors.foregroundMuted }}>
-                        {config.description}
+                        {config.tagline}
                       </p>
                     </div>
                   </div>
@@ -270,20 +284,29 @@ export function SubscriptionTab() {
                     </span>
                     {config.price > 0 && (
                       <span className="text-sm" style={{ color: theme.colors.foregroundMuted }}>
-                        /month
+                        {config.billingType === 'lifetime' ? ' once' : '/month'}
                       </span>
                     )}
                   </div>
 
-                  <div className="space-y-2 mb-5">
-                    {config.features.map((feature, i) => (
-                      <div key={i} className="flex items-center gap-2">
-                        <Check size={14} style={{ color: colors.primary }} />
+                  <p className="text-xs mb-4" style={{ color: theme.colors.foregroundMuted }}>
+                    {config.description}
+                  </p>
+
+                  <div className="space-y-2 mb-5 max-h-48 overflow-y-auto">
+                    {config.features.slice(0, 6).map((feature, i) => (
+                      <div key={i} className="flex items-start gap-2">
+                        <Check size={14} className="mt-0.5 shrink-0" style={{ color: colors.primary }} />
                         <span className="text-sm" style={{ color: theme.colors.foreground }}>
                           {feature}
                         </span>
                       </div>
                     ))}
+                    {config.features.length > 6 && (
+                      <p className="text-xs pl-5" style={{ color: theme.colors.foregroundMuted }}>
+                        +{config.features.length - 6} more features
+                      </p>
+                    )}
                   </div>
 
                   {isCurrentTier ? (
@@ -293,11 +316,18 @@ export function SubscriptionTab() {
                     >
                       Current Plan
                     </div>
+                  ) : isLifetimeUser ? (
+                    <div
+                      className="w-full py-2.5 rounded-xl text-center font-medium text-sm"
+                      style={{ background: theme.colors.backgroundSecondary, color: theme.colors.foregroundMuted }}
+                    >
+                      Lifetime Access
+                    </div>
                   ) : isUpgrade ? (
                     <button
                       onClick={() => {
                         setSelectedTier(tier)
-                        checkoutMutation.mutate(tier as 'pro' | 'creator')
+                        checkoutMutation.mutate(tier as 'pro' | 'creator' | 'lifetime')
                       }}
                       disabled={checkoutMutation.isPending}
                       className="w-full py-2.5 rounded-xl font-medium text-sm text-white transition-all hover:opacity-90 flex items-center justify-center gap-2"
@@ -308,7 +338,7 @@ export function SubscriptionTab() {
                       ) : (
                         <Sparkles size={16} />
                       )}
-                      Upgrade to {config.name}
+                      {isLifetime ? 'Get Lifetime' : `Upgrade to ${config.name}`}
                     </button>
                   ) : isDowngrade ? (
                     <button
@@ -350,10 +380,10 @@ export function SubscriptionTab() {
                   <th className="text-left py-2 px-3" style={{ color: theme.colors.foregroundMuted }}>
                     Feature
                   </th>
-                  {(['free', 'pro', 'creator'] as TierType[]).map((tier) => (
+                  {(['free', 'pro', 'creator', 'lifetime'] as TierType[]).map((tier) => (
                     <th
                       key={tier}
-                      className="text-center py-2 px-3 font-medium"
+                      className="text-center py-2 px-3 font-medium text-xs"
                       style={{ color: tierColors[tier].primary }}
                     >
                       {tiers?.[tier]?.name}
@@ -363,19 +393,24 @@ export function SubscriptionTab() {
               </thead>
               <tbody>
                 {[
-                  { key: 'maxLinks', label: 'Links', format: (v: number) => (v === -1 ? 'Unlimited' : v.toString()) },
-                  { key: 'analytics', label: 'Full Analytics' },
-                  { key: 'customThemes', label: 'Custom Themes' },
-                  { key: 'spotifyIntegration', label: 'Spotify Integration' },
+                  { key: 'maxLinks', label: 'Links', format: (v: number) => (v === -1 ? '∞' : v.toString()) },
+                  { key: 'analyticsRetentionDays', label: 'Analytics History', format: (v: number) => (v === -1 ? '∞' : v === 7 ? '7 days' : `${v} days`) },
+                  { key: 'realtimeAnalytics', label: 'Realtime Analytics' },
+                  { key: 'perLinkAnalytics', label: 'Per-Link Tracking' },
+                  { key: 'customBackgrounds', label: 'Custom Backgrounds' },
+                  { key: 'disableBranding', label: 'Remove Branding' },
+                  { key: 'customCSS', label: 'Custom CSS' },
+                  { key: 'animatedProfiles', label: 'Animated Profiles' },
+                  { key: 'linkScheduling', label: 'Link Scheduling' },
                   { key: 'prioritySupport', label: 'Priority Support' },
-                  { key: 'premiumBadge', label: 'Premium Badge' },
                   { key: 'apiAccess', label: 'API Access' },
+                  { key: 'lifetimeBadge', label: 'Lifetime Badge' },
                 ].map((feature) => (
                   <tr key={feature.key} className="border-t" style={{ borderColor: theme.colors.border }}>
                     <td className="py-3 px-3 text-sm" style={{ color: theme.colors.foreground }}>
                       {feature.label}
                     </td>
-                    {(['free', 'pro', 'creator'] as TierType[]).map((tier) => {
+                    {(['free', 'pro', 'creator', 'lifetime'] as TierType[]).map((tier) => {
                       const value = tiers?.[tier]?.limits[feature.key as keyof TierConfig['limits']]
                       const displayValue = feature.format
                         ? feature.format(value as number)
@@ -392,7 +427,7 @@ export function SubscriptionTab() {
                               <X size={18} className="mx-auto" style={{ color: theme.colors.foregroundMuted }} />
                             )
                           ) : (
-                            <span className="text-sm font-medium" style={{ color: theme.colors.foreground }}>
+                            <span className="text-xs font-medium" style={{ color: theme.colors.foreground }}>
                               {displayValue}
                             </span>
                           )}
