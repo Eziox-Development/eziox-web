@@ -6,7 +6,9 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { getMyLinksFn, createLinkFn, updateLinkFn, deleteLinkFn } from '@/server/functions/links'
-import { Link as LinkIcon, Eye, EyeOff, MousePointerClick, TrendingUp, Plus, X, Save, Loader2, Edit3, Trash2, GripVertical } from 'lucide-react'
+import { Link as LinkIcon, Eye, EyeOff, MousePointerClick, TrendingUp, Plus, X, Save, Loader2, Edit3, Trash2, GripVertical, Settings2, Star } from 'lucide-react'
+import { LinkAdvancedSettings } from '@/components/profile/LinkAdvancedSettings'
+import { useAuth } from '@/hooks/use-auth'
 
 const linkSchema = z.object({
   title: z.string().min(1, 'Title is required').max(100),
@@ -27,8 +29,13 @@ export function LinksTab({ accentColor }: LinksTabProps) {
   const updateLink = useServerFn(updateLinkFn)
   const deleteLink = useServerFn(deleteLinkFn)
 
+  const { currentUser } = useAuth()
   const [isCreating, setIsCreating] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
+  const [advancedSettingsLink, setAdvancedSettingsLink] = useState<typeof links[0] | null>(null)
+
+  const userTier = (currentUser?.tier || 'free') as string
+  const isCreator = ['creator', 'lifetime'].includes(userTier)
 
   const form = useForm<LinkFormData>({
     resolver: zodResolver(linkSchema),
@@ -154,15 +161,27 @@ export function LinksTab({ accentColor }: LinksTabProps) {
           </div>
         ) : (
           links.map((link) => (
-            <motion.div key={link.id} className="p-4 rounded-xl" style={{ background: 'var(--card)', border: '1px solid var(--border)', opacity: link.isActive ? 1 : 0.5 }}>
+            <motion.div key={link.id} className="p-4 rounded-xl relative" style={{ background: 'var(--card)', border: link.isFeatured ? `2px solid ${accentColor}` : '1px solid var(--border)', opacity: link.isActive ? 1 : 0.5 }}>
+              {link.isFeatured && (
+                <div className="absolute -top-2 -right-2 w-6 h-6 rounded-full flex items-center justify-center" style={{ background: `linear-gradient(135deg, #ec4899, #8b5cf6)` }}>
+                  <Star size={12} className="text-white" />
+                </div>
+              )}
               <div className="flex items-center gap-4">
                 <GripVertical size={20} className="cursor-grab" style={{ color: 'var(--foreground-muted)' }} />
                 <div className="flex-1 min-w-0">
                   <h4 className="font-semibold truncate" style={{ color: 'var(--foreground)' }}>{link.title}</h4>
                   <p className="text-xs truncate" style={{ color: 'var(--foreground-muted)' }}>{link.url}</p>
-                  {(link.clicks ?? 0) > 0 && <p className="text-xs mt-1" style={{ color: accentColor }}>{link.clicks} clicks</p>}
+                  <div className="flex items-center gap-2 mt-1">
+                    {(link.clicks ?? 0) > 0 && <span className="text-xs" style={{ color: accentColor }}>{link.clicks} clicks</span>}
+                    {link.schedule?.enabled && <span className="text-xs px-1.5 py-0.5 rounded" style={{ background: 'rgba(34, 197, 94, 0.15)', color: '#22c55e' }}>Scheduled</span>}
+                    {link.abTestEnabled && <span className="text-xs px-1.5 py-0.5 rounded" style={{ background: 'rgba(139, 92, 246, 0.15)', color: '#8b5cf6' }}>A/B</span>}
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1">
+                  <button onClick={() => setAdvancedSettingsLink(link)} className="p-2 rounded-lg hover:bg-white/5" style={{ color: 'var(--foreground-muted)' }} title="Advanced Settings">
+                    <Settings2 size={18} />
+                  </button>
                   <button onClick={() => toggleMutation.mutate({ id: link.id, isActive: link.isActive ?? true })} className="p-2 rounded-lg hover:bg-white/5" style={{ color: link.isActive ? accentColor : 'var(--foreground-muted)' }}>
                     {link.isActive ? <Eye size={18} /> : <EyeOff size={18} />}
                   </button>
@@ -178,6 +197,16 @@ export function LinksTab({ accentColor }: LinksTabProps) {
           ))
         )}
       </div>
+
+      <AnimatePresence>
+        {advancedSettingsLink && (
+          <LinkAdvancedSettings
+            link={advancedSettingsLink}
+            isCreator={isCreator}
+            onClose={() => setAdvancedSettingsLink(null)}
+          />
+        )}
+      </AnimatePresence>
     </motion.div>
   )
 }

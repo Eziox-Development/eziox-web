@@ -258,6 +258,7 @@ export const getCurrentUser = createServerFn({ method: 'GET' }).handler(
         username: userData.user.username,
         name: userData.user.name,
         role: userData.user.role,
+        tier: userData.user.tier || 'free',
         emailVerified: userData.user.emailVerified,
         createdAt: userData.user.createdAt.toISOString(),
         profile: userData.profile ? {

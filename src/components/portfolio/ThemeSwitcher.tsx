@@ -1,8 +1,9 @@
 import { useState, useMemo } from 'react'
 import { useTheme } from './ThemeProvider'
-import { Paintbrush, Check, Gamepad2, Tv, Code2, Radio, Palette, Minus, Sparkles, X, Star } from 'lucide-react'
+import { Paintbrush, Check, Gamepad2, Tv, Code2, Radio, Palette, Minus, Sparkles, X, Star, Crown, Lock } from 'lucide-react'
 import { motion, AnimatePresence } from 'motion/react'
 import type { ThemeCategory } from '@/lib/site-config'
+import { useAuth } from '@/hooks/use-auth'
 
 const CATEGORIES: { id: ThemeCategory; label: string; icon: typeof Gamepad2 }[] = [
   { id: 'general', label: 'General', icon: Sparkles },
@@ -17,8 +18,12 @@ const CATEGORIES: { id: ThemeCategory; label: string; icon: typeof Gamepad2 }[] 
 
 export function ThemeSwitcher() {
   const { theme, setTheme, themes, isTransitioning } = useTheme()
+  const { currentUser } = useAuth()
   const [isOpen, setIsOpen] = useState(false)
   const [activeCategory, setActiveCategory] = useState<ThemeCategory>(theme.category)
+
+  const userTier = (currentUser?.tier || 'free') as string
+  const hasPremiumThemes = ['pro', 'creator', 'lifetime'].includes(userTier)
 
   const filteredThemes = useMemo(() => 
     themes.filter(t => t.category === activeCategory),
@@ -120,18 +125,26 @@ export function ThemeSwitcher() {
                 <div className="grid grid-cols-2 gap-3 max-h-[400px] overflow-y-auto pr-1">
                   {filteredThemes.map((t) => {
                     const isActive = theme.id === t.id
+                    const isPremium = t.isPremium === true
+                    const isLocked = isPremium && !hasPremiumThemes
                     return (
                       <motion.button
                         key={t.id}
-                        onClick={() => { setTheme(t.id); setIsOpen(false) }}
-                        disabled={isTransitioning}
+                        onClick={() => { 
+                          if (!isLocked) {
+                            setTheme(t.id)
+                            setIsOpen(false)
+                          }
+                        }}
+                        disabled={isTransitioning || isLocked}
                         className="relative flex flex-col p-3 rounded-xl transition-all"
                         style={{ 
                           background: isActive ? 'linear-gradient(135deg, var(--primary), var(--accent))' : 'var(--background-secondary)',
                           border: isActive ? 'none' : '1px solid var(--border)',
+                          opacity: isLocked ? 0.6 : 1,
                         }}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
+                        whileHover={{ scale: isLocked ? 1 : 1.02 }}
+                        whileTap={{ scale: isLocked ? 1 : 0.98 }}
                       >
                         {isActive && (
                           <motion.div
@@ -142,6 +155,15 @@ export function ThemeSwitcher() {
                           >
                             <Check size={12} className="text-white" />
                           </motion.div>
+                        )}
+                        {isPremium && !isActive && (
+                          <div 
+                            className="absolute top-2 right-2 flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[9px] font-bold"
+                            style={{ background: isLocked ? 'rgba(139, 92, 246, 0.3)' : 'linear-gradient(135deg, #8b5cf6, #ec4899)', color: '#fff' }}
+                          >
+                            {isLocked ? <Lock size={8} /> : <Crown size={8} />}
+                            PRO
+                          </div>
                         )}
                         <div className="flex gap-1 mb-2">
                           {[t.colors.primary, t.colors.accent, t.colors.background].map((color, i) => (

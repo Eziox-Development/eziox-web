@@ -33,6 +33,8 @@ import {
   RefreshCw,
   FileJson,
   FileSpreadsheet,
+  Clock,
+  Crown,
 } from 'lucide-react'
 
 export const Route = createFileRoute('/_protected/analytics')({
@@ -78,6 +80,8 @@ function AnalyticsPage() {
         viewsChange: number
         clicksChange: number
         followersChange: number
+        isRealtime: boolean
+        analyticsDelay: number
       }
     },
     refetchInterval: 60000,
@@ -92,20 +96,28 @@ function AnalyticsPage() {
     refetchInterval: 60000,
   })
 
-  const { data: topLinks, refetch: refetchLinks } = useQuery({
+  const { data: topLinksData, refetch: refetchLinks } = useQuery({
     queryKey: ['topLinks'],
     queryFn: async () => {
       const result = await getTopLinks({ data: { limit: 5 } })
-      return result as Array<{ id: string; title: string; url: string; clicks: number; percentage: number }>
+      return result as { 
+        links: Array<{ id: string; title: string; url: string; clicks: number; percentage: number }>
+        requiresUpgrade: boolean
+        message?: string
+      }
     },
     refetchInterval: 60000,
   })
 
-  const { data: referrers, refetch: refetchReferrers } = useQuery({
+  const { data: referrersData, refetch: refetchReferrers } = useQuery({
     queryKey: ['referrers', timeRange],
     queryFn: async () => {
       const result = await getReferrers({ data: { days: timeRange } })
-      return result as Array<{ source: string; count: number; percentage: number }>
+      return result as {
+        referrers: Array<{ source: string; count: number; percentage: number }>
+        requiresUpgrade: boolean
+        message?: string
+      }
     },
     refetchInterval: 60000,
   })
@@ -249,6 +261,41 @@ function AnalyticsPage() {
             </div>
           </div>
         </motion.div>
+
+        {overview && !overview.isRealtime && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6 p-4 rounded-xl flex items-center justify-between gap-4"
+            style={{ 
+              background: `linear-gradient(135deg, ${theme.colors.primary}15, ${theme.colors.accent}10)`,
+              border: `1px solid ${theme.colors.primary}30`
+            }}
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: `${theme.colors.primary}20` }}>
+                <Clock size={20} style={{ color: theme.colors.primary }} />
+              </div>
+              <div>
+                <p className="font-medium text-sm" style={{ color: theme.colors.foreground }}>
+                  Analytics delayed by {overview.analyticsDelay}h
+                </p>
+                <p className="text-xs" style={{ color: theme.colors.foregroundMuted }}>
+                  Upgrade to Pro for realtime analytics
+                </p>
+              </div>
+            </div>
+            <Link
+              to="/profile"
+              search={{ tab: 'subscription' }}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all hover:scale-105"
+              style={{ background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`, color: '#fff' }}
+            >
+              <Crown size={16} />
+              Upgrade
+            </Link>
+          </motion.div>
+        )}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <StatCard
@@ -399,9 +446,24 @@ function AnalyticsPage() {
               </div>
             </div>
             <div className="p-4">
-              {topLinks?.length ? (
+              {topLinksData?.requiresUpgrade ? (
+                <div className="py-8 text-center">
+                  <Crown size={32} className="mx-auto mb-3 opacity-50" style={{ color: theme.colors.primary }} />
+                  <p className="text-sm font-medium mb-1" style={{ color: theme.colors.foreground }}>Per-Link Analytics</p>
+                  <p className="text-xs mb-4" style={{ color: theme.colors.foregroundMuted }}>Track clicks on individual links</p>
+                  <Link
+                    to="/profile"
+                    search={{ tab: 'subscription' }}
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all hover:scale-105"
+                    style={{ background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`, color: '#fff' }}
+                  >
+                    <Crown size={14} />
+                    Upgrade to Pro
+                  </Link>
+                </div>
+              ) : topLinksData?.links?.length ? (
                 <div className="space-y-3">
-                  {topLinks.map((link, i) => (
+                  {topLinksData.links.map((link, i) => (
                     <motion.div
                       key={link.id}
                       initial={{ opacity: 0, x: -10 }}
@@ -477,9 +539,24 @@ function AnalyticsPage() {
               </div>
             </div>
             <div className="p-4">
-              {referrers?.length ? (
+              {referrersData?.requiresUpgrade ? (
+                <div className="py-8 text-center">
+                  <Crown size={32} className="mx-auto mb-3 opacity-50" style={{ color: '#8b5cf6' }} />
+                  <p className="text-sm font-medium mb-1" style={{ color: theme.colors.foreground }}>Referrer Tracking</p>
+                  <p className="text-xs mb-4" style={{ color: theme.colors.foregroundMuted }}>See where your visitors come from</p>
+                  <Link
+                    to="/profile"
+                    search={{ tab: 'subscription' }}
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all hover:scale-105"
+                    style={{ background: 'linear-gradient(135deg, #8b5cf6, #ec4899)', color: '#fff' }}
+                  >
+                    <Crown size={14} />
+                    Upgrade to Pro
+                  </Link>
+                </div>
+              ) : referrersData?.referrers?.length ? (
                 <div className="space-y-3">
-                  {referrers.slice(0, 6).map((ref, i) => (
+                  {referrersData.referrers.slice(0, 6).map((ref, i) => (
                     <motion.div
                       key={ref.source}
                       initial={{ opacity: 0, x: -10 }}

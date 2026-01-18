@@ -1,8 +1,3 @@
-/**
- * Database Schema
- * Complete schema for user profiles, links, and stats
- */
-
 import {
   pgTable,
   text,
@@ -15,10 +10,7 @@ import {
 } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm'
 
-// ============================================================================
 // USERS TABLE
-// ============================================================================
-
 export const users = pgTable('users', {
   id: uuid('id').primaryKey().defaultRandom(),
   email: varchar('email', { length: 255 }).notNull().unique(),
@@ -41,9 +33,62 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   stats: one(userStats),
 }))
 
-// ============================================================================
 // PROFILES TABLE
-// ============================================================================
+export interface CustomBackground {
+  type: 'solid' | 'gradient' | 'image'
+  value: string
+  gradientAngle?: number
+  gradientColors?: string[]
+  imageUrl?: string
+  imageOpacity?: number
+  imageBlur?: number
+}
+
+export interface LayoutSettings {
+  cardSpacing: number
+  cardBorderRadius: number
+  cardShadow: 'none' | 'sm' | 'md' | 'lg' | 'xl'
+  cardPadding: number
+  profileLayout: 'default' | 'compact' | 'expanded'
+  linkStyle: 'default' | 'minimal' | 'bold' | 'glass'
+}
+
+export interface ProfileBackup {
+  id: string
+  createdAt: string
+  name: string
+  data: {
+    bio?: string
+    avatar?: string
+    banner?: string
+    accentColor?: string
+    socials?: Record<string, string>
+    customBackground?: CustomBackground
+    layoutSettings?: LayoutSettings
+  }
+}
+
+export interface CustomFont {
+  id: string
+  name: string
+  url: string
+  type: 'display' | 'body'
+}
+
+export interface AnimatedProfileSettings {
+  enabled: boolean
+  avatarAnimation: 'none' | 'pulse' | 'glow' | 'bounce' | 'rotate' | 'shake'
+  bannerAnimation: 'none' | 'parallax' | 'gradient-shift' | 'particles'
+  linkHoverEffect: 'none' | 'scale' | 'glow' | 'slide' | 'shake' | 'flip'
+  pageTransition: 'none' | 'fade' | 'slide' | 'zoom'
+}
+
+export interface OpenGraphSettings {
+  title?: string
+  description?: string
+  image?: string
+  useCustom: boolean
+}
 
 export const profiles = pgTable('profiles', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -52,13 +97,13 @@ export const profiles = pgTable('profiles', {
     .references(() => users.id, { onDelete: 'cascade' })
     .unique(),
   bio: text('bio'),
-  avatar: text('avatar'), // Cloudinary URL
-  banner: text('banner'), // Cloudinary URL
+  avatar: text('avatar'),
+  banner: text('banner'),
   location: varchar('location', { length: 100 }),
   website: varchar('website', { length: 255 }),
   pronouns: varchar('pronouns', { length: 50 }),
   birthday: timestamp('birthday'),
-  accentColor: varchar('accent_color', { length: 7 }), // Hex color
+  accentColor: varchar('accent_color', { length: 7 }),
   badges: jsonb('badges').$type<string[]>().default([]),
   socials: jsonb('socials').$type<Record<string, string>>().default({}),
   isPublic: boolean('is_public').default(true),
@@ -71,6 +116,14 @@ export const profiles = pgTable('profiles', {
   notifyMilestones: boolean('notify_milestones').default(true),
   notifySystemUpdates: boolean('notify_system_updates').default(true),
   lastSeenChangelog: varchar('last_seen_changelog', { length: 20 }),
+  customBackground: jsonb('custom_background').$type<CustomBackground>(),
+  layoutSettings: jsonb('layout_settings').$type<LayoutSettings>(),
+  profileBackups: jsonb('profile_backups').$type<ProfileBackup[]>().default([]),
+  themeId: varchar('theme_id', { length: 50 }),
+  customCSS: text('custom_css'),
+  customFonts: jsonb('custom_fonts').$type<CustomFont[]>().default([]),
+  animatedProfile: jsonb('animated_profile').$type<AnimatedProfileSettings>(),
+  openGraphSettings: jsonb('open_graph_settings').$type<OpenGraphSettings>(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 })
@@ -82,9 +135,29 @@ export const profilesRelations = relations(profiles, ({ one }) => ({
   }),
 }))
 
-// ============================================================================
 // USER LINKS TABLE (Linktree-style)
-// ============================================================================
+export interface LinkSchedule {
+  enabled: boolean
+  startDate?: string
+  endDate?: string
+  timezone?: string
+}
+
+export interface ABTestVariant {
+  id: string
+  title: string
+  url: string
+  clicks: number
+}
+
+export interface EmbedSettings {
+  type: 'default' | 'spotify' | 'youtube' | 'soundcloud'
+  autoplay?: boolean
+  loop?: boolean
+  showControls?: boolean
+  width?: number
+  height?: number
+}
 
 export const userLinks = pgTable('user_links', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -93,14 +166,23 @@ export const userLinks = pgTable('user_links', {
     .references(() => users.id, { onDelete: 'cascade' }),
   title: varchar('title', { length: 100 }).notNull(),
   url: text('url').notNull(),
-  icon: varchar('icon', { length: 50 }), // Icon name from lucide
-  thumbnail: text('thumbnail'), // Optional thumbnail image
+  icon: varchar('icon', { length: 50 }),
+  thumbnail: text('thumbnail'),
   description: varchar('description', { length: 255 }),
   backgroundColor: varchar('background_color', { length: 7 }),
   textColor: varchar('text_color', { length: 7 }),
   isActive: boolean('is_active').default(true),
   clicks: integer('clicks').default(0),
   order: integer('order').default(0),
+  isFeatured: boolean('is_featured').default(false),
+  featuredStyle: varchar('featured_style', { length: 20 }),
+  schedule: jsonb('schedule').$type<LinkSchedule>(),
+  abTestEnabled: boolean('ab_test_enabled').default(false),
+  abTestVariants: jsonb('ab_test_variants').$type<ABTestVariant[]>().default([]),
+  utmSource: varchar('utm_source', { length: 100 }),
+  utmMedium: varchar('utm_medium', { length: 100 }),
+  utmCampaign: varchar('utm_campaign', { length: 100 }),
+  embedSettings: jsonb('embed_settings').$type<EmbedSettings>(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 })
@@ -112,10 +194,7 @@ export const userLinksRelations = relations(userLinks, ({ one }) => ({
   }),
 }))
 
-// ============================================================================
 // USER STATS TABLE
-// ============================================================================
-
 export const userStats = pgTable('user_stats', {
   id: uuid('id').primaryKey().defaultRandom(),
   userId: uuid('user_id')
@@ -140,10 +219,7 @@ export const userStatsRelations = relations(userStats, ({ one }) => ({
   }),
 }))
 
-// ============================================================================
 // SESSIONS TABLE (for auth)
-// ============================================================================
-
 export const sessions = pgTable('sessions', {
   id: uuid('id').primaryKey().defaultRandom(),
   userId: uuid('user_id')
@@ -163,10 +239,7 @@ export const sessionsRelations = relations(sessions, ({ one }) => ({
   }),
 }))
 
-// ============================================================================
 // FOLLOWS TABLE
-// ============================================================================
-
 export const follows = pgTable('follows', {
   id: uuid('id').primaryKey().defaultRandom(),
   followerId: uuid('follower_id')
@@ -191,10 +264,7 @@ export const followsRelations = relations(follows, ({ one }) => ({
   }),
 }))
 
-// ============================================================================
 // REFERRALS TABLE
-// ============================================================================
-
 export const referrals = pgTable('referrals', {
   id: uuid('id').primaryKey().defaultRandom(),
   referrerId: uuid('referrer_id')
@@ -222,10 +292,7 @@ export const referralsRelations = relations(referrals, ({ one }) => ({
   }),
 }))
 
-// ============================================================================
 // ACTIVITY LOG TABLE
-// ============================================================================
-
 export const activityLog = pgTable('activity_log', {
   id: uuid('id').primaryKey().defaultRandom(),
   userId: uuid('user_id')
@@ -244,10 +311,7 @@ export const activityLogRelations = relations(activityLog, ({ one }) => ({
   }),
 }))
 
-// ============================================================================
 // BLOG POSTS TABLE
-// ============================================================================
-
 export const blogPosts = pgTable('blog_posts', {
   id: uuid('id').primaryKey().defaultRandom(),
   authorId: uuid('author_id')
@@ -276,10 +340,7 @@ export const blogPostsRelations = relations(blogPosts, ({ one }) => ({
   }),
 }))
 
-// ============================================================================
 // PROJECTS TABLE
-// ============================================================================
-
 export const projects = pgTable('projects', {
   id: uuid('id').primaryKey().defaultRandom(),
   authorId: uuid('author_id')
@@ -313,10 +374,7 @@ export const projectsRelations = relations(projects, ({ one }) => ({
   }),
 }))
 
-// ============================================================================
 // SHORT LINKS TABLE (URL Shortener)
-// ============================================================================
-
 export const shortLinks = pgTable('short_links', {
   id: uuid('id').primaryKey().defaultRandom(),
   userId: uuid('user_id')
@@ -339,10 +397,7 @@ export const shortLinksRelations = relations(shortLinks, ({ one }) => ({
   }),
 }))
 
-// ============================================================================
 // PARTNER APPLICATIONS TABLE
-// ============================================================================
-
 export const partnerApplications = pgTable('partner_applications', {
   id: uuid('id').primaryKey().defaultRandom(),
   userId: uuid('user_id')
@@ -376,10 +431,7 @@ export const partnerApplicationsRelations = relations(partnerApplications, ({ on
   }),
 }))
 
-// ============================================================================
 // NOTIFICATIONS TABLE
-// ============================================================================
-
 export const notifications = pgTable('notifications', {
   id: uuid('id').primaryKey().defaultRandom(),
   userId: uuid('user_id')
@@ -401,10 +453,7 @@ export const notificationsRelations = relations(notifications, ({ one }) => ({
   }),
 }))
 
-// ============================================================================
 // ANALYTICS DAILY TABLE (Aggregated daily stats for performance)
-// ============================================================================
-
 export const analyticsDaily = pgTable('analytics_daily', {
   id: uuid('id').primaryKey().defaultRandom(),
   userId: uuid('user_id')
@@ -428,10 +477,7 @@ export const analyticsDailyRelations = relations(analyticsDaily, ({ one }) => ({
   }),
 }))
 
-// ============================================================================
 // SPOTIFY CONNECTIONS TABLE
-// ============================================================================
-
 export const spotifyConnections = pgTable('spotify_connections', {
   id: uuid('id').primaryKey().defaultRandom(),
   userId: uuid('user_id')
@@ -454,10 +500,7 @@ export const spotifyConnectionsRelations = relations(spotifyConnections, ({ one 
   }),
 }))
 
-// ============================================================================
 // SUBSCRIPTIONS TABLE (Stripe subscription tracking)
-// ============================================================================
-
 export const subscriptions = pgTable('subscriptions', {
   id: uuid('id').primaryKey().defaultRandom(),
   userId: uuid('user_id')
@@ -486,10 +529,7 @@ export const subscriptionsRelations = relations(subscriptions, ({ one }) => ({
   }),
 }))
 
-// ============================================================================
 // TYPE EXPORTS
-// ============================================================================
-
 export type User = typeof users.$inferSelect
 export type NewUser = typeof users.$inferInsert
 export type Profile = typeof profiles.$inferSelect

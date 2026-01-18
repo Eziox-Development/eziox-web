@@ -9,6 +9,71 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.8.0] - 2026-01-18
+
+### Added - Creator Tier Features 🎨
+- **Custom CSS Editor** - Sandboxed CSS customization with security validation
+  - Real-time CSS input with character counter (10,000 max)
+  - Forbidden pattern detection (fixed positioning, imports, expressions)
+  - Automatic sanitization with error reporting
+  - Tier-gated: Creator & Lifetime only
+
+- **Custom Font Uploads** - Up to 4 custom fonts per profile
+  - Support for Google Fonts and custom URLs
+  - Display and body font types
+  - Font management UI with add/remove functionality
+
+- **Animated Profiles** - Micro-interactions and effects
+  - Avatar animations: pulse, glow, bounce, rotate, shake
+  - Banner animations: parallax, gradient-shift, particles
+  - Link hover effects: scale, glow, slide, shake, flip
+  - Page transitions: fade, slide, zoom
+  - Enable/disable toggle with live preview
+
+- **Custom Open Graph** - Control social sharing previews
+  - Custom title, description, and image URL
+  - Live preview of OG image
+  - Toggle between default and custom settings
+
+- **Advanced Link Features** - Professional link management
+  - **Featured Links**: Highlight important links with 5 styles (default, glow, gradient, outline, neon)
+  - **Link Scheduling**: Show/hide links based on start/end dates with timezone support
+  - **A/B Testing**: Compare up to 4 link variants with click tracking
+  - **UTM Parameters**: Marketing campaign tracking (source, medium, campaign)
+  - **Embed Controls**: Advanced settings for Spotify, YouTube, SoundCloud (autoplay, loop, size)
+
+- **Pro Tier Enhancements** 💎
+  - 6 new premium themes: Ocean Depths, Forest Night, Neon Tokyo, Pastel Dream, Monochrome Pro, Aurora
+  - Theme switcher now shows premium badge and tier-locks for free users
+  - Custom backgrounds (solid, gradient, image upload)
+  - Layout fine-tuning (spacing, border-radius, shadows, link styles)
+  - Profile backups & restore functionality
+
+### Technical
+- **New Database Fields**:
+  - `profiles`: `customCSS`, `customFonts`, `animatedProfile`, `openGraphSettings`
+  - `userLinks`: `isFeatured`, `featuredStyle`, `schedule`, `abTestEnabled`, `abTestVariants`, `utmSource`, `utmMedium`, `utmCampaign`, `embedSettings`
+  - `users`: `tier` field now exposed in auth response
+
+- **New Files**:
+  - `src/server/functions/creator-features.ts` - All Creator tier server functions
+  - `src/components/profile/tabs/CreatorTab.tsx` - Creator settings UI
+  - `src/components/profile/LinkAdvancedSettings.tsx` - Advanced link settings modal
+  - `drizzle/0004_late_landau.sql` - Database migration
+
+- **Updated Components**:
+  - `LinksTab`: Added advanced settings button, featured link indicators, status badges
+  - `ThemeSwitcher`: Premium theme badges and tier-gating
+  - `profile.tsx`: Integrated Creator tab
+  - `auth.ts`: Added tier to user response object
+
+### Security
+- CSS sanitization with forbidden pattern detection
+- Tier-based access control on all Creator features
+- Input validation with Zod schemas
+
+---
+
 ## [1.6.0] - 2026-01-17
 
 ### Added

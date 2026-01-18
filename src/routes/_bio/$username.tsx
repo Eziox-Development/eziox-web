@@ -1,9 +1,3 @@
-/**
- * Bio Page - Modern Design
- * User's personal bio link page at eziox.link/{username}
- * No Nav/Footer - this is the user's space
- */
-
 import { createFileRoute, Link, notFound, useRouterState } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
@@ -45,6 +39,7 @@ import { getSocialUrl } from '@/lib/social-links'
 import { SpotifyWidget } from '@/components/spotify'
 import { useTheme } from '@/components/portfolio/ThemeProvider'
 import { checkSpotifyConnectionFn } from '@/server/functions/spotify'
+import type { TierType } from '@/server/lib/stripe'
 
 const socialIconMap: Record<string, ComponentType<{ size?: number }>> = {
   twitter: SiX,
@@ -698,22 +693,30 @@ function BioPage() {
           </AnimatePresence>
         </div>
 
-        {/* Eziox Branding Footer */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
-          className="text-center pb-8"
-        >
-          <Link
-            to="/sign-up"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm transition-all hover:scale-105"
-            style={{ background: 'var(--background-secondary)', color: 'var(--foreground-muted)' }}
-          >
-            <Sparkles size={14} style={{ color: 'var(--primary)' }} />
-            Create your own Eziox page
-          </Link>
-        </motion.div>
+        {(() => {
+          const userTier = (profile.user.tier || 'free') as TierType
+          const showBranding = !['pro', 'creator', 'lifetime'].includes(userTier)
+          
+          if (!showBranding) return null
+          
+          return (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.6 }}
+              className="text-center pb-8"
+            >
+              <Link
+                to="/sign-up"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm transition-all hover:scale-105"
+                style={{ background: 'var(--background-secondary)', color: 'var(--foreground-muted)' }}
+              >
+                <Sparkles size={14} style={{ color: 'var(--primary)' }} />
+                Create your own Eziox page
+              </Link>
+            </motion.div>
+          )
+        })()}
       </div>
 
       {/* Follow Modal */}

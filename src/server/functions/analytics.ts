@@ -2,9 +2,12 @@ import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
 import { getCookie, setResponseStatus } from '@tanstack/react-start/server'
 import { db } from '../db'
-import { analyticsDaily, userStats, userLinks } from '../db/schema'
+import { analyticsDaily, userStats, userLinks, users } from '../db/schema'
 import { eq, desc, and, gte, lte, sql } from 'drizzle-orm'
 import { validateSession } from '../lib/auth'
+import type { TierType } from '../lib/stripe'
+
+const ANALYTICS_DELAY_HOURS = 24
 
 async function getAuthenticatedUser() {
   const token = getCookie('session-token')
@@ -20,6 +23,29 @@ async function getAuthenticatedUser() {
   return user
 }
 
+async function getUserTier(userId: string): Promise<TierType> {
+  const [userData] = await db
+    .select({ tier: users.tier })
+    .from(users)
+    .where(eq(users.id, userId))
+    .limit(1)
+  
+  const tier = userData?.tier || 'free'
+  return (tier === 'standard' || !tier ? 'free' : tier) as TierType
+}
+
+function hasRealtimeAnalytics(tier: TierType): boolean {
+  return ['pro', 'creator', 'lifetime'].includes(tier)
+}
+
+function getAnalyticsCutoffDate(tier: TierType): Date {
+  const now = new Date()
+  if (hasRealtimeAnalytics(tier)) {
+    return now
+  }
+  return new Date(now.getTime() - ANALYTICS_DELAY_HOURS * 60 * 60 * 1000)
+}
+
 export interface AnalyticsOverview {
   totalViews: number
   totalClicks: number
@@ -27,6 +53,8 @@ export interface AnalyticsOverview {
   viewsChange: number
   clicksChange: number
   followersChange: number
+  isRealtime: boolean
+  analyticsDelay: number
 }
 
 export interface DailyStats {
@@ -52,6 +80,9 @@ export interface ReferrerData {
 
 export const getAnalyticsOverviewFn = createServerFn({ method: 'GET' }).handler(async () => {
   const user = await getAuthenticatedUser()
+  const tier = await getUserTier(user.id)
+  const cutoffDate = getAnalyticsCutoffDate(tier)
+  const isRealtime = hasRealtimeAnalytics(tier)
 
   const stats = await db.query.userStats.findFirst({
     where: eq(userStats.userId, user.id),
@@ -68,7 +99,11 @@ export const getAnalyticsOverviewFn = createServerFn({ method: 'GET' }).handler(
       followers: sql<number>`COALESCE(SUM(${analyticsDaily.newFollowers}), 0)`,
     })
     .from(analyticsDaily)
-    .where(and(eq(analyticsDaily.userId, user.id), gte(analyticsDaily.date, thirtyDaysAgo)))
+    .where(and(
+      eq(analyticsDaily.userId, user.id), 
+      gte(analyticsDaily.date, thirtyDaysAgo),
+      lte(analyticsDaily.date, cutoffDate)
+    ))
 
   const previousPeriod = await db
     .select({
@@ -96,6 +131,8 @@ export const getAnalyticsOverviewFn = createServerFn({ method: 'GET' }).handler(
     viewsChange: calculateChange(Number(current.views), Number(previous.views)),
     clicksChange: calculateChange(Number(current.clicks), Number(previous.clicks)),
     followersChange: calculateChange(Number(current.followers), Number(previous.followers)),
+    isRealtime,
+    analyticsDelay: isRealtime ? 0 : ANALYTICS_DELAY_HOURS,
   } as AnalyticsOverview
 })
 
@@ -103,6 +140,8 @@ export const getDailyStatsFn = createServerFn({ method: 'GET' })
   .inputValidator(z.object({ days: z.number().min(7).max(365).optional() }))
   .handler(async ({ data }) => {
     const user = await getAuthenticatedUser()
+    const tier = await getUserTier(user.id)
+    const cutoffDate = getAnalyticsCutoffDate(tier)
     const { days = 30 } = data
 
     const startDate = new Date()
@@ -112,12 +151,17 @@ export const getDailyStatsFn = createServerFn({ method: 'GET' })
     const dailyData = await db
       .select()
       .from(analyticsDaily)
-      .where(and(eq(analyticsDaily.userId, user.id), gte(analyticsDaily.date, startDate)))
+      .where(and(
+        eq(analyticsDaily.userId, user.id), 
+        gte(analyticsDaily.date, startDate),
+        lte(analyticsDaily.date, cutoffDate)
+      ))
       .orderBy(analyticsDaily.date)
 
     const dateMap = new Map<string, DailyStats>()
+    const effectiveDays = hasRealtimeAnalytics(tier) ? days : days - 1
 
-    for (let i = 0; i < days; i++) {
+    for (let i = 0; i < effectiveDays; i++) {
       const date = new Date(startDate)
       date.setDate(date.getDate() + i)
       const dateStr = date.toISOString().split('T')[0] ?? ''
@@ -143,7 +187,16 @@ export const getTopLinksFn = createServerFn({ method: 'GET' })
   .inputValidator(z.object({ limit: z.number().min(1).max(20).optional() }))
   .handler(async ({ data }) => {
     const user = await getAuthenticatedUser()
+    const tier = await getUserTier(user.id)
     const { limit = 10 } = data
+
+    if (!hasRealtimeAnalytics(tier)) {
+      return { 
+        links: [] as TopLink[], 
+        requiresUpgrade: true,
+        message: 'Per-link analytics requires Pro tier or higher'
+      }
+    }
 
     const links = await db
       .select({
@@ -159,20 +212,32 @@ export const getTopLinksFn = createServerFn({ method: 'GET' })
 
     const totalClicks = links.reduce((sum, link) => sum + (link.clicks || 0), 0)
 
-    return links.map((link) => ({
-      id: link.id,
-      title: link.title,
-      url: link.url,
-      clicks: link.clicks || 0,
-      percentage: totalClicks > 0 ? Math.round(((link.clicks || 0) / totalClicks) * 100) : 0,
-    })) as TopLink[]
+    return {
+      links: links.map((link) => ({
+        id: link.id,
+        title: link.title,
+        url: link.url,
+        clicks: link.clicks || 0,
+        percentage: totalClicks > 0 ? Math.round(((link.clicks || 0) / totalClicks) * 100) : 0,
+      })) as TopLink[],
+      requiresUpgrade: false,
+    }
   })
 
 export const getReferrersFn = createServerFn({ method: 'GET' })
   .inputValidator(z.object({ days: z.number().min(7).max(365).optional() }))
   .handler(async ({ data }) => {
     const user = await getAuthenticatedUser()
+    const tier = await getUserTier(user.id)
     const { days = 30 } = data
+
+    if (!hasRealtimeAnalytics(tier)) {
+      return { 
+        referrers: [] as ReferrerData[], 
+        requiresUpgrade: true,
+        message: 'Referrer tracking requires Pro tier or higher'
+      }
+    }
 
     const startDate = new Date()
     startDate.setDate(startDate.getDate() - days)
@@ -204,14 +269,20 @@ export const getReferrersFn = createServerFn({ method: 'GET' })
       .sort((a, b) => b.count - a.count)
       .slice(0, 10)
 
-    return result
+    return { referrers: result, requiresUpgrade: false }
   })
 
 export const exportAnalyticsFn = createServerFn({ method: 'GET' })
   .inputValidator(z.object({ days: z.number().min(7).max(365).optional(), format: z.enum(['json', 'csv']).optional() }))
   .handler(async ({ data }) => {
     const user = await getAuthenticatedUser()
+    const tier = await getUserTier(user.id)
     const { days = 30, format = 'json' } = data
+
+    if (!hasRealtimeAnalytics(tier)) {
+      setResponseStatus(403)
+      throw { message: 'Export analytics requires Pro tier or higher', status: 403, code: 'TIER_REQUIRED' }
+    }
 
     const startDate = new Date()
     startDate.setDate(startDate.getDate() - days)

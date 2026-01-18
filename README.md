@@ -38,7 +38,7 @@
 | 🏆 **Leaderboard** | User ranking system with podium display |
 | 👤 **Profiles** | Custom avatars, banners, bios, social links |
 | 🔐 **Auth** | Secure session-based authentication |
-| 🎨 **Themes** | 25+ beautiful theme variants across 8 categories |
+| 🎨 **Themes** | 30+ beautiful theme variants across 8 categories |
 | 💳 **Stripe Payments** | Secure subscription & one-time payments |
 | 📱 **Responsive** | Mobile-first design |
 | ⚡ **Fast** | Bun runtime + Vercel Edge |
@@ -49,7 +49,7 @@
 |------|-------|------------|
 | **Eziox Core** | Free | Unlimited links, embeds, basic analytics |
 | **Pro** | €4.99/mo | Remove branding, realtime analytics, custom backgrounds |
-| **Creator** | €9.99/mo | Custom CSS, animations, link scheduling, API access |
+| **Creator** | €9.99/mo | Custom CSS, fonts, animations, A/B testing, UTM tracking |
 | **Lifetime** | €30 once | All Creator features forever, exclusive badge |
 
 ## 🛠️ Tech Stack

@@ -32,7 +32,10 @@ import { SettingsTab } from '@/components/profile/tabs/SettingsTab'
 import { PrivacyTab } from '@/components/profile/tabs/PrivacyTab'
 import { BadgesTab } from '@/components/profile/tabs/BadgesTab'
 import { SubscriptionTab } from '@/components/profile/tabs/SubscriptionTab'
+import { CustomizationTab } from '@/components/profile/tabs/CustomizationTab'
+import { CreatorTab } from '@/components/profile/tabs/CreatorTab'
 import { BadgeDisplay } from '@/components/ui/BadgeDisplay'
+import { Palette, Wand2 } from 'lucide-react'
 
 export const Route = createFileRoute('/_protected/profile')({
   head: () => ({
@@ -45,7 +48,7 @@ export const Route = createFileRoute('/_protected/profile')({
   component: ProfilePage,
 })
 
-export type TabType = 'profile' | 'links' | 'referrals' | 'badges' | 'subscription' | 'settings' | 'privacy'
+export type TabType = 'profile' | 'links' | 'referrals' | 'badges' | 'subscription' | 'customization' | 'creator' | 'settings' | 'privacy'
 
 export const SOCIAL_PLATFORMS = [
   { key: 'twitter', label: 'Twitter / X', icon: SiX, placeholder: '@username', color: '#000000' },
@@ -222,6 +225,8 @@ function ProfilePage() {
     { id: 'referrals' as TabType, label: 'Referrals', icon: Gift, badge: referralCount },
     { id: 'badges' as TabType, label: 'Badges', icon: Shield, badge: userBadges.length },
     { id: 'subscription' as TabType, label: 'Premium', icon: Crown },
+    { id: 'customization' as TabType, label: 'Customize', icon: Palette },
+    { id: 'creator' as TabType, label: 'Creator', icon: Wand2 },
     { id: 'settings' as TabType, label: 'Settings', icon: Settings },
     { id: 'privacy' as TabType, label: 'Privacy', icon: Lock },
   ]
@@ -433,6 +438,8 @@ function ProfilePage() {
               {activeTab === 'referrals' && <ReferralsTab key="referrals" accentColor={formData.accentColor} />}
               {activeTab === 'badges' && <BadgesTab key="badges" badges={userBadges} accentColor={formData.accentColor} referralCount={referralCount} isEarlyAdopter={userBadges.includes('early_adopter')} />}
               {activeTab === 'subscription' && <SubscriptionTab key="subscription" />}
+              {activeTab === 'customization' && <CustomizationTab key="customization" />}
+              {activeTab === 'creator' && <CreatorTab key="creator" />}
               {activeTab === 'settings' && <SettingsTab key="settings" formData={formData} updateField={updateField} currentUser={currentUser} copyToClipboard={copyToClipboard} copiedField={copiedField} />}
               {activeTab === 'privacy' && <PrivacyTab key="privacy" formData={formData} updateField={updateField} isOwner={isOwner} />}
             </AnimatePresence>
