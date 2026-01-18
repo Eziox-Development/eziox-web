@@ -151,7 +151,6 @@ export function SubscriptionTab() {
       exit={{ opacity: 0, y: -20 }}
       className="space-y-6"
     >
-      {/* Current Plan Status */}
       <div
         className="rounded-2xl overflow-hidden"
         style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}` }}
@@ -236,7 +235,6 @@ export function SubscriptionTab() {
         )}
       </div>
 
-      {/* Pricing Cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {tiers &&
           (['free', 'pro', 'creator', 'lifetime'] as TierType[]).map((tier) => {
@@ -393,7 +391,6 @@ export function SubscriptionTab() {
           })}
       </div>
 
-      {/* Feature Comparison */}
       <div
         className="rounded-2xl overflow-hidden"
         style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}` }}
@@ -473,7 +470,6 @@ export function SubscriptionTab() {
         </div>
       </div>
 
-      {/* Cancel Confirmation Modal */}
       <AnimatePresence>
         {showCancelConfirm && (
           <>

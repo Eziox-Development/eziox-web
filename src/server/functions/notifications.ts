@@ -251,7 +251,7 @@ export async function createSubscriptionNotification(
 
   switch (event) {
     case 'upgraded':
-      title = '🎉 Upgrade Successful!'
+      title = 'Upgrade Successful'
       message = `Welcome to ${tierName}! Your new features are now active.`
       break
     case 'downgraded':
@@ -263,11 +263,11 @@ export async function createSubscriptionNotification(
       message = `Your ${tierName} subscription has been canceled. You'll keep access until the end of your billing period.`
       break
     case 'renewed':
-      title = '✨ Subscription Renewed'
+      title = 'Subscription Renewed'
       message = `Your ${tierName} subscription has been renewed. Thank you for your support!`
       break
     case 'payment_failed':
-      title = '⚠️ Payment Failed'
+      title = 'Payment Failed'
       message = 'We couldn\'t process your payment. Please update your payment method to keep your subscription active.'
       break
     case 'trial_ending':
@@ -275,7 +275,7 @@ export async function createSubscriptionNotification(
       message = `Your ${tierName} trial ends soon. Upgrade now to keep your premium features.`
       break
     case 'tier_granted':
-      title = '🎁 Tier Granted!'
+      title = 'Tier Granted'
       message = data.adminGranted 
         ? `You've been granted ${tierName} access by an admin. Enjoy your new features!`
         : `You now have ${tierName} access!`

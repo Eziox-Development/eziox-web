@@ -1,8 +1,3 @@
-/**
- * Badge Server Functions
- * Manage user badges - assign, remove, check auto-awards
- */
-
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
 import { getCookie, setResponseStatus } from '@tanstack/react-start/server'
