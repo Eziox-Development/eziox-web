@@ -435,3 +435,127 @@ async function handleSubscriptionDeleted(subscriptionId: string, userId?: string
     await updateUserBadgesForTier(userId, 'free')
   }
 }
+
+async function requireAdmin() {
+  const user = await getAuthenticatedUser()
+  if (user.role !== 'admin' && user.role !== 'owner') {
+    setResponseStatus(403)
+    throw { message: 'Admin access required', status: 403 }
+  }
+  return user
+}
+
+export const adminSetUserTierFn = createServerFn({ method: 'POST' })
+  .inputValidator(
+    z.object({
+      userId: z.string().uuid(),
+      tier: z.enum(['free', 'pro', 'creator', 'lifetime']),
+      expiresAt: z.string().datetime().optional().nullable(),
+    })
+  )
+  .handler(async ({ data }) => {
+    await requireAdmin()
+
+    const [targetUser] = await db
+      .select({ id: users.id, username: users.username, tier: users.tier })
+      .from(users)
+      .where(eq(users.id, data.userId))
+      .limit(1)
+
+    if (!targetUser) {
+      setResponseStatus(404)
+      throw { message: 'User not found', status: 404 }
+    }
+
+    const previousTier = targetUser.tier || 'free'
+    const newTier = data.tier as TierType
+
+    let tierExpiresAt: Date | null = null
+    if (data.expiresAt) {
+      tierExpiresAt = new Date(data.expiresAt)
+    } else if (newTier === 'lifetime') {
+      tierExpiresAt = null
+    } else if (newTier !== 'free') {
+      tierExpiresAt = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)
+    }
+
+    await db
+      .update(users)
+      .set({
+        tier: newTier,
+        tierExpiresAt,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, data.userId))
+
+    await updateUserBadgesForTier(data.userId, newTier)
+
+    return {
+      success: true,
+      message: `Tier updated: ${previousTier} → ${newTier}`,
+      user: {
+        id: targetUser.id,
+        username: targetUser.username,
+        previousTier,
+        newTier,
+        expiresAt: tierExpiresAt,
+      },
+    }
+  })
+
+export const adminGetAllUsersTiersFn = createServerFn({ method: 'GET' })
+  .inputValidator(
+    z.object({
+      limit: z.number().int().min(1).max(200).default(100),
+      offset: z.number().int().min(0).default(0),
+      tierFilter: z.enum(['all', 'free', 'pro', 'creator', 'lifetime']).default('all'),
+    }).optional()
+  )
+  .handler(async ({ data }) => {
+    await requireAdmin()
+
+    const limit = data?.limit || 100
+    const offset = data?.offset || 0
+    const tierFilter = data?.tierFilter || 'all'
+
+    const query = db
+      .select({
+        id: users.id,
+        username: users.username,
+        name: users.name,
+        email: users.email,
+        role: users.role,
+        tier: users.tier,
+        tierExpiresAt: users.tierExpiresAt,
+        stripeCustomerId: users.stripeCustomerId,
+        stripeSubscriptionId: users.stripeSubscriptionId,
+        createdAt: users.createdAt,
+        avatar: profiles.avatar,
+        badges: profiles.badges,
+      })
+      .from(users)
+      .leftJoin(profiles, eq(profiles.userId, users.id))
+      .orderBy(users.createdAt)
+      .limit(limit)
+      .offset(offset)
+
+    const results = await query
+
+    const filteredResults = tierFilter === 'all' 
+      ? results 
+      : results.filter(u => {
+          const normalizedTier = (u.tier === 'standard' || !u.tier) ? 'free' : u.tier
+          return normalizedTier === tierFilter
+        })
+
+    return {
+      users: filteredResults.map(u => ({
+        ...u,
+        tier: (u.tier === 'standard' || !u.tier) ? 'free' : u.tier,
+        badges: (u.badges || []) as string[],
+      })),
+      total: filteredResults.length,
+      limit,
+      offset,
+    }
+  })

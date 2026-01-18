@@ -169,7 +169,20 @@ export const checkAndAwardBadgesFn = createServerFn({ method: 'POST' })
       awarded.push('admin')
     }
 
-    if ((userData.user.tier === 'premium' || userData.user.role === 'owner') && !newBadges.includes('premium')) {
+    const userTier = userData.user.tier || 'free'
+    
+    if (userTier === 'lifetime' && !newBadges.includes('lifetime_subscriber')) {
+      newBadges.push('lifetime_subscriber')
+      awarded.push('lifetime_subscriber')
+    } else if (userTier === 'creator' && !newBadges.includes('creator_subscriber')) {
+      newBadges.push('creator_subscriber')
+      awarded.push('creator_subscriber')
+    } else if (userTier === 'pro' && !newBadges.includes('pro_subscriber')) {
+      newBadges.push('pro_subscriber')
+      awarded.push('pro_subscriber')
+    }
+    
+    if ((userTier === 'premium' || userData.user.role === 'owner') && !newBadges.includes('premium')) {
       newBadges.push('premium')
       awarded.push('premium')
     }

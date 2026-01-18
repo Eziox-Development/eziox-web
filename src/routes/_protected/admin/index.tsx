@@ -2,17 +2,33 @@ import { createFileRoute, useNavigate, Link } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { useAuth } from '@/hooks/use-auth'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
 import { getAllUsersWithBadgesFn, assignBadgeFn, removeBadgeFn } from '@/server/functions/badges'
+import { adminSetUserTierFn } from '@/server/functions/subscriptions'
 import { BADGE_LIST, type BadgeId } from '@/lib/badges'
 import { BadgeDisplay } from '@/components/ui/BadgeDisplay'
+import type { TierType } from '@/server/lib/stripe'
 import {
   ShieldCheck, Search, Loader2, Plus, Minus, CheckCircle2, XCircle,
   Users2, Crown, Sparkles, TrendingUp, Activity, UserCheck, Filter,
-  Handshake, ChevronRight,
+  Handshake, ChevronRight, Gem, Star, Zap,
 } from 'lucide-react'
 import * as LucideIcons from 'lucide-react'
+
+const TIER_ICONS: Record<TierType, React.ElementType> = {
+  free: Zap,
+  pro: Star,
+  creator: Crown,
+  lifetime: Gem,
+}
+
+const TIER_COLORS: Record<TierType, { primary: string; bg: string }> = {
+  free: { primary: '#6b7280', bg: 'rgba(107, 114, 128, 0.15)' },
+  pro: { primary: '#3b82f6', bg: 'rgba(59, 130, 246, 0.15)' },
+  creator: { primary: '#f59e0b', bg: 'rgba(245, 158, 11, 0.15)' },
+  lifetime: { primary: '#ec4899', bg: 'rgba(236, 72, 153, 0.15)' },
+}
 
 export const Route = createFileRoute('/_protected/admin/')({
   head: () => ({
@@ -31,12 +47,14 @@ function AdminPage() {
   const getAllUsers = useServerFn(getAllUsersWithBadgesFn)
   const assignBadge = useServerFn(assignBadgeFn)
   const removeBadge = useServerFn(removeBadgeFn)
+  const setUserTier = useServerFn(adminSetUserTierFn)
 
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedUser, setSelectedUser] = useState<string | null>(null)
   const [isAssigning, setIsAssigning] = useState(false)
   const [actionResult, setActionResult] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
   const [filterRole, setFilterRole] = useState<string>('all')
+  const [activeTab, setActiveTab] = useState<'badges' | 'tier'>('badges')
 
   const isAdmin = currentUser?.role === 'admin' || currentUser?.role === 'owner'
 
@@ -66,6 +84,20 @@ function AdminPage() {
     withBadges: users.filter(u => u.badges.length > 0).length,
     totalBadges: users.reduce((sum, u) => sum + u.badges.length, 0),
   }
+
+  const tierMutation = useMutation({
+    mutationFn: (params: { userId: string; tier: TierType }) => 
+      setUserTier({ data: { userId: params.userId, tier: params.tier } }),
+    onSuccess: (result) => {
+      setActionResult({ type: 'success', message: result.message })
+      void queryClient.invalidateQueries({ queryKey: ['admin-users'] })
+      setTimeout(() => setActionResult(null), 3000)
+    },
+    onError: (e: { message?: string }) => {
+      setActionResult({ type: 'error', message: e.message || 'Failed to update tier' })
+      setTimeout(() => setActionResult(null), 3000)
+    },
+  })
 
   const handleAssignBadge = async (userId: string, badgeId: BadgeId) => {
     setIsAssigning(true)
@@ -441,22 +473,50 @@ function AdminPage() {
                 border: '1px solid rgba(255, 255, 255, 0.08)',
               }}
             >
-              <div className="p-5 flex items-center gap-3" style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.06)' }}>
-                <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'rgba(245, 158, 11, 0.15)' }}>
-                  <Sparkles size={20} style={{ color: '#f59e0b' }} />
+              <div className="p-5" style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.06)' }}>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'rgba(139, 92, 246, 0.15)' }}>
+                    <Crown size={20} style={{ color: '#8b5cf6' }} />
+                  </div>
+                  <div>
+                    <h2 className="font-semibold" style={{ color: 'var(--foreground)' }}>User Manager</h2>
+                    <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>
+                      {selectedUserData ? `Managing ${selectedUserData.name || selectedUserData.username}` : 'Select a user'}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h2 className="font-semibold" style={{ color: 'var(--foreground)' }}>Badge Manager</h2>
-                  <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>
-                    {selectedUserData ? `Managing ${selectedUserData.name || selectedUserData.username}` : 'Select a user'}
-                  </p>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setActiveTab('badges')}
+                    className="flex-1 py-2 px-3 rounded-xl text-sm font-medium transition-all"
+                    style={{
+                      background: activeTab === 'badges' ? 'rgba(245, 158, 11, 0.15)' : 'rgba(255, 255, 255, 0.03)',
+                      color: activeTab === 'badges' ? '#f59e0b' : 'var(--foreground-muted)',
+                      border: activeTab === 'badges' ? '1px solid rgba(245, 158, 11, 0.3)' : '1px solid transparent',
+                    }}
+                  >
+                    <Sparkles size={14} className="inline mr-1.5" />
+                    Badges
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('tier')}
+                    className="flex-1 py-2 px-3 rounded-xl text-sm font-medium transition-all"
+                    style={{
+                      background: activeTab === 'tier' ? 'rgba(236, 72, 153, 0.15)' : 'rgba(255, 255, 255, 0.03)',
+                      color: activeTab === 'tier' ? '#ec4899' : 'var(--foreground-muted)',
+                      border: activeTab === 'tier' ? '1px solid rgba(236, 72, 153, 0.3)' : '1px solid transparent',
+                    }}
+                  >
+                    <Gem size={14} className="inline mr-1.5" />
+                    Tier
+                  </button>
                 </div>
               </div>
 
               <AnimatePresence mode="wait">
                 {selectedUserData ? (
                   <motion.div
-                    key={selectedUserData.id}
+                    key={`${selectedUserData.id}-${activeTab}`}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
@@ -479,64 +539,124 @@ function AdminPage() {
                         <p className="text-sm" style={{ color: 'var(--foreground-muted)' }}>@{selectedUserData.username}</p>
                         <div className="flex items-center gap-2 mt-1">
                           <UserCheck size={12} style={{ color: '#22c55e' }} />
-                          <span className="text-xs" style={{ color: 'var(--foreground-muted)' }}>{selectedUserData.badges.length} badges assigned</span>
+                          <span className="text-xs" style={{ color: 'var(--foreground-muted)' }}>{selectedUserData.badges.length} badges</span>
                         </div>
                       </div>
                     </div>
 
-                    <div className="space-y-2 max-h-[400px] overflow-y-auto pr-1">
-                      {BADGE_LIST.map((badge, index) => {
-                        const hasBadge = selectedUserData.badges.includes(badge.id)
-                        const IconComponent = LucideIcons[badge.icon as keyof typeof LucideIcons] as React.ComponentType<{ size?: number; style?: React.CSSProperties; className?: string }>
-                        return (
-                          <motion.div
-                            key={badge.id}
-                            initial={{ opacity: 0, x: 10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: index * 0.02 }}
-                            className="flex items-center gap-3 p-3 rounded-xl transition-all"
-                            style={{
-                              background: hasBadge ? badge.bgColor : 'rgba(255, 255, 255, 0.03)',
-                              boxShadow: hasBadge ? `inset 0 0 0 1px ${badge.color}40` : undefined,
-                            }}
-                          >
-                            <div
-                              className="w-9 h-9 rounded-lg flex items-center justify-center"
-                              style={{ background: hasBadge ? badge.color + '20' : 'rgba(255, 255, 255, 0.05)' }}
-                            >
-                              {IconComponent && <IconComponent size={18} style={{ color: hasBadge ? badge.color : 'var(--foreground-muted)' }} />}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium" style={{ color: hasBadge ? badge.color : 'var(--foreground)' }}>
-                                {badge.name}
-                              </p>
-                              <p className="text-xs truncate" style={{ color: 'var(--foreground-muted)' }}>{badge.description}</p>
-                            </div>
-                            <motion.button
-                              onClick={() => hasBadge
-                                ? handleRemoveBadge(selectedUserData.id, badge.id)
-                                : handleAssignBadge(selectedUserData.id, badge.id)
-                              }
-                              disabled={isAssigning}
-                              whileHover={{ scale: 1.1 }}
-                              whileTap={{ scale: 0.9 }}
-                              className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
+                    {activeTab === 'badges' ? (
+                      <div className="space-y-2 max-h-[400px] overflow-y-auto pr-1">
+                        {BADGE_LIST.map((badge, index) => {
+                          const hasBadge = selectedUserData.badges.includes(badge.id)
+                          const IconComponent = LucideIcons[badge.icon as keyof typeof LucideIcons] as React.ComponentType<{ size?: number; style?: React.CSSProperties; className?: string }>
+                          return (
+                            <motion.div
+                              key={badge.id}
+                              initial={{ opacity: 0, x: 10 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: index * 0.02 }}
+                              className="flex items-center gap-3 p-3 rounded-xl transition-all"
                               style={{
-                                background: hasBadge ? 'rgba(239, 68, 68, 0.15)' : 'rgba(34, 197, 94, 0.15)',
+                                background: hasBadge ? badge.bgColor : 'rgba(255, 255, 255, 0.03)',
+                                boxShadow: hasBadge ? `inset 0 0 0 1px ${badge.color}40` : undefined,
                               }}
                             >
-                              {isAssigning ? (
-                                <Loader2 size={14} className="animate-spin" style={{ color: 'var(--foreground-muted)' }} />
-                              ) : hasBadge ? (
-                                <Minus size={14} style={{ color: '#ef4444' }} />
+                              <div
+                                className="w-9 h-9 rounded-lg flex items-center justify-center"
+                                style={{ background: hasBadge ? badge.color + '20' : 'rgba(255, 255, 255, 0.05)' }}
+                              >
+                                {IconComponent && <IconComponent size={18} style={{ color: hasBadge ? badge.color : 'var(--foreground-muted)' }} />}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium" style={{ color: hasBadge ? badge.color : 'var(--foreground)' }}>
+                                  {badge.name}
+                                </p>
+                                <p className="text-xs truncate" style={{ color: 'var(--foreground-muted)' }}>{badge.description}</p>
+                              </div>
+                              <motion.button
+                                onClick={() => hasBadge
+                                  ? handleRemoveBadge(selectedUserData.id, badge.id)
+                                  : handleAssignBadge(selectedUserData.id, badge.id)
+                                }
+                                disabled={isAssigning}
+                                whileHover={{ scale: 1.1 }}
+                                whileTap={{ scale: 0.9 }}
+                                className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
+                                style={{
+                                  background: hasBadge ? 'rgba(239, 68, 68, 0.15)' : 'rgba(34, 197, 94, 0.15)',
+                                }}
+                              >
+                                {isAssigning ? (
+                                  <Loader2 size={14} className="animate-spin" style={{ color: 'var(--foreground-muted)' }} />
+                                ) : hasBadge ? (
+                                  <Minus size={14} style={{ color: '#ef4444' }} />
+                                ) : (
+                                  <Plus size={14} style={{ color: '#22c55e' }} />
+                                )}
+                              </motion.button>
+                            </motion.div>
+                          )
+                        })}
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        <p className="text-xs font-medium mb-3" style={{ color: 'var(--foreground-muted)' }}>
+                          Select tier to assign (badges sync automatically)
+                        </p>
+                        {(['free', 'pro', 'creator', 'lifetime'] as TierType[]).map((tier) => {
+                          const TierIcon = TIER_ICONS[tier]
+                          const colors = TIER_COLORS[tier]
+                          const userTier = (selectedUserData as { tier?: string }).tier || 'free'
+                          const isCurrentTier = userTier === tier || (tier === 'free' && !['pro', 'creator', 'lifetime'].includes(userTier))
+                          
+                          return (
+                            <motion.button
+                              key={tier}
+                              onClick={() => !isCurrentTier && tierMutation.mutate({ userId: selectedUserData.id, tier })}
+                              disabled={isCurrentTier || tierMutation.isPending}
+                              whileHover={!isCurrentTier ? { scale: 1.02 } : {}}
+                              whileTap={!isCurrentTier ? { scale: 0.98 } : {}}
+                              className="w-full flex items-center gap-3 p-4 rounded-xl transition-all text-left"
+                              style={{
+                                background: isCurrentTier ? colors.bg : 'rgba(255, 255, 255, 0.03)',
+                                border: isCurrentTier ? `2px solid ${colors.primary}` : '2px solid transparent',
+                                opacity: tierMutation.isPending ? 0.7 : 1,
+                              }}
+                            >
+                              <div
+                                className="w-10 h-10 rounded-xl flex items-center justify-center"
+                                style={{ background: colors.bg }}
+                              >
+                                <TierIcon size={20} style={{ color: colors.primary }} />
+                              </div>
+                              <div className="flex-1">
+                                <p className="font-semibold" style={{ color: isCurrentTier ? colors.primary : 'var(--foreground)' }}>
+                                  {tier.charAt(0).toUpperCase() + tier.slice(1)}
+                                </p>
+                                <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>
+                                  {tier === 'free' && 'Basic access'}
+                                  {tier === 'pro' && '€4.99/mo features'}
+                                  {tier === 'creator' && '€9.99/mo features'}
+                                  {tier === 'lifetime' && 'Permanent access'}
+                                </p>
+                              </div>
+                              {isCurrentTier ? (
+                                <span className="text-xs px-2 py-1 rounded-lg font-medium" style={{ background: colors.bg, color: colors.primary }}>
+                                  Current
+                                </span>
+                              ) : tierMutation.isPending ? (
+                                <Loader2 size={16} className="animate-spin" style={{ color: 'var(--foreground-muted)' }} />
                               ) : (
-                                <Plus size={14} style={{ color: '#22c55e' }} />
+                                <ChevronRight size={16} style={{ color: 'var(--foreground-muted)' }} />
                               )}
                             </motion.button>
-                          </motion.div>
-                        )
-                      })}
-                    </div>
+                          )
+                        })}
+                        <p className="text-[10px] mt-4 p-3 rounded-lg" style={{ background: 'rgba(245, 158, 11, 0.1)', color: '#f59e0b' }}>
+                          ⚠️ Manual tier changes bypass Stripe. Use for gifts, testing, or support cases only.
+                        </p>
+                      </div>
+                    )}
                   </motion.div>
                 ) : (
                   <motion.div
