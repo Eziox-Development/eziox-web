@@ -6,7 +6,7 @@ import { notifications, users, profiles } from '../db/schema'
 import { eq, desc, and, count } from 'drizzle-orm'
 import { validateSession } from '../lib/auth'
 
-export type NotificationType = 'new_follower' | 'profile_milestone' | 'link_milestone' | 'system' | 'badge_earned'
+export type NotificationType = 'new_follower' | 'profile_milestone' | 'link_milestone' | 'system' | 'badge_earned' | 'subscription'
 
 export interface NotificationData {
   id: string
@@ -212,6 +212,90 @@ export async function createSystemNotification(userId: string, title: string, me
     message,
     data: {},
     actionUrl: actionUrl || null,
+  })
+}
+
+export type SubscriptionEvent = 
+  | 'upgraded'
+  | 'downgraded'
+  | 'canceled'
+  | 'renewed'
+  | 'payment_failed'
+  | 'trial_ending'
+  | 'tier_granted'
+  | 'tier_expired'
+
+const TIER_NAMES: Record<string, string> = {
+  free: 'Eziox Core',
+  pro: 'Pro',
+  creator: 'Creator',
+  lifetime: 'Lifetime',
+}
+
+export async function createSubscriptionNotification(
+  userId: string,
+  event: SubscriptionEvent,
+  data: { 
+    tier?: string
+    previousTier?: string
+    expiresAt?: Date | null
+    adminGranted?: boolean
+  } = {}
+) {
+  const tierName = data.tier ? TIER_NAMES[data.tier] || data.tier : ''
+  const previousTierName = data.previousTier ? TIER_NAMES[data.previousTier] || data.previousTier : ''
+
+  let title = ''
+  let message = ''
+  const actionUrl = '/profile?tab=subscription'
+
+  switch (event) {
+    case 'upgraded':
+      title = '🎉 Upgrade Successful!'
+      message = `Welcome to ${tierName}! Your new features are now active.`
+      break
+    case 'downgraded':
+      title = 'Plan Changed'
+      message = `Your plan has been changed to ${tierName}.`
+      break
+    case 'canceled':
+      title = 'Subscription Canceled'
+      message = `Your ${tierName} subscription has been canceled. You'll keep access until the end of your billing period.`
+      break
+    case 'renewed':
+      title = '✨ Subscription Renewed'
+      message = `Your ${tierName} subscription has been renewed. Thank you for your support!`
+      break
+    case 'payment_failed':
+      title = '⚠️ Payment Failed'
+      message = 'We couldn\'t process your payment. Please update your payment method to keep your subscription active.'
+      break
+    case 'trial_ending':
+      title = 'Trial Ending Soon'
+      message = `Your ${tierName} trial ends soon. Upgrade now to keep your premium features.`
+      break
+    case 'tier_granted':
+      title = '🎁 Tier Granted!'
+      message = data.adminGranted 
+        ? `You've been granted ${tierName} access by an admin. Enjoy your new features!`
+        : `You now have ${tierName} access!`
+      break
+    case 'tier_expired':
+      title = 'Subscription Expired'
+      message = `Your ${previousTierName} subscription has expired. You've been moved to ${tierName}.`
+      break
+    default:
+      title = 'Subscription Update'
+      message = 'Your subscription status has changed.'
+  }
+
+  await db.insert(notifications).values({
+    userId,
+    type: 'subscription',
+    title,
+    message,
+    data: { event, tier: data.tier, previousTier: data.previousTier, expiresAt: data.expiresAt },
+    actionUrl,
   })
 }
 

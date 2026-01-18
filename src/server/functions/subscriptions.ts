@@ -6,8 +6,10 @@ import { users, subscriptions, profiles } from '../db/schema'
 import { eq } from 'drizzle-orm'
 import { validateSession } from '../lib/auth'
 import { stripe, TIER_CONFIG, getTierFromPriceId, type TierType } from '../lib/stripe'
+import { createSubscriptionNotification, createBadgeNotification } from './notifications'
+import { BADGES } from '@/lib/badges'
 
-async function updateUserBadgesForTier(userId: string, tier: TierType) {
+async function updateUserBadgesForTier(userId: string, tier: TierType, sendNotification = true) {
   const [profile] = await db
     .select({ badges: profiles.badges })
     .from(profiles)
@@ -20,19 +22,30 @@ async function updateUserBadgesForTier(userId: string, tier: TierType) {
   const premiumBadges = ['pro_subscriber', 'creator_subscriber', 'lifetime_subscriber']
   
   const newBadges = currentBadges.filter(b => !premiumBadges.includes(b))
+  let awardedBadge: string | null = null
   
-  if (tier === 'lifetime') {
+  if (tier === 'lifetime' && !currentBadges.includes('lifetime_subscriber')) {
     newBadges.push('lifetime_subscriber')
-  } else if (tier === 'creator') {
+    awardedBadge = 'lifetime_subscriber'
+  } else if (tier === 'creator' && !currentBadges.includes('creator_subscriber')) {
     newBadges.push('creator_subscriber')
-  } else if (tier === 'pro') {
+    awardedBadge = 'creator_subscriber'
+  } else if (tier === 'pro' && !currentBadges.includes('pro_subscriber')) {
     newBadges.push('pro_subscriber')
+    awardedBadge = 'pro_subscriber'
   }
 
   await db
     .update(profiles)
     .set({ badges: newBadges, updatedAt: new Date() })
     .where(eq(profiles.userId, userId))
+
+  if (awardedBadge && sendNotification) {
+    const badge = BADGES[awardedBadge as keyof typeof BADGES]
+    if (badge) {
+      await createBadgeNotification(userId, badge.name, badge.icon)
+    }
+  }
 }
 
 async function getAuthenticatedUser() {
@@ -365,6 +378,11 @@ async function handleSubscriptionCreated(
     .where(eq(users.id, userId))
 
   await updateUserBadgesForTier(userId, actualTier)
+
+  await createSubscriptionNotification(userId, 'upgraded', {
+    tier: actualTier,
+    expiresAt: new Date(periodEnd * 1000),
+  })
 }
 
 async function handleSubscriptionUpdated(subscription: {
@@ -408,6 +426,13 @@ async function handleSubscriptionUpdated(subscription: {
       .where(eq(users.id, subscription.metadata.userId))
 
     await updateUserBadgesForTier(subscription.metadata.userId, effectiveTier as TierType)
+
+    if (subscription.cancel_at_period_end) {
+      await createSubscriptionNotification(subscription.metadata.userId, 'canceled', {
+        tier: effectiveTier,
+        expiresAt: new Date(subscription.current_period_end * 1000),
+      })
+    }
   }
 }
 
@@ -433,6 +458,11 @@ async function handleSubscriptionDeleted(subscriptionId: string, userId?: string
       .where(eq(users.id, userId))
 
     await updateUserBadgesForTier(userId, 'free')
+
+    await createSubscriptionNotification(userId, 'tier_expired', {
+      tier: 'free',
+      previousTier: 'unknown',
+    })
   }
 }
 
@@ -489,6 +519,16 @@ export const adminSetUserTierFn = createServerFn({ method: 'POST' })
       .where(eq(users.id, data.userId))
 
     await updateUserBadgesForTier(data.userId, newTier)
+
+    const tierLevel: Record<string, number> = { free: 0, standard: 0, pro: 1, creator: 2, lifetime: 3 }
+    const isUpgrade = (tierLevel[newTier] ?? 0) > (tierLevel[previousTier] ?? 0)
+    
+    await createSubscriptionNotification(data.userId, isUpgrade ? 'tier_granted' : 'downgraded', {
+      tier: newTier,
+      previousTier,
+      expiresAt: tierExpiresAt,
+      adminGranted: true,
+    })
 
     return {
       success: true,
