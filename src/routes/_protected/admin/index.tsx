@@ -331,7 +331,7 @@ function AdminPage() {
             className="lg:col-span-3"
           >
             <div
-              className="rounded-3xl overflow-hidden"
+              className="rounded-3xl"
               style={{
                 background: 'rgba(255, 255, 255, 0.02)',
                 backdropFilter: 'blur(20px)',

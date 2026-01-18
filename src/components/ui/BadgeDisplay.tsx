@@ -1,8 +1,3 @@
-/**
- * BadgeDisplay Component
- * Renders user badges with tooltips and animations
- */
-
 import { motion } from 'motion/react'
 import { getBadgeConfigs, sortBadgesByRarity, type BadgeConfig } from '@/lib/badges'
 import * as LucideIcons from 'lucide-react'
@@ -115,11 +110,12 @@ function BadgeIcon({ badge, size, showTooltip, delay = 0 }: BadgeIconProps) {
       
       {showTooltip && (
         <div
-          className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 rounded-xl text-xs whitespace-nowrap opacity-0 group-hover/badge:opacity-100 transition-opacity pointer-events-none z-50"
+          className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 rounded-xl text-xs whitespace-nowrap opacity-0 group-hover/badge:opacity-100 transition-opacity pointer-events-none"
           style={{
             background: 'var(--card)',
             border: '1px solid var(--border)',
             boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
+            zIndex: 9999,
           }}
         >
           <div className="font-semibold" style={{ color: badge.color }}>{badge.name}</div>
