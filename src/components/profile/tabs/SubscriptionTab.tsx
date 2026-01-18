@@ -98,7 +98,7 @@ export function SubscriptionTab() {
   })
 
   const isLoading = tiersLoading || subLoading
-  const currentTier = subscriptionData?.tier || 'free'
+  const currentTier = (subscriptionData?.tier || 'free') as TierType
   const subscription = subscriptionData?.subscription
   const tiers = tierData?.tiers as Record<TierType, TierConfig> | undefined
 
@@ -122,6 +122,9 @@ export function SubscriptionTab() {
     )
   }
 
+  const currentTierColors = tierColors[currentTier] || tierColors.free
+  const CurrentTierIcon = tierIcons[currentTier] || tierIcons.free
+
   return (
     <motion.div
       key="subscription"
@@ -137,14 +140,11 @@ export function SubscriptionTab() {
       >
         <div
           className="p-6"
-          style={{ background: tierColors[currentTier].gradient }}
+          style={{ background: currentTierColors.gradient }}
         >
           <div className="flex items-center gap-4">
             <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
-              {(() => {
-                const Icon = tierIcons[currentTier]
-                return <Icon size={28} className="text-white" />
-              })()}
+              <CurrentTierIcon size={28} className="text-white" />
             </div>
             <div>
               <p className="text-white/80 text-sm font-medium">Current Plan</p>
