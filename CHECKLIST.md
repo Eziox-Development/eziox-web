@@ -182,17 +182,67 @@
 ### Phase 4: Premium Features (Priority: MEDIUM)
 
 #### 8. Premium Tiers
-> Philosophy:  
-> Free is fully usable. Paid tiers improve comfort, control, and polish — not access.
+> **Philosophy:**  
+> Free is fully usable. Paid tiers improve comfort, control, and polish — **not access**.  
+> Everyone gets the core experience. Premium is about refinement, not restriction.
+
 - [ ] Tier system:
-  - [ ] **Free - Eziox Core** - Unlimited links, Spotify, SoundCloud & YouTube embeds, profile picture & banner, multiple layouts, custom username (e.g. `eziox.me/username`), mobile-optimized layout, public & private links, basic analytics (total views, total clicks).
-    - [ ] Limitations: Small Eziox branding, analytics with delay (e.g. 24h), no custom CSS, no custom domain.
-  - [ ] **Pro** - Includes everything from Free plus: Disable Eziox branding, extended premium themes, custom backgrounds (color, gradient, image), layout fine-tuning (spacing, radius, animations), realtime analytics, per-link click tracking, top links overview, referrer & date range filters, priority CDN, improved embed quality, profile backups & rollbacks.
-  - [ ] **Creator** - Includes everything from Pro plus: Custom CSS (sandboxed), custom font uploads, animated profiles & micro-interactions, advanced embed controls, highlighted / featured links, link scheduling (e.g. releases), A/B testing for links, UTM parameter support, custom social previews (Open Graph), priority support, feature voting access, early access to new features.
-  - [ ] **Lifetime** - Creator tier with lifetime access, all future Creator features, lifetime badge on profile, internal supporter status, one-time payment with no renewals.
-- [ ] Stripe integration for payments
-- [ ] Subscription management
-- [ ] Premium badge display
+
+  - [ ] **Free (Eziox Core)** — The complete Eziox experience
+    - Unlimited links (no artificial limits)
+    - Profile picture, banner & bio
+    - All standard layouts
+    - Custom username (`eziox.link/username`)
+    - Mobile-optimized responsive design
+    - Public & private link visibility
+    - Spotify, SoundCloud & YouTube embeds
+    - Basic analytics: total views, total clicks (24h delay)
+    - Standard themes & accent colors
+    - Social links integration
+    - **Limitations:** Small "Powered by Eziox" branding, delayed analytics, no custom CSS/domain
+
+  - [ ] **Pro** ($4.99/month) — Enhanced control & insights
+    - Everything in Free, plus:
+    - Remove Eziox branding
+    - Realtime analytics (no delay)
+    - Per-link click tracking & top links overview
+    - Referrer tracking & date range filters
+    - Export analytics data (CSV/JSON)
+    - Extended premium themes
+    - Custom backgrounds (solid, gradient, image)
+    - Layout fine-tuning (spacing, border-radius, shadows)
+    - Profile backups & version history
+    - Priority CDN for faster loading
+    - Pro badge on profile
+
+  - [ ] **Creator** ($9.99/month) — Full creative freedom
+    - Everything in Pro, plus:
+    - Custom CSS (sandboxed for safety)
+    - Custom font uploads
+    - Animated profiles & micro-interactions
+    - Advanced embed controls (size, autoplay, loop)
+    - Featured/highlighted links with special styling
+    - Link scheduling (show/hide at specific times)
+    - A/B testing for links (compare click rates)
+    - UTM parameter support for marketing
+    - Custom Open Graph previews (social sharing)
+    - Priority support (faster response times)
+    - Feature voting access (influence roadmap)
+    - Early access to new features
+    - API access for integrations
+    - Creator badge on profile
+
+  - [ ] **Lifetime** ($30 once) — Forever supporter
+    - Everything in Creator, permanently
+    - All future Creator features included
+    - Exclusive Lifetime badge (legendary rarity)
+    - Internal supporter recognition
+    - One-time payment, no renewals ever
+    - Priority in feature requests
+
+- [x] Stripe integration for payments
+- [x] Subscription management
+- [x] Premium badge display
 
 #### 9. Custom Themes
 - [ ] Theme builder for premium users
