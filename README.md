@@ -31,16 +31,26 @@
 | Feature | Description |
 |---------|-------------|
 | 🔗 **Bio Links** | Linktree-style customizable link pages |
+| 💎 **Premium Tiers** | Free, Pro, Creator & Lifetime subscriptions |
 | 📊 **Analytics Dashboard** | Track views, clicks, top links, referrers with charts |
 | 🔔 **Notifications** | Real-time notification center with bell icon |
 | 🎵 **Spotify Integration** | Display currently playing music on bio page |
 | 🏆 **Leaderboard** | User ranking system with podium display |
 | 👤 **Profiles** | Custom avatars, banners, bios, social links |
 | 🔐 **Auth** | Secure session-based authentication |
-| 🎨 **Themes** | 5 beautiful theme variants |
-| 🔗 **URL Shortener** | Create short memorable links |
+| 🎨 **Themes** | 25+ beautiful theme variants across 8 categories |
+| 💳 **Stripe Payments** | Secure subscription & one-time payments |
 | 📱 **Responsive** | Mobile-first design |
 | ⚡ **Fast** | Bun runtime + Vercel Edge |
+
+## 💎 Premium Tiers
+
+| Tier | Price | Highlights |
+|------|-------|------------|
+| **Eziox Core** | Free | Unlimited links, embeds, basic analytics |
+| **Pro** | €4.99/mo | Remove branding, realtime analytics, custom backgrounds |
+| **Creator** | €9.99/mo | Custom CSS, animations, link scheduling, API access |
+| **Lifetime** | €30 once | All Creator features forever, exclusive badge |
 
 ## 🛠️ Tech Stack
 
@@ -79,10 +89,19 @@ VITE_OWNER_EMAIL=your-email@example.com
 SPOTIFY_CLIENT_ID=your-spotify-client-id
 SPOTIFY_CLIENT_SECRET=your-spotify-client-secret
 SPOTIFY_REDIRECT_URI=https://your-domain.com/api/spotify-callback
+
+# Optional: Stripe Payments
+STRIPE_SECRET_KEY=sk_live_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+STRIPE_PRO_PRICE_ID=price_...
+STRIPE_CREATOR_PRICE_ID=price_...
+STRIPE_LIFETIME_PRICE_ID=price_...
+APP_URL=https://your-domain.com
 ```
 
 > Get your `DATABASE_URL` from [console.neon.tech](https://console.neon.tech)  
-> Get Spotify credentials from [developer.spotify.com](https://developer.spotify.com/dashboard)
+> Get Spotify credentials from [developer.spotify.com](https://developer.spotify.com/dashboard)  
+> Get Stripe keys from [dashboard.stripe.com](https://dashboard.stripe.com/apikeys)
 
 ## 📜 Scripts
 

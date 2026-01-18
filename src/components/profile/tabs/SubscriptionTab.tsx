@@ -27,19 +27,37 @@ import {
 } from 'lucide-react'
 import type { TierType, TierConfig } from '@/server/lib/stripe'
 
-const tierIcons: Record<TierType, React.ElementType> = {
+const TIER_ICONS: Record<TierType, React.ElementType> = {
   free: Zap,
   pro: Star,
   creator: Crown,
   lifetime: Gem,
 }
 
-const tierColors: Record<TierType, { primary: string; gradient: string }> = {
-  free: { primary: '#6b7280', gradient: 'linear-gradient(135deg, #6b7280, #9ca3af)' },
-  pro: { primary: '#3b82f6', gradient: 'linear-gradient(135deg, #3b82f6, #8b5cf6)' },
-  creator: { primary: '#f59e0b', gradient: 'linear-gradient(135deg, #f59e0b, #ef4444)' },
-  lifetime: { primary: '#ec4899', gradient: 'linear-gradient(135deg, #ec4899, #8b5cf6)' },
+const TIER_STYLES: Record<TierType, { primary: string; gradient: string; glow: string }> = {
+  free: { 
+    primary: '#6b7280', 
+    gradient: 'linear-gradient(135deg, #6b7280 0%, #9ca3af 100%)',
+    glow: 'rgba(107, 114, 128, 0.3)'
+  },
+  pro: { 
+    primary: '#3b82f6', 
+    gradient: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)',
+    glow: 'rgba(59, 130, 246, 0.3)'
+  },
+  creator: { 
+    primary: '#f59e0b', 
+    gradient: 'linear-gradient(135deg, #f59e0b 0%, #ef4444 100%)',
+    glow: 'rgba(245, 158, 11, 0.3)'
+  },
+  lifetime: { 
+    primary: '#ec4899', 
+    gradient: 'linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%)',
+    glow: 'rgba(236, 72, 153, 0.3)'
+  },
 }
+
+const TIER_LEVELS: Record<string, number> = { free: 0, standard: 0, pro: 1, creator: 2, lifetime: 3 }
 
 export function SubscriptionTab() {
   const { theme } = useTheme()
@@ -122,8 +140,8 @@ export function SubscriptionTab() {
     )
   }
 
-  const currentTierColors = tierColors[currentTier] || tierColors.free
-  const CurrentTierIcon = tierIcons[currentTier] || tierIcons.free
+  const currentStyles = TIER_STYLES[currentTier] || TIER_STYLES.free
+  const CurrentIcon = TIER_ICONS[currentTier] || TIER_ICONS.free
 
   return (
     <motion.div
@@ -140,11 +158,11 @@ export function SubscriptionTab() {
       >
         <div
           className="p-6"
-          style={{ background: currentTierColors.gradient }}
+          style={{ background: currentStyles.gradient }}
         >
           <div className="flex items-center gap-4">
             <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
-              <CurrentTierIcon size={28} className="text-white" />
+              <CurrentIcon size={28} className="text-white" />
             </div>
             <div>
               <p className="text-white/80 text-sm font-medium">Current Plan</p>
@@ -223,12 +241,11 @@ export function SubscriptionTab() {
         {tiers &&
           (['free', 'pro', 'creator', 'lifetime'] as TierType[]).map((tier) => {
             const config = tiers[tier]
-            const Icon = tierIcons[tier]
-            const colors = tierColors[tier]
+            const Icon = TIER_ICONS[tier]
+            const styles = TIER_STYLES[tier]
             const isCurrentTier = currentTier === tier || (tier === 'free' && !['pro', 'creator', 'lifetime'].includes(currentTier))
-            const tierLevel: Record<string, number> = { free: 0, standard: 0, pro: 1, creator: 2, lifetime: 3 }
-            const currentLevel = tierLevel[currentTier] ?? 0
-            const targetLevel = tierLevel[tier] ?? 0
+            const currentLevel = TIER_LEVELS[currentTier] ?? 0
+            const targetLevel = TIER_LEVELS[tier] ?? 0
             const isUpgrade = targetLevel > currentLevel && tier !== 'free'
             const isDowngrade = targetLevel < currentLevel && targetLevel > 0
             const isLifetime = tier === 'lifetime'
@@ -240,35 +257,30 @@ export function SubscriptionTab() {
                 className="rounded-2xl overflow-hidden relative"
                 style={{
                   background: theme.colors.card,
-                  border: `2px solid ${isCurrentTier ? colors.primary : theme.colors.border}`,
+                  border: `2px solid ${isCurrentTier ? styles.primary : theme.colors.border}`,
+                  boxShadow: isCurrentTier ? `0 0 20px ${styles.glow}` : 'none',
                 }}
                 whileHover={{ scale: 1.02 }}
                 transition={{ type: 'spring', stiffness: 300, damping: 20 }}
               >
-                {config.popular && (
-                  <div
-                    className="absolute top-0 right-0 px-3 py-1 text-xs font-bold text-white rounded-bl-xl"
-                    style={{ background: colors.gradient }}
+                {(config.popular || isLifetime) && (
+                  <motion.div
+                    initial={{ opacity: 0, x: 10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    className="absolute top-0 right-0 px-3 py-1.5 text-[10px] font-bold text-white rounded-bl-xl tracking-wider"
+                    style={{ background: styles.gradient }}
                   >
-                    POPULAR
-                  </div>
-                )}
-                {isLifetime && (
-                  <div
-                    className="absolute top-0 right-0 px-3 py-1 text-xs font-bold text-white rounded-bl-xl"
-                    style={{ background: colors.gradient }}
-                  >
-                    BEST VALUE
-                  </div>
+                    {isLifetime ? 'BEST VALUE' : 'POPULAR'}
+                  </motion.div>
                 )}
 
                 <div className="p-5">
                   <div className="flex items-center gap-3 mb-4">
                     <div
                       className="w-10 h-10 rounded-xl flex items-center justify-center"
-                      style={{ background: `${colors.primary}20` }}
+                      style={{ background: `${styles.primary}20` }}
                     >
-                      <Icon size={20} style={{ color: colors.primary }} />
+                      <Icon size={20} style={{ color: styles.primary }} />
                     </div>
                     <div>
                       <h3 className="font-bold" style={{ color: theme.colors.foreground }}>
@@ -282,11 +294,11 @@ export function SubscriptionTab() {
 
                   <div className="mb-4">
                     <span className="text-3xl font-bold" style={{ color: theme.colors.foreground }}>
-                      ${config.price}
+                      €{config.price}
                     </span>
                     {config.price > 0 && (
                       <span className="text-sm" style={{ color: theme.colors.foregroundMuted }}>
-                        {config.billingType === 'lifetime' ? ' once' : '/month'}
+                        {config.billingType === 'lifetime' ? ' einmalig' : '/Monat'}
                       </span>
                     )}
                   </div>
@@ -298,7 +310,7 @@ export function SubscriptionTab() {
                   <div className="space-y-2 mb-5 max-h-48 overflow-y-auto">
                     {config.features.slice(0, 6).map((feature, i) => (
                       <div key={i} className="flex items-start gap-2">
-                        <Check size={14} className="mt-0.5 shrink-0" style={{ color: colors.primary }} />
+                        <Check size={14} className="mt-0.5 shrink-0" style={{ color: styles.primary }} />
                         <span className="text-sm" style={{ color: theme.colors.foreground }}>
                           {feature}
                         </span>
@@ -333,7 +345,7 @@ export function SubscriptionTab() {
                       }}
                       disabled={checkoutMutation.isPending}
                       className="w-full py-2.5 rounded-xl font-medium text-sm text-white transition-all hover:opacity-90 flex items-center justify-center gap-2"
-                      style={{ background: colors.gradient }}
+                      style={{ background: styles.gradient }}
                     >
                       {checkoutMutation.isPending && selectedTier === tier ? (
                         <Loader2 size={16} className="animate-spin" />
@@ -365,7 +377,7 @@ export function SubscriptionTab() {
                       }}
                       disabled={checkoutMutation.isPending}
                       className="w-full py-2.5 rounded-xl font-medium text-sm text-white transition-all hover:opacity-90 flex items-center justify-center gap-2"
-                      style={{ background: colors.gradient }}
+                      style={{ background: styles.gradient }}
                     >
                       {checkoutMutation.isPending && selectedTier === tier ? (
                         <Loader2 size={16} className="animate-spin" />
@@ -403,7 +415,7 @@ export function SubscriptionTab() {
                     <th
                       key={tier}
                       className="text-center py-2 px-3 font-medium text-xs"
-                      style={{ color: tierColors[tier].primary }}
+                      style={{ color: TIER_STYLES[tier].primary }}
                     >
                       {tiers?.[tier]?.name}
                     </th>

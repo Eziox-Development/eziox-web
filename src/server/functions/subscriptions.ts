@@ -142,7 +142,7 @@ export const createCheckoutSessionFn = createServerFn({ method: 'POST' })
         .where(eq(users.id, user.id))
     }
 
-    const baseUrl = process.env.VITE_APP_URL || 'http://localhost:5173'
+    const baseUrl = process.env.APP_URL || process.env.VITE_APP_URL || 'https://www.eziox.link'
     const isLifetime = data.tier === 'lifetime'
 
     const session = isLifetime
@@ -188,7 +188,7 @@ export const createBillingPortalSessionFn = createServerFn({ method: 'POST' }).h
     throw { message: 'No billing account found', status: 400 }
   }
 
-  const baseUrl = process.env.VITE_APP_URL || 'http://localhost:5173'
+  const baseUrl = process.env.APP_URL || process.env.VITE_APP_URL || 'https://www.eziox.link'
 
   const session = await stripe.billingPortal.sessions.create({
     customer: userData.stripeCustomerId,

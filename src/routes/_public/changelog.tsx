@@ -22,6 +22,7 @@ import {
   Sliders,
   Grid3X3,
   BarChart3,
+  Crown,
 } from 'lucide-react'
 import { useTheme } from '@/components/portfolio/ThemeProvider'
 
@@ -63,6 +64,31 @@ const typeConfig: Record<ChangeType, { label: string; color: string; bgColor: st
 }
 
 const changelog: ChangelogEntry[] = [
+  {
+    version: '1.7.0',
+    date: 'January 18, 2026',
+    title: 'Premium Tiers & Stripe Integration',
+    description: 'Complete subscription system with 4 tiers, Stripe payments, and automatic badge rewards.',
+    icon: Crown,
+    type: 'feature',
+    highlights: [
+      '4 Premium Tiers: Free, Pro, Creator, Lifetime',
+      'Stripe checkout & billing portal',
+      'Automatic premium badges',
+    ],
+    changes: [
+      { type: 'feature', text: 'Premium tier system with Free, Pro (€4.99/mo), Creator (€9.99/mo), and Lifetime (€30)' },
+      { type: 'feature', text: 'Stripe Checkout integration for secure payments' },
+      { type: 'feature', text: 'Billing portal for subscription management' },
+      { type: 'feature', text: 'Automatic badge awards: Pro, Creator, and Lifetime badges' },
+      { type: 'feature', text: 'Tier-based feature limits and access control' },
+      { type: 'feature', text: 'Subscription tab in profile settings' },
+      { type: 'feature', text: 'Feature comparison table with all tier benefits' },
+      { type: 'improvement', text: 'Modern pricing cards with glow effects' },
+      { type: 'improvement', text: 'Real-time subscription status display' },
+      { type: 'security', text: 'Stripe webhook verification for secure events' },
+    ],
+  },
   {
     version: '1.6.0',
     date: 'January 17, 2026',

@@ -1,6 +1,6 @@
 {
   "name": "portfolio-v2",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "description": "Modern anime-inspired portfolio with animated UI, blog engine, and TanStack Router.",
   "private": true,
   "type": "module",
