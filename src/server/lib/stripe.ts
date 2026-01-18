@@ -214,7 +214,7 @@ export const TIER_CONFIG: Record<TierType, TierConfig> = {
     name: 'Lifetime',
     tagline: 'Forever Supporter',
     description: 'One payment, forever access',
-    price: 99.99,
+    price: 30,
     priceId: process.env.STRIPE_LIFETIME_PRICE_ID || null,
     billingType: 'lifetime',
     features: [

@@ -186,9 +186,9 @@
 > Free is fully usable. Paid tiers improve comfort, control, and polish — **not access**.  
 > Everyone gets the core experience. Premium is about refinement, not restriction.
 
-- [ ] Tier system:
+- [x] Tier system:
 
-  - [ ] **Free (Eziox Core)** — The complete Eziox experience
+  - [x] **Free (Eziox Core)** — The complete Eziox experience
     - Unlimited links (no artificial limits)
     - Profile picture, banner & bio
     - All standard layouts
@@ -201,7 +201,7 @@
     - Social links integration
     - **Limitations:** Small "Powered by Eziox" branding, delayed analytics, no custom CSS/domain
 
-  - [ ] **Pro** ($4.99/month) — Enhanced control & insights
+  - [x] **Pro** (€4,99/month) — Enhanced control & insights
     - Everything in Free, plus:
     - Remove Eziox branding
     - Realtime analytics (no delay)
@@ -215,7 +215,7 @@
     - Priority CDN for faster loading
     - Pro badge on profile
 
-  - [ ] **Creator** ($9.99/month) — Full creative freedom
+  - [x] **Creator** (€9,99/month) — Full creative freedom
     - Everything in Pro, plus:
     - Custom CSS (sandboxed for safety)
     - Custom font uploads
@@ -227,12 +227,8 @@
     - UTM parameter support for marketing
     - Custom Open Graph previews (social sharing)
     - Priority support (faster response times)
-    - Feature voting access (influence roadmap)
-    - Early access to new features
-    - API access for integrations
-    - Creator badge on profile
 
-  - [ ] **Lifetime** ($30 once) — Forever supporter
+  - [x] **Lifetime** (€30 once) — Forever supporter
     - Everything in Creator, permanently
     - All future Creator features included
     - Exclusive Lifetime badge (legendary rarity)
