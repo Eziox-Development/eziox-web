@@ -225,10 +225,12 @@ export function SubscriptionTab() {
             const config = tiers[tier]
             const Icon = tierIcons[tier]
             const colors = tierColors[tier]
-            const isCurrentTier = currentTier === tier
-            const tierLevel = { free: 0, pro: 1, creator: 2, lifetime: 3 }
-            const isUpgrade = tierLevel[tier] > tierLevel[currentTier]
-            const isDowngrade = tierLevel[tier] < tierLevel[currentTier] && tier !== 'free'
+            const isCurrentTier = currentTier === tier || (tier === 'free' && !['pro', 'creator', 'lifetime'].includes(currentTier))
+            const tierLevel: Record<string, number> = { free: 0, standard: 0, pro: 1, creator: 2, lifetime: 3 }
+            const currentLevel = tierLevel[currentTier] ?? 0
+            const targetLevel = tierLevel[tier] ?? 0
+            const isUpgrade = targetLevel > currentLevel && tier !== 'free'
+            const isDowngrade = targetLevel < currentLevel && targetLevel > 0
             const isLifetime = tier === 'lifetime'
             const isLifetimeUser = currentTier === 'lifetime'
 
@@ -348,13 +350,30 @@ export function SubscriptionTab() {
                     >
                       Downgrade
                     </button>
-                  ) : (
+                  ) : tier === 'free' ? (
                     <div
                       className="w-full py-2.5 rounded-xl text-center font-medium text-sm"
                       style={{ background: theme.colors.backgroundSecondary, color: theme.colors.foregroundMuted }}
                     >
                       Free Forever
                     </div>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        setSelectedTier(tier)
+                        checkoutMutation.mutate(tier as 'pro' | 'creator' | 'lifetime')
+                      }}
+                      disabled={checkoutMutation.isPending}
+                      className="w-full py-2.5 rounded-xl font-medium text-sm text-white transition-all hover:opacity-90 flex items-center justify-center gap-2"
+                      style={{ background: colors.gradient }}
+                    >
+                      {checkoutMutation.isPending && selectedTier === tier ? (
+                        <Loader2 size={16} className="animate-spin" />
+                      ) : (
+                        <Sparkles size={16} />
+                      )}
+                      {isLifetime ? 'Get Lifetime' : `Upgrade to ${config.name}`}
+                    </button>
                   )}
                 </div>
               </motion.div>

@@ -84,8 +84,10 @@ export const getCurrentSubscriptionFn = createServerFn({ method: 'GET' }).handle
     subscription = sub || null
   }
 
+  const normalizedTier = (userData.tier === 'standard' || !userData.tier) ? 'free' : userData.tier
+  
   return {
-    tier: (userData.tier || 'free') as TierType,
+    tier: normalizedTier as TierType,
     tierExpiresAt: userData.tierExpiresAt,
     subscription: subscription
       ? {
