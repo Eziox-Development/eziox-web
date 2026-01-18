@@ -38,6 +38,7 @@ import { Route as ProtectedAdminIndexRouteImport } from './routes/_protected/adm
 import { Route as PublicSCodeRouteImport } from './routes/_public/s.$code'
 import { Route as PublicJoinCodeRouteImport } from './routes/_public/join.$code'
 import { Route as ProtectedAdminPartnerApplicationsRouteImport } from './routes/_protected/admin/partner-applications'
+import { Route as ApiWebhooksStripeRouteImport } from './routes/_api/webhooks/stripe'
 
 const PublicRoute = PublicRouteImport.update({
   id: '/_public',
@@ -181,6 +182,11 @@ const ProtectedAdminPartnerApplicationsRoute =
     path: '/admin/partner-applications',
     getParentRoute: () => ProtectedRoute,
   } as any)
+const ApiWebhooksStripeRoute = ApiWebhooksStripeRouteImport.update({
+  id: '/_api/webhooks/stripe',
+  path: '/webhooks/stripe',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/hello': typeof ApiHelloRoute
@@ -204,6 +210,7 @@ export interface FileRoutesByFullPath {
   '/terms': typeof PublicTermsRoute
   '/api/spotify-callback': typeof ApiSpotifyCallbackRoute
   '/': typeof PublicIndexRoute
+  '/webhooks/stripe': typeof ApiWebhooksStripeRoute
   '/admin/partner-applications': typeof ProtectedAdminPartnerApplicationsRoute
   '/join/$code': typeof PublicJoinCodeRoute
   '/s/$code': typeof PublicSCodeRoute
@@ -231,6 +238,7 @@ export interface FileRoutesByTo {
   '/terms': typeof PublicTermsRoute
   '/api/spotify-callback': typeof ApiSpotifyCallbackRoute
   '/': typeof PublicIndexRoute
+  '/webhooks/stripe': typeof ApiWebhooksStripeRoute
   '/admin/partner-applications': typeof ProtectedAdminPartnerApplicationsRoute
   '/join/$code': typeof PublicJoinCodeRoute
   '/s/$code': typeof PublicSCodeRoute
@@ -263,6 +271,7 @@ export interface FileRoutesById {
   '/_public/terms': typeof PublicTermsRoute
   '/api/spotify-callback': typeof ApiSpotifyCallbackRoute
   '/_public/': typeof PublicIndexRoute
+  '/_api/webhooks/stripe': typeof ApiWebhooksStripeRoute
   '/_protected/admin/partner-applications': typeof ProtectedAdminPartnerApplicationsRoute
   '/_public/join/$code': typeof PublicJoinCodeRoute
   '/_public/s/$code': typeof PublicSCodeRoute
@@ -292,6 +301,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/api/spotify-callback'
     | '/'
+    | '/webhooks/stripe'
     | '/admin/partner-applications'
     | '/join/$code'
     | '/s/$code'
@@ -319,6 +329,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/api/spotify-callback'
     | '/'
+    | '/webhooks/stripe'
     | '/admin/partner-applications'
     | '/join/$code'
     | '/s/$code'
@@ -350,6 +361,7 @@ export interface FileRouteTypes {
     | '/_public/terms'
     | '/api/spotify-callback'
     | '/_public/'
+    | '/_api/webhooks/stripe'
     | '/_protected/admin/partner-applications'
     | '/_public/join/$code'
     | '/_public/s/$code'
@@ -365,6 +377,7 @@ export interface RootRouteChildren {
   ApiRssRoute: typeof ApiRssRoute
   ApiSitemapRoute: typeof ApiSitemapRoute
   ApiSpotifyCallbackRoute: typeof ApiSpotifyCallbackRoute
+  ApiWebhooksStripeRoute: typeof ApiWebhooksStripeRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -572,6 +585,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedAdminPartnerApplicationsRouteImport
       parentRoute: typeof ProtectedRoute
     }
+    '/_api/webhooks/stripe': {
+      id: '/_api/webhooks/stripe'
+      path: '/webhooks/stripe'
+      fullPath: '/webhooks/stripe'
+      preLoaderRoute: typeof ApiWebhooksStripeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -662,6 +682,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiRssRoute: ApiRssRoute,
   ApiSitemapRoute: ApiSitemapRoute,
   ApiSpotifyCallbackRoute: ApiSpotifyCallbackRoute,
+  ApiWebhooksStripeRoute: ApiWebhooksStripeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

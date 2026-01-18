@@ -27,8 +27,10 @@ export const users = pgTable('users', {
   name: varchar('name', { length: 100 }),
   emailVerified: boolean('email_verified').default(false),
   role: varchar('role', { length: 20 }).default('user'), // user, admin, owner
-  tier: varchar('tier', { length: 20 }).default('standard'), // standard, premium
-  tierExpiresAt: timestamp('tier_expires_at'), // When premium expires (null = never)
+  tier: varchar('tier', { length: 20 }).default('free'), // free, pro, creator
+  stripeCustomerId: varchar('stripe_customer_id', { length: 255 }),
+  stripeSubscriptionId: varchar('stripe_subscription_id', { length: 255 }),
+  tierExpiresAt: timestamp('tier_expires_at'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 })
@@ -453,6 +455,38 @@ export const spotifyConnectionsRelations = relations(spotifyConnections, ({ one 
 }))
 
 // ============================================================================
+// SUBSCRIPTIONS TABLE (Stripe subscription tracking)
+// ============================================================================
+
+export const subscriptions = pgTable('subscriptions', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  stripeSubscriptionId: varchar('stripe_subscription_id', { length: 255 }).notNull().unique(),
+  stripePriceId: varchar('stripe_price_id', { length: 255 }).notNull(),
+  stripeCustomerId: varchar('stripe_customer_id', { length: 255 }).notNull(),
+  tier: varchar('tier', { length: 20 }).notNull(), // pro, creator
+  status: varchar('status', { length: 50 }).notNull(), // active, canceled, past_due, trialing, etc.
+  currentPeriodStart: timestamp('current_period_start').notNull(),
+  currentPeriodEnd: timestamp('current_period_end').notNull(),
+  cancelAtPeriodEnd: boolean('cancel_at_period_end').default(false),
+  canceledAt: timestamp('canceled_at'),
+  endedAt: timestamp('ended_at'),
+  trialStart: timestamp('trial_start'),
+  trialEnd: timestamp('trial_end'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+})
+
+export const subscriptionsRelations = relations(subscriptions, ({ one }) => ({
+  user: one(users, {
+    fields: [subscriptions.userId],
+    references: [users.id],
+  }),
+}))
+
+// ============================================================================
 // TYPE EXPORTS
 // ============================================================================
 
@@ -482,3 +516,5 @@ export type Notification = typeof notifications.$inferSelect
 export type NewNotification = typeof notifications.$inferInsert
 export type AnalyticsDaily = typeof analyticsDaily.$inferSelect
 export type NewAnalyticsDaily = typeof analyticsDaily.$inferInsert
+export type Subscription = typeof subscriptions.$inferSelect
+export type NewSubscription = typeof subscriptions.$inferInsert

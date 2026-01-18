@@ -7,9 +7,10 @@ import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
 import { getCookie, setResponseStatus } from '@tanstack/react-start/server'
 import { db } from '../db'
-import { userLinks, userStats } from '../db/schema'
-import { eq, asc, sql } from 'drizzle-orm'
+import { userLinks, userStats, users } from '../db/schema'
+import { eq, asc, sql, count } from 'drizzle-orm'
 import { validateSession } from '../lib/auth'
+import { getMaxLinks, type TierType } from '../lib/stripe'
 
 // ============================================================================
 // Validation Schemas
@@ -106,6 +107,34 @@ export const createLinkFn = createServerFn({ method: 'POST' })
     if (!user) {
       setResponseStatus(401)
       throw { message: 'Not authenticated', status: 401 }
+    }
+
+    // Check tier-based link limit
+    const [userData] = await db
+      .select({ tier: users.tier })
+      .from(users)
+      .where(eq(users.id, user.id))
+      .limit(1)
+
+    const userTier = (userData?.tier || 'free') as TierType
+    const maxLinks = getMaxLinks(userTier)
+
+    if (maxLinks !== -1) {
+      const [linkCount] = await db
+        .select({ count: count() })
+        .from(userLinks)
+        .where(eq(userLinks.userId, user.id))
+
+      if ((linkCount?.count || 0) >= maxLinks) {
+        setResponseStatus(403)
+        throw { 
+          message: `Link limit reached. Upgrade to Pro for unlimited links.`, 
+          status: 403,
+          code: 'LINK_LIMIT_REACHED',
+          currentCount: linkCount?.count || 0,
+          maxLinks,
+        }
+      }
     }
 
     // Get current max order

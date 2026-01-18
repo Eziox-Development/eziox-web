@@ -31,6 +31,7 @@ import { ReferralsTab } from '@/components/profile/tabs/ReferralsTab'
 import { SettingsTab } from '@/components/profile/tabs/SettingsTab'
 import { PrivacyTab } from '@/components/profile/tabs/PrivacyTab'
 import { BadgesTab } from '@/components/profile/tabs/BadgesTab'
+import { SubscriptionTab } from '@/components/profile/tabs/SubscriptionTab'
 import { BadgeDisplay } from '@/components/ui/BadgeDisplay'
 
 export const Route = createFileRoute('/_protected/profile')({
@@ -44,7 +45,7 @@ export const Route = createFileRoute('/_protected/profile')({
   component: ProfilePage,
 })
 
-export type TabType = 'profile' | 'links' | 'referrals' | 'badges' | 'settings' | 'privacy'
+export type TabType = 'profile' | 'links' | 'referrals' | 'badges' | 'subscription' | 'settings' | 'privacy'
 
 export const SOCIAL_PLATFORMS = [
   { key: 'twitter', label: 'Twitter / X', icon: SiX, placeholder: '@username', color: '#000000' },
@@ -220,6 +221,7 @@ function ProfilePage() {
     { id: 'links' as TabType, label: 'Links', icon: LinkIcon, badge: links.length },
     { id: 'referrals' as TabType, label: 'Referrals', icon: Gift, badge: referralCount },
     { id: 'badges' as TabType, label: 'Badges', icon: Shield, badge: userBadges.length },
+    { id: 'subscription' as TabType, label: 'Premium', icon: Crown },
     { id: 'settings' as TabType, label: 'Settings', icon: Settings },
     { id: 'privacy' as TabType, label: 'Privacy', icon: Lock },
   ]
@@ -430,6 +432,7 @@ function ProfilePage() {
               {activeTab === 'links' && <LinksTab key="links" accentColor={formData.accentColor} />}
               {activeTab === 'referrals' && <ReferralsTab key="referrals" accentColor={formData.accentColor} />}
               {activeTab === 'badges' && <BadgesTab key="badges" badges={userBadges} accentColor={formData.accentColor} referralCount={referralCount} isEarlyAdopter={userBadges.includes('early_adopter')} />}
+              {activeTab === 'subscription' && <SubscriptionTab key="subscription" />}
               {activeTab === 'settings' && <SettingsTab key="settings" formData={formData} updateField={updateField} currentUser={currentUser} copyToClipboard={copyToClipboard} copiedField={copiedField} />}
               {activeTab === 'privacy' && <PrivacyTab key="privacy" formData={formData} updateField={updateField} isOwner={isOwner} />}
             </AnimatePresence>

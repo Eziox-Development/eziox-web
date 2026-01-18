@@ -8,6 +8,8 @@ export type BadgeId =
   | 'admin'
   | 'verified'
   | 'premium'
+  | 'pro_subscriber'
+  | 'creator_subscriber'
   | 'early_adopter'
   | 'referral_master'
   | 'creator'
@@ -74,6 +76,28 @@ export const BADGES: Record<BadgeId, BadgeConfig> = {
     color: '#a855f7',
     bgColor: 'rgba(168, 85, 247, 0.15)',
     rarity: 'rare',
+    autoAwarded: true,
+    adminOnly: false,
+  },
+  pro_subscriber: {
+    id: 'pro_subscriber',
+    name: 'Pro',
+    description: 'Pro tier subscriber',
+    icon: 'Star',
+    color: '#3b82f6',
+    bgColor: 'rgba(59, 130, 246, 0.15)',
+    rarity: 'rare',
+    autoAwarded: true,
+    adminOnly: false,
+  },
+  creator_subscriber: {
+    id: 'creator_subscriber',
+    name: 'Creator',
+    description: 'Creator tier subscriber',
+    icon: 'Crown',
+    color: '#f59e0b',
+    bgColor: 'rgba(245, 158, 11, 0.15)',
+    rarity: 'epic',
     autoAwarded: true,
     adminOnly: false,
   },
