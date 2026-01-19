@@ -25,12 +25,31 @@ import {
   Trophy,
   Zap,
   BarChart3,
+  Star,
+  Gem,
+  CreditCard,
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'motion/react'
 import { useAuth } from '@/hooks/use-auth'
+import type { TierType } from '@/server/lib/stripe'
+
+const TIER_ICONS: Record<TierType, React.ElementType> = {
+  free: Zap,
+  pro: Star,
+  creator: Crown,
+  lifetime: Gem,
+}
+
+const TIER_STYLES: Record<TierType, { primary: string; gradient: string; name: string }> = {
+  free: { primary: '#6b7280', gradient: 'linear-gradient(135deg, #6b7280, #9ca3af)', name: 'Free' },
+  pro: { primary: '#3b82f6', gradient: 'linear-gradient(135deg, #3b82f6, #8b5cf6)', name: 'Pro' },
+  creator: { primary: '#f59e0b', gradient: 'linear-gradient(135deg, #f59e0b, #ef4444)', name: 'Creator' },
+  lifetime: { primary: '#ec4899', gradient: 'linear-gradient(135deg, #ec4899, #8b5cf6)', name: 'Lifetime' },
+}
 
 const NAV_ITEMS = [
   { href: '/', label: 'Home', icon: Home },
+  { href: '/pricing', label: 'Pricing', icon: CreditCard },
   { href: '/changelog', label: 'Updates', icon: FileText },
   { href: '/about', label: 'About', icon: Info },
 ] as const
@@ -85,6 +104,10 @@ export function Nav() {
   const displayName = currentUser?.name || currentUser?.email?.split('@')[0] || 'User'
   const bioLink = `eziox.link/${currentUser?.username || 'you'}`
   const isCommunityActive = COMMUNITY_ITEMS.some(i => location.pathname === i.href)
+  
+  const userTier = (currentUser?.tier || 'free') as TierType
+  const tierStyles = TIER_STYLES[userTier]
+  const TierIcon = TIER_ICONS[userTier]
 
   return (
     <header
@@ -312,10 +335,14 @@ export function Nav() {
                             <div className="flex-1 min-w-0">
                               <p className="font-bold truncate" style={{ color: theme.colors.foreground }}>{displayName}</p>
                               <p className="text-xs truncate" style={{ color: theme.colors.foregroundMuted }}>@{currentUser.username}</p>
-                              <div className="flex items-center gap-1 mt-1">
-                                <Zap size={10} style={{ color: theme.colors.primary }} />
-                                <span className="text-[10px] font-medium" style={{ color: theme.colors.primary }}>Free Plan</span>
-                              </div>
+                              <motion.div 
+                                className="flex items-center gap-1.5 mt-1.5 px-2 py-0.5 rounded-full w-fit"
+                                style={{ background: `${tierStyles.primary}15` }}
+                                whileHover={{ scale: 1.05 }}
+                              >
+                                <TierIcon size={10} style={{ color: tierStyles.primary }} />
+                                <span className="text-[10px] font-bold" style={{ color: tierStyles.primary }}>{tierStyles.name}</span>
+                              </motion.div>
                             </div>
                           </div>
                           <motion.a
@@ -368,20 +395,31 @@ export function Nav() {
                           ))}
                         </div>
 
-                        <div className="p-2" style={{ borderTop: `1px solid ${theme.colors.border}` }}>
-                          <motion.div
-                            className="p-3 rounded-xl flex items-center gap-3 cursor-pointer"
-                            style={{ background: `linear-gradient(135deg, ${theme.colors.primary}15, ${theme.colors.accent}15)`, border: `1px solid ${theme.colors.primary}30` }}
-                            whileHover={{ scale: 1.02 }}
-                          >
-                            <Crown size={18} style={{ color: theme.colors.primary }} />
-                            <div className="flex-1">
-                              <p className="text-xs font-bold" style={{ color: theme.colors.foreground }}>Upgrade to Pro</p>
-                              <p className="text-[10px]" style={{ color: theme.colors.foregroundMuted }}>Unlock all features</p>
-                            </div>
-                            <Sparkles size={14} style={{ color: theme.colors.accent }} />
-                          </motion.div>
-                        </div>
+                        {userTier !== 'lifetime' && userTier !== 'creator' && (
+                          <div className="p-2" style={{ borderTop: `1px solid ${theme.colors.border}` }}>
+                            <Link to="/pricing" onClick={() => setIsUserMenuOpen(false)}>
+                              <motion.div
+                                className="p-3 rounded-xl flex items-center gap-3"
+                                style={{ background: `linear-gradient(135deg, ${theme.colors.primary}15, ${theme.colors.accent}15)`, border: `1px solid ${theme.colors.primary}30` }}
+                                whileHover={{ scale: 1.02, background: `linear-gradient(135deg, ${theme.colors.primary}25, ${theme.colors.accent}25)` }}
+                                whileTap={{ scale: 0.98 }}
+                              >
+                                <motion.div
+                                  className="w-8 h-8 rounded-lg flex items-center justify-center"
+                                  style={{ background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})` }}
+                                  whileHover={{ rotate: 10 }}
+                                >
+                                  <Crown size={16} className="text-white" />
+                                </motion.div>
+                                <div className="flex-1">
+                                  <p className="text-xs font-bold" style={{ color: theme.colors.foreground }}>Upgrade Plan</p>
+                                  <p className="text-[10px]" style={{ color: theme.colors.foregroundMuted }}>Unlock premium features</p>
+                                </div>
+                                <Sparkles size={14} style={{ color: theme.colors.accent }} />
+                              </motion.div>
+                            </Link>
+                          </div>
+                        )}
 
                         <div className="p-2" style={{ borderTop: `1px solid ${theme.colors.border}` }}>
                           <motion.button

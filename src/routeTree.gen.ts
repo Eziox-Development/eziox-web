@@ -18,6 +18,7 @@ import { Route as ApiSpotifyCallbackRouteImport } from './routes/api/spotify-cal
 import { Route as PublicTermsRouteImport } from './routes/_public/terms'
 import { Route as PublicTemplatesRouteImport } from './routes/_public/templates'
 import { Route as PublicPrivacyRouteImport } from './routes/_public/privacy'
+import { Route as PublicPricingRouteImport } from './routes/_public/pricing'
 import { Route as PublicPartnersRouteImport } from './routes/_public/partners'
 import { Route as PublicLeaderboardRouteImport } from './routes/_public/leaderboard'
 import { Route as PublicCreatorsRouteImport } from './routes/_public/creators'
@@ -81,6 +82,11 @@ const PublicTemplatesRoute = PublicTemplatesRouteImport.update({
 const PublicPrivacyRoute = PublicPrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
+  getParentRoute: () => PublicRoute,
+} as any)
+const PublicPricingRoute = PublicPricingRouteImport.update({
+  id: '/pricing',
+  path: '/pricing',
   getParentRoute: () => PublicRoute,
 } as any)
 const PublicPartnersRoute = PublicPartnersRouteImport.update({
@@ -219,6 +225,7 @@ export interface FileRoutesByFullPath {
   '/creators': typeof PublicCreatorsRoute
   '/leaderboard': typeof PublicLeaderboardRoute
   '/partners': typeof PublicPartnersRoute
+  '/pricing': typeof PublicPricingRoute
   '/privacy': typeof PublicPrivacyRoute
   '/templates': typeof PublicTemplatesRoute
   '/terms': typeof PublicTermsRoute
@@ -249,6 +256,7 @@ export interface FileRoutesByTo {
   '/creators': typeof PublicCreatorsRoute
   '/leaderboard': typeof PublicLeaderboardRoute
   '/partners': typeof PublicPartnersRoute
+  '/pricing': typeof PublicPricingRoute
   '/privacy': typeof PublicPrivacyRoute
   '/templates': typeof PublicTemplatesRoute
   '/terms': typeof PublicTermsRoute
@@ -284,6 +292,7 @@ export interface FileRoutesById {
   '/_public/creators': typeof PublicCreatorsRoute
   '/_public/leaderboard': typeof PublicLeaderboardRoute
   '/_public/partners': typeof PublicPartnersRoute
+  '/_public/pricing': typeof PublicPricingRoute
   '/_public/privacy': typeof PublicPrivacyRoute
   '/_public/templates': typeof PublicTemplatesRoute
   '/_public/terms': typeof PublicTermsRoute
@@ -316,6 +325,7 @@ export interface FileRouteTypes {
     | '/creators'
     | '/leaderboard'
     | '/partners'
+    | '/pricing'
     | '/privacy'
     | '/templates'
     | '/terms'
@@ -346,6 +356,7 @@ export interface FileRouteTypes {
     | '/creators'
     | '/leaderboard'
     | '/partners'
+    | '/pricing'
     | '/privacy'
     | '/templates'
     | '/terms'
@@ -380,6 +391,7 @@ export interface FileRouteTypes {
     | '/_public/creators'
     | '/_public/leaderboard'
     | '/_public/partners'
+    | '/_public/pricing'
     | '/_public/privacy'
     | '/_public/templates'
     | '/_public/terms'
@@ -467,6 +479,13 @@ declare module '@tanstack/react-router' {
       path: '/privacy'
       fullPath: '/privacy'
       preLoaderRoute: typeof PublicPrivacyRouteImport
+      parentRoute: typeof PublicRoute
+    }
+    '/_public/pricing': {
+      id: '/_public/pricing'
+      path: '/pricing'
+      fullPath: '/pricing'
+      preLoaderRoute: typeof PublicPricingRouteImport
       parentRoute: typeof PublicRoute
     }
     '/_public/partners': {
@@ -689,6 +708,7 @@ interface PublicRouteChildren {
   PublicCreatorsRoute: typeof PublicCreatorsRoute
   PublicLeaderboardRoute: typeof PublicLeaderboardRoute
   PublicPartnersRoute: typeof PublicPartnersRoute
+  PublicPricingRoute: typeof PublicPricingRoute
   PublicPrivacyRoute: typeof PublicPrivacyRoute
   PublicTemplatesRoute: typeof PublicTemplatesRoute
   PublicTermsRoute: typeof PublicTermsRoute
@@ -704,6 +724,7 @@ const PublicRouteChildren: PublicRouteChildren = {
   PublicCreatorsRoute: PublicCreatorsRoute,
   PublicLeaderboardRoute: PublicLeaderboardRoute,
   PublicPartnersRoute: PublicPartnersRoute,
+  PublicPricingRoute: PublicPricingRoute,
   PublicPrivacyRoute: PublicPrivacyRoute,
   PublicTemplatesRoute: PublicTemplatesRoute,
   PublicTermsRoute: PublicTermsRoute,
