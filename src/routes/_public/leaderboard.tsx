@@ -5,6 +5,7 @@ import { useServerFn } from '@tanstack/react-start'
 import { getTopUsersFn } from '@/server/functions/users'
 import { getPlatformStatsFn } from '@/server/functions/stats'
 import { BadgeDisplay } from '@/components/ui/BadgeDisplay'
+import { useTheme } from '@/components/portfolio/ThemeProvider'
 import {
   Trophy, Crown, Medal, Star, Users2, TrendingUp, Activity,
   Eye, Heart, ArrowRight, Loader2, Sparkles, Flame, Zap,
@@ -22,6 +23,7 @@ export const Route = createFileRoute('/_public/leaderboard')({
 })
 
 function LeaderboardPage() {
+  const { theme } = useTheme()
   const getTopUsers = useServerFn(getTopUsersFn)
   const getPlatformStats = useServerFn(getPlatformStatsFn)
 
@@ -57,14 +59,14 @@ function LeaderboardPage() {
     <div className="min-h-screen pt-24 pb-12 px-4">
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
         <motion.div
-          className="absolute top-40 right-1/4 w-[500px] h-[500px] rounded-full blur-3xl"
-          style={{ background: 'rgba(245, 158, 11, 0.08)' }}
+          className="absolute top-40 right-1/4 w-[500px] h-[500px] rounded-full blur-3xl opacity-20"
+          style={{ background: theme.colors.primary }}
           animate={{ scale: [1, 1.2, 1], x: [0, -50, 0] }}
           transition={{ duration: 20, repeat: Infinity }}
         />
         <motion.div
-          className="absolute bottom-20 left-1/4 w-[400px] h-[400px] rounded-full blur-3xl"
-          style={{ background: 'rgba(139, 92, 246, 0.06)' }}
+          className="absolute bottom-20 left-1/4 w-[400px] h-[400px] rounded-full blur-3xl opacity-15"
+          style={{ background: theme.colors.accent }}
           animate={{ scale: [1.2, 1, 1.2], y: [0, -30, 0] }}
           transition={{ duration: 15, repeat: Infinity }}
         />
@@ -80,7 +82,7 @@ function LeaderboardPage() {
             <div className="flex items-center gap-4">
               <motion.div
                 className="w-14 h-14 rounded-2xl flex items-center justify-center relative"
-                style={{ background: 'linear-gradient(135deg, #f59e0b, #d97706)' }}
+                style={{ background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})` }}
                 whileHover={{ scale: 1.05, rotate: 5 }}
               >
                 <Trophy size={28} className="text-white" />
@@ -113,8 +115,8 @@ function LeaderboardPage() {
           className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"
         >
           {[
-            { label: 'Total Creators', value: stats.totalUsers, icon: Users2, color: '#8b5cf6', bg: 'rgba(139, 92, 246, 0.15)' },
-            { label: 'Total Points', value: stats.totalScore, icon: Star, color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.15)' },
+            { label: 'Total Creators', value: stats.totalUsers, icon: Users2, color: theme.colors.primary, bg: `${theme.colors.primary}20` },
+            { label: 'Total Points', value: stats.totalScore, icon: Star, color: theme.colors.accent, bg: `${theme.colors.accent}20` },
             { label: 'Active Today', value: stats.activeToday, icon: Flame, color: '#ef4444', bg: 'rgba(239, 68, 68, 0.15)' },
             { label: 'New This Week', value: stats.newThisWeek, icon: TrendingUp, color: '#22c55e', bg: 'rgba(34, 197, 94, 0.15)' },
           ].map((stat, i) => (
@@ -126,9 +128,9 @@ function LeaderboardPage() {
               whileHover={{ scale: 1.02, y: -2 }}
               className="relative p-5 rounded-2xl overflow-hidden group"
               style={{
-                background: 'rgba(255, 255, 255, 0.03)',
+                background: theme.colors.card,
                 backdropFilter: 'blur(20px)',
-                border: '1px solid rgba(255, 255, 255, 0.08)',
+                border: `1px solid ${theme.colors.border}`,
               }}
             >
               <motion.div
@@ -165,10 +167,10 @@ function LeaderboardPage() {
             className="mb-8"
           >
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'rgba(245, 158, 11, 0.15)' }}>
-                <Trophy size={16} style={{ color: '#f59e0b' }} />
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: `${theme.colors.primary}20` }}>
+                <Trophy size={16} style={{ color: theme.colors.primary }} />
               </div>
-              <h2 className="text-xl font-bold" style={{ color: 'var(--foreground)' }}>Top 3</h2>
+              <h2 className="text-xl font-bold" style={{ color: theme.colors.foreground }}>Top 3</h2>
             </div>
             <div className="grid grid-cols-3 gap-4 items-end">
               {[1, 0, 2].map((idx) => {
@@ -241,15 +243,15 @@ function LeaderboardPage() {
           <div
             className="rounded-3xl overflow-hidden"
             style={{
-              background: 'rgba(255, 255, 255, 0.02)',
+              background: theme.colors.card,
               backdropFilter: 'blur(20px)',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
+              border: `1px solid ${theme.colors.border}`,
             }}
           >
-            <div className="p-5 flex items-center justify-between" style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.06)' }}>
+            <div className="p-5 flex items-center justify-between" style={{ borderBottom: `1px solid ${theme.colors.border}` }}>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'rgba(139, 92, 246, 0.15)' }}>
-                  <Users2 size={20} style={{ color: '#8b5cf6' }} />
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: `${theme.colors.primary}20` }}>
+                  <Users2 size={20} style={{ color: theme.colors.primary }} />
                 </div>
                 <div>
                   <h2 className="font-semibold" style={{ color: 'var(--foreground)' }}>All Rankings</h2>
@@ -267,15 +269,15 @@ function LeaderboardPage() {
               </div>
             ) : !topUsers || topUsers.length === 0 ? (
               <div className="p-12 text-center">
-                <div className="w-20 h-20 mx-auto mb-4 rounded-2xl flex items-center justify-center" style={{ background: 'rgba(245, 158, 11, 0.1)' }}>
-                  <Trophy size={40} style={{ color: '#f59e0b', opacity: 0.5 }} />
+                <div className="w-20 h-20 mx-auto mb-4 rounded-2xl flex items-center justify-center" style={{ background: `${theme.colors.primary}15` }}>
+                  <Trophy size={40} style={{ color: theme.colors.primary, opacity: 0.5 }} />
                 </div>
                 <h3 className="text-xl font-bold mb-2" style={{ color: 'var(--foreground)' }}>No rankings yet</h3>
                 <p className="mb-6" style={{ color: 'var(--foreground-muted)' }}>Be the first to claim the top spot!</p>
                 <Link to="/sign-up">
                   <motion.button
                     className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-white"
-                    style={{ background: 'linear-gradient(135deg, #f59e0b, #d97706)' }}
+                    style={{ background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})` }}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
@@ -373,28 +375,28 @@ function LeaderboardPage() {
           <div
             className="p-6 rounded-3xl"
             style={{
-              background: 'rgba(255, 255, 255, 0.02)',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
+              background: theme.colors.card,
+              border: `1px solid ${theme.colors.border}`,
             }}
           >
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'rgba(139, 92, 246, 0.15)' }}>
-                <Sparkles size={16} style={{ color: '#8b5cf6' }} />
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: `${theme.colors.primary}20` }}>
+                <Sparkles size={16} style={{ color: theme.colors.primary }} />
               </div>
-              <h3 className="font-bold" style={{ color: 'var(--foreground)' }}>How to Earn Points</h3>
+              <h3 className="font-bold" style={{ color: theme.colors.foreground }}>How to Earn Points</h3>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {[
-                { icon: Eye, label: 'Profile Views', points: '+1 pt', color: '#8b5cf6' },
-                { icon: MousePointerClick, label: 'Link Clicks', points: '+2 pts', color: '#ec4899' },
+                { icon: Eye, label: 'Profile Views', points: '+1 pt', color: theme.colors.primary },
+                { icon: MousePointerClick, label: 'Link Clicks', points: '+2 pts', color: theme.colors.accent },
                 { icon: Heart, label: 'Followers', points: '+3 pts', color: '#ef4444' },
                 { icon: UserPlus, label: 'Referrals', points: '+5 pts', color: '#22c55e' },
               ].map((item) => (
-                <div key={item.label} className="text-center p-4 rounded-xl" style={{ background: 'rgba(255, 255, 255, 0.02)' }}>
+                <div key={item.label} className="text-center p-4 rounded-xl" style={{ background: theme.colors.backgroundSecondary }}>
                   <div className="w-10 h-10 mx-auto mb-2 rounded-lg flex items-center justify-center" style={{ background: `${item.color}15` }}>
                     <item.icon size={20} style={{ color: item.color }} />
                   </div>
-                  <p className="text-sm font-medium" style={{ color: 'var(--foreground)' }}>{item.label}</p>
+                  <p className="text-sm font-medium" style={{ color: theme.colors.foreground }}>{item.label}</p>
                   <p className="text-lg font-bold" style={{ color: item.color }}>{item.points}</p>
                 </div>
               ))}

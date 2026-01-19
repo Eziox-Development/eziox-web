@@ -7,6 +7,7 @@ import { getPartnersFn, getMyApplicationFn, getPartnerStatsFn } from '@/server/f
 import { BadgeDisplay } from '@/components/ui/BadgeDisplay'
 import { PartnerApplicationForm } from '@/components/partner/PartnerApplicationForm'
 import { useAuth } from '@/hooks/use-auth'
+import { useTheme } from '@/components/portfolio/ThemeProvider'
 import {
   Handshake, Star, Loader2, Users2, TrendingUp,
   Eye, Heart, ArrowRight, Crown, Sparkles, Shield, CheckCircle2,
@@ -31,6 +32,7 @@ const PARTNER_BENEFITS = [
 ]
 
 function PartnersPage() {
+  const { theme } = useTheme()
   const { currentUser } = useAuth()
   const getPartners = useServerFn(getPartnersFn)
   const getMyApplication = useServerFn(getMyApplicationFn)
@@ -75,8 +77,8 @@ function PartnersPage() {
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 overflow-hidden">
         <div className="absolute inset-0">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl opacity-20" style={{ background: 'linear-gradient(135deg, #14b8a6, #8b5cf6)' }} />
-          <div className="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full blur-3xl opacity-15" style={{ background: 'linear-gradient(135deg, #8b5cf6, #ec4899)' }} />
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl opacity-20" style={{ background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})` }} />
+          <div className="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full blur-3xl opacity-15" style={{ background: `linear-gradient(135deg, ${theme.colors.accent}, ${theme.colors.primary})` }} />
         </div>
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -85,14 +87,14 @@ function PartnersPage() {
             animate={{ opacity: 1, y: 0 }}
             className="text-center max-w-3xl mx-auto"
           >
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6" style={{ background: 'rgba(20, 184, 166, 0.1)', border: '1px solid rgba(20, 184, 166, 0.2)' }}>
-              <Handshake size={16} style={{ color: '#14b8a6' }} />
-              <span className="text-sm font-medium" style={{ color: '#14b8a6' }}>Partner Program</span>
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6" style={{ background: `${theme.colors.primary}15`, border: `1px solid ${theme.colors.primary}30` }}>
+              <Handshake size={16} style={{ color: theme.colors.primary }} />
+              <span className="text-sm font-medium" style={{ color: theme.colors.primary }}>Partner Program</span>
             </div>
 
             <h1 className="text-4xl md:text-6xl font-bold mb-6" style={{ color: 'var(--foreground)' }}>
               Join Our{' '}
-              <span style={{ background: 'linear-gradient(135deg, #14b8a6, #8b5cf6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+              <span style={{ background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                 Partner Network
               </span>
             </h1>
@@ -104,7 +106,7 @@ function PartnersPage() {
             <div className="flex flex-wrap justify-center gap-4">
               {currentUser ? (
                 myApplication ? (
-                  <div className="flex items-center gap-3 px-6 py-3 rounded-2xl" style={{ background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
+                  <div className="flex items-center gap-3 px-6 py-3 rounded-2xl" style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}` }}>
                     {(() => {
                       const status = getStatusBadge(myApplication.status)
                       return (
@@ -119,7 +121,7 @@ function PartnersPage() {
                   <motion.button
                     onClick={() => setShowApplicationForm(true)}
                     className="px-8 py-4 rounded-2xl font-semibold text-white flex items-center gap-2"
-                    style={{ background: 'linear-gradient(135deg, #14b8a6, #8b5cf6)' }}
+                    style={{ background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})` }}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
@@ -132,7 +134,7 @@ function PartnersPage() {
                 <Link
                   to="/sign-in"
                   className="px-8 py-4 rounded-2xl font-semibold text-white flex items-center gap-2"
-                  style={{ background: 'linear-gradient(135deg, #14b8a6, #8b5cf6)' }}
+                  style={{ background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})` }}
                 >
                   Sign In to Apply
                   <ArrowRight size={18} />
@@ -157,13 +159,13 @@ function PartnersPage() {
               <div
                 key={i}
                 className="p-4 rounded-2xl text-center"
-                style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.08)' }}
+                style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}` }}
               >
-                <stat.icon size={24} className="mx-auto mb-2" style={{ color: '#14b8a6' }} />
-                <div className="text-2xl font-bold" style={{ color: 'var(--foreground)' }}>
+                <stat.icon size={24} className="mx-auto mb-2" style={{ color: theme.colors.primary }} />
+                <div className="text-2xl font-bold" style={{ color: theme.colors.foreground }}>
                   {typeof stat.value === 'number' && stat.value > 1000 ? `${(stat.value / 1000).toFixed(1)}k` : stat.value}
                 </div>
-                <div className="text-sm" style={{ color: 'var(--foreground-muted)' }}>{stat.label}</div>
+                <div className="text-sm" style={{ color: theme.colors.foregroundMuted }}>{stat.label}</div>
               </div>
             ))}
           </motion.div>
@@ -171,7 +173,7 @@ function PartnersPage() {
       </section>
 
       {/* Benefits Section */}
-      <section className="py-20" style={{ background: 'rgba(255, 255, 255, 0.01)' }}>
+      <section className="py-20" style={{ background: theme.colors.backgroundSecondary }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -180,7 +182,7 @@ function PartnersPage() {
             className="mb-12"
           >
             <div className="flex items-center gap-4 mb-4">
-              <div className="w-12 h-12 rounded-2xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #14b8a6, #8b5cf6)' }}>
+              <div className="w-12 h-12 rounded-2xl flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})` }}>
                 <Gift size={24} className="text-white" />
               </div>
               <div>
@@ -200,14 +202,14 @@ function PartnersPage() {
                 transition={{ delay: i * 0.1 }}
                 className="p-6 rounded-2xl group hover:scale-[1.02] transition-all"
                 style={{ 
-                  background: 'rgba(255, 255, 255, 0.02)', 
+                  background: theme.colors.card, 
                   backdropFilter: 'blur(20px)',
-                  border: '1px solid rgba(255, 255, 255, 0.08)' 
+                  border: `1px solid ${theme.colors.border}` 
                 }}
                 whileHover={{ y: -5 }}
               >
-                <div className="w-14 h-14 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform" style={{ background: 'linear-gradient(135deg, rgba(20, 184, 166, 0.2), rgba(139, 92, 246, 0.2))' }}>
-                  <benefit.icon size={24} style={{ color: '#14b8a6' }} />
+                <div className="w-14 h-14 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform" style={{ background: `linear-gradient(135deg, ${theme.colors.primary}30, ${theme.colors.accent}30)` }}>
+                  <benefit.icon size={24} style={{ color: theme.colors.primary }} />
                 </div>
                 <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--foreground)' }}>{benefit.title}</h3>
                 <p className="text-sm" style={{ color: 'var(--foreground-muted)' }}>{benefit.description}</p>
@@ -230,13 +232,13 @@ function PartnersPage() {
               <div className="flex items-center gap-4 mb-8">
                 <motion.div 
                   className="w-14 h-14 rounded-2xl flex items-center justify-center relative" 
-                  style={{ background: 'linear-gradient(135deg, #14b8a6, #8b5cf6)' }}
+                  style={{ background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})` }}
                   whileHover={{ scale: 1.05, rotate: 5 }}
                 >
                   <Shield size={24} className="text-white" />
                   <motion.div
                     className="absolute inset-0 rounded-2xl"
-                    style={{ background: 'linear-gradient(135deg, #14b8a6, #8b5cf6)' }}
+                    style={{ background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})` }}
                     animate={{ opacity: [0.5, 0, 0.5] }}
                     transition={{ duration: 2, repeat: Infinity }}
                   />
@@ -263,9 +265,9 @@ function PartnersPage() {
                       <motion.div
                         className="p-5 rounded-3xl transition-all"
                         style={{ 
-                          background: 'rgba(255, 255, 255, 0.02)', 
+                          background: theme.colors.card, 
                           backdropFilter: 'blur(20px)',
-                          border: '1px solid rgba(255, 255, 255, 0.08)' 
+                          border: `1px solid ${theme.colors.border}` 
                         }}
                         whileHover={{ y: -8, scale: 1.02 }}
                       >
@@ -276,7 +278,7 @@ function PartnersPage() {
                               alt={partner.user.name || partner.user.username}
                               className="w-16 h-16 rounded-2xl object-cover ring-2 ring-white/10"
                             />
-                            <div className="absolute -bottom-1.5 -right-1.5 w-6 h-6 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #14b8a6, #8b5cf6)' }}>
+                            <div className="absolute -bottom-1.5 -right-1.5 w-6 h-6 rounded-full flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})` }}>
                               <Handshake size={12} className="text-white" />
                             </div>
                           </div>
@@ -299,7 +301,7 @@ function PartnersPage() {
                           <p className="text-sm mb-4 line-clamp-2" style={{ color: 'var(--foreground-muted)' }}>{partner.profile.bio}</p>
                         )}
                         
-                        <div className="flex items-center justify-between pt-4" style={{ borderTop: '1px solid rgba(255, 255, 255, 0.06)' }}>
+                        <div className="flex items-center justify-between pt-4" style={{ borderTop: `1px solid ${theme.colors.border}` }}>
                           <div className="flex items-center gap-4 text-sm" style={{ color: 'var(--foreground-muted)' }}>
                             <span className="flex items-center gap-1.5">
                               <Eye size={14} />
@@ -312,7 +314,7 @@ function PartnersPage() {
                           </div>
                           <motion.div
                             className="flex items-center gap-1 text-sm font-medium"
-                            style={{ color: '#14b8a6' }}
+                            style={{ color: theme.colors.primary }}
                             animate={{ x: [0, 4, 0] }}
                             transition={{ duration: 1.5, repeat: Infinity }}
                           >
@@ -338,13 +340,13 @@ function PartnersPage() {
               <div className="flex items-center gap-4 mb-8">
                 <motion.div 
                   className="w-14 h-14 rounded-2xl flex items-center justify-center relative" 
-                  style={{ background: 'linear-gradient(135deg, #f59e0b, #ec4899)' }}
+                  style={{ background: `linear-gradient(135deg, ${theme.colors.accent}, ${theme.colors.primary})` }}
                   whileHover={{ scale: 1.05, rotate: -5 }}
                 >
                   <Star size={24} className="text-white" />
                   <motion.div
                     className="absolute inset-0 rounded-2xl"
-                    style={{ background: 'linear-gradient(135deg, #f59e0b, #ec4899)' }}
+                    style={{ background: `linear-gradient(135deg, ${theme.colors.accent}, ${theme.colors.primary})` }}
                     animate={{ opacity: [0.5, 0, 0.5] }}
                     transition={{ duration: 2, repeat: Infinity, delay: 1 }}
                   />
@@ -371,9 +373,9 @@ function PartnersPage() {
                       <motion.div
                         className="p-4 rounded-2xl transition-all text-center"
                         style={{ 
-                          background: 'rgba(255, 255, 255, 0.02)', 
+                          background: theme.colors.card, 
                           backdropFilter: 'blur(20px)',
-                          border: '1px solid rgba(255, 255, 255, 0.08)' 
+                          border: `1px solid ${theme.colors.border}` 
                         }}
                         whileHover={{ y: -5, scale: 1.05 }}
                       >
@@ -383,7 +385,7 @@ function PartnersPage() {
                             alt={partner.user.name || partner.user.username}
                             className="w-16 h-16 rounded-2xl object-cover ring-2 ring-white/10 mx-auto"
                           />
-                          <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #f59e0b, #ec4899)' }}>
+                          <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${theme.colors.accent}, ${theme.colors.primary})` }}>
                             <Star size={10} className="text-white" />
                           </div>
                         </div>
@@ -400,11 +402,11 @@ function PartnersPage() {
           {/* Empty State */}
           {isLoading ? (
             <div className="flex items-center justify-center py-20">
-              <Loader2 size={32} className="animate-spin" style={{ color: '#14b8a6' }} />
+              <Loader2 size={32} className="animate-spin" style={{ color: theme.colors.primary }} />
             </div>
           ) : (!partnersData?.partners || partnersData.partners.length === 0) && (
             <div className="text-center py-20">
-              <div className="w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center" style={{ background: 'rgba(255, 255, 255, 0.05)' }}>
+              <div className="w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center" style={{ background: `${theme.colors.primary}15` }}>
                 <Handshake size={40} style={{ color: 'var(--foreground-muted)' }} />
               </div>
               <h3 className="text-xl font-semibold mb-2" style={{ color: 'var(--foreground)' }}>No Partners Yet</h3>
@@ -413,7 +415,7 @@ function PartnersPage() {
                 <motion.button
                   onClick={() => setShowApplicationForm(true)}
                   className="px-6 py-3 rounded-xl font-medium text-white"
-                  style={{ background: 'linear-gradient(135deg, #14b8a6, #8b5cf6)' }}
+                  style={{ background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})` }}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
