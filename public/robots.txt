@@ -1,3 +1,37 @@
-# https://www.robotstxt.org/robotstxt.html
+# Eziox - Bio Link Platform
+# https://eziox.link
+
 User-agent: *
-Disallow:
+Allow: /
+Disallow: /api/
+Disallow: /profile/
+Disallow: /links/
+Disallow: /analytics/
+Disallow: /admin/
+Disallow: /sign-in
+Disallow: /sign-up
+Disallow: /sign-out
+Disallow: /reset-password
+Disallow: /s/
+
+# Sitemaps
+Sitemap: https://eziox.link/sitemap.xml
+
+# Crawl-delay for polite crawling
+Crawl-delay: 1
+
+# Allow social media crawlers full access
+User-agent: Twitterbot
+Allow: /
+
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: LinkedInBot
+Allow: /
+
+User-agent: Discordbot
+Allow: /
+
+User-agent: TelegramBot
+Allow: /

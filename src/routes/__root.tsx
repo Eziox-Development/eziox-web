@@ -38,37 +38,63 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
     }
   },
   head: () => {
+    const siteUrl = siteConfig.metadata.url
+    const title = `${siteConfig.metadata.title} - Bio Link Platform for Creators`
+    const description = siteConfig.metadata.description
+    const ogImage = `${siteUrl}/eziox.png`
+
     const meta = [
       { charSet: 'utf-8' },
       {
         name: 'viewport',
         content: 'width=device-width, initial-scale=1, viewport-fit=cover',
       },
-      { title: siteConfig.metadata.title },
-      { name: 'description', content: siteConfig.metadata.description },
+      { title },
+      { name: 'description', content: description },
       // Theme & PWA
-      { name: 'theme-color', content: '#0a0a0a' },
-      { name: 'color-scheme', content: 'dark light' },
+      { name: 'theme-color', content: '#8b5cf6' },
+      { name: 'color-scheme', content: 'dark' },
       { name: 'apple-mobile-web-app-capable', content: 'yes' },
       { name: 'mobile-web-app-capable', content: 'yes' },
-      {
-        name: 'apple-mobile-web-app-status-bar-style',
-        content: 'black-translucent',
-      },
+      { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' },
+      { name: 'apple-mobile-web-app-title', content: 'Eziox' },
+      { name: 'application-name', content: 'Eziox' },
+      { name: 'msapplication-TileColor', content: '#8b5cf6' },
       // SEO
-      { name: 'robots', content: 'index, follow' },
+      { name: 'robots', content: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1' },
       { name: 'author', content: 'Saito' },
+      { name: 'creator', content: 'Eziox Development' },
+      { name: 'publisher', content: 'Eziox' },
       { name: 'generator', content: 'TanStack Start' },
+      { name: 'keywords', content: 'bio link, link in bio, linktree alternative, creator tools, social media links, portfolio, personal page, streamer, vtuber, content creator' },
+      { name: 'category', content: 'Technology' },
+      // Canonical URL
+      { name: 'canonical', content: siteUrl },
       // Open Graph
       { property: 'og:type', content: 'website' },
-      { property: 'og:title', content: siteConfig.metadata.title },
-      { property: 'og:description', content: siteConfig.metadata.description },
-      { property: 'og:site_name', content: siteConfig.metadata.title },
-      { property: 'og:locale', content: siteConfig.metadata.language || 'en' },
+      { property: 'og:url', content: siteUrl },
+      { property: 'og:title', content: title },
+      { property: 'og:description', content: description },
+      { property: 'og:site_name', content: 'Eziox' },
+      { property: 'og:locale', content: 'en_US' },
+      { property: 'og:image', content: ogImage },
+      { property: 'og:image:width', content: '1200' },
+      { property: 'og:image:height', content: '630' },
+      { property: 'og:image:type', content: 'image/png' },
+      { property: 'og:image:alt', content: 'Eziox - The modern bio link platform for creators' },
       // Twitter Card
       { name: 'twitter:card', content: 'summary_large_image' },
-      { name: 'twitter:title', content: siteConfig.metadata.title },
-      { name: 'twitter:description', content: siteConfig.metadata.description },
+      { name: 'twitter:site', content: '@eziox' },
+      { name: 'twitter:creator', content: '@eziox' },
+      { name: 'twitter:title', content: title },
+      { name: 'twitter:description', content: description },
+      { name: 'twitter:image', content: ogImage },
+      { name: 'twitter:image:alt', content: 'Eziox - The modern bio link platform for creators' },
+      // Discord
+      { name: 'theme-color', content: '#8b5cf6' },
+      // Additional SEO
+      { name: 'format-detection', content: 'telephone=no' },
+      { name: 'referrer', content: 'origin-when-cross-origin' },
     ]
 
     const links: {
@@ -79,22 +105,19 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       sizes?: string
     }[] = [
       { rel: 'stylesheet', href: appCss },
-      {
-        rel: 'alternate',
-        type: 'application/rss+xml',
-        title: `${siteConfig.metadata.title} RSS Feed`,
-        href: '/rss',
-      },
+      { rel: 'canonical', href: siteUrl },
+      { rel: 'alternate', type: 'application/rss+xml', title: 'Eziox RSS Feed', href: '/rss' },
+      { rel: 'sitemap', type: 'application/xml', href: '/sitemap.xml' },
+      { rel: 'manifest', href: '/site.webmanifest' },
       { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+      { rel: 'preconnect', href: 'https://fonts.gstatic.com' },
       { rel: 'dns-prefetch', href: 'https://fonts.googleapis.com' },
+      { rel: 'dns-prefetch', href: 'https://res.cloudinary.com' },
+      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+      { rel: 'icon', type: 'image/png', sizes: '16x16', href: '/favicon-16x16.png' },
+      { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/favicon-32x32.png' },
+      { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' },
     ]
-
-    if (siteConfig.metadata.icon) {
-      links.push(
-        { rel: 'icon', type: 'image/png', href: siteConfig.metadata.icon },
-        { rel: 'apple-touch-icon', href: siteConfig.metadata.icon },
-      )
-    }
 
     return {
       meta,
