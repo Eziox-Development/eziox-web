@@ -313,7 +313,7 @@ function TemplatesPage() {
               Sign up and upgrade to Pro to apply community templates to your profile.
             </p>
             <Link
-              to="/join"
+              to="/sign-up"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-all hover:scale-105"
               style={{ background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`, color: '#fff' }}
             >
@@ -381,7 +381,7 @@ function TemplateCard({ template, theme, onApply, onLike, onPreview, canApply, i
         style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}` }}
       >
         <div
-          className="w-20 h-20 rounded-xl flex-shrink-0"
+          className="w-20 h-20 rounded-xl shrink-0"
           style={{ background: bgPreview }}
         />
         <div className="flex-1 min-w-0">

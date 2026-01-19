@@ -425,15 +425,36 @@ export function CustomizationTab() {
 
               {currentBackground?.type === 'video' && (
                 <div className="space-y-3">
-                  <label className="text-sm font-medium" style={{ color: theme.colors.foreground }}>Video URL</label>
-                  <input
-                    type="url"
-                    placeholder="https://example.com/video.mp4"
-                    value={currentBackground.videoUrl || ''}
-                    onChange={(e) => setLocalBackground({ ...currentBackground, videoUrl: e.target.value, value: e.target.value })}
-                    className="w-full px-4 py-2.5 rounded-xl text-sm"
-                    style={{ background: theme.colors.backgroundSecondary, color: theme.colors.foreground, border: `1px solid ${theme.colors.border}` }}
-                  />
+                  <label className="text-sm font-medium" style={{ color: theme.colors.foreground }}>Video</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="url"
+                      placeholder="https://example.com/video.mp4"
+                      value={currentBackground.videoUrl || ''}
+                      onChange={(e) => setLocalBackground({ ...currentBackground, videoUrl: e.target.value, value: e.target.value })}
+                      className="flex-1 px-4 py-2.5 rounded-xl text-sm"
+                      style={{ background: theme.colors.backgroundSecondary, color: theme.colors.foreground, border: `1px solid ${theme.colors.border}` }}
+                    />
+                    <label
+                      className="px-4 py-2.5 rounded-xl text-sm font-medium cursor-pointer flex items-center gap-2 transition-all hover:opacity-80"
+                      style={{ background: theme.colors.primary, color: '#fff' }}
+                    >
+                      <Upload size={16} />
+                      Upload
+                      <input
+                        type="file"
+                        accept="video/*"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0]
+                          if (file) {
+                            const url = URL.createObjectURL(file)
+                            setLocalBackground({ ...currentBackground, videoUrl: url, value: url })
+                          }
+                        }}
+                      />
+                    </label>
+                  </div>
                   <div className="flex gap-4">
                     <label className="flex items-center gap-2 cursor-pointer">
                       <input

@@ -81,6 +81,7 @@ function PlaygroundPage() {
   const [isPublic, setIsPublic] = useState(true)
   
   // Local state for editing
+  const [isInitialized, setIsInitialized] = useState(false)
   const [localBackground, setLocalBackground] = useState<CustomBackground>(DEFAULT_BACKGROUND)
   const [localLayout, setLocalLayout] = useState<LayoutSettings>(DEFAULT_LAYOUT)
   const [localCSS, setLocalCSS] = useState('')
@@ -113,24 +114,24 @@ function PlaygroundPage() {
     queryFn: () => getMyTemplates(),
   })
   
-  // Load current settings
+  // Load current settings only once on initial load
   useEffect(() => {
-    if (profileSettings?.customBackground) {
-      setLocalBackground(profileSettings.customBackground)
+    if (!isInitialized && profileSettings && creatorSettings) {
+      if (profileSettings.customBackground) {
+        setLocalBackground(profileSettings.customBackground)
+      }
+      if (profileSettings.layoutSettings) {
+        setLocalLayout(profileSettings.layoutSettings)
+      }
+      if (creatorSettings.customCSS) {
+        setLocalCSS(creatorSettings.customCSS)
+      }
+      if (creatorSettings.animatedProfile) {
+        setLocalAnimated(creatorSettings.animatedProfile)
+      }
+      setIsInitialized(true)
     }
-    if (profileSettings?.layoutSettings) {
-      setLocalLayout(profileSettings.layoutSettings)
-    }
-  }, [profileSettings])
-  
-  useEffect(() => {
-    if (creatorSettings?.customCSS) {
-      setLocalCSS(creatorSettings.customCSS)
-    }
-    if (creatorSettings?.animatedProfile) {
-      setLocalAnimated(creatorSettings.animatedProfile)
-    }
-  }, [creatorSettings])
+  }, [profileSettings, creatorSettings, isInitialized])
   
   // Mutations
   const applyAllMutation = useMutation({
@@ -927,7 +928,7 @@ function PlaygroundPage() {
                   {/* Mock Profile Content */}
                   <div className="relative z-10 p-6 flex flex-col items-center">
                     <div 
-                      className={`w-24 h-24 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 mb-4 ${
+                      className={`w-24 h-24 rounded-full bg-linear-to-br from-purple-500 to-pink-500 mb-4 ${
                         localAnimated.avatarAnimation === 'pulse' ? 'animate-pulse' : ''
                       }`}
                     />
