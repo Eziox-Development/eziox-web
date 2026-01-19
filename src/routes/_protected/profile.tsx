@@ -20,7 +20,7 @@ import {
   Copy, Check, Globe, Sparkles, Link as LinkIcon, AtSign,
   ExternalLink, Eye, MousePointerClick, Users, Heart,
   Settings, Gift, TrendingUp, Shield, Lock,
-  UserCircle, ChevronRight, Handshake, Crown, BarChart3,
+  UserCircle, ChevronRight, Handshake, Crown, BarChart3, Paintbrush,
 } from 'lucide-react'
 import {
   SiX, SiInstagram, SiYoutube, SiTwitch, SiGithub, SiTiktok, SiDiscord,
@@ -295,6 +295,15 @@ function ProfilePage() {
                 <Link to="/leaderboard" className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/5">
                   <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: 'var(--background-secondary)' }}><TrendingUp size={18} style={{ color: 'var(--foreground-muted)' }} /></div>
                   <span style={{ color: 'var(--foreground)' }}>Leaderboard</span>
+                </Link>
+                <Link to="/playground" className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/5">
+                  <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: 'var(--background-secondary)' }}><Palette size={18} style={{ color: 'var(--foreground-muted)' }} /></div>
+                  <span style={{ color: 'var(--foreground)' }}>Playground</span>
+                </Link>
+                <Link to="/theme-builder" className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/5">
+                  <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, var(--primary), var(--accent))' }}><Paintbrush size={18} className="text-white" /></div>
+                  <span style={{ color: 'var(--foreground)' }}>Theme Builder</span>
+                  <Crown size={12} style={{ color: '#f59e0b' }} />
                 </Link>
               </nav>
 

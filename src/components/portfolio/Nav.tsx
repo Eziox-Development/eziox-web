@@ -33,6 +33,7 @@ import {
   Palette,
   ArrowRight,
   Command,
+  Paintbrush,
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'motion/react'
 import { useAuth } from '@/hooks/use-auth'
@@ -62,6 +63,7 @@ const COMMUNITY_ITEMS = [
 const QUICK_ACTIONS = [
   { to: '/profile', icon: LayoutDashboard, label: 'Dashboard', shortcut: 'D' },
   { to: '/playground', icon: Palette, label: 'Playground', shortcut: 'P' },
+  { to: '/theme-builder', icon: Paintbrush, label: 'Theme Builder', shortcut: 'T' },
   { to: '/analytics', icon: BarChart3, label: 'Analytics', shortcut: 'A' },
 ]
 
