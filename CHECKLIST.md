@@ -285,6 +285,7 @@
 - [x] "Remember me" option (30 days vs 7 days session)
 - [x] Account lockout after 5 failed login attempts (30 min)
 - [x] 2FA/MFA support (TOTP with QR code)
+- [x] 2FA recovery codes (10 codes, one-time use, regeneratable)
 - [x] Password reset with rate limiting (3/hour)
 - [x] Login notification emails (Resend integration)
 
