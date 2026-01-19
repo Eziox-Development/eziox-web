@@ -242,36 +242,36 @@ function PlaygroundPage() {
 
   return (
     <div className="min-h-screen" style={{ background: theme.colors.background }}>
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
-        >
-          <div className="flex items-center justify-between flex-wrap gap-4">
-            <div>
-              <h1 className="text-3xl font-bold" style={{ color: theme.colors.foreground }}>
-                Playground
-              </h1>
-              <p className="text-sm mt-1" style={{ color: theme.colors.foregroundMuted }}>
-                Create, test, and publish your custom presets
-              </p>
+      {/* Sticky Header */}
+      <div className="sticky top-0 z-40 backdrop-blur-xl" style={{ background: `${theme.colors.background}ee`, borderBottom: `1px solid ${theme.colors.border}` }}>
+        <div className="max-w-7xl mx-auto px-4 py-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div
+                className="w-10 h-10 rounded-xl flex items-center justify-center"
+                style={{ background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})` }}
+              >
+                <Sparkles size={20} className="text-white" />
+              </div>
+              <div>
+                <h1 className="text-lg font-bold" style={{ color: theme.colors.foreground }}>Playground</h1>
+                <p className="text-xs" style={{ color: theme.colors.foregroundMuted }}>Create & test presets</p>
+              </div>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               <motion.button
                 onClick={() => setShowPreview(!showPreview)}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium"
+                className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium"
                 style={{ background: theme.colors.backgroundSecondary, color: theme.colors.foreground }}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
                 {showPreview ? <EyeOff size={16} /> : <Eye size={16} />}
-                {showPreview ? 'Hide' : 'Show'} Preview
+                <span className="hidden sm:inline">{showPreview ? 'Hide' : 'Show'}</span>
               </motion.button>
               <motion.button
                 onClick={loadFromProfile}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium"
+                className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium"
                 style={{ background: theme.colors.backgroundSecondary, color: theme.colors.foreground }}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
@@ -291,8 +291,10 @@ function PlaygroundPage() {
               </motion.button>
             </div>
           </div>
-        </motion.div>
-        
+        </div>
+      </div>
+      
+      <div className="max-w-7xl mx-auto px-4 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Editor Panel */}
           <motion.div
