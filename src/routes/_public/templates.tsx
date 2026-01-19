@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { motion, AnimatePresence } from 'motion/react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
@@ -17,24 +17,24 @@ import {
   Heart,
   Download,
   Sparkles,
-  Filter,
-  Grid3X3,
+  LayoutGrid,
   List,
-  ChevronRight,
   Crown,
   Loader2,
   Eye,
   User,
   Palette,
-  Code,
+  Code2,
   Gamepad2,
-  Music,
-  Brush,
+  Music4,
+  Paintbrush,
   Briefcase,
   Monitor,
   Star,
+  ArrowRight,
+  Layers,
+  X,
 } from 'lucide-react'
-import { Link } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/_public/templates')({
   component: TemplatesPage,
@@ -47,17 +47,18 @@ export const Route = createFileRoute('/_public/templates')({
 })
 
 const CATEGORIES = [
-  { id: 'all', label: 'All', icon: Grid3X3 },
+  { id: 'all', label: 'All', icon: LayoutGrid },
   { id: 'vtuber', label: 'VTuber', icon: Sparkles },
   { id: 'gamer', label: 'Gamer', icon: Gamepad2 },
-  { id: 'developer', label: 'Developer', icon: Code },
+  { id: 'developer', label: 'Developer', icon: Code2 },
   { id: 'minimal', label: 'Minimal', icon: Monitor },
-  { id: 'creative', label: 'Creative', icon: Brush },
+  { id: 'creative', label: 'Creative', icon: Paintbrush },
   { id: 'business', label: 'Business', icon: Briefcase },
-  { id: 'music', label: 'Music', icon: Music },
+  { id: 'music', label: 'Music', icon: Music4 },
   { id: 'art', label: 'Art', icon: Palette },
   { id: 'anime', label: 'Anime', icon: Star },
 ]
+
 
 function TemplatesPage() {
   const { theme } = useTheme()
@@ -118,41 +119,43 @@ function TemplatesPage() {
 
   return (
     <div className="min-h-screen" style={{ background: theme.colors.background }}>
-      <div className="max-w-7xl mx-auto px-4 py-12">
+      <div className="max-w-7xl mx-auto px-4 py-6">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative text-center mb-16 py-12 rounded-3xl overflow-hidden"
-          style={{ background: `linear-gradient(135deg, ${theme.colors.primary}10, ${theme.colors.accent}10)` }}
+          className="relative text-center mb-8 py-8 px-6 rounded-2xl overflow-hidden"
+          style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}` }}
         >
-          <div className="absolute inset-0 overflow-hidden">
-            <div className="absolute -top-1/2 -left-1/4 w-96 h-96 rounded-full opacity-20" style={{ background: `radial-gradient(circle, ${theme.colors.primary}, transparent)` }} />
-            <div className="absolute -bottom-1/2 -right-1/4 w-96 h-96 rounded-full opacity-20" style={{ background: `radial-gradient(circle, ${theme.colors.accent}, transparent)` }} />
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute -top-24 -right-24 w-48 h-48 rounded-full opacity-10" style={{ background: theme.colors.primary }} />
+            <div className="absolute -bottom-24 -left-24 w-48 h-48 rounded-full opacity-10" style={{ background: theme.colors.accent }} />
           </div>
-          <div className="relative z-10">
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: 0.1 }}
-              className="w-20 h-20 rounded-2xl mx-auto mb-6 flex items-center justify-center"
-              style={{ background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`, boxShadow: `0 20px 40px ${theme.colors.primary}40` }}
-            >
-              <Palette size={36} className="text-white" />
-            </motion.div>
-            <h1 className="text-4xl md:text-5xl font-bold mb-4" style={{ color: theme.colors.foreground }}>
-              Community Templates
-            </h1>
-            <p className="text-lg max-w-2xl mx-auto px-4" style={{ color: theme.colors.foregroundMuted }}>
-              Discover beautiful profile styles created by our community. Apply them to your bio page with one click.
-            </p>
-            <div className="flex items-center justify-center gap-6 mt-8">
-              <div className="text-center">
-                <p className="text-2xl font-bold" style={{ color: theme.colors.foreground }}>{templatesData?.total || 0}</p>
+          <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="flex items-center gap-4">
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                className="w-14 h-14 rounded-xl flex items-center justify-center shrink-0"
+                style={{ background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})` }}
+              >
+                <Palette size={28} className="text-white" />
+              </motion.div>
+              <div className="text-left">
+                <h1 className="text-2xl md:text-3xl font-bold" style={{ color: theme.colors.foreground }}>
+                  Community Templates
+                </h1>
+                <p className="text-sm" style={{ color: theme.colors.foregroundMuted }}>
+                  Discover and apply beautiful profile styles
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="text-center px-4 py-2 rounded-xl" style={{ background: theme.colors.backgroundSecondary }}>
+                <p className="text-xl font-bold" style={{ color: theme.colors.foreground }}>{templatesData?.total || 0}</p>
                 <p className="text-xs" style={{ color: theme.colors.foregroundMuted }}>Templates</p>
               </div>
-              <div className="w-px h-10" style={{ background: theme.colors.border }} />
-              <div className="text-center">
-                <p className="text-2xl font-bold" style={{ color: theme.colors.foreground }}>{featuredTemplates?.length || 0}</p>
+              <div className="text-center px-4 py-2 rounded-xl" style={{ background: theme.colors.backgroundSecondary }}>
+                <p className="text-xl font-bold" style={{ color: theme.colors.foreground }}>{featuredTemplates?.length || 0}</p>
                 <p className="text-xs" style={{ color: theme.colors.foregroundMuted }}>Featured</p>
               </div>
             </div>
@@ -189,26 +192,28 @@ function TemplatesPage() {
         )}
 
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="mb-8"
+          transition={{ delay: 0.1 }}
+          className="mb-6"
         >
           <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
-            <div className="flex items-center gap-2 overflow-x-auto pb-2 lg:pb-0 w-full lg:w-auto">
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-2 lg:pb-0 w-full lg:w-auto scrollbar-hide">
               {CATEGORIES.map(({ id, label, icon: Icon }) => (
-                <button
+                <motion.button
                   key={id}
                   onClick={() => setCategory(id)}
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all"
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors"
                   style={{
-                    background: category === id ? theme.colors.primary : theme.colors.backgroundSecondary,
+                    background: category === id ? theme.colors.primary : 'transparent',
                     color: category === id ? '#fff' : theme.colors.foregroundMuted,
                   }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                 >
                   <Icon size={16} />
                   {label}
-                </button>
+                </motion.button>
               ))}
             </div>
 
@@ -253,7 +258,7 @@ function TemplatesPage() {
                     color: viewMode === 'grid' ? '#fff' : theme.colors.foregroundMuted,
                   }}
                 >
-                  <Grid3X3 size={18} />
+                  <LayoutGrid size={18} />
                 </button>
                 <button
                   onClick={() => setViewMode('list')}
@@ -310,7 +315,7 @@ function TemplatesPage() {
             animate={{ opacity: 1, y: 0 }}
             className="text-center py-20"
           >
-            <Filter size={48} className="mx-auto mb-4 opacity-20" style={{ color: theme.colors.foregroundMuted }} />
+            <Layers size={48} className="mx-auto mb-4 opacity-20" style={{ color: theme.colors.foregroundMuted }} />
             <h3 className="text-lg font-medium mb-2" style={{ color: theme.colors.foreground }}>No templates found</h3>
             <p className="text-sm" style={{ color: theme.colors.foregroundMuted }}>
               Try adjusting your filters or search terms
@@ -339,7 +344,7 @@ function TemplatesPage() {
               style={{ background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`, color: '#fff' }}
             >
               Get Started
-              <ChevronRight size={16} />
+              <ArrowRight size={16} />
             </Link>
           </motion.div>
         )}
@@ -387,33 +392,34 @@ interface TemplateCardProps {
 }
 
 function TemplateCard({ template, theme, onApply, onLike, onPreview, canApply, isApplying, featured, listView }: TemplateCardProps) {
-  const settings = template.settings as { accentColor?: string; customBackground?: { type: string; value?: string } }
+  const settings = template.settings as { accentColor?: string; customBackground?: { type: string; value?: string; imageUrl?: string } }
   const accentColor = settings?.accentColor || theme.colors.primary
-  const bgPreview = settings?.customBackground?.type === 'gradient' 
+  const bgPreview = settings?.customBackground?.type === 'image' && settings.customBackground.imageUrl
+    ? `url(${settings.customBackground.imageUrl}) center/cover`
+    : settings?.customBackground?.type === 'gradient' 
     ? settings.customBackground.value 
     : settings?.customBackground?.type === 'solid'
     ? settings.customBackground.value
-    : `linear-gradient(135deg, ${accentColor}40, ${theme.colors.accent}40)`
+    : `linear-gradient(135deg, ${accentColor}, ${theme.colors.accent})`
 
   if (listView) {
     return (
-      <div
-        className="flex items-center gap-4 p-4 rounded-xl transition-all hover:scale-[1.01]"
+      <motion.div
+        className="flex items-center gap-4 p-4 rounded-xl group"
         style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}` }}
+        whileHover={{ scale: 1.005, y: -2 }}
+        transition={{ type: 'spring', stiffness: 400, damping: 25 }}
       >
         <div
-          className="w-20 h-20 rounded-xl shrink-0"
+          className="w-16 h-16 rounded-lg shrink-0 shadow-lg"
           style={{ background: bgPreview }}
         />
         <div className="flex-1 min-w-0">
-          <h3 className="font-bold truncate" style={{ color: theme.colors.foreground }}>{template.name}</h3>
-          <p className="text-sm truncate" style={{ color: theme.colors.foregroundMuted }}>
-            {template.description || `A ${template.category} style template`}
-          </p>
-          <div className="flex items-center gap-3 mt-2 text-xs" style={{ color: theme.colors.foregroundMuted }}>
+          <h3 className="font-semibold truncate" style={{ color: theme.colors.foreground }}>{template.name}</h3>
+          <div className="flex items-center gap-3 mt-1 text-xs" style={{ color: theme.colors.foregroundMuted }}>
             <span className="flex items-center gap-1">
               <User size={12} />
-              @{template.userUsername}
+              {template.userUsername}
             </span>
             <span className="flex items-center gap-1">
               <Download size={12} />
@@ -425,73 +431,82 @@ function TemplateCard({ template, theme, onApply, onLike, onPreview, canApply, i
             </span>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <button
+        <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+          <motion.button
             onClick={onPreview}
-            className="p-2 rounded-lg transition-all hover:scale-105"
+            className="p-2 rounded-lg"
             style={{ background: theme.colors.backgroundSecondary }}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
           >
-            <Eye size={18} style={{ color: theme.colors.foregroundMuted }} />
-          </button>
-          <button
+            <Eye size={16} style={{ color: theme.colors.foregroundMuted }} />
+          </motion.button>
+          <motion.button
             onClick={onLike}
-            className="p-2 rounded-lg transition-all hover:scale-105"
+            className="p-2 rounded-lg"
             style={{ background: theme.colors.backgroundSecondary }}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
           >
-            <Heart size={18} style={{ color: theme.colors.foregroundMuted }} />
-          </button>
-          <button
+            <Heart size={16} style={{ color: theme.colors.foregroundMuted }} />
+          </motion.button>
+          <motion.button
             onClick={onApply}
             disabled={!canApply || isApplying}
-            className="px-4 py-2 rounded-lg font-medium text-sm transition-all hover:scale-105 disabled:opacity-50"
+            className="px-4 py-2 rounded-lg font-medium text-sm disabled:opacity-50"
             style={{ background: theme.colors.primary, color: '#fff' }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
             Apply
-          </button>
+          </motion.button>
         </div>
-      </div>
+      </motion.div>
     )
   }
 
   return (
-    <div
-      className={`rounded-xl overflow-hidden transition-all hover:scale-[1.02] ${featured ? 'ring-2' : ''}`}
+    <motion.div
+      className="rounded-xl overflow-hidden group cursor-pointer"
       style={{ 
         background: theme.colors.card, 
         border: `1px solid ${theme.colors.border}`,
-        ...(featured ? { ringColor: theme.colors.primary } : {}),
+        boxShadow: featured ? `0 0 0 2px ${theme.colors.primary}` : undefined,
       }}
+      whileHover={{ scale: 1.02, y: -4 }}
+      transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+      onClick={onPreview}
     >
-      <div
-        className="h-32 relative"
-        style={{ background: bgPreview }}
-      >
+      <div className="h-28 relative overflow-hidden" style={{ background: bgPreview }}>
         {featured && (
-          <div
-            className="absolute top-2 right-2 px-2 py-1 rounded-md text-xs font-medium flex items-center gap-1"
-            style={{ background: 'rgba(0,0,0,0.5)', color: '#fff' }}
+          <motion.div
+            initial={{ opacity: 0, x: 10 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="absolute top-2 right-2 px-2 py-1 rounded-md text-xs font-medium flex items-center gap-1 backdrop-blur-md"
+            style={{ background: `${theme.colors.primary}cc`, color: '#fff' }}
           >
-            <Sparkles size={12} />
+            <Sparkles size={10} />
             Featured
-          </div>
+          </motion.div>
         )}
-        <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity bg-black/50">
-          <button
-            onClick={onPreview}
-            className="px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2"
-            style={{ background: 'rgba(255,255,255,0.2)', color: '#fff', backdropFilter: 'blur(8px)' }}
+        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 bg-black/40 backdrop-blur-sm">
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            whileHover={{ scale: 1 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="flex items-center gap-2"
           >
-            <Eye size={16} />
-            Preview
-          </button>
+            <Eye size={20} className="text-white" />
+            <span className="text-white text-sm font-medium">Preview</span>
+          </motion.div>
         </div>
       </div>
-      <div className="p-4">
-        <div className="flex items-start justify-between mb-2">
+      <div className="p-3">
+        <div className="flex items-start justify-between gap-2 mb-2">
           <div className="min-w-0">
-            <h3 className="font-bold truncate" style={{ color: theme.colors.foreground }}>{template.name}</h3>
+            <h3 className="font-semibold text-sm truncate" style={{ color: theme.colors.foreground }}>{template.name}</h3>
             <p className="text-xs truncate" style={{ color: theme.colors.foregroundMuted }}>
-              by @{template.userUsername}
+              {template.userUsername}
             </p>
           </div>
           <span
@@ -525,7 +540,7 @@ function TemplateCard({ template, theme, onApply, onLike, onPreview, canApply, i
           </button>
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }
 
@@ -540,83 +555,123 @@ interface TemplatePreviewModalProps {
 function TemplatePreviewModal({ templateId, theme, onClose, onApply, canApply }: TemplatePreviewModalProps) {
   const getTemplate = useServerFn(getPublicTemplatesFn)
   
-  const { data } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ['template', templateId],
-    queryFn: () => getTemplate({ data: { limit: 1 } }),
+    queryFn: () => getTemplate({ data: { limit: 50 } }),
   })
 
   const template = data?.templates?.find(t => t.id === templateId)
 
-  if (!template) return null
-
-  const settings = template.settings as { 
+  const settings = template?.settings as { 
     accentColor?: string
-    customBackground?: { type: string; value?: string }
+    customBackground?: { type: string; value?: string; imageUrl?: string }
     layoutSettings?: { cardBorderRadius?: number; cardShadow?: string }
-  }
+  } | undefined
+
+  const bgPreview = settings?.customBackground?.type === 'image' && settings.customBackground.imageUrl
+    ? `url(${settings.customBackground.imageUrl}) center/cover`
+    : settings?.customBackground?.value 
+    || `linear-gradient(135deg, ${settings?.accentColor || theme.colors.primary}, ${theme.colors.accent})`
 
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{ background: 'rgba(0,0,0,0.8)' }}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm"
+      style={{ background: 'rgba(0,0,0,0.7)' }}
       onClick={onClose}
     >
       <motion.div
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.9, opacity: 0 }}
-        className="w-full max-w-2xl rounded-2xl overflow-hidden"
-        style={{ background: theme.colors.card }}
+        initial={{ scale: 0.95, opacity: 0, y: 20 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.95, opacity: 0, y: 20 }}
+        transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+        className="w-full max-w-lg rounded-2xl overflow-hidden shadow-2xl"
+        style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}` }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div
-          className="h-48 relative"
-          style={{ 
-            background: settings?.customBackground?.value || `linear-gradient(135deg, ${settings?.accentColor || theme.colors.primary}40, ${theme.colors.accent}40)` 
-          }}
-        >
-          <div className="absolute bottom-4 left-4">
-            <h2 className="text-2xl font-bold text-white drop-shadow-lg">{template.name}</h2>
-            <p className="text-white/80 text-sm">by @{template.userUsername}</p>
+        {isLoading || !template ? (
+          <div className="h-64 flex items-center justify-center">
+            <Loader2 className="w-8 h-8 animate-spin" style={{ color: theme.colors.primary }} />
           </div>
-        </div>
-        <div className="p-6">
-          <p className="mb-4" style={{ color: theme.colors.foregroundMuted }}>
-            {template.description || `A beautiful ${template.category} style template for your bio page.`}
-          </p>
-          
-          <div className="grid grid-cols-2 gap-4 mb-6">
-            <div className="p-4 rounded-xl" style={{ background: theme.colors.backgroundSecondary }}>
-              <p className="text-xs font-medium mb-1" style={{ color: theme.colors.foregroundMuted }}>Category</p>
-              <p className="font-medium capitalize" style={{ color: theme.colors.foreground }}>{template.category}</p>
+        ) : (
+          <>
+            <div className="h-40 relative overflow-hidden" style={{ background: bgPreview }}>
+              <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent" />
+              <motion.button
+                onClick={onClose}
+                className="absolute top-3 right-3 p-2 rounded-full backdrop-blur-md"
+                style={{ background: 'rgba(0,0,0,0.3)' }}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+              >
+                <X size={18} className="text-white" />
+              </motion.button>
+              <div className="absolute bottom-4 left-4 right-4">
+                <h2 className="text-xl font-bold text-white">{template.name}</h2>
+                <p className="text-white/70 text-sm flex items-center gap-1">
+                  <User size={12} />
+                  {template.userUsername}
+                </p>
+              </div>
             </div>
-            <div className="p-4 rounded-xl" style={{ background: theme.colors.backgroundSecondary }}>
-              <p className="text-xs font-medium mb-1" style={{ color: theme.colors.foregroundMuted }}>Used by</p>
-              <p className="font-medium" style={{ color: theme.colors.foreground }}>{template.uses || 0} users</p>
-            </div>
-          </div>
+            <div className="p-5">
+              {template.description && (
+                <p className="text-sm mb-4" style={{ color: theme.colors.foregroundMuted }}>
+                  {template.description}
+                </p>
+              )}
+              
+              <div className="grid grid-cols-3 gap-3 mb-5">
+                <div className="text-center p-3 rounded-xl" style={{ background: theme.colors.backgroundSecondary }}>
+                  <p className="text-lg font-bold" style={{ color: theme.colors.foreground }}>{template.uses || 0}</p>
+                  <p className="text-xs" style={{ color: theme.colors.foregroundMuted }}>Uses</p>
+                </div>
+                <div className="text-center p-3 rounded-xl" style={{ background: theme.colors.backgroundSecondary }}>
+                  <p className="text-lg font-bold" style={{ color: theme.colors.foreground }}>{template.likes || 0}</p>
+                  <p className="text-xs" style={{ color: theme.colors.foregroundMuted }}>Likes</p>
+                </div>
+                <div className="text-center p-3 rounded-xl" style={{ background: theme.colors.backgroundSecondary }}>
+                  <p className="text-lg font-bold capitalize" style={{ color: theme.colors.foreground }}>{template.category}</p>
+                  <p className="text-xs" style={{ color: theme.colors.foregroundMuted }}>Category</p>
+                </div>
+              </div>
 
-          <div className="flex gap-3">
-            <button
-              onClick={onClose}
-              className="flex-1 py-3 rounded-xl font-medium transition-all"
-              style={{ background: theme.colors.backgroundSecondary, color: theme.colors.foreground }}
-            >
-              Close
-            </button>
-            <button
-              onClick={onApply}
-              disabled={!canApply}
-              className="flex-1 py-3 rounded-xl font-medium transition-all hover:scale-[1.02] disabled:opacity-50"
-              style={{ background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`, color: '#fff' }}
-            >
-              {canApply ? 'Apply Template' : 'Pro Required'}
-            </button>
-          </div>
-        </div>
+              <div className="flex gap-3">
+                <motion.button
+                  onClick={onClose}
+                  className="flex-1 py-3 rounded-xl font-medium text-sm"
+                  style={{ background: theme.colors.backgroundSecondary, color: theme.colors.foreground }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  Cancel
+                </motion.button>
+                <motion.button
+                  onClick={onApply}
+                  disabled={!canApply}
+                  className="flex-1 py-3 rounded-xl font-medium text-sm disabled:opacity-50 flex items-center justify-center gap-2"
+                  style={{ background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`, color: '#fff' }}
+                  whileHover={{ scale: canApply ? 1.02 : 1 }}
+                  whileTap={{ scale: canApply ? 0.98 : 1 }}
+                >
+                  {canApply ? (
+                    <>
+                      <Download size={16} />
+                      Apply Template
+                    </>
+                  ) : (
+                    <>
+                      <Crown size={16} />
+                      Pro Required
+                    </>
+                  )}
+                </motion.button>
+              </div>
+            </div>
+          </>
+        )}
       </motion.div>
     </motion.div>
   )

@@ -39,6 +39,8 @@
 | 👤 **Profiles** | Custom avatars, banners, bios, social links |
 | 🔐 **Auth** | Secure session-based authentication |
 | 🎨 **Themes** | 30+ beautiful theme variants across 8 categories |
+| 🎮 **Playground** | Create & test presets with live preview |
+| 📋 **Templates** | Browse & apply community templates |
 | 💳 **Stripe Payments** | Secure subscription & one-time payments |
 | 📱 **Responsive** | Mobile-first design |
 | ⚡ **Fast** | Bun runtime + Vercel Edge |

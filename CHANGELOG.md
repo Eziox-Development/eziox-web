@@ -9,6 +9,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.9.0] - 2026-01-19
+
+### Added - UI Modernization 🎨
+- **Templates Page Redesign** - Complete modernization with modern UI/UX
+  - Compact hero section with real-time template/featured counts
+  - Modern category filters with motion animations
+  - Redesigned TemplateCard with hover effects and spring animations
+  - Image background preview support in template cards
+  - Modernized TemplatePreviewModal with loading states and stats grid
+  - Desktop/mobile responsive design throughout
+
+- **Playground Page Rebuild** - Complete rewrite from scratch
+  - Fixed nav overlap issue with proper spacing
+  - Modern tab-based interface (Background, Layout, CSS, Animations)
+  - Live preview panel with desktop/mobile toggle
+  - Background types: Solid, Gradient, Image, Video, Animated
+  - File upload support for images and videos
+  - Gradient editor with color pickers and angle control
+  - Animated background presets with speed/intensity controls
+  - Layout controls: spacing, border-radius, padding, shadows
+  - Link style presets: default, minimal, bold, glass
+  - Animation controls: avatar, link hover effects
+  - Publish modal with category selection
+  - My Templates list with delete functionality
+
+### Improved
+- **Theme System** - Consistent use of `theme.colors.*` throughout both pages
+- **Motion Animations** - Spring-based hover effects, AnimatePresence for transitions
+- **Icons** - Modern Lucide icons (Code2, Wand2, LayoutGrid, FileUp, etc.)
+- **Real Data** - All stats and counts from actual database queries
+- **Clean Code** - Removed unnecessary comments, compact structure
+
+### Technical
+- Replaced deprecated Tailwind classes (`bg-gradient-to-*` → `bg-linear-to-*`)
+- Fixed TypeScript errors in preview component
+- Optimized component structure for better maintainability
+
+---
+
 ## [1.8.0] - 2026-01-18
 
 ### Added - Creator Tier Features 🎨
@@ -351,7 +390,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/Eziox-Development/eziox-web/compare/v1.4.1...HEAD
+[Unreleased]: https://github.com/Eziox-Development/eziox-web/compare/v1.9.0...HEAD
+[1.9.0]: https://github.com/Eziox-Development/eziox-web/compare/v1.8.0...v1.9.0
+[1.8.0]: https://github.com/Eziox-Development/eziox-web/compare/v1.6.0...v1.8.0
+[1.6.0]: https://github.com/Eziox-Development/eziox-web/compare/v1.5.0...v1.6.0
+[1.5.0]: https://github.com/Eziox-Development/eziox-web/compare/v1.4.1...v1.5.0
 [1.4.1]: https://github.com/Eziox-Development/eziox-web/compare/v1.4.0...v1.4.1
 [1.4.0]: https://github.com/Eziox-Development/eziox-web/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/Eziox-Development/eziox-web/compare/v1.0.0...v1.3.0

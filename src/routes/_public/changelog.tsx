@@ -65,6 +65,32 @@ const typeConfig: Record<ChangeType, { label: string; color: string; bgColor: st
 
 const changelog: ChangelogEntry[] = [
   {
+    version: '1.9.0',
+    date: 'January 19, 2026',
+    title: 'UI Modernization - Templates & Playground',
+    description: 'Complete redesign of Templates and Playground pages with modern UI/UX, motion animations, and improved user experience.',
+    icon: Palette,
+    type: 'feature',
+    highlights: [
+      'Templates page completely redesigned',
+      'Playground rebuilt from scratch',
+      'Live preview with device toggle',
+    ],
+    changes: [
+      { type: 'feature', text: 'Templates page with compact hero, modern cards, and spring animations' },
+      { type: 'feature', text: 'Playground rebuilt with tab-based interface and live preview' },
+      { type: 'feature', text: 'Desktop/mobile preview toggle in Playground' },
+      { type: 'feature', text: 'File upload support for images and videos in backgrounds' },
+      { type: 'feature', text: 'Gradient editor with color pickers and angle control' },
+      { type: 'feature', text: 'Link style presets: default, minimal, bold, glass' },
+      { type: 'improvement', text: 'Spring-based motion animations throughout' },
+      { type: 'improvement', text: 'Consistent theme system usage across all components' },
+      { type: 'improvement', text: 'Modern Lucide icons (Code2, Wand2, LayoutGrid, etc.)' },
+      { type: 'fix', text: 'Fixed nav overlap issue in Playground page' },
+      { type: 'fix', text: 'Fixed deprecated Tailwind classes' },
+    ],
+  },
+  {
     version: '1.8.0',
     date: 'January 18, 2026',
     title: 'Creator Tier Features - Full Creative Freedom',
