@@ -536,6 +536,66 @@ export const subscriptionsRelations = relations(subscriptions, ({ one }) => ({
   }),
 }))
 
+// COMMUNITY TEMPLATES TABLE
+export interface TemplateSettings {
+  customBackground?: CustomBackground
+  layoutSettings?: LayoutSettings
+  customCSS?: string
+  customFonts?: CustomFont[]
+  animatedProfile?: AnimatedProfileSettings
+  accentColor?: string
+  themeId?: string
+}
+
+export const communityTemplates = pgTable('community_templates', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  name: varchar('name', { length: 100 }).notNull(),
+  description: text('description'),
+  category: varchar('category', { length: 50 }).notNull(), // vtuber, gamer, developer, minimal, creative, etc.
+  tags: jsonb('tags').$type<string[]>().default([]),
+  settings: jsonb('settings').$type<TemplateSettings>().notNull(),
+  previewImage: text('preview_image'),
+  isPublic: boolean('is_public').default(true),
+  isFeatured: boolean('is_featured').default(false),
+  uses: integer('uses').default(0),
+  likes: integer('likes').default(0),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+})
+
+export const communityTemplatesRelations = relations(communityTemplates, ({ one }) => ({
+  user: one(users, {
+    fields: [communityTemplates.userId],
+    references: [users.id],
+  }),
+}))
+
+// TEMPLATE LIKES TABLE
+export const templateLikes = pgTable('template_likes', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  templateId: uuid('template_id')
+    .notNull()
+    .references(() => communityTemplates.id, { onDelete: 'cascade' }),
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+})
+
+export const templateLikesRelations = relations(templateLikes, ({ one }) => ({
+  template: one(communityTemplates, {
+    fields: [templateLikes.templateId],
+    references: [communityTemplates.id],
+  }),
+  user: one(users, {
+    fields: [templateLikes.userId],
+    references: [users.id],
+  }),
+}))
+
 // TYPE EXPORTS
 export type User = typeof users.$inferSelect
 export type NewUser = typeof users.$inferInsert
@@ -565,3 +625,6 @@ export type AnalyticsDaily = typeof analyticsDaily.$inferSelect
 export type NewAnalyticsDaily = typeof analyticsDaily.$inferInsert
 export type Subscription = typeof subscriptions.$inferSelect
 export type NewSubscription = typeof subscriptions.$inferInsert
+export type CommunityTemplate = typeof communityTemplates.$inferSelect
+export type NewCommunityTemplate = typeof communityTemplates.$inferInsert
+export type TemplateLike = typeof templateLikes.$inferSelect

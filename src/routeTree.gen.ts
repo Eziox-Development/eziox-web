@@ -16,6 +16,7 @@ import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
 import { Route as ApiSpotifyCallbackRouteImport } from './routes/api/spotify-callback'
 import { Route as PublicTermsRouteImport } from './routes/_public/terms'
+import { Route as PublicTemplatesRouteImport } from './routes/_public/templates'
 import { Route as PublicPrivacyRouteImport } from './routes/_public/privacy'
 import { Route as PublicPartnersRouteImport } from './routes/_public/partners'
 import { Route as PublicLeaderboardRouteImport } from './routes/_public/leaderboard'
@@ -69,6 +70,11 @@ const ApiSpotifyCallbackRoute = ApiSpotifyCallbackRouteImport.update({
 const PublicTermsRoute = PublicTermsRouteImport.update({
   id: '/terms',
   path: '/terms',
+  getParentRoute: () => PublicRoute,
+} as any)
+const PublicTemplatesRoute = PublicTemplatesRouteImport.update({
+  id: '/templates',
+  path: '/templates',
   getParentRoute: () => PublicRoute,
 } as any)
 const PublicPrivacyRoute = PublicPrivacyRouteImport.update({
@@ -207,6 +213,7 @@ export interface FileRoutesByFullPath {
   '/leaderboard': typeof PublicLeaderboardRoute
   '/partners': typeof PublicPartnersRoute
   '/privacy': typeof PublicPrivacyRoute
+  '/templates': typeof PublicTemplatesRoute
   '/terms': typeof PublicTermsRoute
   '/api/spotify-callback': typeof ApiSpotifyCallbackRoute
   '/': typeof PublicIndexRoute
@@ -235,6 +242,7 @@ export interface FileRoutesByTo {
   '/leaderboard': typeof PublicLeaderboardRoute
   '/partners': typeof PublicPartnersRoute
   '/privacy': typeof PublicPrivacyRoute
+  '/templates': typeof PublicTemplatesRoute
   '/terms': typeof PublicTermsRoute
   '/api/spotify-callback': typeof ApiSpotifyCallbackRoute
   '/': typeof PublicIndexRoute
@@ -268,6 +276,7 @@ export interface FileRoutesById {
   '/_public/leaderboard': typeof PublicLeaderboardRoute
   '/_public/partners': typeof PublicPartnersRoute
   '/_public/privacy': typeof PublicPrivacyRoute
+  '/_public/templates': typeof PublicTemplatesRoute
   '/_public/terms': typeof PublicTermsRoute
   '/api/spotify-callback': typeof ApiSpotifyCallbackRoute
   '/_public/': typeof PublicIndexRoute
@@ -298,6 +307,7 @@ export interface FileRouteTypes {
     | '/leaderboard'
     | '/partners'
     | '/privacy'
+    | '/templates'
     | '/terms'
     | '/api/spotify-callback'
     | '/'
@@ -326,6 +336,7 @@ export interface FileRouteTypes {
     | '/leaderboard'
     | '/partners'
     | '/privacy'
+    | '/templates'
     | '/terms'
     | '/api/spotify-callback'
     | '/'
@@ -358,6 +369,7 @@ export interface FileRouteTypes {
     | '/_public/leaderboard'
     | '/_public/partners'
     | '/_public/privacy'
+    | '/_public/templates'
     | '/_public/terms'
     | '/api/spotify-callback'
     | '/_public/'
@@ -429,6 +441,13 @@ declare module '@tanstack/react-router' {
       path: '/terms'
       fullPath: '/terms'
       preLoaderRoute: typeof PublicTermsRouteImport
+      parentRoute: typeof PublicRoute
+    }
+    '/_public/templates': {
+      id: '/_public/templates'
+      path: '/templates'
+      fullPath: '/templates'
+      preLoaderRoute: typeof PublicTemplatesRouteImport
       parentRoute: typeof PublicRoute
     }
     '/_public/privacy': {
@@ -650,6 +669,7 @@ interface PublicRouteChildren {
   PublicLeaderboardRoute: typeof PublicLeaderboardRoute
   PublicPartnersRoute: typeof PublicPartnersRoute
   PublicPrivacyRoute: typeof PublicPrivacyRoute
+  PublicTemplatesRoute: typeof PublicTemplatesRoute
   PublicTermsRoute: typeof PublicTermsRoute
   PublicIndexRoute: typeof PublicIndexRoute
   PublicJoinCodeRoute: typeof PublicJoinCodeRoute
@@ -664,6 +684,7 @@ const PublicRouteChildren: PublicRouteChildren = {
   PublicLeaderboardRoute: PublicLeaderboardRoute,
   PublicPartnersRoute: PublicPartnersRoute,
   PublicPrivacyRoute: PublicPrivacyRoute,
+  PublicTemplatesRoute: PublicTemplatesRoute,
   PublicTermsRoute: PublicTermsRoute,
   PublicIndexRoute: PublicIndexRoute,
   PublicJoinCodeRoute: PublicJoinCodeRoute,
