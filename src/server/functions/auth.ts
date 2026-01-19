@@ -33,7 +33,7 @@ import {
 } from '../lib/auth'
 import { checkRateLimit, RATE_LIMITS, sanitizeText, sanitizeURL, isValidReferralCode, generateCSRFToken, validateCSRFToken } from '@/lib/security'
 import { getRequestIP } from '@tanstack/react-start/server'
-import { sendPasswordResetEmail, sendLoginNotificationEmail, sendWelcomeEmail } from '../lib/email'
+import { sendPasswordResetEmail, sendLoginNotificationEmail, sendWelcomeEmail, sendAccountDeletedEmail, send2FAEnabledEmail, send2FADisabledEmail, sendPasswordChangedEmail } from '../lib/email'
 import { verifyTurnstileToken } from '../lib/turnstile'
 import { logSecurityEvent } from '../lib/security-logger'
 
@@ -524,6 +524,13 @@ export const resetPasswordFn = createServerFn({ method: 'POST' })
 
     await resetPassword(user.id, data.password)
 
+    // Send password changed notification email
+    if (user.email) {
+      const ip = getRequestIP() || 'Unknown'
+      const username = user.username ?? user.email.split('@')[0]
+      void sendPasswordChangedEmail(user.email, username, ip, new Date())
+    }
+
     return { success: true, message: 'Password reset successfully. Please sign in.' }
   })
 
@@ -589,6 +596,12 @@ export const enableTwoFactorFn = createServerFn({ method: 'POST' })
       throw { message: 'Invalid verification code', status: 400 }
     }
 
+    // Send 2FA enabled notification email
+    if (user.email) {
+      const username = user.username ?? user.email.split('@')[0]
+      void send2FAEnabledEmail(user.email, username, new Date())
+    }
+
     return { success: true, message: '2FA enabled successfully' }
   })
 
@@ -614,6 +627,14 @@ export const disableTwoFactorFn = createServerFn({ method: 'POST' })
     }
 
     await disableTwoFactor(user.id)
+
+    // Send 2FA disabled security alert email
+    if (user.email) {
+      const ip = getRequestIP() || 'Unknown'
+      const username = user.username ?? user.email.split('@')[0]
+      void send2FADisabledEmail(user.email, username, ip, new Date())
+    }
+
     return { success: true, message: '2FA disabled successfully' }
   })
 
@@ -720,6 +741,12 @@ export const deleteAccountFn = createServerFn({ method: 'POST' })
     await db.delete(users).where(eq(users.id, user.id))
 
     logSecurityEvent('auth.account_deleted', { userId: user.id })
+
+    // Send account deletion confirmation email
+    if (user.email) {
+      const username = user.username ?? user.email.split('@')[0]
+      void sendAccountDeletedEmail(user.email, username)
+    }
 
     deleteCookie('session-token')
 
