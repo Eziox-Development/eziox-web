@@ -112,7 +112,7 @@ export function Nav() {
   const isCommunityActive = COMMUNITY_ITEMS.some(i => location.pathname === i.href)
   
   const userTier = (currentUser?.tier || 'free') as TierType
-  const tierConfig = TIER_CONFIG[userTier]
+  const tierConfig = TIER_CONFIG[userTier] || TIER_CONFIG.free
   const TierIcon = tierConfig.icon
 
   return (
