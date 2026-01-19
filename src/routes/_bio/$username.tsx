@@ -251,7 +251,13 @@ function BioPage() {
 
   const handleLinkClick = (linkId: string, url: string) => {
     setClickedLink(linkId)
-    trackClick({ data: { linkId } }).catch(console.error)
+    trackClick({ 
+      data: { 
+        linkId,
+        userAgent: navigator.userAgent,
+        referrer: document.referrer || undefined,
+      } 
+    }).catch(console.error)
     window.open(url, '_blank', 'noopener,noreferrer')
     setTimeout(() => setClickedLink(null), 500)
   }

@@ -249,9 +249,9 @@
 ### Phase 5: Advanced Features (Priority: LOW)
 
 #### 10. Link Scheduling
-- [ ] Schedule links to appear/disappear
-- [ ] Time-limited links
-- [ ] Countdown timer display
+- [x] Schedule links to appear/disappear (LinkSchedule schema with startDate/endDate)
+- [x] Time-limited links (endDate support with hideWhenExpired option)
+- [x] Countdown timer display (showCountdown, countdownStyle: minimal/detailed/badge)
 
 #### 11. QR Codes
 - [ ] Generate QR code for bio page
@@ -259,10 +259,10 @@
 - [ ] Custom QR colors
 
 #### 12. Link Analytics
-- [ ] Per-link click analytics
-- [ ] Geographic data (country)
-- [ ] Device/browser stats
-- [ ] Click heatmap
+- [x] Per-link click analytics (linkClickAnalytics table, getLinkAnalyticsFn)
+- [x] Geographic data (country, city, region fields in schema)
+- [x] Device/browser stats (device, browser, os tracking)
+- [x] Click heatmap (hourlyClicks aggregation by day/hour)
 
 #### 13. API Access
 - [ ] Public API for profile data

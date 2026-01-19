@@ -190,6 +190,9 @@ export interface LinkSchedule {
   startDate?: string
   endDate?: string
   timezone?: string
+  showCountdown?: boolean
+  countdownStyle?: 'minimal' | 'detailed' | 'badge'
+  hideWhenExpired?: boolean
 }
 
 export interface ABTestVariant {
@@ -523,6 +526,38 @@ export const analyticsDaily = pgTable('analytics_daily', {
 export const analyticsDailyRelations = relations(analyticsDaily, ({ one }) => ({
   user: one(users, {
     fields: [analyticsDaily.userId],
+    references: [users.id],
+  }),
+}))
+
+// LINK CLICK ANALYTICS TABLE (detailed per-click tracking)
+export const linkClickAnalytics = pgTable('link_click_analytics', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  linkId: uuid('link_id')
+    .notNull()
+    .references(() => userLinks.id, { onDelete: 'cascade' }),
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  country: varchar('country', { length: 2 }),
+  city: varchar('city', { length: 100 }),
+  region: varchar('region', { length: 100 }),
+  device: varchar('device', { length: 20 }),
+  browser: varchar('browser', { length: 50 }),
+  os: varchar('os', { length: 50 }),
+  referrer: text('referrer'),
+  userAgent: text('user_agent'),
+  ipHash: varchar('ip_hash', { length: 64 }),
+  clickedAt: timestamp('clicked_at').defaultNow().notNull(),
+})
+
+export const linkClickAnalyticsRelations = relations(linkClickAnalytics, ({ one }) => ({
+  link: one(userLinks, {
+    fields: [linkClickAnalytics.linkId],
+    references: [userLinks.id],
+  }),
+  user: one(users, {
+    fields: [linkClickAnalytics.userId],
     references: [users.id],
   }),
 }))
