@@ -122,20 +122,41 @@ function TemplatesPage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-12"
+          className="relative text-center mb-16 py-12 rounded-3xl overflow-hidden"
+          style={{ background: `linear-gradient(135deg, ${theme.colors.primary}10, ${theme.colors.accent}10)` }}
         >
-          <div
-            className="w-16 h-16 rounded-2xl mx-auto mb-6 flex items-center justify-center"
-            style={{ background: `linear-gradient(135deg, ${theme.colors.primary}20, ${theme.colors.accent}20)` }}
-          >
-            <Palette size={32} style={{ color: theme.colors.primary }} />
+          <div className="absolute inset-0 overflow-hidden">
+            <div className="absolute -top-1/2 -left-1/4 w-96 h-96 rounded-full opacity-20" style={{ background: `radial-gradient(circle, ${theme.colors.primary}, transparent)` }} />
+            <div className="absolute -bottom-1/2 -right-1/4 w-96 h-96 rounded-full opacity-20" style={{ background: `radial-gradient(circle, ${theme.colors.accent}, transparent)` }} />
           </div>
-          <h1 className="text-4xl font-bold mb-4" style={{ color: theme.colors.foreground }}>
-            Community Templates
-          </h1>
-          <p className="text-lg max-w-2xl mx-auto" style={{ color: theme.colors.foregroundMuted }}>
-            Discover beautiful profile styles created by our community. Apply them to your bio page with one click.
-          </p>
+          <div className="relative z-10">
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.1 }}
+              className="w-20 h-20 rounded-2xl mx-auto mb-6 flex items-center justify-center"
+              style={{ background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`, boxShadow: `0 20px 40px ${theme.colors.primary}40` }}
+            >
+              <Palette size={36} className="text-white" />
+            </motion.div>
+            <h1 className="text-4xl md:text-5xl font-bold mb-4" style={{ color: theme.colors.foreground }}>
+              Community Templates
+            </h1>
+            <p className="text-lg max-w-2xl mx-auto px-4" style={{ color: theme.colors.foregroundMuted }}>
+              Discover beautiful profile styles created by our community. Apply them to your bio page with one click.
+            </p>
+            <div className="flex items-center justify-center gap-6 mt-8">
+              <div className="text-center">
+                <p className="text-2xl font-bold" style={{ color: theme.colors.foreground }}>{templatesData?.total || 0}</p>
+                <p className="text-xs" style={{ color: theme.colors.foregroundMuted }}>Templates</p>
+              </div>
+              <div className="w-px h-10" style={{ background: theme.colors.border }} />
+              <div className="text-center">
+                <p className="text-2xl font-bold" style={{ color: theme.colors.foreground }}>{featuredTemplates?.length || 0}</p>
+                <p className="text-xs" style={{ color: theme.colors.foregroundMuted }}>Featured</p>
+              </div>
+            </div>
+          </div>
         </motion.div>
 
         {featuredTemplates && featuredTemplates.length > 0 && (
