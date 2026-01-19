@@ -23,6 +23,7 @@ import {
   Plus,
   Crown,
   Loader2,
+  Upload,
   History,
   ChevronRight,
   Sliders,
@@ -358,15 +359,43 @@ export function CustomizationTab() {
 
               {currentBackground?.type === 'image' && (
                 <div className="space-y-3">
-                  <label className="text-sm font-medium" style={{ color: theme.colors.foreground }}>Image URL</label>
-                  <input
-                    type="url"
-                    placeholder="https://example.com/image.jpg"
-                    value={currentBackground.imageUrl || ''}
-                    onChange={(e) => setLocalBackground({ ...currentBackground, imageUrl: e.target.value, value: e.target.value })}
-                    className="w-full px-4 py-2.5 rounded-xl text-sm"
-                    style={{ background: theme.colors.backgroundSecondary, color: theme.colors.foreground, border: `1px solid ${theme.colors.border}` }}
-                  />
+                  <label className="text-sm font-medium" style={{ color: theme.colors.foreground }}>Image</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="url"
+                      placeholder="https://example.com/image.jpg or paste data URL"
+                      value={currentBackground.imageUrl || ''}
+                      onChange={(e) => setLocalBackground({ ...currentBackground, imageUrl: e.target.value, value: e.target.value })}
+                      className="flex-1 px-4 py-2.5 rounded-xl text-sm"
+                      style={{ background: theme.colors.backgroundSecondary, color: theme.colors.foreground, border: `1px solid ${theme.colors.border}` }}
+                    />
+                    <label
+                      className="px-4 py-2.5 rounded-xl text-sm font-medium cursor-pointer flex items-center gap-2 transition-all hover:opacity-80"
+                      style={{ background: theme.colors.primary, color: '#fff' }}
+                    >
+                      <Upload size={16} />
+                      Upload
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0]
+                          if (file) {
+                            const reader = new FileReader()
+                            reader.onload = (event) => {
+                              const dataUrl = event.target?.result as string
+                              setLocalBackground({ ...currentBackground, imageUrl: dataUrl, value: dataUrl })
+                            }
+                            reader.readAsDataURL(file)
+                          }
+                        }}
+                      />
+                    </label>
+                  </div>
+                  <p className="text-xs" style={{ color: theme.colors.foregroundMuted }}>
+                    Upload from your device or paste an image URL. Supports JPG, PNG, GIF, WebP.
+                  </p>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <label className="text-xs" style={{ color: theme.colors.foregroundMuted }}>Opacity: {Math.round((currentBackground.imageOpacity ?? 1) * 100)}%</label>
@@ -396,7 +425,7 @@ export function CustomizationTab() {
 
               {currentBackground?.type === 'video' && (
                 <div className="space-y-3">
-                  <label className="text-sm font-medium" style={{ color: theme.colors.foreground }}>Video URL (MP4 or WebM)</label>
+                  <label className="text-sm font-medium" style={{ color: theme.colors.foreground }}>Video URL</label>
                   <input
                     type="url"
                     placeholder="https://example.com/video.mp4"
@@ -426,7 +455,7 @@ export function CustomizationTab() {
                     </label>
                   </div>
                   <p className="text-xs" style={{ color: theme.colors.foregroundMuted }}>
-                    Tip: Use short, looping videos for best performance. WebM format recommended.
+                    Supported: MP4, WebM, MOV, OGG, AVI, MKV, M4V. WebM recommended for best performance.
                   </p>
                 </div>
               )}

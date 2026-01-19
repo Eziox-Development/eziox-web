@@ -26,6 +26,7 @@ import { Route as PublicChangelogRouteImport } from './routes/_public/changelog'
 import { Route as PublicAboutRouteImport } from './routes/_public/about'
 import { Route as ProtectedReferralsRouteImport } from './routes/_protected/referrals'
 import { Route as ProtectedProfileRouteImport } from './routes/_protected/profile'
+import { Route as ProtectedPlaygroundRouteImport } from './routes/_protected/playground'
 import { Route as ProtectedLinksRouteImport } from './routes/_protected/links'
 import { Route as ProtectedAnalyticsRouteImport } from './routes/_protected/analytics'
 import { Route as BioUsernameRouteImport } from './routes/_bio/$username'
@@ -122,6 +123,11 @@ const ProtectedProfileRoute = ProtectedProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => ProtectedRoute,
 } as any)
+const ProtectedPlaygroundRoute = ProtectedPlaygroundRouteImport.update({
+  id: '/playground',
+  path: '/playground',
+  getParentRoute: () => ProtectedRoute,
+} as any)
 const ProtectedLinksRoute = ProtectedLinksRouteImport.update({
   id: '/links',
   path: '/links',
@@ -204,6 +210,7 @@ export interface FileRoutesByFullPath {
   '/$username': typeof BioUsernameRoute
   '/analytics': typeof ProtectedAnalyticsRoute
   '/links': typeof ProtectedLinksRoute
+  '/playground': typeof ProtectedPlaygroundRoute
   '/profile': typeof ProtectedProfileRoute
   '/referrals': typeof ProtectedReferralsRoute
   '/about': typeof PublicAboutRoute
@@ -233,6 +240,7 @@ export interface FileRoutesByTo {
   '/$username': typeof BioUsernameRoute
   '/analytics': typeof ProtectedAnalyticsRoute
   '/links': typeof ProtectedLinksRoute
+  '/playground': typeof ProtectedPlaygroundRoute
   '/profile': typeof ProtectedProfileRoute
   '/referrals': typeof ProtectedReferralsRoute
   '/about': typeof PublicAboutRoute
@@ -267,6 +275,7 @@ export interface FileRoutesById {
   '/_bio/$username': typeof BioUsernameRoute
   '/_protected/analytics': typeof ProtectedAnalyticsRoute
   '/_protected/links': typeof ProtectedLinksRoute
+  '/_protected/playground': typeof ProtectedPlaygroundRoute
   '/_protected/profile': typeof ProtectedProfileRoute
   '/_protected/referrals': typeof ProtectedReferralsRoute
   '/_public/about': typeof PublicAboutRoute
@@ -298,6 +307,7 @@ export interface FileRouteTypes {
     | '/$username'
     | '/analytics'
     | '/links'
+    | '/playground'
     | '/profile'
     | '/referrals'
     | '/about'
@@ -327,6 +337,7 @@ export interface FileRouteTypes {
     | '/$username'
     | '/analytics'
     | '/links'
+    | '/playground'
     | '/profile'
     | '/referrals'
     | '/about'
@@ -360,6 +371,7 @@ export interface FileRouteTypes {
     | '/_bio/$username'
     | '/_protected/analytics'
     | '/_protected/links'
+    | '/_protected/playground'
     | '/_protected/profile'
     | '/_protected/referrals'
     | '/_public/about'
@@ -513,6 +525,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedProfileRouteImport
       parentRoute: typeof ProtectedRoute
     }
+    '/_protected/playground': {
+      id: '/_protected/playground'
+      path: '/playground'
+      fullPath: '/playground'
+      preLoaderRoute: typeof ProtectedPlaygroundRouteImport
+      parentRoute: typeof ProtectedRoute
+    }
     '/_protected/links': {
       id: '/_protected/links'
       path: '/links'
@@ -641,6 +660,7 @@ const BioRouteWithChildren = BioRoute._addFileChildren(BioRouteChildren)
 interface ProtectedRouteChildren {
   ProtectedAnalyticsRoute: typeof ProtectedAnalyticsRoute
   ProtectedLinksRoute: typeof ProtectedLinksRoute
+  ProtectedPlaygroundRoute: typeof ProtectedPlaygroundRoute
   ProtectedProfileRoute: typeof ProtectedProfileRoute
   ProtectedReferralsRoute: typeof ProtectedReferralsRoute
   ProtectedAdminPartnerApplicationsRoute: typeof ProtectedAdminPartnerApplicationsRoute
@@ -650,6 +670,7 @@ interface ProtectedRouteChildren {
 const ProtectedRouteChildren: ProtectedRouteChildren = {
   ProtectedAnalyticsRoute: ProtectedAnalyticsRoute,
   ProtectedLinksRoute: ProtectedLinksRoute,
+  ProtectedPlaygroundRoute: ProtectedPlaygroundRoute,
   ProtectedProfileRoute: ProtectedProfileRoute,
   ProtectedReferralsRoute: ProtectedReferralsRoute,
   ProtectedAdminPartnerApplicationsRoute:

@@ -431,7 +431,7 @@ export function AnimatedBackground({ preset, speed = 'normal', intensity = 'norm
 
   if (['gradient-mesh', 'fluid', 'holographic', 'neon-city'].includes(preset)) {
     return (
-      <div className="fixed inset-0 -z-10 overflow-hidden">
+      <div className="fixed inset-0 overflow-hidden pointer-events-none" style={{ zIndex: -1 }}>
         <motion.div
           className="absolute inset-0"
           style={{
@@ -504,10 +504,27 @@ export function AnimatedBackground({ preset, speed = 'normal', intensity = 'norm
   return (
     <canvas
       ref={canvasRef}
-      className="fixed inset-0 -z-10"
-      style={{ background: 'transparent' }}
+      className="fixed inset-0 pointer-events-none"
+      style={{ background: 'transparent', zIndex: -1 }}
     />
   )
+}
+
+const getVideoMimeType = (url: string): string => {
+  const extension = url.split('.').pop()?.toLowerCase() || ''
+  const mimeTypes: Record<string, string> = {
+    mp4: 'video/mp4',
+    webm: 'video/webm',
+    mov: 'video/quicktime',
+    ogg: 'video/ogg',
+    ogv: 'video/ogg',
+    avi: 'video/x-msvideo',
+    mkv: 'video/x-matroska',
+    m4v: 'video/x-m4v',
+    '3gp': 'video/3gpp',
+    wmv: 'video/x-ms-wmv',
+  }
+  return mimeTypes[extension] || 'video/mp4'
 }
 
 export function VideoBackground({ 
@@ -531,7 +548,8 @@ export function VideoBackground({
         className="absolute min-w-full min-h-full object-cover"
         style={{ opacity }}
       >
-        <source src={url} type={url.endsWith('.webm') ? 'video/webm' : 'video/mp4'} />
+        <source src={url} type={getVideoMimeType(url)} />
+        Your browser does not support the video tag.
       </video>
     </div>
   )

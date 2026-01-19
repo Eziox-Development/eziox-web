@@ -37,6 +37,7 @@ const NAV_ITEMS = [
 
 const COMMUNITY_ITEMS = [
   { href: '/creators', label: 'Creators', icon: Sparkles, description: 'Discover amazing creators', color: '#8b5cf6' },
+  { href: '/templates', label: 'Templates', icon: LayoutDashboard, description: 'Community style presets', color: '#ec4899' },
   { href: '/partners', label: 'Partners', icon: Handshake, description: 'Official platform partners', color: '#14b8a6' },
   { href: '/leaderboard', label: 'Leaderboard', icon: Trophy, description: 'Top performing users', color: '#f59e0b' },
 ] as const
@@ -333,6 +334,7 @@ export function Nav() {
                         <div className="p-2">
                           {[
                             { to: '/profile', icon: LayoutDashboard, label: 'Dashboard', color: theme.colors.foregroundMuted },
+                            { to: '/playground', icon: Sparkles, label: 'Playground', color: '#ec4899' },
                             { to: '/analytics', icon: BarChart3, label: 'Analytics', color: theme.colors.foregroundMuted },
                             { href: `https://${bioLink}`, icon: Globe, label: 'View Bio Page', external: true, color: theme.colors.foregroundMuted },
                             ...(currentUser.role === 'owner' || currentUser.role === 'admin' ? [{ to: '/admin', icon: Shield, label: 'Admin Panel', color: '#ef4444' }] : []),
