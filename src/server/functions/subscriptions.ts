@@ -8,6 +8,7 @@ import { validateSession } from '../lib/auth'
 import { stripe, TIER_CONFIG, getTierFromPriceId, type TierType } from '../lib/stripe'
 import { createSubscriptionNotification, createBadgeNotification } from './notifications'
 import { BADGES } from '@/lib/badges'
+import { sendSubscriptionEmail } from '../lib/email'
 
 async function updateUserBadgesForTier(userId: string, tier: TierType, sendNotification = true) {
   const [profile] = await db
@@ -383,6 +384,18 @@ async function handleSubscriptionCreated(
     tier: actualTier,
     expiresAt: new Date(periodEnd * 1000),
   })
+
+  // Send subscription email
+  const [user] = await db
+    .select({ email: users.email, username: users.username })
+    .from(users)
+    .where(eq(users.id, userId))
+    .limit(1)
+  
+  if (user?.email) {
+    const tierName = TIER_CONFIG[actualTier]?.name || actualTier
+    void sendSubscriptionEmail(user.email, user.username || 'User', tierName, 'upgraded')
+  }
 }
 
 async function handleSubscriptionUpdated(subscription: {
@@ -432,6 +445,18 @@ async function handleSubscriptionUpdated(subscription: {
         tier: effectiveTier,
         expiresAt: new Date(subscription.current_period_end * 1000),
       })
+
+      // Send cancellation email
+      const [user] = await db
+        .select({ email: users.email, username: users.username })
+        .from(users)
+        .where(eq(users.id, subscription.metadata.userId))
+        .limit(1)
+      
+      if (user?.email) {
+        const tierName = TIER_CONFIG[effectiveTier as TierType]?.name || effectiveTier
+        void sendSubscriptionEmail(user.email, user.username || 'User', tierName, 'cancelled')
+      }
     }
   }
 }
