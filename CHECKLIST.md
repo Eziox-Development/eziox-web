@@ -389,6 +389,23 @@
 - [ ] Bug bounty program consideration - future consideration
 - [ ] Regular security audits - manual process
 
+### Email System (Resend)
+- [x] Domain verified (eziox.link with DKIM, SPF, MX records)
+- [x] Welcome email on signup
+- [x] Password reset email with secure token
+- [x] Login notification email with device/IP info
+- [x] Password changed notification email
+- [x] 2FA enabled notification email
+- [x] 2FA disabled security alert email (with IP)
+- [x] Account deletion confirmation email
+- [x] Subscription emails (upgrade/downgrade/cancel/renew)
+- [x] Weekly digest email template (stats summary)
+- [x] Email verification template (ready for implementation)
+- [x] Consistent email template design (dark theme, Eziox branding)
+- [x] Footer with Privacy/Terms/Unsubscribe links
+- [ ] Email preferences UI in settings
+- [ ] Weekly digest cron job
+
 ---
 
 ## 📱 UI/UX Improvements
@@ -429,5 +446,5 @@
 
 ---
 
-**Last Updated**: 2026-01-17  
+**Last Updated**: 2026-01-19  
 **Next Review**: Before each major feature release
