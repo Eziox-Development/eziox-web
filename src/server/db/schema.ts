@@ -657,6 +657,21 @@ export const adminAuditLogRelations = relations(adminAuditLog, ({ one }) => ({
   }),
 }))
 
+// CONTACT MESSAGES TABLE
+export const contactMessages = pgTable('contact_messages', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  category: varchar('category', { length: 50 }).notNull(),
+  name: varchar('name', { length: 100 }).notNull(),
+  email: varchar('email', { length: 255 }).notNull(),
+  subject: varchar('subject', { length: 200 }).notNull(),
+  message: text('message').notNull(),
+  status: varchar('status', { length: 20 }).default('new').notNull(),
+  adminNotes: text('admin_notes'),
+  respondedAt: timestamp('responded_at'),
+  respondedBy: uuid('responded_by').references(() => users.id),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+})
+
 // TYPE EXPORTS
 export type User = typeof users.$inferSelect
 export type NewUser = typeof users.$inferInsert

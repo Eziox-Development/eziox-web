@@ -23,6 +23,7 @@ import { Route as PublicPartnersRouteImport } from './routes/_public/partners'
 import { Route as PublicLeaderboardRouteImport } from './routes/_public/leaderboard'
 import { Route as PublicCreatorsRouteImport } from './routes/_public/creators'
 import { Route as PublicCookiesRouteImport } from './routes/_public/cookies'
+import { Route as PublicContactRouteImport } from './routes/_public/contact'
 import { Route as PublicChangelogRouteImport } from './routes/_public/changelog'
 import { Route as PublicAboutRouteImport } from './routes/_public/about'
 import { Route as ProtectedThemeBuilderRouteImport } from './routes/_protected/theme-builder'
@@ -110,6 +111,11 @@ const PublicCreatorsRoute = PublicCreatorsRouteImport.update({
 const PublicCookiesRoute = PublicCookiesRouteImport.update({
   id: '/cookies',
   path: '/cookies',
+  getParentRoute: () => PublicRoute,
+} as any)
+const PublicContactRoute = PublicContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
   getParentRoute: () => PublicRoute,
 } as any)
 const PublicChangelogRoute = PublicChangelogRouteImport.update({
@@ -242,6 +248,7 @@ export interface FileRoutesByFullPath {
   '/theme-builder': typeof ProtectedThemeBuilderRoute
   '/about': typeof PublicAboutRoute
   '/changelog': typeof PublicChangelogRoute
+  '/contact': typeof PublicContactRoute
   '/cookies': typeof PublicCookiesRoute
   '/creators': typeof PublicCreatorsRoute
   '/leaderboard': typeof PublicLeaderboardRoute
@@ -276,6 +283,7 @@ export interface FileRoutesByTo {
   '/theme-builder': typeof ProtectedThemeBuilderRoute
   '/about': typeof PublicAboutRoute
   '/changelog': typeof PublicChangelogRoute
+  '/contact': typeof PublicContactRoute
   '/cookies': typeof PublicCookiesRoute
   '/creators': typeof PublicCreatorsRoute
   '/leaderboard': typeof PublicLeaderboardRoute
@@ -315,6 +323,7 @@ export interface FileRoutesById {
   '/_protected/theme-builder': typeof ProtectedThemeBuilderRoute
   '/_public/about': typeof PublicAboutRoute
   '/_public/changelog': typeof PublicChangelogRoute
+  '/_public/contact': typeof PublicContactRoute
   '/_public/cookies': typeof PublicCookiesRoute
   '/_public/creators': typeof PublicCreatorsRoute
   '/_public/leaderboard': typeof PublicLeaderboardRoute
@@ -351,6 +360,7 @@ export interface FileRouteTypes {
     | '/theme-builder'
     | '/about'
     | '/changelog'
+    | '/contact'
     | '/cookies'
     | '/creators'
     | '/leaderboard'
@@ -385,6 +395,7 @@ export interface FileRouteTypes {
     | '/theme-builder'
     | '/about'
     | '/changelog'
+    | '/contact'
     | '/cookies'
     | '/creators'
     | '/leaderboard'
@@ -423,6 +434,7 @@ export interface FileRouteTypes {
     | '/_protected/theme-builder'
     | '/_public/about'
     | '/_public/changelog'
+    | '/_public/contact'
     | '/_public/cookies'
     | '/_public/creators'
     | '/_public/leaderboard'
@@ -550,6 +562,13 @@ declare module '@tanstack/react-router' {
       path: '/cookies'
       fullPath: '/cookies'
       preLoaderRoute: typeof PublicCookiesRouteImport
+      parentRoute: typeof PublicRoute
+    }
+    '/_public/contact': {
+      id: '/_public/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof PublicContactRouteImport
       parentRoute: typeof PublicRoute
     }
     '/_public/changelog': {
@@ -767,6 +786,7 @@ const ProtectedRouteWithChildren = ProtectedRoute._addFileChildren(
 interface PublicRouteChildren {
   PublicAboutRoute: typeof PublicAboutRoute
   PublicChangelogRoute: typeof PublicChangelogRoute
+  PublicContactRoute: typeof PublicContactRoute
   PublicCookiesRoute: typeof PublicCookiesRoute
   PublicCreatorsRoute: typeof PublicCreatorsRoute
   PublicLeaderboardRoute: typeof PublicLeaderboardRoute
@@ -783,6 +803,7 @@ interface PublicRouteChildren {
 const PublicRouteChildren: PublicRouteChildren = {
   PublicAboutRoute: PublicAboutRoute,
   PublicChangelogRoute: PublicChangelogRoute,
+  PublicContactRoute: PublicContactRoute,
   PublicCookiesRoute: PublicCookiesRoute,
   PublicCreatorsRoute: PublicCreatorsRoute,
   PublicLeaderboardRoute: PublicLeaderboardRoute,

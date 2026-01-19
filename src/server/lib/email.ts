@@ -770,3 +770,221 @@ function parseUserAgent(ua: string): string {
 
   return `${browser} on ${os}`
 }
+
+// ============================================================================
+// CONTACT FORM EMAILS
+// ============================================================================
+
+interface ContactNotificationData {
+  category: string
+  name: string
+  email: string
+  subject: string
+  message: string
+  messageId: string
+}
+
+const CATEGORY_LABELS: Record<string, { label: string; color: string }> = {
+  general: { label: 'General Inquiry', color: '#6366f1' },
+  support: { label: 'Technical Support', color: '#ef4444' },
+  partnership: { label: 'Partnership', color: '#22c55e' },
+  feature: { label: 'Feature Request', color: '#f59e0b' },
+  security: { label: 'Security', color: '#8b5cf6' },
+}
+
+export async function sendContactNotificationEmail(data: ContactNotificationData): Promise<EmailResult> {
+  const adminEmail = process.env.ADMIN_EMAIL || 'support@eziox.link'
+  const categoryInfo = CATEGORY_LABELS[data.category] || { label: data.category, color: '#6b7280' }
+
+  try {
+    const { error } = await getResend().emails.send({
+      from: FROM_EMAIL,
+      to: adminEmail,
+      subject: `[${categoryInfo.label}] ${data.subject}`,
+      replyTo: data.email,
+      html: `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; background-color: #0a0a0f; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #0a0a0f; padding: 40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 560px; background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.05)); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; overflow: hidden;">
+          <tr>
+            <td style="padding: 32px; text-align: left;">
+              <div style="display: inline-block; padding: 6px 14px; background: ${categoryInfo.color}25; border: 1px solid ${categoryInfo.color}50; border-radius: 20px; margin-bottom: 20px;">
+                <span style="color: ${categoryInfo.color}; font-size: 12px; font-weight: 600;">${categoryInfo.label}</span>
+              </div>
+              
+              <h1 style="margin: 0 0 8px; font-size: 22px; font-weight: 700; color: #ffffff;">
+                New Contact Message
+              </h1>
+              <p style="margin: 0 0 24px; font-size: 14px; color: rgba(255, 255, 255, 0.6);">
+                Message ID: ${data.messageId}
+              </p>
+              
+              <table width="100%" cellpadding="0" cellspacing="0" style="background: rgba(0, 0, 0, 0.3); border-radius: 12px; margin-bottom: 20px;">
+                <tr>
+                  <td style="padding: 16px;">
+                    <p style="margin: 0 0 8px; font-size: 12px; color: rgba(255, 255, 255, 0.5); text-transform: uppercase; letter-spacing: 0.5px;">From</p>
+                    <p style="margin: 0; font-size: 15px; color: #ffffff; font-weight: 500;">${data.name}</p>
+                    <p style="margin: 4px 0 0; font-size: 14px; color: rgba(255, 255, 255, 0.7);">${data.email}</p>
+                  </td>
+                </tr>
+              </table>
+              
+              <table width="100%" cellpadding="0" cellspacing="0" style="background: rgba(0, 0, 0, 0.3); border-radius: 12px; margin-bottom: 20px;">
+                <tr>
+                  <td style="padding: 16px;">
+                    <p style="margin: 0 0 8px; font-size: 12px; color: rgba(255, 255, 255, 0.5); text-transform: uppercase; letter-spacing: 0.5px;">Subject</p>
+                    <p style="margin: 0; font-size: 15px; color: #ffffff; font-weight: 500;">${data.subject}</p>
+                  </td>
+                </tr>
+              </table>
+              
+              <table width="100%" cellpadding="0" cellspacing="0" style="background: rgba(0, 0, 0, 0.3); border-radius: 12px;">
+                <tr>
+                  <td style="padding: 16px;">
+                    <p style="margin: 0 0 8px; font-size: 12px; color: rgba(255, 255, 255, 0.5); text-transform: uppercase; letter-spacing: 0.5px;">Message</p>
+                    <p style="margin: 0; font-size: 14px; color: rgba(255, 255, 255, 0.9); line-height: 1.6; white-space: pre-wrap;">${data.message}</p>
+                  </td>
+                </tr>
+              </table>
+              
+              <p style="margin: 24px 0 0; font-size: 13px; color: rgba(255, 255, 255, 0.5);">
+                Reply directly to this email to respond to the sender.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 20px 32px; border-top: 1px solid rgba(255, 255, 255, 0.1); text-align: center;">
+              <p style="margin: 0; font-size: 12px; color: rgba(255, 255, 255, 0.4);">
+                © ${new Date().getFullYear()} Eziox Contact System
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+      `,
+    })
+
+    if (error) {
+      console.error('Failed to send contact notification email:', error)
+      return { success: false, error: error.message }
+    }
+
+    return { success: true }
+  } catch (error) {
+    console.error('Failed to send contact notification email:', error)
+    return { success: false, error: 'Failed to send notification email' }
+  }
+}
+
+export async function sendContactConfirmationEmail(
+  to: string,
+  name: string,
+  subject: string,
+  category: string
+): Promise<EmailResult> {
+  const categoryInfo = CATEGORY_LABELS[category] || { label: category, color: '#6b7280' }
+
+  try {
+    const { error } = await getResend().emails.send({
+      from: FROM_EMAIL,
+      to,
+      subject: 'We received your message - Eziox',
+      html: `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; background-color: #0a0a0f; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #0a0a0f; padding: 40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 480px; background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.05)); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; overflow: hidden;">
+          <tr>
+            <td style="padding: 40px 32px; text-align: center;">
+              <img src="${APP_URL}/icon.png" alt="Eziox" width="48" height="48" style="border-radius: 12px; margin-bottom: 24px;">
+              
+              <div style="width: 64px; height: 64px; margin: 0 auto 24px; background: linear-gradient(135deg, #22c55e, #16a34a); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                <span style="font-size: 28px;">✓</span>
+              </div>
+              
+              <h1 style="margin: 0 0 8px; font-size: 24px; font-weight: 700; color: #ffffff;">
+                Message Received!
+              </h1>
+              <p style="margin: 0 0 24px; font-size: 15px; color: rgba(255, 255, 255, 0.7); line-height: 1.6;">
+                Hi ${name}, thank you for reaching out to us. We've received your message and will get back to you soon.
+              </p>
+              
+              <table width="100%" cellpadding="0" cellspacing="0" style="background: rgba(0, 0, 0, 0.3); border-radius: 12px; margin-bottom: 24px; text-align: left;">
+                <tr>
+                  <td style="padding: 16px;">
+                    <p style="margin: 0 0 4px; font-size: 12px; color: rgba(255, 255, 255, 0.5);">Category</p>
+                    <p style="margin: 0 0 12px; font-size: 14px; color: ${categoryInfo.color}; font-weight: 500;">${categoryInfo.label}</p>
+                    <p style="margin: 0 0 4px; font-size: 12px; color: rgba(255, 255, 255, 0.5);">Subject</p>
+                    <p style="margin: 0; font-size: 14px; color: #ffffff;">${subject}</p>
+                  </td>
+                </tr>
+              </table>
+              
+              <table width="100%" cellpadding="0" cellspacing="0" style="background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.2); border-radius: 12px;">
+                <tr>
+                  <td style="padding: 16px;">
+                    <p style="margin: 0 0 4px; font-size: 13px; font-weight: 600; color: #6366f1;">Expected Response Time</p>
+                    <p style="margin: 0; font-size: 14px; color: rgba(255, 255, 255, 0.8);">
+                      ${category === 'security' ? 'Priority - Within 24 hours' : category === 'support' ? '12-24 hours' : '24-48 hours'}
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 24px 32px; border-top: 1px solid rgba(255, 255, 255, 0.1); text-align: center;">
+              <p style="margin: 0 0 8px; font-size: 13px; color: rgba(255, 255, 255, 0.6);">
+                Need faster help? Join our Discord community!
+              </p>
+              <a href="https://discord.com/invite/KD84DmNA89" style="display: inline-block; padding: 10px 20px; background: #5865f2; color: #ffffff; text-decoration: none; border-radius: 8px; font-size: 13px; font-weight: 500;">
+                Join Discord
+              </a>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 20px 32px; border-top: 1px solid rgba(255, 255, 255, 0.1); text-align: center;">
+              <p style="margin: 0; font-size: 12px; color: rgba(255, 255, 255, 0.4);">
+                © ${new Date().getFullYear()} Eziox. All rights reserved.
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+      `,
+    })
+
+    if (error) {
+      console.error('Failed to send contact confirmation email:', error)
+      return { success: false, error: error.message }
+    }
+
+    return { success: true }
+  } catch (error) {
+    console.error('Failed to send contact confirmation email:', error)
+    return { success: false, error: 'Failed to send confirmation email' }
+  }
+}
