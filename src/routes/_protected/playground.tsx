@@ -6,13 +6,14 @@ import { useServerFn } from '@tanstack/react-start'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { getMyLinksFn } from '@/server/functions/links'
-import { getProfileSettingsFn, updateCustomBackgroundFn, updateLayoutSettingsFn, updateThemeFn } from '@/server/functions/profile-settings'
+import { getProfileSettingsFn, updateCustomBackgroundFn, updateLayoutSettingsFn, updateThemeFn, createProfileBackupFn, restoreProfileBackupFn, deleteProfileBackupFn } from '@/server/functions/profile-settings'
 import { getCreatorSettingsFn, updateCustomCSSFn, addCustomFontFn, removeCustomFontFn, updateAnimatedProfileFn, updateOpenGraphFn } from '@/server/functions/creator-features'
 import { ANIMATED_PRESETS } from '@/components/backgrounds/AnimatedBackgrounds'
 import type { CustomBackground, LayoutSettings, AnimatedProfileSettings, OpenGraphSettings, CustomFont } from '@/server/db/schema'
 import {
   Palette, Sparkles, Monitor, Smartphone, Save, Undo2, ExternalLink, Loader2, Check,
   Wand2, Crown, Lock, Code, Type, Share2, ImageIcon, Sliders, Trash2, Info, RotateCcw,
+  History, Upload, Plus, Clock,
 } from 'lucide-react'
 import { SiX, SiInstagram, SiYoutube, SiTwitch, SiGithub, SiTiktok, SiDiscord } from 'react-icons/si'
 
@@ -74,11 +75,12 @@ const SOCIAL_ICONS: Record<string, React.ComponentType<{ size?: number; classNam
   twitter: SiX, instagram: SiInstagram, youtube: SiYoutube, twitch: SiTwitch, github: SiGithub, tiktok: SiTiktok, discord: SiDiscord,
 }
 
-type TabId = 'theme' | 'background' | 'layout' | 'animations' | 'fonts' | 'css' | 'opengraph'
+type TabId = 'theme' | 'background' | 'layout' | 'animations' | 'fonts' | 'css' | 'opengraph' | 'backups'
 const TABS: { id: TabId; label: string; icon: React.ComponentType<{ size?: number }>; tier: 'free' | 'pro' | 'creator' }[] = [
   { id: 'theme', label: 'Theme', icon: Palette, tier: 'free' },
   { id: 'background', label: 'Background', icon: ImageIcon, tier: 'pro' },
   { id: 'layout', label: 'Layout', icon: Sliders, tier: 'pro' },
+  { id: 'backups', label: 'Backups', icon: History, tier: 'pro' },
   { id: 'animations', label: 'Animations', icon: Sparkles, tier: 'creator' },
   { id: 'fonts', label: 'Fonts', icon: Type, tier: 'creator' },
   { id: 'css', label: 'CSS', icon: Code, tier: 'creator' },
@@ -104,8 +106,12 @@ function PlaygroundPage() {
   const removeFont = useServerFn(removeCustomFontFn)
   const updateAnimated = useServerFn(updateAnimatedProfileFn)
   const updateOG = useServerFn(updateOpenGraphFn)
+  const createBackup = useServerFn(createProfileBackupFn)
+  const restoreBackup = useServerFn(restoreProfileBackupFn)
+  const deleteBackup = useServerFn(deleteProfileBackupFn)
   
   const [activeTab, setActiveTab] = useState<TabId>('theme')
+  const [backupName, setBackupName] = useState('')
   const [previewMode, setPreviewMode] = useState<'desktop' | 'mobile'>('desktop')
   const [hasChanges, setHasChanges] = useState(false)
   const [themePreset, setThemePreset] = useState('midnight')
@@ -192,6 +198,24 @@ function PlaygroundPage() {
     mutationFn: (data: OpenGraphSettings) => updateOG({ data }),
     onSuccess: () => { toast.success('Social preview saved!'); setHasChanges(false); void queryClient.invalidateQueries({ queryKey: ['creatorSettings'] }) },
     onError: () => toast.error('Failed to save'),
+  })
+  
+  const backupMutation = useMutation({
+    mutationFn: (name: string) => createBackup({ data: { name } }),
+    onSuccess: () => { toast.success('Backup created!'); setBackupName(''); void queryClient.invalidateQueries({ queryKey: ['profile-settings'] }) },
+    onError: () => toast.error('Failed to create backup'),
+  })
+  
+  const restoreMutation = useMutation({
+    mutationFn: (backupId: string) => restoreBackup({ data: { backupId } }),
+    onSuccess: () => { toast.success('Backup restored!'); void queryClient.invalidateQueries({ queryKey: ['profile-settings'] }); void queryClient.invalidateQueries({ queryKey: ['creatorSettings'] }) },
+    onError: () => toast.error('Failed to restore backup'),
+  })
+  
+  const deleteMutation = useMutation({
+    mutationFn: (backupId: string) => deleteBackup({ data: { backupId } }),
+    onSuccess: () => { toast.success('Backup deleted'); void queryClient.invalidateQueries({ queryKey: ['profile-settings'] }) },
+    onError: () => toast.error('Failed to delete backup'),
   })
   
   const applyPreset = (presetId: string) => {
@@ -367,6 +391,41 @@ function PlaygroundPage() {
                           <div className="h-16 rounded-xl" style={{ background: localBackground.value }} />
                         </div>
                       )}
+                      {localBackground?.type === 'image' && (
+                        <div className="space-y-3">
+                          <label className="text-sm font-medium" style={{ color: 'var(--foreground)' }}>Image URL</label>
+                          <div className="flex items-center gap-2">
+                            <input type="url" value={localBackground.value || ''} onChange={(e) => { setLocalBackground({ ...localBackground, value: e.target.value }); setHasChanges(true) }} placeholder="https://example.com/image.jpg" className="flex-1 px-4 py-2.5 rounded-xl text-sm" style={{ background: 'var(--background-secondary)', color: 'var(--foreground)', border: '1px solid var(--border)' }} />
+                          </div>
+                          <div className="flex items-center gap-2 p-3 rounded-xl" style={{ background: 'rgba(99, 102, 241, 0.1)' }}>
+                            <Upload size={14} style={{ color: '#6366f1' }} />
+                            <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>Paste an image URL or use a CDN link</p>
+                          </div>
+                          {localBackground.value && (
+                            <div className="h-24 rounded-xl bg-cover bg-center" style={{ backgroundImage: `url(${localBackground.value})` }} />
+                          )}
+                        </div>
+                      )}
+                      {localBackground?.type === 'video' && (
+                        <div className="space-y-3">
+                          <label className="text-sm font-medium" style={{ color: 'var(--foreground)' }}>Video URL</label>
+                          <input type="url" value={localBackground.value || ''} onChange={(e) => { setLocalBackground({ ...localBackground, value: e.target.value }); setHasChanges(true) }} placeholder="https://example.com/video.mp4" className="w-full px-4 py-2.5 rounded-xl text-sm" style={{ background: 'var(--background-secondary)', color: 'var(--foreground)', border: '1px solid var(--border)' }} />
+                          <div className="flex items-center gap-4">
+                            <label className="flex items-center gap-2 cursor-pointer">
+                              <input type="checkbox" checked={localBackground.videoLoop ?? true} onChange={(e) => { setLocalBackground({ ...localBackground, videoLoop: e.target.checked }); setHasChanges(true) }} className="rounded" />
+                              <span className="text-xs" style={{ color: 'var(--foreground)' }}>Loop</span>
+                            </label>
+                            <label className="flex items-center gap-2 cursor-pointer">
+                              <input type="checkbox" checked={localBackground.videoMuted ?? true} onChange={(e) => { setLocalBackground({ ...localBackground, videoMuted: e.target.checked }); setHasChanges(true) }} className="rounded" />
+                              <span className="text-xs" style={{ color: 'var(--foreground)' }}>Muted</span>
+                            </label>
+                          </div>
+                          <div className="flex items-center gap-2 p-3 rounded-xl" style={{ background: 'rgba(234, 179, 8, 0.1)' }}>
+                            <Info size={14} style={{ color: '#eab308' }} />
+                            <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>Use short, optimized videos for best performance</p>
+                          </div>
+                        </div>
+                      )}
                       {localBackground?.type === 'animated' && (
                         <div className="space-y-4">
                           <label className="text-sm font-medium mb-2 block" style={{ color: 'var(--foreground)' }}>Animation Preset</label>
@@ -377,6 +436,24 @@ function PlaygroundPage() {
                                 <div className="text-[10px]" style={{ color: 'var(--foreground-muted)' }}>{preset.category}</div>
                               </button>
                             ))}
+                          </div>
+                          <div className="grid grid-cols-2 gap-3">
+                            <div>
+                              <label className="text-xs font-medium mb-2 block" style={{ color: 'var(--foreground)' }}>Speed</label>
+                              <select value={localBackground.animatedSpeed || 'normal'} onChange={(e) => { setLocalBackground({ ...localBackground, animatedSpeed: e.target.value as 'slow' | 'normal' | 'fast' }); setHasChanges(true) }} className="w-full px-3 py-2 rounded-xl text-sm" style={{ background: 'var(--background-secondary)', color: 'var(--foreground)', border: '1px solid var(--border)' }}>
+                                <option value="slow">Slow</option>
+                                <option value="normal">Normal</option>
+                                <option value="fast">Fast</option>
+                              </select>
+                            </div>
+                            <div>
+                              <label className="text-xs font-medium mb-2 block" style={{ color: 'var(--foreground)' }}>Intensity</label>
+                              <select value={localBackground.animatedIntensity || 'normal'} onChange={(e) => { setLocalBackground({ ...localBackground, animatedIntensity: e.target.value as 'subtle' | 'normal' | 'intense' }); setHasChanges(true) }} className="w-full px-3 py-2 rounded-xl text-sm" style={{ background: 'var(--background-secondary)', color: 'var(--foreground)', border: '1px solid var(--border)' }}>
+                                <option value="subtle">Subtle</option>
+                                <option value="normal">Normal</option>
+                                <option value="intense">Intense</option>
+                              </select>
+                            </div>
                           </div>
                         </div>
                       )}
@@ -417,6 +494,10 @@ function PlaygroundPage() {
                           <input type="range" min="0" max="32" value={localLayout.cardSpacing} onChange={(e) => { setLocalLayout({ ...localLayout, cardSpacing: parseInt(e.target.value) }); setHasChanges(true) }} className="w-full" />
                         </div>
                         <div>
+                          <div className="flex justify-between mb-2"><label className="text-sm font-medium" style={{ color: 'var(--foreground)' }}>Card Padding</label><span className="text-xs" style={{ color: 'var(--foreground-muted)' }}>{localLayout.cardPadding}px</span></div>
+                          <input type="range" min="8" max="32" value={localLayout.cardPadding} onChange={(e) => { setLocalLayout({ ...localLayout, cardPadding: parseInt(e.target.value) }); setHasChanges(true) }} className="w-full" />
+                        </div>
+                        <div>
                           <div className="flex justify-between mb-2"><label className="text-sm font-medium" style={{ color: 'var(--foreground)' }}>Border Radius</label><span className="text-xs" style={{ color: 'var(--foreground-muted)' }}>{localLayout.cardBorderRadius}px</span></div>
                           <input type="range" min="0" max="32" value={localLayout.cardBorderRadius} onChange={(e) => { setLocalLayout({ ...localLayout, cardBorderRadius: parseInt(e.target.value) }); setHasChanges(true) }} className="w-full" />
                         </div>
@@ -431,6 +512,58 @@ function PlaygroundPage() {
                           </div>
                         </div>
                       </div>
+                    </motion.div>
+                  )}
+                  
+                  {/* Backups Tab */}
+                  {activeTab === 'backups' && canPro && (
+                    <motion.div key="backups" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-5">
+                      <div className="flex items-center gap-2 p-3 rounded-xl" style={{ background: 'rgba(99, 102, 241, 0.1)' }}>
+                        <History size={16} style={{ color: '#6366f1' }} />
+                        <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>Create backups to save your current profile settings</p>
+                      </div>
+                      <div>
+                        <label className="text-xs font-semibold uppercase tracking-wider mb-3 block" style={{ color: 'var(--foreground-muted)' }}>Create New Backup</label>
+                        <div className="flex gap-2">
+                          <input type="text" value={backupName} onChange={(e) => setBackupName(e.target.value)} placeholder="Backup name..." className="flex-1 px-4 py-2.5 rounded-xl text-sm" style={{ background: 'var(--background-secondary)', color: 'var(--foreground)', border: '1px solid var(--border)' }} />
+                          <button onClick={() => backupName.trim() && backupMutation.mutate(backupName.trim())} disabled={!backupName.trim() || backupMutation.isPending} className="px-4 py-2.5 rounded-xl text-sm font-medium text-white disabled:opacity-50" style={{ background: accentColor }}>
+                            {backupMutation.isPending ? <Loader2 size={16} className="animate-spin" /> : <Plus size={16} />}
+                          </button>
+                        </div>
+                      </div>
+                      {profileSettings?.profileBackups && profileSettings.profileBackups.length > 0 && (
+                        <div>
+                          <label className="text-xs font-semibold uppercase tracking-wider mb-3 block" style={{ color: 'var(--foreground-muted)' }}>Your Backups ({profileSettings.profileBackups.length}/5)</label>
+                          <div className="space-y-2">
+                            {profileSettings.profileBackups.map((backup) => (
+                              <div key={backup.id} className="flex items-center justify-between p-3 rounded-xl" style={{ background: 'var(--background-secondary)' }}>
+                                <div>
+                                  <p className="font-medium text-sm" style={{ color: 'var(--foreground)' }}>{backup.name}</p>
+                                  <p className="text-xs flex items-center gap-1" style={{ color: 'var(--foreground-muted)' }}>
+                                    <Clock size={10} />
+                                    {new Date(backup.createdAt).toLocaleDateString()}
+                                  </p>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                  <button onClick={() => restoreMutation.mutate(backup.id)} disabled={restoreMutation.isPending} className="p-2 rounded-lg text-xs font-medium" style={{ background: `${accentColor}20`, color: accentColor }}>
+                                    {restoreMutation.isPending ? <Loader2 size={14} className="animate-spin" /> : <RotateCcw size={14} />}
+                                  </button>
+                                  <button onClick={() => deleteMutation.mutate(backup.id)} disabled={deleteMutation.isPending} className="p-2 rounded-lg hover:bg-red-500/10">
+                                    <Trash2 size={14} style={{ color: '#ef4444' }} />
+                                  </button>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {(!profileSettings?.profileBackups || profileSettings.profileBackups.length === 0) && (
+                        <div className="text-center py-6">
+                          <History size={32} className="mx-auto mb-3" style={{ color: 'var(--foreground-muted)' }} />
+                          <p className="text-sm" style={{ color: 'var(--foreground-muted)' }}>No backups yet</p>
+                          <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>Create your first backup above</p>
+                        </div>
+                      )}
                     </motion.div>
                   )}
                   
