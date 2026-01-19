@@ -21,7 +21,7 @@ import {
   Gift,
 } from 'lucide-react'
 
-export const CURRENT_VERSION = '1.9.0'
+export const CURRENT_VERSION = '2.0.0'
 
 interface ChangelogChange {
   type: 'feature' | 'improvement' | 'fix' | 'security' | 'breaking'
@@ -29,12 +29,12 @@ interface ChangelogChange {
 }
 
 const latestChanges: ChangelogChange[] = [
-  { type: 'feature', text: 'Templates page completely redesigned with modern UI' },
-  { type: 'feature', text: 'Playground page rebuilt from scratch' },
-  { type: 'feature', text: 'Live preview with desktop/mobile toggle' },
-  { type: 'feature', text: 'File upload for images & videos in backgrounds' },
-  { type: 'improvement', text: 'Spring-based motion animations throughout' },
-  { type: 'improvement', text: 'Consistent theme system usage' },
+  { type: 'feature', text: '31 modernized themes with Tailwind color palettes' },
+  { type: 'feature', text: 'New eziox-default theme as the signature look' },
+  { type: 'improvement', text: 'All themes updated with deeper, richer colors' },
+  { type: 'improvement', text: 'Modern typography: Inter, Plus Jakarta Sans, Outfit' },
+  { type: 'improvement', text: 'Cleaned up site-config.ts - removed unused properties' },
+  { type: 'fix', text: 'Fixed duplicate pastel-dream theme' },
 ]
 
 const typeConfig: Record<ChangelogChange['type'], { icon: React.ElementType; color: string }> = {

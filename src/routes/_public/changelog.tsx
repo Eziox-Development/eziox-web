@@ -65,6 +65,35 @@ const typeConfig: Record<ChangeType, { label: string; color: string; bgColor: st
 
 const changelog: ChangelogEntry[] = [
   {
+    version: '2.0.0',
+    date: 'January 19, 2026',
+    title: 'Theme System Modernization',
+    description: 'Complete overhaul of the theme system with 31 modernized themes, Tailwind CSS color palettes, and cleaned up configuration.',
+    icon: Palette,
+    type: 'feature',
+    highlights: [
+      '31 themes completely modernized',
+      'New eziox-default signature theme',
+      'Tailwind CSS color alignment',
+    ],
+    changes: [
+      { type: 'feature', text: 'New eziox-default theme with deep black (#030305) and violet (#8b5cf6) accents' },
+      { type: 'feature', text: 'All 31 themes updated with modern color palettes' },
+      { type: 'improvement', text: 'General themes: eziox-default, obsidian, midnight, ember' },
+      { type: 'improvement', text: 'Gamer themes: neon-green, rgb-fusion, cyberpunk with vibrant neon colors' },
+      { type: 'improvement', text: 'VTuber themes: kawaii-pink, pastel-dream, anime-night with soft aesthetics' },
+      { type: 'improvement', text: 'Developer themes: terminal, github-dark, vscode with authentic colors' },
+      { type: 'improvement', text: 'Streamer themes: twitch, youtube, kick with official brand colors' },
+      { type: 'improvement', text: 'Artist themes: canvas, watercolor, gallery with elegant palettes' },
+      { type: 'improvement', text: 'Premium themes: ocean-depths, forest-night, neon-tokyo, sakura-bloom, monochrome-pro' },
+      { type: 'improvement', text: 'Modern typography: Inter, Plus Jakarta Sans, Outfit, Space Grotesk, JetBrains Mono' },
+      { type: 'improvement', text: 'Deeper, richer background colors for better contrast' },
+      { type: 'fix', text: 'Fixed duplicate pastel-dream theme (renamed to sakura-bloom)' },
+      { type: 'fix', text: 'Removed unused site-config properties: owner details, header, navigation, footerLinks' },
+      { type: 'fix', text: 'Updated CSS variables to match new eziox-default theme' },
+    ],
+  },
+  {
     version: '1.9.0',
     date: 'January 19, 2026',
     title: 'UI Modernization - Templates & Playground',

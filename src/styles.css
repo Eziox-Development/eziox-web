@@ -26,55 +26,56 @@ code, kbd, samp, pre {
 }
 
 /* Default Theme Variables (Fallbacks - ThemeProvider overrides these) */
+/* Matches eziox-default theme from site-config.ts */
 :root {
-  --background: #0a0a0f;
-  --background-secondary: #12121a;
+  --background: #030305;
+  --background-secondary: #0c0c10;
   --foreground: #fafafa;
-  --foreground-muted: #a1a1aa;
-  --primary: #6366f1;
+  --foreground-muted: #71717a;
+  --primary: #8b5cf6;
   --primary-foreground: #ffffff;
-  --accent: #8b5cf6;
-  --accent-foreground: #ffffff;
-  --border: #27272a;
-  --card: #18181b;
+  --accent: #c4b5fd;
+  --accent-foreground: #030305;
+  --border: #1c1c22;
+  --card: #0c0c10;
   --card-foreground: #fafafa;
   
-  --primary-rgb: 99, 102, 241;
-  --accent-rgb: 139, 92, 246;
-  --background-rgb: 10, 10, 15;
-  --border-rgb: 39, 39, 42;
+  --primary-rgb: 139, 92, 246;
+  --accent-rgb: 196, 181, 253;
+  --background-rgb: 3, 3, 5;
+  --border-rgb: 28, 28, 34;
   
   --theme-transition: 250ms ease-out;
   --radius: 0.75rem;
-  --glow-intensity: 0.4;
+  --glow-intensity: 0.2;
   --card-style: glass;
   --animation-speed: 250ms;
   
   --destructive: #ef4444;
   --destructive-foreground: #fafafa;
-  --muted: #27272a;
-  --muted-foreground: #a1a1aa;
-  --secondary: #27272a;
+  --muted: #1c1c22;
+  --muted-foreground: #71717a;
+  --secondary: #1c1c22;
   --secondary-foreground: #fafafa;
-  --popover: #18181b;
+  --popover: #0c0c10;
   --popover-foreground: #fafafa;
-  --input: #27272a;
-  --ring: #6366f1;
+  --input: #1c1c22;
+  --ring: #8b5cf6;
   
-  --chart-1: #6366f1;
-  --chart-2: #8b5cf6;
+  --chart-1: #8b5cf6;
+  --chart-2: #a855f7;
   --chart-3: #ec4899;
-  --chart-4: #f59e0b;
-  --chart-5: #10b981;
+  --chart-4: #f97316;
+  --chart-5: #22c55e;
   
-  --sidebar: #0a0a0f;
+  --sidebar: #030305;
   --sidebar-foreground: #fafafa;
-  --sidebar-primary: #6366f1;
+  --sidebar-primary: #8b5cf6;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #27272a;
+  --sidebar-accent: #1c1c22;
   --sidebar-accent-foreground: #fafafa;
-  --sidebar-border: #27272a;
-  --sidebar-ring: #6366f1;
+  --sidebar-border: #1c1c22;
+  --sidebar-ring: #8b5cf6;
 }
 
 @theme inline {

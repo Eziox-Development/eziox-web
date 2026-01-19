@@ -38,7 +38,7 @@
 | 🏆 **Leaderboard** | User ranking system with podium display |
 | 👤 **Profiles** | Custom avatars, banners, bios, social links |
 | 🔐 **Auth** | Secure session-based authentication |
-| 🎨 **Themes** | 30+ beautiful theme variants across 8 categories |
+| 🎨 **Themes** | 31 modern themes across 8 categories with Tailwind colors |
 | 🎮 **Playground** | Create & test presets with live preview |
 | 📋 **Templates** | Browse & apply community templates |
 | 💳 **Stripe Payments** | Secure subscription & one-time payments |

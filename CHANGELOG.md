@@ -9,6 +9,49 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.0.0] - 2026-01-19
+
+### Added - Theme System Modernization 🎨
+- **31 Modernized Themes** - Complete overhaul of all themes with modern color palettes
+  - New `eziox-default` signature theme with deep black (#030305) and violet (#8b5cf6)
+  - All themes aligned with Tailwind CSS color palette
+  - Deeper, richer background colors for better contrast
+
+- **Theme Categories Updated**:
+  - **General**: eziox-default, obsidian, midnight, ember
+  - **Gamer**: neon-green, rgb-fusion, cyberpunk (vibrant neon colors)
+  - **VTuber**: kawaii-pink, pastel-dream, anime-night (soft aesthetics)
+  - **Anime**: shonen-fire, slice-of-life, mecha-chrome
+  - **Developer**: terminal, github-dark, vscode (authentic IDE colors)
+  - **Streamer**: twitch, youtube, kick (official brand colors)
+  - **Artist**: canvas, watercolor, gallery (elegant palettes)
+  - **Minimal**: minimal-dark, minimal-light, aurora
+  - **Premium**: ocean-depths, forest-night, neon-tokyo, sakura-bloom, monochrome-pro
+
+- **Modern Typography**:
+  - Inter, Plus Jakarta Sans, Outfit for display fonts
+  - Space Grotesk, DM Sans for body fonts
+  - JetBrains Mono, Fira Code for developer themes
+
+### Changed
+- **Site Config Cleanup** - Removed unused properties:
+  - Removed: owner (userId, role, bio, extendedBio, avatar, banner, location, availability, badges, stats, socialLinks)
+  - Removed: metadata.copyright, header, navigation, footerLinks
+  - Removed: SocialLink, NavItem, OwnerStats, HeaderConfig interfaces
+  - Kept only: metadata (title, description, url, language, icon), owner (name, email), themes, defaultTheme
+
+- **CSS Variables Updated** - Default theme variables now match eziox-default:
+  - Background: #030305 (deeper black)
+  - Primary: #8b5cf6 (violet)
+  - Accent: #c4b5fd (light violet)
+  - Border: #1c1c22 (subtle dark)
+
+### Fixed
+- Fixed duplicate `pastel-dream` theme (renamed second instance to `sakura-bloom`)
+- Theme IDs cleaned up (removed `-green`, `-purple`, `-red` suffixes from streamer themes)
+
+---
+
 ## [1.9.0] - 2026-01-19
 
 ### Added - UI Modernization 🎨

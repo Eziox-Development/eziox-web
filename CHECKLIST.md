@@ -346,7 +346,6 @@ ALTER TABLE user_stats ADD COLUMN referral_count INTEGER DEFAULT 0;
 ## 📱 UI/UX Improvements
 
 - [ ] Mobile app (React Native / PWA)
-- [ ] Dark/Light mode toggle
 - [ ] Accessibility improvements (ARIA)
 - [ ] Loading skeletons
 - [ ] Error boundaries
