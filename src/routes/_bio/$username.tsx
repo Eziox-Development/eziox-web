@@ -41,6 +41,7 @@ import { useTheme } from '@/components/portfolio/ThemeProvider'
 import { checkSpotifyConnectionFn } from '@/server/functions/spotify'
 import type { TierType } from '@/server/lib/stripe'
 import type { CustomBackground, LayoutSettings, AnimatedProfileSettings, CustomFont } from '@/server/db/schema'
+import { AnimatedBackground, VideoBackground } from '@/components/backgrounds/AnimatedBackgrounds'
 
 const socialIconMap: Record<string, ComponentType<{ size?: number }>> = {
   twitter: SiX,
@@ -384,12 +385,44 @@ function BioPage() {
         background: `url(${customBackground.imageUrl}) center/cover fixed`,
         ...(customBackground.imageBlur ? { filter: `blur(${customBackground.imageBlur}px)` } : {}),
       }
+      case 'video': return { background: 'var(--background)' }
+      case 'animated': return { background: 'var(--background)' }
       default: return { background: 'var(--background)' }
     }
   }
 
+  const renderAnimatedBackground = () => {
+    if (!customBackground) return null
+    
+    if (customBackground.type === 'video' && customBackground.videoUrl) {
+      return (
+        <VideoBackground
+          url={customBackground.videoUrl}
+          loop={customBackground.videoLoop ?? true}
+          muted={customBackground.videoMuted ?? true}
+        />
+      )
+    }
+    
+    if (customBackground.type === 'animated' && customBackground.animatedPreset) {
+      return (
+        <AnimatedBackground
+          preset={customBackground.animatedPreset}
+          speed={customBackground.animatedSpeed}
+          intensity={customBackground.animatedIntensity}
+          colors={customBackground.animatedColors}
+        />
+      )
+    }
+    
+    return null
+  }
+
   return (
     <div className="min-h-screen relative" style={getBackgroundStyle()}>
+      {/* Animated/Video Background */}
+      {renderAnimatedBackground()}
+      
       {/* Custom CSS injection */}
       {customCSS && (
         <style dangerouslySetInnerHTML={{ __html: customCSS }} />

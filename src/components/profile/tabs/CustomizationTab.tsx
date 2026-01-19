@@ -28,6 +28,7 @@ import {
   Sliders,
 } from 'lucide-react'
 import type { CustomBackground, LayoutSettings } from '@/server/db/schema'
+import { ANIMATED_PRESETS } from '@/components/backgrounds/AnimatedBackgrounds'
 
 const SHADOW_OPTIONS = [
   { value: 'none', label: 'None', preview: 'shadow-none' },
@@ -252,14 +253,14 @@ export function CustomizationTab() {
                 </div>
                 <div>
                   <h3 className="font-bold" style={{ color: theme.colors.foreground }}>Custom Background</h3>
-                  <p className="text-xs" style={{ color: theme.colors.foregroundMuted }}>Solid color, gradient, or image</p>
+                  <p className="text-xs" style={{ color: theme.colors.foregroundMuted }}>Solid, gradient, image, video, or animated</p>
                 </div>
               </div>
             </div>
 
             <div className="p-5 space-y-4">
-              <div className="grid grid-cols-3 gap-3">
-                {(['solid', 'gradient', 'image'] as const).map((type) => (
+              <div className="grid grid-cols-5 gap-2">
+                {(['solid', 'gradient', 'image', 'video', 'animated'] as const).map((type) => (
                   <button
                     key={type}
                     onClick={() => setLocalBackground({ 
@@ -267,14 +268,19 @@ export function CustomizationTab() {
                       value: type === 'solid' ? '#1a1a2e' : type === 'gradient' ? 'linear-gradient(135deg, #667eea, #764ba2)' : '',
                       gradientColors: type === 'gradient' ? ['#667eea', '#764ba2'] : undefined,
                       gradientAngle: type === 'gradient' ? 135 : undefined,
+                      animatedPreset: type === 'animated' ? 'particles' : undefined,
+                      animatedSpeed: type === 'animated' ? 'normal' : undefined,
+                      animatedIntensity: type === 'animated' ? 'normal' : undefined,
+                      videoLoop: type === 'video' ? true : undefined,
+                      videoMuted: type === 'video' ? true : undefined,
                     })}
-                    className="p-4 rounded-xl text-center transition-all"
+                    className="p-3 rounded-xl text-center transition-all"
                     style={{
                       background: currentBackground?.type === type ? `${theme.colors.primary}20` : theme.colors.backgroundSecondary,
                       border: `2px solid ${currentBackground?.type === type ? theme.colors.primary : 'transparent'}`,
                     }}
                   >
-                    <div className="text-sm font-medium capitalize" style={{ color: theme.colors.foreground }}>{type}</div>
+                    <div className="text-xs font-medium capitalize" style={{ color: theme.colors.foreground }}>{type}</div>
                   </button>
                 ))}
               </div>
@@ -383,6 +389,144 @@ export function CustomizationTab() {
                         onChange={(e) => setLocalBackground({ ...currentBackground, imageBlur: parseInt(e.target.value) })}
                         className="w-full"
                       />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {currentBackground?.type === 'video' && (
+                <div className="space-y-3">
+                  <label className="text-sm font-medium" style={{ color: theme.colors.foreground }}>Video URL (MP4 or WebM)</label>
+                  <input
+                    type="url"
+                    placeholder="https://example.com/video.mp4"
+                    value={currentBackground.videoUrl || ''}
+                    onChange={(e) => setLocalBackground({ ...currentBackground, videoUrl: e.target.value, value: e.target.value })}
+                    className="w-full px-4 py-2.5 rounded-xl text-sm"
+                    style={{ background: theme.colors.backgroundSecondary, color: theme.colors.foreground, border: `1px solid ${theme.colors.border}` }}
+                  />
+                  <div className="flex gap-4">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={currentBackground.videoLoop ?? true}
+                        onChange={(e) => setLocalBackground({ ...currentBackground, videoLoop: e.target.checked })}
+                        className="rounded"
+                      />
+                      <span className="text-sm" style={{ color: theme.colors.foreground }}>Loop</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={currentBackground.videoMuted ?? true}
+                        onChange={(e) => setLocalBackground({ ...currentBackground, videoMuted: e.target.checked })}
+                        className="rounded"
+                      />
+                      <span className="text-sm" style={{ color: theme.colors.foreground }}>Muted</span>
+                    </label>
+                  </div>
+                  <p className="text-xs" style={{ color: theme.colors.foregroundMuted }}>
+                    Tip: Use short, looping videos for best performance. WebM format recommended.
+                  </p>
+                </div>
+              )}
+
+              {currentBackground?.type === 'animated' && (
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium mb-3 block" style={{ color: theme.colors.foreground }}>Choose Animation</label>
+                    <div className="space-y-3">
+                      {['vtuber', 'gamer', 'developer', 'nature', 'abstract'].map((category) => (
+                        <div key={category}>
+                          <p className="text-xs font-medium uppercase tracking-wider mb-2" style={{ color: theme.colors.foregroundMuted }}>
+                            {category === 'vtuber' ? 'VTuber / Anime' : category.charAt(0).toUpperCase() + category.slice(1)}
+                          </p>
+                          <div className="grid grid-cols-3 gap-2">
+                            {ANIMATED_PRESETS.filter(p => p.category === category).map((preset) => (
+                              <button
+                                key={preset.id}
+                                onClick={() => setLocalBackground({ 
+                                  ...currentBackground, 
+                                  animatedPreset: preset.id,
+                                  value: preset.id,
+                                })}
+                                className="p-2 rounded-lg text-left transition-all"
+                                style={{
+                                  background: currentBackground.animatedPreset === preset.id ? `${theme.colors.primary}20` : theme.colors.backgroundSecondary,
+                                  border: `1px solid ${currentBackground.animatedPreset === preset.id ? theme.colors.primary : theme.colors.border}`,
+                                }}
+                              >
+                                <div className="text-xs font-medium" style={{ color: theme.colors.foreground }}>{preset.name}</div>
+                                <div className="text-[10px] truncate" style={{ color: theme.colors.foregroundMuted }}>{preset.description}</div>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium mb-2 block" style={{ color: theme.colors.foreground }}>Speed</label>
+                      <div className="flex gap-2">
+                        {(['slow', 'normal', 'fast'] as const).map((speed) => (
+                          <button
+                            key={speed}
+                            onClick={() => setLocalBackground({ ...currentBackground, animatedSpeed: speed })}
+                            className="flex-1 py-2 rounded-lg text-xs font-medium capitalize transition-all"
+                            style={{
+                              background: currentBackground.animatedSpeed === speed ? theme.colors.primary : theme.colors.backgroundSecondary,
+                              color: currentBackground.animatedSpeed === speed ? '#fff' : theme.colors.foreground,
+                            }}
+                          >
+                            {speed}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium mb-2 block" style={{ color: theme.colors.foreground }}>Intensity</label>
+                      <div className="flex gap-2">
+                        {(['subtle', 'normal', 'intense'] as const).map((intensity) => (
+                          <button
+                            key={intensity}
+                            onClick={() => setLocalBackground({ ...currentBackground, animatedIntensity: intensity })}
+                            className="flex-1 py-2 rounded-lg text-xs font-medium capitalize transition-all"
+                            style={{
+                              background: currentBackground.animatedIntensity === intensity ? theme.colors.primary : theme.colors.backgroundSecondary,
+                              color: currentBackground.animatedIntensity === intensity ? '#fff' : theme.colors.foreground,
+                            }}
+                          >
+                            {intensity}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-medium mb-2 block" style={{ color: theme.colors.foreground }}>Custom Colors</label>
+                    <div className="flex gap-3">
+                      <input
+                        type="color"
+                        value={currentBackground.animatedColors?.[0] || '#8b5cf6'}
+                        onChange={(e) => setLocalBackground({ 
+                          ...currentBackground, 
+                          animatedColors: [e.target.value, currentBackground.animatedColors?.[1] || '#ec4899']
+                        })}
+                        className="w-12 h-10 rounded-lg cursor-pointer border-0"
+                      />
+                      <input
+                        type="color"
+                        value={currentBackground.animatedColors?.[1] || '#ec4899'}
+                        onChange={(e) => setLocalBackground({ 
+                          ...currentBackground, 
+                          animatedColors: [currentBackground.animatedColors?.[0] || '#8b5cf6', e.target.value]
+                        })}
+                        className="w-12 h-10 rounded-lg cursor-pointer border-0"
+                      />
+                      <span className="text-xs self-center" style={{ color: theme.colors.foregroundMuted }}>Primary & Secondary</span>
                     </div>
                   </div>
                 </div>

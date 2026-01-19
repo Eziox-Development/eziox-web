@@ -35,13 +35,20 @@ export const usersRelations = relations(users, ({ one, many }) => ({
 
 // PROFILES TABLE
 export interface CustomBackground {
-  type: 'solid' | 'gradient' | 'image'
+  type: 'solid' | 'gradient' | 'image' | 'video' | 'animated'
   value: string
   gradientAngle?: number
   gradientColors?: string[]
   imageUrl?: string
   imageOpacity?: number
   imageBlur?: number
+  videoUrl?: string
+  videoLoop?: boolean
+  videoMuted?: boolean
+  animatedPreset?: string
+  animatedSpeed?: 'slow' | 'normal' | 'fast'
+  animatedIntensity?: 'subtle' | 'normal' | 'intense'
+  animatedColors?: string[]
 }
 
 export interface LayoutSettings {

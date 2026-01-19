@@ -41,13 +41,20 @@ function canAccessFeature(tier: TierType, feature: 'customBackgrounds' | 'layout
 }
 
 const customBackgroundSchema = z.object({
-  type: z.enum(['solid', 'gradient', 'image']),
+  type: z.enum(['solid', 'gradient', 'image', 'video', 'animated']),
   value: z.string(),
   gradientAngle: z.number().min(0).max(360).optional(),
   gradientColors: z.array(z.string()).optional(),
   imageUrl: z.string().url().optional(),
   imageOpacity: z.number().min(0).max(1).optional(),
   imageBlur: z.number().min(0).max(20).optional(),
+  videoUrl: z.string().url().optional(),
+  videoLoop: z.boolean().optional(),
+  videoMuted: z.boolean().optional(),
+  animatedPreset: z.string().optional(),
+  animatedSpeed: z.enum(['slow', 'normal', 'fast']).optional(),
+  animatedIntensity: z.enum(['subtle', 'normal', 'intense']).optional(),
+  animatedColors: z.array(z.string()).optional(),
 })
 
 const layoutSettingsSchema = z.object({
