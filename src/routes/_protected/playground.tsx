@@ -1,768 +1,802 @@
-import { useState, useEffect, useRef } from 'react'
-import { createFileRoute } from '@tanstack/react-router'
+/**
+ * Playground - Live Bio Page Customization
+ * Real-time preview with actual user data
+ */
+
+import { createFileRoute, Link } from '@tanstack/react-router'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { useServerFn } from '@tanstack/react-start'
-import { useTheme } from '@/components/portfolio/ThemeProvider'
 import { useAuth } from '@/hooks/use-auth'
+import { useServerFn } from '@tanstack/react-start'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
+import { getMyLinksFn } from '@/server/functions/links'
+import { getProfileSettingsFn, updateThemeFn, updateLayoutSettingsFn } from '@/server/functions/profile-settings'
 import {
-  getProfileSettingsFn,
-  updateCustomBackgroundFn,
-  updateLayoutSettingsFn,
-} from '@/server/functions/profile-settings'
-import {
-  getCreatorSettingsFn,
-  updateCustomCSSFn,
-  updateAnimatedProfileFn,
-  addCustomFontFn,
-  removeCustomFontFn,
-  updateOpenGraphFn,
-} from '@/server/functions/creator-features'
-import {
-  publishTemplateFn,
-  getMyTemplatesFn,
-  deleteTemplateFn,
-} from '@/server/functions/templates'
-import {
-  Palette,
-  LayoutGrid,
-  Code2,
-  Sparkles,
-  Upload,
-  Trash2,
-  Eye,
-  EyeOff,
-  RotateCcw,
-  Download,
-  Play,
-  Loader2,
-  Globe,
-  Lock,
-  Image as ImageIcon,
-  Video,
-  Wand2,
-  Layers,
-  Monitor,
-  Smartphone,
-  FileUp,
-  X,
-  Type,
-  Share2,
-  Plus,
+  Palette, Layout, Sparkles, Monitor, Smartphone, Eye, 
+  Save, Undo2, ExternalLink, Loader2, Check, Layers, Wand2,
 } from 'lucide-react'
-import type { CustomBackground, LayoutSettings, AnimatedProfileSettings, CustomFont, OpenGraphSettings } from '@/server/db/schema'
-import { AnimatedBackground, VideoBackground, ANIMATED_PRESETS } from '@/components/backgrounds/AnimatedBackgrounds'
-import { TIER_CONFIG, canAccessFeature, type TierType } from '@/server/lib/stripe'
-import { Crown } from 'lucide-react'
+import {
+  SiX, SiInstagram, SiYoutube, SiTwitch, SiGithub, SiTiktok, SiDiscord,
+} from 'react-icons/si'
 
 export const Route = createFileRoute('/_protected/playground')({
+  head: () => ({
+    meta: [
+      { title: 'Playground | Eziox' },
+      { name: 'description', content: 'Customize your bio page in real-time' },
+      { name: 'robots', content: 'noindex, nofollow' },
+    ],
+  }),
   component: PlaygroundPage,
 })
 
-const CATEGORIES = [
-  { id: 'vtuber', label: 'VTuber' },
-  { id: 'gamer', label: 'Gamer' },
-  { id: 'developer', label: 'Developer' },
-  { id: 'minimal', label: 'Minimal' },
-  { id: 'creative', label: 'Creative' },
-  { id: 'business', label: 'Business' },
-  { id: 'music', label: 'Music' },
-  { id: 'art', label: 'Art' },
-  { id: 'anime', label: 'Anime' },
-  { id: 'other', label: 'Other' },
-] as const
+// Theme presets
+const THEME_PRESETS = [
+  { id: 'midnight', name: 'Midnight', bg: '#0a0a0f', card: '#12121a', accent: '#6366f1', text: '#ffffff' },
+  { id: 'ocean', name: 'Ocean', bg: '#0c1929', card: '#132f4c', accent: '#0ea5e9', text: '#ffffff' },
+  { id: 'forest', name: 'Forest', bg: '#0d1f0d', card: '#1a3a1a', accent: '#22c55e', text: '#ffffff' },
+  { id: 'sunset', name: 'Sunset', bg: '#1a0a0a', card: '#2d1515', accent: '#f97316', text: '#ffffff' },
+  { id: 'lavender', name: 'Lavender', bg: '#1a1625', card: '#2d2640', accent: '#a855f7', text: '#ffffff' },
+  { id: 'rose', name: 'Rose', bg: '#1a0f14', card: '#2d1a24', accent: '#ec4899', text: '#ffffff' },
+  { id: 'minimal', name: 'Minimal', bg: '#ffffff', card: '#f8f9fa', accent: '#171717', text: '#171717' },
+  { id: 'cream', name: 'Cream', bg: '#faf8f5', card: '#f5f0e8', accent: '#8b7355', text: '#2d2a26' },
+]
 
-const BG_TYPES = [
-  { id: 'solid', label: 'Solid', icon: Palette },
-  { id: 'gradient', label: 'Gradient', icon: Layers },
-  { id: 'image', label: 'Image', icon: ImageIcon },
-  { id: 'video', label: 'Video', icon: Video },
-  { id: 'animated', label: 'Animated', icon: Wand2 },
-] as const
+// Accent colors
+const ACCENT_COLORS = [
+  '#6366f1', '#8b5cf6', '#a855f7', '#d946ef', '#ec4899',
+  '#f43f5e', '#ef4444', '#f97316', '#eab308', '#22c55e',
+  '#14b8a6', '#06b6d4', '#0ea5e9', '#3b82f6',
+]
+
+// Layout styles
+const LAYOUT_STYLES = [
+  { id: 'classic', name: 'Classic', description: 'Traditional centered layout' },
+  { id: 'modern', name: 'Modern', description: 'Card-based with shadows' },
+  { id: 'minimal', name: 'Minimal', description: 'Clean and simple' },
+  { id: 'bold', name: 'Bold', description: 'Large text, strong presence' },
+]
+
+// Button styles
+const BUTTON_STYLES = [
+  { id: 'rounded', name: 'Rounded', radius: '9999px' },
+  { id: 'soft', name: 'Soft', radius: '12px' },
+  { id: 'square', name: 'Square', radius: '4px' },
+  { id: 'pill', name: 'Pill', radius: '24px' },
+]
+
+// Social platform icons
+const SOCIAL_ICONS: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
+  twitter: SiX,
+  instagram: SiInstagram,
+  youtube: SiYoutube,
+  twitch: SiTwitch,
+  github: SiGithub,
+  tiktok: SiTiktok,
+  discord: SiDiscord,
+}
+
+// Tab configuration
+type TabId = 'theme' | 'layout' | 'buttons' | 'effects'
+const TABS: { id: TabId; label: string; icon: React.ComponentType<{ size?: number }> }[] = [
+  { id: 'theme', label: 'Theme', icon: Palette },
+  { id: 'layout', label: 'Layout', icon: Layout },
+  { id: 'buttons', label: 'Buttons', icon: Layers },
+  { id: 'effects', label: 'Effects', icon: Sparkles },
+]
+
+interface PlaygroundSettings {
+  themePreset: string
+  accentColor: string
+  layoutStyle: string
+  buttonStyle: string
+  buttonRadius: string
+  showSocials: boolean
+  showBio: boolean
+  showAvatar: boolean
+  glowEffect: boolean
+  animatedBg: boolean
+  customBg: string
+  customCard: string
+  customText: string
+}
+
+const DEFAULT_SETTINGS: PlaygroundSettings = {
+  themePreset: 'midnight',
+  accentColor: '#6366f1',
+  layoutStyle: 'classic',
+  buttonStyle: 'rounded',
+  buttonRadius: '9999px',
+  showSocials: true,
+  showBio: true,
+  showAvatar: true,
+  glowEffect: true,
+  animatedBg: false,
+  customBg: '',
+  customCard: '',
+  customText: '',
+}
 
 function PlaygroundPage() {
-  const { theme } = useTheme()
   const { currentUser } = useAuth()
   const queryClient = useQueryClient()
-  const imageInputRef = useRef<HTMLInputElement>(null)
-  const videoInputRef = useRef<HTMLInputElement>(null)
-  const [isInitialized, setIsInitialized] = useState(false)
+  const getMyLinks = useServerFn(getMyLinksFn)
+  const getProfileSettings = useServerFn(getProfileSettingsFn)
+  const updateTheme = useServerFn(updateThemeFn)
+  // updateLayoutSettings available for future use
+  void updateLayoutSettingsFn
   
-  const userTier = (currentUser?.tier || 'free') as TierType
-  const canCustomBg = canAccessFeature(userTier, 'customBackgrounds')
-  const canLayout = canAccessFeature(userTier, 'layoutCustomization')
-  const canCSS = canAccessFeature(userTier, 'customCSS')
-  const canAnimations = canAccessFeature(userTier, 'animatedProfiles')
-  const canFonts = canAccessFeature(userTier, 'customFonts')
-  const canOG = canAccessFeature(userTier, 'customOpenGraph')
+  const [activeTab, setActiveTab] = useState<TabId>('theme')
+  const [previewMode, setPreviewMode] = useState<'desktop' | 'mobile'>('desktop')
+  const [settings, setSettings] = useState<PlaygroundSettings>(DEFAULT_SETTINGS)
+  const [hasChanges, setHasChanges] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
   
-  const [activeTab, setActiveTab] = useState<'background' | 'layout' | 'css' | 'animations' | 'fonts' | 'opengraph'>('background')
-  const [showPreview, setShowPreview] = useState(true)
-  const [previewDevice, setPreviewDevice] = useState<'desktop' | 'mobile'>('desktop')
-  
-  const [publishName, setPublishName] = useState('')
-  const [publishCategory, setPublishCategory] = useState<string>('creative')
-  const [publishPublic, setPublishPublic] = useState(true)
-  const [showPublish, setShowPublish] = useState(false)
-  
-  const [bg, setBg] = useState<CustomBackground>({ type: 'solid', value: '#1a1a2e' })
-  const [layout, setLayout] = useState<LayoutSettings>({
-    cardSpacing: 12, cardBorderRadius: 16, cardShadow: 'md', cardPadding: 16, profileLayout: 'default', linkStyle: 'default',
-  })
-  const [css, setCss] = useState('')
-  const [anim, setAnim] = useState<AnimatedProfileSettings>({
-    enabled: false, avatarAnimation: 'none', bannerAnimation: 'none', linkHoverEffect: 'scale', pageTransition: 'fade',
-  })
-  const [fonts, setFonts] = useState<CustomFont[]>([])
-  const [newFontName, setNewFontName] = useState('')
-  const [newFontUrl, setNewFontUrl] = useState('')
-  const [newFontType, setNewFontType] = useState<'display' | 'body'>('display')
-  const [og, setOg] = useState<OpenGraphSettings>({
-    useCustom: false, title: '', description: '', image: '',
+  // Fetch user links
+  const { data: links = [] } = useQuery({
+    queryKey: ['my-links'],
+    queryFn: () => getMyLinks(),
   })
   
-  const getProfile = useServerFn(getProfileSettingsFn)
-  const getCreator = useServerFn(getCreatorSettingsFn)
-  const updateBg = useServerFn(updateCustomBackgroundFn)
-  const updateLayout = useServerFn(updateLayoutSettingsFn)
-  const updateCss = useServerFn(updateCustomCSSFn)
-  const updateAnim = useServerFn(updateAnimatedProfileFn)
-  const addFont = useServerFn(addCustomFontFn)
-  const removeFont = useServerFn(removeCustomFontFn)
-  const updateOG = useServerFn(updateOpenGraphFn)
-  const publish = useServerFn(publishTemplateFn)
-  const getTemplates = useServerFn(getMyTemplatesFn)
-  const deleteTemplate = useServerFn(deleteTemplateFn)
-  
-  const { data: profileData, isLoading: profileLoading } = useQuery({
-    queryKey: ['profileSettings'],
-    queryFn: () => getProfile(),
+  // Fetch profile settings
+  const { data: profileSettings } = useQuery({
+    queryKey: ['profile-settings'],
+    queryFn: () => getProfileSettings(),
   })
   
-  const { data: creatorData, isLoading: creatorLoading } = useQuery({
-    queryKey: ['creatorSettings'],
-    queryFn: () => getCreator(),
-  })
-  
-  const { data: myTemplates } = useQuery({
-    queryKey: ['myTemplates'],
-    queryFn: () => getTemplates(),
-  })
-  
+  // Load saved settings from profile
   useEffect(() => {
-    if (!isInitialized && !profileLoading && !creatorLoading && profileData && creatorData) {
-      if (profileData.customBackground) setBg(profileData.customBackground)
-      if (profileData.layoutSettings) setLayout(profileData.layoutSettings)
-      if (creatorData.customCSS) setCss(creatorData.customCSS)
-      if (creatorData.animatedProfile) setAnim(creatorData.animatedProfile)
-      if (creatorData.customFonts) setFonts(creatorData.customFonts)
-      if (creatorData.openGraphSettings) setOg(creatorData.openGraphSettings)
-      setIsInitialized(true)
+    if (profileSettings) {
+      setSettings(prev => ({
+        ...prev,
+        accentColor: profileSettings.accentColor || prev.accentColor,
+        themePreset: profileSettings.themeId || prev.themePreset,
+      }))
     }
-  }, [profileData, creatorData, profileLoading, creatorLoading, isInitialized])
+  }, [profileSettings])
   
-  const applyMutation = useMutation({
-    mutationFn: async () => {
-      await updateBg({ data: bg })
-      await updateLayout({ data: layout })
-      await updateCss({ data: { css } })
-      await updateAnim({ data: anim })
-    },
-    onSuccess: () => {
-      toast.success('Applied to profile!')
-      void queryClient.invalidateQueries({ queryKey: ['profileSettings'] })
-      void queryClient.invalidateQueries({ queryKey: ['creatorSettings'] })
-    },
-    onError: () => toast.error('Failed to apply'),
-  })
-  
-  const publishMutation = useMutation({
-    mutationFn: () => publish({ 
-      data: { 
-        name: publishName,
-        category: publishCategory as typeof CATEGORIES[number]['id'],
-        isPublic: publishPublic,
-      } 
-    }),
-    onSuccess: () => {
-      toast.success('Template published!')
-      setPublishName('')
-      setShowPublish(false)
-      void queryClient.invalidateQueries({ queryKey: ['myTemplates'] })
-    },
-    onError: () => toast.error('Failed to publish'),
-  })
-  
-  const deleteMutation = useMutation({
-    mutationFn: (id: string) => deleteTemplate({ data: { id } }),
-    onSuccess: () => {
-      toast.success('Deleted')
-      void queryClient.invalidateQueries({ queryKey: ['myTemplates'] })
-    },
-  })
-  
-  const reset = () => {
-    setBg({ type: 'solid', value: '#1a1a2e' })
-    setLayout({ cardSpacing: 12, cardBorderRadius: 16, cardShadow: 'md', cardPadding: 16, profileLayout: 'default', linkStyle: 'default' })
-    setCss('')
-    setAnim({ enabled: false, avatarAnimation: 'none', bannerAnimation: 'none', linkHoverEffect: 'scale', pageTransition: 'fade' })
-    toast.info('Reset')
+  // Update setting helper
+  const updateSetting = <K extends keyof PlaygroundSettings>(key: K, value: PlaygroundSettings[K]) => {
+    setSettings(prev => ({ ...prev, [key]: value }))
+    setHasChanges(true)
   }
   
-  const loadCurrent = () => {
-    if (profileData?.customBackground) setBg(profileData.customBackground)
-    if (profileData?.layoutSettings) setLayout(profileData.layoutSettings)
-    if (creatorData?.customCSS) setCss(creatorData.customCSS)
-    if (creatorData?.animatedProfile) setAnim(creatorData.animatedProfile)
-    toast.info('Loaded')
-  }
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      const reader = new FileReader()
-      reader.onload = (ev) => setBg({ ...bg, imageUrl: ev.target?.result as string, value: ev.target?.result as string })
-      reader.readAsDataURL(file)
-    }
-  }
-
-  const handleVideoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      const url = URL.createObjectURL(file)
-      setBg({ ...bg, videoUrl: url, value: url })
+  // Apply theme preset
+  const applyPreset = (presetId: string) => {
+    const preset = THEME_PRESETS.find(p => p.id === presetId)
+    if (preset) {
+      setSettings(prev => ({
+        ...prev,
+        themePreset: presetId,
+        accentColor: preset.accent,
+        customBg: preset.bg,
+        customCard: preset.card,
+        customText: preset.text,
+      }))
+      setHasChanges(true)
     }
   }
   
-  const renderBgPreview = () => {
-    if (bg.type === 'video' && bg.videoUrl) {
-      return <VideoBackground url={bg.videoUrl} loop={bg.videoLoop ?? true} muted={bg.videoMuted ?? true} />
+  // Save settings
+  const handleSave = async () => {
+    setIsSaving(true)
+    try {
+      await updateTheme({ 
+        data: { 
+          themeId: settings.themePreset,
+          accentColor: settings.accentColor,
+        } 
+      })
+      toast.success('Settings saved!')
+      setHasChanges(false)
+      void queryClient.invalidateQueries({ queryKey: ['profile-settings'] })
+    } catch {
+      toast.error('Failed to save settings')
+    } finally {
+      setIsSaving(false)
     }
-    if (bg.type === 'animated' && bg.animatedPreset) {
-      return <AnimatedBackground preset={bg.animatedPreset} speed={bg.animatedSpeed} intensity={bg.animatedIntensity} colors={bg.animatedColors} />
-    }
-    return null
   }
   
-  const getBgStyle = (): React.CSSProperties => {
-    switch (bg.type) {
-      case 'solid': return { background: bg.value || '#1a1a2e' }
-      case 'gradient': return { background: bg.value || 'linear-gradient(135deg, #667eea, #764ba2)' }
-      case 'image': return { background: bg.imageUrl ? `url(${bg.imageUrl}) center/cover` : '#1a1a2e' }
-      default: return { background: '#0a0a0f' }
+  // Reset to defaults
+  const handleReset = () => {
+    setSettings(DEFAULT_SETTINGS)
+    setHasChanges(true)
+  }
+  
+  // Get current theme colors
+  const getColors = () => {
+    const preset = THEME_PRESETS.find(p => p.id === settings.themePreset)
+    return {
+      bg: settings.customBg || preset?.bg || '#0a0a0f',
+      card: settings.customCard || preset?.card || '#12121a',
+      text: settings.customText || preset?.text || '#ffffff',
+      accent: settings.accentColor,
     }
   }
-
-  const isLoading = profileLoading || creatorLoading
-
-  if (isLoading) {
+  
+  const colors = getColors()
+  const profile = currentUser?.profile
+  const socials = (profile?.socials as Record<string, string>) || {}
+  
+  if (!currentUser) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: theme.colors.background }}>
-        <Loader2 className="w-8 h-8 animate-spin" style={{ color: theme.colors.primary }} />
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-10 h-10 animate-spin" style={{ color: 'var(--primary)' }} />
       </div>
     )
   }
 
   return (
-    <div className="h-screen overflow-hidden pt-22" style={{ background: theme.colors.background }}>
-      <div className="max-w-7xl mx-auto px-4 py-4 h-full flex flex-col">
-        <motion.div 
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4 shrink-0"
-        >
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})` }}>
-              <Wand2 size={20} className="text-white" />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold" style={{ color: theme.colors.foreground }}>Playground</h1>
-              <p className="text-xs" style={{ color: theme.colors.foregroundMuted }}>Create & test presets</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 flex-wrap">
-            <motion.button
-              onClick={() => setShowPreview(!showPreview)}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm"
-              style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}`, color: theme.colors.foreground }}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              {showPreview ? <EyeOff size={16} /> : <Eye size={16} />}
-              <span className="hidden sm:inline">{showPreview ? 'Hide' : 'Show'}</span>
-            </motion.button>
-            <motion.button
-              onClick={loadCurrent}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm"
-              style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}`, color: theme.colors.foreground }}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <Download size={16} />
-              <span className="hidden sm:inline">Load</span>
-            </motion.button>
-            <motion.button
-              onClick={reset}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm"
-              style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}`, color: theme.colors.foreground }}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <RotateCcw size={16} />
-              <span className="hidden sm:inline">Reset</span>
-            </motion.button>
-            <motion.button
-              onClick={() => applyMutation.mutate()}
-              disabled={applyMutation.isPending}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-white"
-              style={{ background: '#22c55e' }}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              {applyMutation.isPending ? <Loader2 size={16} className="animate-spin" /> : <Play size={16} />}
-              Apply
-            </motion.button>
-            <motion.button
-              onClick={() => setShowPublish(true)}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-white"
-              style={{ background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})` }}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <Upload size={16} />
-              Publish
-            </motion.button>
-          </div>
-        </motion.div>
-        
-        <div className={`grid gap-4 flex-1 min-h-0 ${showPreview ? 'lg:grid-cols-[1fr,360px]' : 'grid-cols-1'}`}>
-          <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="space-y-3 overflow-y-auto pr-1">
-            <div className="flex items-center gap-1 p-1 rounded-xl" style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}` }}>
-              {[
-                { id: 'background', label: 'Background', icon: Palette, tier: 'pro' as TierType, canAccess: canCustomBg },
-                { id: 'layout', label: 'Layout', icon: LayoutGrid, tier: 'pro' as TierType, canAccess: canLayout },
-                { id: 'css', label: 'CSS', icon: Code2, tier: 'creator' as TierType, canAccess: canCSS },
-                { id: 'animations', label: 'Animations', icon: Sparkles, tier: 'creator' as TierType, canAccess: canAnimations },
-                { id: 'fonts', label: 'Fonts', icon: Type, tier: 'creator' as TierType, canAccess: canFonts },
-                { id: 'opengraph', label: 'OG', icon: Share2, tier: 'creator' as TierType, canAccess: canOG },
-              ].map(({ id, label, icon: Icon, tier, canAccess }) => (
-                <motion.button
-                  key={id}
-                  onClick={() => canAccess && setActiveTab(id as typeof activeTab)}
-                  className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium relative"
-                  style={{
-                    background: activeTab === id ? theme.colors.primary : 'transparent',
-                    color: activeTab === id ? '#fff' : canAccess ? theme.colors.foregroundMuted : theme.colors.foregroundMuted + '60',
-                    opacity: canAccess ? 1 : 0.6,
-                    cursor: canAccess ? 'pointer' : 'not-allowed',
-                  }}
-                  whileHover={{ scale: canAccess && activeTab !== id ? 1.02 : 1 }}
-                  whileTap={{ scale: canAccess ? 0.98 : 1 }}
-                  title={!canAccess ? `${TIER_CONFIG[tier].name} required` : undefined}
-                >
-                  {!canAccess && <Lock size={10} className="absolute top-1 right-1" style={{ color: theme.colors.foregroundMuted }} />}
-                  <Icon size={16} />
-                  <span className="hidden sm:inline">{label}</span>
-                  {!canAccess && <Crown size={12} style={{ color: '#fbbf24' }} />}
-                </motion.button>
-              ))}
-            </div>
-            
-            <AnimatePresence mode="wait">
-              {activeTab === 'background' && (
-                <motion.div key="bg" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-4">
-                  <div className="rounded-xl p-4" style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}` }}>
-                    <p className="text-sm font-medium mb-3" style={{ color: theme.colors.foreground }}>Type</p>
-                    <div className="grid grid-cols-5 gap-2">
-                      {BG_TYPES.map(({ id, label, icon: Icon }) => (
-                        <motion.button
-                          key={id}
-                          onClick={() => setBg({ ...bg, type: id as CustomBackground['type'], animatedPreset: id === 'animated' ? 'particles' : undefined })}
-                          className="flex flex-col items-center gap-1.5 p-2.5 rounded-lg text-xs"
-                          style={{
-                            background: bg.type === id ? `${theme.colors.primary}20` : theme.colors.backgroundSecondary,
-                            border: `2px solid ${bg.type === id ? theme.colors.primary : 'transparent'}`,
-                            color: bg.type === id ? theme.colors.primary : theme.colors.foregroundMuted,
-                          }}
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                        >
-                          <Icon size={18} />
-                          {label}
-                        </motion.button>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  <div className="rounded-xl p-4" style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}` }}>
-                    {bg.type === 'solid' && (
-                      <div className="space-y-3">
-                        <div className="flex items-center gap-3">
-                          <input type="color" value={bg.value || '#1a1a2e'} onChange={(e) => setBg({ ...bg, value: e.target.value })} className="w-12 h-12 rounded-lg cursor-pointer border-0" />
-                          <input type="text" value={bg.value || '#1a1a2e'} onChange={(e) => setBg({ ...bg, value: e.target.value })} className="flex-1 px-3 py-2 rounded-lg text-sm font-mono" style={{ background: theme.colors.backgroundSecondary, color: theme.colors.foreground, border: `1px solid ${theme.colors.border}` }} />
-                        </div>
-                        <div className="grid grid-cols-6 gap-2">
-                          {['#1a1a2e', '#0f172a', '#18181b', '#1e1b4b', '#0c0a09', '#0a0a0a'].map((c) => (
-                            <button key={c} onClick={() => setBg({ ...bg, value: c })} className="aspect-square rounded-lg" style={{ background: c, border: bg.value === c ? `2px solid ${theme.colors.primary}` : '2px solid transparent' }} />
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    
-                    {bg.type === 'gradient' && (
-                      <div className="space-y-3">
-                        <div className="flex gap-3">
-                          <div className="flex-1">
-                            <p className="text-xs mb-1" style={{ color: theme.colors.foregroundMuted }}>Color 1</p>
-                            <input type="color" value={bg.gradientColors?.[0] || '#667eea'} onChange={(e) => {
-                              const colors = [e.target.value, bg.gradientColors?.[1] || '#764ba2']
-                              setBg({ ...bg, gradientColors: colors, value: `linear-gradient(${bg.gradientAngle ?? 135}deg, ${colors[0]}, ${colors[1]})` })
-                            }} className="w-full h-10 rounded-lg cursor-pointer border-0" />
-                          </div>
-                          <div className="flex-1">
-                            <p className="text-xs mb-1" style={{ color: theme.colors.foregroundMuted }}>Color 2</p>
-                            <input type="color" value={bg.gradientColors?.[1] || '#764ba2'} onChange={(e) => {
-                              const colors = [bg.gradientColors?.[0] || '#667eea', e.target.value]
-                              setBg({ ...bg, gradientColors: colors, value: `linear-gradient(${bg.gradientAngle ?? 135}deg, ${colors[0]}, ${colors[1]})` })
-                            }} className="w-full h-10 rounded-lg cursor-pointer border-0" />
-                          </div>
-                        </div>
-                        <div>
-                          <div className="flex justify-between text-xs mb-1" style={{ color: theme.colors.foregroundMuted }}>
-                            <span>Angle</span><span>{bg.gradientAngle ?? 135}°</span>
-                          </div>
-                          <input type="range" min="0" max="360" value={bg.gradientAngle ?? 135} onChange={(e) => {
-                            const angle = parseInt(e.target.value)
-                            const colors = bg.gradientColors || ['#667eea', '#764ba2']
-                            setBg({ ...bg, gradientAngle: angle, value: `linear-gradient(${angle}deg, ${colors[0]}, ${colors[1]})` })
-                          }} className="w-full" style={{ accentColor: theme.colors.primary }} />
-                        </div>
-                        <div className="h-16 rounded-lg" style={{ background: bg.value }} />
-                      </div>
-                    )}
-                    
-                    {bg.type === 'image' && (
-                      <div className="space-y-3">
-                        <div className="flex gap-2">
-                          <input type="url" placeholder="https://..." value={bg.imageUrl || ''} onChange={(e) => setBg({ ...bg, imageUrl: e.target.value, value: e.target.value })} className="flex-1 px-3 py-2 rounded-lg text-sm" style={{ background: theme.colors.backgroundSecondary, color: theme.colors.foreground, border: `1px solid ${theme.colors.border}` }} />
-                          <motion.button onClick={() => imageInputRef.current?.click()} className="px-3 py-2 rounded-lg text-sm font-medium flex items-center gap-2" style={{ background: theme.colors.primary, color: '#fff' }} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                            <FileUp size={16} />
-                          </motion.button>
-                          <input ref={imageInputRef} type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
-                        </div>
-                        <div className="grid grid-cols-2 gap-3">
-                          <div>
-                            <div className="flex justify-between text-xs mb-1" style={{ color: theme.colors.foregroundMuted }}><span>Opacity</span><span>{Math.round((bg.imageOpacity ?? 1) * 100)}%</span></div>
-                            <input type="range" min="0" max="100" value={(bg.imageOpacity ?? 1) * 100} onChange={(e) => setBg({ ...bg, imageOpacity: parseInt(e.target.value) / 100 })} className="w-full" style={{ accentColor: theme.colors.primary }} />
-                          </div>
-                          <div>
-                            <div className="flex justify-between text-xs mb-1" style={{ color: theme.colors.foregroundMuted }}><span>Blur</span><span>{bg.imageBlur ?? 0}px</span></div>
-                            <input type="range" min="0" max="20" value={bg.imageBlur ?? 0} onChange={(e) => setBg({ ...bg, imageBlur: parseInt(e.target.value) })} className="w-full" style={{ accentColor: theme.colors.primary }} />
-                          </div>
-                        </div>
-                        {bg.imageUrl && <div className="h-24 rounded-lg bg-cover bg-center" style={{ backgroundImage: `url(${bg.imageUrl})`, opacity: bg.imageOpacity ?? 1, filter: bg.imageBlur ? `blur(${bg.imageBlur}px)` : undefined }} />}
-                      </div>
-                    )}
-                    
-                    {bg.type === 'video' && (
-                      <div className="space-y-3">
-                        <div className="flex gap-2">
-                          <input type="url" placeholder="https://..." value={bg.videoUrl || ''} onChange={(e) => setBg({ ...bg, videoUrl: e.target.value, value: e.target.value })} className="flex-1 px-3 py-2 rounded-lg text-sm" style={{ background: theme.colors.backgroundSecondary, color: theme.colors.foreground, border: `1px solid ${theme.colors.border}` }} />
-                          <motion.button onClick={() => videoInputRef.current?.click()} className="px-3 py-2 rounded-lg text-sm font-medium flex items-center gap-2" style={{ background: theme.colors.primary, color: '#fff' }} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                            <FileUp size={16} />
-                          </motion.button>
-                          <input ref={videoInputRef} type="file" accept="video/*" className="hidden" onChange={handleVideoUpload} />
-                        </div>
-                        <div className="flex gap-4">
-                          <label className="flex items-center gap-2 text-sm cursor-pointer" style={{ color: theme.colors.foreground }}>
-                            <input type="checkbox" checked={bg.videoLoop ?? true} onChange={(e) => setBg({ ...bg, videoLoop: e.target.checked })} className="rounded" style={{ accentColor: theme.colors.primary }} /> Loop
-                          </label>
-                          <label className="flex items-center gap-2 text-sm cursor-pointer" style={{ color: theme.colors.foreground }}>
-                            <input type="checkbox" checked={bg.videoMuted ?? true} onChange={(e) => setBg({ ...bg, videoMuted: e.target.checked })} className="rounded" style={{ accentColor: theme.colors.primary }} /> Muted
-                          </label>
-                        </div>
-                        <p className="text-xs" style={{ color: theme.colors.foregroundMuted }}>MP4, WebM, MOV supported</p>
-                      </div>
-                    )}
-                    
-                    {bg.type === 'animated' && (
-                      <div className="space-y-3">
-                        <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto">
-                          {ANIMATED_PRESETS.map((p) => (
-                            <motion.button key={p.id} onClick={() => setBg({ ...bg, animatedPreset: p.id, value: p.id })} className="p-2.5 rounded-lg text-left text-xs" style={{ background: bg.animatedPreset === p.id ? `${theme.colors.primary}20` : theme.colors.backgroundSecondary, border: `2px solid ${bg.animatedPreset === p.id ? theme.colors.primary : 'transparent'}` }} whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
-                              <p className="font-medium" style={{ color: theme.colors.foreground }}>{p.name}</p>
-                              <p className="truncate" style={{ color: theme.colors.foregroundMuted }}>{p.description}</p>
-                            </motion.button>
-                          ))}
-                        </div>
-                        <div className="grid grid-cols-2 gap-3">
-                          <div>
-                            <p className="text-xs mb-1.5" style={{ color: theme.colors.foregroundMuted }}>Speed</p>
-                            <div className="flex gap-1">
-                              {(['slow', 'normal', 'fast'] as const).map((s) => (
-                                <button key={s} onClick={() => setBg({ ...bg, animatedSpeed: s })} className="flex-1 py-1.5 rounded text-xs capitalize" style={{ background: bg.animatedSpeed === s ? theme.colors.primary : theme.colors.backgroundSecondary, color: bg.animatedSpeed === s ? '#fff' : theme.colors.foreground }}>{s}</button>
-                              ))}
-                            </div>
-                          </div>
-                          <div>
-                            <p className="text-xs mb-1.5" style={{ color: theme.colors.foregroundMuted }}>Intensity</p>
-                            <div className="flex gap-1">
-                              {(['subtle', 'normal', 'intense'] as const).map((i) => (
-                                <button key={i} onClick={() => setBg({ ...bg, animatedIntensity: i })} className="flex-1 py-1.5 rounded text-xs capitalize" style={{ background: bg.animatedIntensity === i ? theme.colors.primary : theme.colors.backgroundSecondary, color: bg.animatedIntensity === i ? '#fff' : theme.colors.foreground }}>{i}</button>
-                              ))}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </motion.div>
-              )}
-              
-              {activeTab === 'layout' && (
-                <motion.div key="layout" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-4">
-                  <div className="rounded-xl p-4" style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}` }}>
-                    <p className="text-sm font-medium mb-3" style={{ color: theme.colors.foreground }}>Card</p>
-                    <div className="space-y-3">
-                      <div>
-                        <div className="flex justify-between text-xs mb-1" style={{ color: theme.colors.foregroundMuted }}><span>Spacing</span><span>{layout.cardSpacing}px</span></div>
-                        <input type="range" min="4" max="32" value={layout.cardSpacing} onChange={(e) => setLayout({ ...layout, cardSpacing: parseInt(e.target.value) })} className="w-full" style={{ accentColor: theme.colors.primary }} />
-                      </div>
-                      <div>
-                        <div className="flex justify-between text-xs mb-1" style={{ color: theme.colors.foregroundMuted }}><span>Radius</span><span>{layout.cardBorderRadius}px</span></div>
-                        <input type="range" min="0" max="32" value={layout.cardBorderRadius} onChange={(e) => setLayout({ ...layout, cardBorderRadius: parseInt(e.target.value) })} className="w-full" style={{ accentColor: theme.colors.primary }} />
-                      </div>
-                      <div>
-                        <div className="flex justify-between text-xs mb-1" style={{ color: theme.colors.foregroundMuted }}><span>Padding</span><span>{layout.cardPadding}px</span></div>
-                        <input type="range" min="8" max="32" value={layout.cardPadding} onChange={(e) => setLayout({ ...layout, cardPadding: parseInt(e.target.value) })} className="w-full" style={{ accentColor: theme.colors.primary }} />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="rounded-xl p-4" style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}` }}>
-                    <p className="text-sm font-medium mb-3" style={{ color: theme.colors.foreground }}>Shadow</p>
-                    <div className="grid grid-cols-5 gap-2">
-                      {(['none', 'sm', 'md', 'lg', 'xl'] as const).map((s) => (
-                        <button key={s} onClick={() => setLayout({ ...layout, cardShadow: s })} className="py-2 rounded-lg text-xs capitalize" style={{ background: layout.cardShadow === s ? theme.colors.primary : theme.colors.backgroundSecondary, color: layout.cardShadow === s ? '#fff' : theme.colors.foreground }}>{s}</button>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="rounded-xl p-4" style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}` }}>
-                    <p className="text-sm font-medium mb-3" style={{ color: theme.colors.foreground }}>Link Style</p>
-                    <div className="grid grid-cols-4 gap-2">
-                      {(['default', 'minimal', 'bold', 'glass'] as const).map((s) => (
-                        <button key={s} onClick={() => setLayout({ ...layout, linkStyle: s })} className="py-2 rounded-lg text-xs capitalize" style={{ background: layout.linkStyle === s ? theme.colors.primary : theme.colors.backgroundSecondary, color: layout.linkStyle === s ? '#fff' : theme.colors.foreground }}>{s}</button>
-                      ))}
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-              
-              {activeTab === 'css' && (
-                <motion.div key="css" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
-                  <div className="rounded-xl p-4" style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}` }}>
-                    <p className="text-sm font-medium mb-3" style={{ color: theme.colors.foreground }}>Custom CSS</p>
-                    <textarea value={css} onChange={(e) => setCss(e.target.value)} placeholder=".bio-card { ... }" rows={12} className="w-full px-3 py-2 rounded-lg text-sm font-mono resize-none" style={{ background: theme.colors.backgroundSecondary, color: theme.colors.foreground, border: `1px solid ${theme.colors.border}` }} />
-                  </div>
-                </motion.div>
-              )}
-              
-              {activeTab === 'animations' && (
-                <motion.div key="anim" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-4">
-                  <div className="rounded-xl p-4" style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}` }}>
-                    <div className="flex items-center justify-between">
-                      <p className="text-sm font-medium" style={{ color: theme.colors.foreground }}>Enable</p>
-                      <button onClick={() => setAnim({ ...anim, enabled: !anim.enabled })} className="w-10 h-5 rounded-full relative" style={{ background: anim.enabled ? '#22c55e' : theme.colors.backgroundSecondary }}>
-                        <div className="absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all" style={{ left: anim.enabled ? '22px' : '2px' }} />
-                      </button>
-                    </div>
-                  </div>
-                  <div className="rounded-xl p-4" style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}`, opacity: anim.enabled ? 1 : 0.5 }}>
-                    <p className="text-sm font-medium mb-3" style={{ color: theme.colors.foreground }}>Avatar</p>
-                    <div className="grid grid-cols-3 gap-2">
-                      {(['none', 'pulse', 'glow', 'bounce', 'rotate', 'shake'] as const).map((a) => (
-                        <button key={a} onClick={() => setAnim({ ...anim, avatarAnimation: a })} disabled={!anim.enabled} className="py-2 rounded-lg text-xs capitalize disabled:cursor-not-allowed" style={{ background: anim.avatarAnimation === a ? theme.colors.primary : theme.colors.backgroundSecondary, color: anim.avatarAnimation === a ? '#fff' : theme.colors.foreground }}>{a}</button>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="rounded-xl p-4" style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}`, opacity: anim.enabled ? 1 : 0.5 }}>
-                    <p className="text-sm font-medium mb-3" style={{ color: theme.colors.foreground }}>Link Hover</p>
-                    <div className="grid grid-cols-3 gap-2">
-                      {(['none', 'scale', 'glow', 'slide', 'shake', 'flip'] as const).map((e) => (
-                        <button key={e} onClick={() => setAnim({ ...anim, linkHoverEffect: e })} disabled={!anim.enabled} className="py-2 rounded-lg text-xs capitalize disabled:cursor-not-allowed" style={{ background: anim.linkHoverEffect === e ? theme.colors.primary : theme.colors.backgroundSecondary, color: anim.linkHoverEffect === e ? '#fff' : theme.colors.foreground }}>{e}</button>
-                      ))}
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-
-              {activeTab === 'fonts' && (
-                <motion.div key="fonts" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-4">
-                  <div className="rounded-xl p-4" style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}` }}>
-                    <p className="text-sm font-medium mb-3" style={{ color: theme.colors.foreground }}>Add Custom Font</p>
-                    <div className="grid grid-cols-3 gap-2 mb-3">
-                      <input type="text" placeholder="Font name" value={newFontName} onChange={(e) => setNewFontName(e.target.value)} className="px-3 py-2 rounded-lg text-xs" style={{ background: theme.colors.backgroundSecondary, color: theme.colors.foreground, border: `1px solid ${theme.colors.border}` }} />
-                      <input type="url" placeholder="Google Fonts URL" value={newFontUrl} onChange={(e) => setNewFontUrl(e.target.value)} className="px-3 py-2 rounded-lg text-xs" style={{ background: theme.colors.backgroundSecondary, color: theme.colors.foreground, border: `1px solid ${theme.colors.border}` }} />
-                      <select value={newFontType} onChange={(e) => setNewFontType(e.target.value as 'display' | 'body')} className="px-3 py-2 rounded-lg text-xs" style={{ background: theme.colors.backgroundSecondary, color: theme.colors.foreground, border: `1px solid ${theme.colors.border}` }}>
-                        <option value="display">Display</option>
-                        <option value="body">Body</option>
-                      </select>
-                    </div>
-                    <motion.button onClick={() => { if (newFontName && newFontUrl) { addFont({ data: { id: crypto.randomUUID(), name: newFontName, url: newFontUrl, type: newFontType } }).then(() => { setNewFontName(''); setNewFontUrl(''); toast.success('Font added!'); void queryClient.invalidateQueries({ queryKey: ['creatorSettings'] }) }).catch(() => toast.error('Failed to add font')) }}} disabled={!newFontName || !newFontUrl || fonts.length >= 4} className="w-full py-2 rounded-lg text-xs font-medium disabled:opacity-50" style={{ background: theme.colors.primary, color: '#fff' }} whileHover={{ scale: newFontName && newFontUrl && fonts.length < 4 ? 1.02 : 1 }} whileTap={{ scale: 0.98 }}>
-                      <Plus size={14} className="inline mr-1" />Add Font ({fonts.length}/4)
-                    </motion.button>
-                  </div>
-                  {fonts.length > 0 && (
-                    <div className="rounded-xl p-4" style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}` }}>
-                      <p className="text-sm font-medium mb-3" style={{ color: theme.colors.foreground }}>Your Fonts</p>
-                      <div className="space-y-2">
-                        {fonts.map((font) => (
-                          <div key={font.id} className="flex items-center justify-between p-2 rounded-lg" style={{ background: theme.colors.backgroundSecondary }}>
-                            <div>
-                              <p className="text-xs font-medium" style={{ color: theme.colors.foreground }}>{font.name}</p>
-                              <p className="text-[10px]" style={{ color: theme.colors.foregroundMuted }}>{font.type}</p>
-                            </div>
-                            <motion.button onClick={() => removeFont({ data: { fontId: font.id } }).then(() => { toast.success('Font removed'); void queryClient.invalidateQueries({ queryKey: ['creatorSettings'] }) }).catch(() => toast.error('Failed'))} className="p-1 rounded" style={{ color: '#ef4444' }} whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-                              <Trash2 size={12} />
-                            </motion.button>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </motion.div>
-              )}
-
-              {activeTab === 'opengraph' && (
-                <motion.div key="og" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-4">
-                  <div className="rounded-xl p-4" style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}` }}>
-                    <div className="flex items-center justify-between mb-3">
-                      <p className="text-sm font-medium" style={{ color: theme.colors.foreground }}>Custom Open Graph</p>
-                      <button onClick={() => setOg({ ...og, useCustom: !og.useCustom })} className="w-10 h-5 rounded-full relative" style={{ background: og.useCustom ? '#3b82f6' : theme.colors.backgroundSecondary }}>
-                        <div className="absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all" style={{ left: og.useCustom ? '22px' : '2px' }} />
-                      </button>
-                    </div>
-                    <div className="space-y-3" style={{ opacity: og.useCustom ? 1 : 0.5 }}>
-                      <div>
-                        <label className="text-xs mb-1 block" style={{ color: theme.colors.foregroundMuted }}>Title</label>
-                        <input type="text" placeholder="Custom title" value={og.title || ''} onChange={(e) => setOg({ ...og, title: e.target.value })} disabled={!og.useCustom} className="w-full px-3 py-2 rounded-lg text-xs" style={{ background: theme.colors.backgroundSecondary, color: theme.colors.foreground, border: `1px solid ${theme.colors.border}` }} />
-                      </div>
-                      <div>
-                        <label className="text-xs mb-1 block" style={{ color: theme.colors.foregroundMuted }}>Description</label>
-                        <textarea placeholder="Custom description" value={og.description || ''} onChange={(e) => setOg({ ...og, description: e.target.value })} disabled={!og.useCustom} rows={2} className="w-full px-3 py-2 rounded-lg text-xs resize-none" style={{ background: theme.colors.backgroundSecondary, color: theme.colors.foreground, border: `1px solid ${theme.colors.border}` }} />
-                      </div>
-                      <div>
-                        <label className="text-xs mb-1 block" style={{ color: theme.colors.foregroundMuted }}>Image URL</label>
-                        <input type="url" placeholder="https://..." value={og.image || ''} onChange={(e) => setOg({ ...og, image: e.target.value })} disabled={!og.useCustom} className="w-full px-3 py-2 rounded-lg text-xs" style={{ background: theme.colors.backgroundSecondary, color: theme.colors.foreground, border: `1px solid ${theme.colors.border}` }} />
-                      </div>
-                      {og.image && <img src={og.image} alt="OG Preview" className="w-full h-20 object-cover rounded-lg" />}
-                    </div>
-                    <motion.button onClick={() => updateOG({ data: og }).then(() => { toast.success('Open Graph saved!'); void queryClient.invalidateQueries({ queryKey: ['creatorSettings'] }) }).catch(() => toast.error('Failed'))} className="w-full mt-3 py-2 rounded-lg text-xs font-medium" style={{ background: '#3b82f6', color: '#fff' }} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                      Save Open Graph
-                    </motion.button>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-            
-            {myTemplates && myTemplates.length > 0 && (
-              <div className="rounded-xl p-4" style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}` }}>
-                <p className="text-sm font-medium mb-3" style={{ color: theme.colors.foreground }}>My Templates</p>
-                <div className="space-y-2">
-                  {myTemplates.map((t) => (
-                    <div key={t.id} className="flex items-center justify-between p-2.5 rounded-lg" style={{ background: theme.colors.backgroundSecondary }}>
-                      <div className="flex items-center gap-2">
-                        {t.isPublic ? <Globe size={14} style={{ color: '#22c55e' }} /> : <Lock size={14} style={{ color: theme.colors.foregroundMuted }} />}
-                        <span className="text-sm" style={{ color: theme.colors.foreground }}>{t.name}</span>
-                        <span className="text-xs" style={{ color: theme.colors.foregroundMuted }}>{t.uses || 0} uses</span>
-                      </div>
-                      <motion.button onClick={() => deleteMutation.mutate(t.id)} className="p-1.5 rounded" style={{ color: '#ef4444' }} whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-                        <Trash2 size={14} />
-                      </motion.button>
-                    </div>
-                  ))}
-                </div>
+    <div className="min-h-screen pt-20 pb-8">
+      {/* Background */}
+      <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
+        <motion.div
+          className="absolute top-20 right-1/4 w-[600px] h-[600px] rounded-full blur-3xl"
+          style={{ background: `${settings.accentColor}15` }}
+          animate={{ scale: [1, 1.2, 1] }}
+          transition={{ duration: 20, repeat: Infinity }}
+        />
+      </div>
+      
+      {/* Header */}
+      <div className="max-w-7xl mx-auto px-4 mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold flex items-center gap-3" style={{ color: 'var(--foreground)' }}>
+              <div 
+                className="w-10 h-10 rounded-xl flex items-center justify-center"
+                style={{ background: `linear-gradient(135deg, ${settings.accentColor}, var(--accent))` }}
+              >
+                <Wand2 size={20} className="text-white" />
               </div>
-            )}
-          </motion.div>
+              Playground
+            </h1>
+            <p className="text-sm mt-1" style={{ color: 'var(--foreground-muted)' }}>
+              Customize your bio page in real-time
+            </p>
+          </div>
           
-          {showPreview && (
-            <motion.div initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} className="h-full flex flex-col">
-              <div className="rounded-xl overflow-hidden flex-1 flex flex-col" style={{ border: `1px solid ${theme.colors.border}` }}>
-                <div className="flex items-center justify-between p-2 shrink-0" style={{ background: theme.colors.card }}>
-                  <div className="flex items-center gap-2">
-                    <div className="flex gap-1">
-                      <div className="w-2 h-2 rounded-full bg-red-500" />
-                      <div className="w-2 h-2 rounded-full bg-yellow-500" />
-                      <div className="w-2 h-2 rounded-full bg-green-500" />
-                    </div>
-                    <span className="text-xs" style={{ color: theme.colors.foregroundMuted }}>Preview</span>
-                  </div>
-                  <div className="flex gap-1">
-                    <button onClick={() => setPreviewDevice('desktop')} className="p-1 rounded" style={{ background: previewDevice === 'desktop' ? theme.colors.primary : 'transparent' }}>
-                      <Monitor size={12} style={{ color: previewDevice === 'desktop' ? '#fff' : theme.colors.foregroundMuted }} />
-                    </button>
-                    <button onClick={() => setPreviewDevice('mobile')} className="p-1 rounded" style={{ background: previewDevice === 'mobile' ? theme.colors.primary : 'transparent' }}>
-                      <Smartphone size={12} style={{ color: previewDevice === 'mobile' ? '#fff' : theme.colors.foregroundMuted }} />
-                    </button>
-                  </div>
-                </div>
-                <div className={`relative overflow-hidden flex-1 ${previewDevice === 'mobile' ? 'max-w-[280px] mx-auto' : ''}`} style={{ ...getBgStyle() }}>
-                  {renderBgPreview()}
-                  {css && <style dangerouslySetInnerHTML={{ __html: css }} />}
-                  <div className="relative z-10 p-5 flex flex-col items-center">
-                    <motion.div className={`w-16 h-16 rounded-full bg-linear-to-br from-purple-500 to-pink-500 mb-3 ${anim.enabled && anim.avatarAnimation === 'pulse' ? 'animate-pulse' : ''}`} animate={anim.enabled && anim.avatarAnimation === 'bounce' ? { y: [0, -8, 0] } : {}} transition={{ repeat: Infinity, duration: 1 }} />
-                    <h2 className="text-lg font-bold text-white mb-0.5">{currentUser?.name || currentUser?.username || 'Username'}</h2>
-                    <p className="text-xs text-white/60 mb-5">{currentUser?.profile?.bio || 'Bio description'}</p>
-                    <div className="w-full space-y-2">
-                      {['Link 1', 'Link 2', 'Link 3'].map((linkTitle, i) => (
-                        <motion.div key={i} className="bio-card w-full py-2.5 px-3 text-center text-white text-sm font-medium" style={{ borderRadius: `${layout.cardBorderRadius}px`, padding: `${layout.cardPadding}px`, background: layout.linkStyle === 'glass' ? 'rgba(255,255,255,0.1)' : layout.linkStyle === 'bold' ? theme.colors.primary : 'rgba(255,255,255,0.05)', backdropFilter: layout.linkStyle === 'glass' ? 'blur(10px)' : undefined, border: layout.linkStyle === 'minimal' ? '1px solid rgba(255,255,255,0.2)' : undefined, boxShadow: layout.cardShadow !== 'none' ? `0 ${layout.cardShadow === 'sm' ? '1' : layout.cardShadow === 'md' ? '4' : layout.cardShadow === 'lg' ? '10' : '20'}px ${layout.cardShadow === 'sm' ? '2' : layout.cardShadow === 'md' ? '6' : layout.cardShadow === 'lg' ? '15' : '25'}px rgba(0,0,0,0.15)` : undefined, marginBottom: `${layout.cardSpacing}px` }} whileHover={anim.enabled ? { scale: anim.linkHoverEffect === 'scale' ? 1.03 : 1, x: anim.linkHoverEffect === 'slide' ? 8 : 0 } : {}}>
-                          {linkTitle}
-                        </motion.div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          )}
+          <div className="flex items-center gap-3">
+            {hasChanges && (
+              <motion.button
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                onClick={handleReset}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium"
+                style={{ background: 'var(--background-secondary)', color: 'var(--foreground)' }}
+              >
+                <Undo2 size={16} />
+                Reset
+              </motion.button>
+            )}
+            <motion.button
+              onClick={handleSave}
+              disabled={!hasChanges || isSaving}
+              className="flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-semibold text-white disabled:opacity-50"
+              style={{ background: hasChanges ? settings.accentColor : 'var(--background-secondary)' }}
+              whileHover={{ scale: hasChanges ? 1.02 : 1 }}
+              whileTap={{ scale: hasChanges ? 0.98 : 1 }}
+            >
+              {isSaving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+              Save Changes
+            </motion.button>
+            <Link
+              to="/$username"
+              params={{ username: currentUser.username }}
+              target="_blank"
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium"
+              style={{ background: 'var(--background-secondary)', color: 'var(--foreground)' }}
+            >
+              <ExternalLink size={16} />
+              View Live
+            </Link>
+          </div>
         </div>
       </div>
       
-      <AnimatePresence>
-        {showPublish && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm" style={{ background: 'rgba(0,0,0,0.7)' }} onClick={() => setShowPublish(false)}>
-            <motion.div initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }} className="w-full max-w-md rounded-xl p-5" style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}` }} onClick={(e) => e.stopPropagation()}>
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-bold" style={{ color: theme.colors.foreground }}>Publish Template</h2>
-                <motion.button onClick={() => setShowPublish(false)} whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}><X size={20} style={{ color: theme.colors.foregroundMuted }} /></motion.button>
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="flex flex-col lg:flex-row gap-6">
+          {/* Settings Panel */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="lg:w-80 shrink-0"
+          >
+            <div 
+              className="rounded-2xl overflow-hidden lg:sticky lg:top-24"
+              style={{ background: 'var(--card)', border: '1px solid var(--border)' }}
+            >
+              {/* Tabs */}
+              <div className="flex border-b" style={{ borderColor: 'var(--border)' }}>
+                {TABS.map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`flex-1 flex flex-col items-center gap-1 py-3 text-xs font-medium transition-colors ${
+                      activeTab === tab.id ? 'border-b-2' : ''
+                    }`}
+                    style={{
+                      color: activeTab === tab.id ? settings.accentColor : 'var(--foreground-muted)',
+                      borderColor: activeTab === tab.id ? settings.accentColor : 'transparent',
+                    }}
+                  >
+                    <tab.icon size={18} />
+                    {tab.label}
+                  </button>
+                ))}
               </div>
-              <div className="space-y-4">
-                <div>
-                  <p className="text-sm mb-1.5" style={{ color: theme.colors.foreground }}>Name</p>
-                  <input type="text" value={publishName} onChange={(e) => setPublishName(e.target.value)} placeholder="My Template" className="w-full px-3 py-2 rounded-lg text-sm" style={{ background: theme.colors.backgroundSecondary, color: theme.colors.foreground, border: `1px solid ${theme.colors.border}` }} />
+              
+              {/* Tab Content */}
+              <div className="p-4 max-h-[calc(100vh-200px)] overflow-y-auto">
+                <AnimatePresence mode="wait">
+                  {activeTab === 'theme' && (
+                    <motion.div
+                      key="theme"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="space-y-5"
+                    >
+                      {/* Theme Presets */}
+                      <div>
+                        <label className="text-xs font-semibold uppercase tracking-wider mb-3 block" style={{ color: 'var(--foreground-muted)' }}>
+                          Theme Presets
+                        </label>
+                        <div className="grid grid-cols-4 gap-2">
+                          {THEME_PRESETS.map((preset) => (
+                            <button
+                              key={preset.id}
+                              onClick={() => applyPreset(preset.id)}
+                              className={`relative aspect-square rounded-xl overflow-hidden transition-transform hover:scale-105 ${
+                                settings.themePreset === preset.id ? 'ring-2' : ''
+                              }`}
+                              style={{ 
+                                background: preset.bg,
+                                outlineColor: settings.themePreset === preset.id ? settings.accentColor : 'transparent',
+                                outlineWidth: settings.themePreset === preset.id ? '2px' : '0',
+                                outlineStyle: 'solid',
+                              }}
+                              title={preset.name}
+                            >
+                              <div 
+                                className="absolute bottom-1 left-1 right-1 h-2 rounded"
+                                style={{ background: preset.accent }}
+                              />
+                              {settings.themePreset === preset.id && (
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                  <Check size={16} style={{ color: preset.accent }} />
+                                </div>
+                              )}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      
+                      {/* Accent Color */}
+                      <div>
+                        <label className="text-xs font-semibold uppercase tracking-wider mb-3 block" style={{ color: 'var(--foreground-muted)' }}>
+                          Accent Color
+                        </label>
+                        <div className="grid grid-cols-7 gap-2">
+                          {ACCENT_COLORS.map((color) => (
+                            <button
+                              key={color}
+                              onClick={() => updateSetting('accentColor', color)}
+                              className="w-8 h-8 rounded-full transition-transform hover:scale-110"
+                              style={{ 
+                                background: color,
+                                outline: settings.accentColor === color ? `2px solid ${color}` : 'none',
+                                outlineOffset: settings.accentColor === color ? '2px' : '0',
+                              }}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                  
+                  {activeTab === 'layout' && (
+                    <motion.div
+                      key="layout"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="space-y-5"
+                    >
+                      {/* Layout Styles */}
+                      <div>
+                        <label className="text-xs font-semibold uppercase tracking-wider mb-3 block" style={{ color: 'var(--foreground-muted)' }}>
+                          Layout Style
+                        </label>
+                        <div className="space-y-2">
+                          {LAYOUT_STYLES.map((layout) => (
+                            <button
+                              key={layout.id}
+                              onClick={() => updateSetting('layoutStyle', layout.id)}
+                              className="w-full p-3 rounded-xl text-left transition-all"
+                              style={{
+                                background: settings.layoutStyle === layout.id ? `${settings.accentColor}20` : 'var(--background-secondary)',
+                                outline: settings.layoutStyle === layout.id ? `2px solid ${settings.accentColor}` : 'none',
+                              }}
+                            >
+                              <p className="font-medium text-sm" style={{ color: 'var(--foreground)' }}>{layout.name}</p>
+                              <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>{layout.description}</p>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      
+                      {/* Visibility Toggles */}
+                      <div>
+                        <label className="text-xs font-semibold uppercase tracking-wider mb-3 block" style={{ color: 'var(--foreground-muted)' }}>
+                          Show/Hide Elements
+                        </label>
+                        <div className="space-y-2">
+                          {[
+                            { key: 'showAvatar' as const, label: 'Avatar' },
+                            { key: 'showBio' as const, label: 'Bio' },
+                            { key: 'showSocials' as const, label: 'Social Links' },
+                          ].map((item) => (
+                            <button
+                              key={item.key}
+                              onClick={() => updateSetting(item.key, !settings[item.key])}
+                              className="w-full flex items-center justify-between p-3 rounded-xl"
+                              style={{ background: 'var(--background-secondary)' }}
+                            >
+                              <span className="text-sm" style={{ color: 'var(--foreground)' }}>{item.label}</span>
+                              <div 
+                                className={`w-10 h-6 rounded-full relative transition-colors ${settings[item.key] ? '' : 'opacity-50'}`}
+                                style={{ background: settings[item.key] ? settings.accentColor : 'var(--border)' }}
+                              >
+                                <motion.div
+                                  className="absolute top-1 w-4 h-4 rounded-full bg-white"
+                                  animate={{ left: settings[item.key] ? 20 : 4 }}
+                                />
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                  
+                  {activeTab === 'buttons' && (
+                    <motion.div
+                      key="buttons"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="space-y-5"
+                    >
+                      {/* Button Styles */}
+                      <div>
+                        <label className="text-xs font-semibold uppercase tracking-wider mb-3 block" style={{ color: 'var(--foreground-muted)' }}>
+                          Button Style
+                        </label>
+                        <div className="grid grid-cols-2 gap-2">
+                          {BUTTON_STYLES.map((style) => (
+                            <button
+                              key={style.id}
+                              onClick={() => {
+                                updateSetting('buttonStyle', style.id)
+                                updateSetting('buttonRadius', style.radius)
+                              }}
+                              className="p-3 text-center transition-all"
+                              style={{
+                                background: 'var(--background-secondary)',
+                                borderRadius: style.radius,
+                                outline: settings.buttonStyle === style.id ? `2px solid ${settings.accentColor}` : 'none',
+                              }}
+                            >
+                              <span className="text-sm font-medium" style={{ color: 'var(--foreground)' }}>{style.name}</span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      
+                      {/* Preview Button */}
+                      <div>
+                        <label className="text-xs font-semibold uppercase tracking-wider mb-3 block" style={{ color: 'var(--foreground-muted)' }}>
+                          Preview
+                        </label>
+                        <div 
+                          className="p-4 rounded-xl"
+                          style={{ background: colors.bg }}
+                        >
+                          <button
+                            className="w-full py-3 px-4 font-medium transition-all hover:scale-[1.02]"
+                            style={{
+                              background: colors.card,
+                              color: colors.text,
+                              borderRadius: settings.buttonRadius,
+                              border: `1px solid ${settings.accentColor}40`,
+                            }}
+                          >
+                            Example Link
+                          </button>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                  
+                  {activeTab === 'effects' && (
+                    <motion.div
+                      key="effects"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="space-y-5"
+                    >
+                      {/* Effect Toggles */}
+                      <div>
+                        <label className="text-xs font-semibold uppercase tracking-wider mb-3 block" style={{ color: 'var(--foreground-muted)' }}>
+                          Visual Effects
+                        </label>
+                        <div className="space-y-2">
+                          {[
+                            { key: 'glowEffect' as const, label: 'Glow Effect', desc: 'Add subtle glow to buttons' },
+                            { key: 'animatedBg' as const, label: 'Animated Background', desc: 'Floating gradient orbs' },
+                          ].map((item) => (
+                            <button
+                              key={item.key}
+                              onClick={() => updateSetting(item.key, !settings[item.key])}
+                              className="w-full flex items-center justify-between p-3 rounded-xl"
+                              style={{ background: 'var(--background-secondary)' }}
+                            >
+                              <div>
+                                <p className="text-sm font-medium" style={{ color: 'var(--foreground)' }}>{item.label}</p>
+                                <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>{item.desc}</p>
+                              </div>
+                              <div 
+                                className={`w-10 h-6 rounded-full relative transition-colors ${settings[item.key] ? '' : 'opacity-50'}`}
+                                style={{ background: settings[item.key] ? settings.accentColor : 'var(--border)' }}
+                              >
+                                <motion.div
+                                  className="absolute top-1 w-4 h-4 rounded-full bg-white"
+                                  animate={{ left: settings[item.key] ? 20 : 4 }}
+                                />
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            </div>
+          </motion.div>
+          
+          {/* Preview Panel */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex-1"
+          >
+            {/* Preview Controls */}
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2 p-1 rounded-xl" style={{ background: 'var(--background-secondary)' }}>
+                <button
+                  onClick={() => setPreviewMode('desktop')}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors`}
+                  style={{
+                    background: previewMode === 'desktop' ? 'var(--card)' : 'transparent',
+                    color: previewMode === 'desktop' ? 'var(--foreground)' : 'var(--foreground-muted)',
+                  }}
+                >
+                  <Monitor size={16} />
+                  Desktop
+                </button>
+                <button
+                  onClick={() => setPreviewMode('mobile')}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors`}
+                  style={{
+                    background: previewMode === 'mobile' ? 'var(--card)' : 'transparent',
+                    color: previewMode === 'mobile' ? 'var(--foreground)' : 'var(--foreground-muted)',
+                  }}
+                >
+                  <Smartphone size={16} />
+                  Mobile
+                </button>
+              </div>
+              
+              <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--foreground-muted)' }}>
+                <Eye size={14} />
+                Live Preview
+              </div>
+            </div>
+            
+            {/* Preview Frame */}
+            <div 
+              className="rounded-2xl overflow-hidden"
+              style={{ 
+                background: 'var(--card)', 
+                border: '1px solid var(--border)',
+                boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
+              }}
+            >
+              {/* Browser Chrome */}
+              <div className="flex items-center gap-2 px-4 py-3 border-b" style={{ borderColor: 'var(--border)' }}>
+                <div className="flex gap-1.5">
+                  <div className="w-3 h-3 rounded-full bg-red-500" />
+                  <div className="w-3 h-3 rounded-full bg-yellow-500" />
+                  <div className="w-3 h-3 rounded-full bg-green-500" />
                 </div>
-                <div>
-                  <p className="text-sm mb-1.5" style={{ color: theme.colors.foreground }}>Category</p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {CATEGORIES.map((c) => (
-                      <button key={c.id} onClick={() => setPublishCategory(c.id)} className="px-2.5 py-1 rounded text-xs" style={{ background: publishCategory === c.id ? theme.colors.primary : theme.colors.backgroundSecondary, color: publishCategory === c.id ? '#fff' : theme.colors.foreground }}>{c.label}</button>
-                    ))}
+                <div 
+                  className="flex-1 mx-4 px-3 py-1.5 rounded-lg text-xs font-mono"
+                  style={{ background: 'var(--background-secondary)', color: 'var(--foreground-muted)' }}
+                >
+                  eziox.link/{currentUser.username}
+                </div>
+              </div>
+              
+              {/* Preview Content */}
+              <div 
+                className={`transition-all duration-300 ${previewMode === 'mobile' ? 'max-w-[375px] mx-auto' : ''}`}
+              >
+                <div 
+                  className="min-h-[600px] p-8 relative overflow-hidden"
+                  style={{ background: colors.bg }}
+                >
+                  {/* Animated Background */}
+                  {settings.animatedBg && (
+                    <>
+                      <motion.div
+                        className="absolute top-20 right-10 w-64 h-64 rounded-full blur-3xl opacity-30"
+                        style={{ background: settings.accentColor }}
+                        animate={{ scale: [1, 1.3, 1], x: [0, 30, 0] }}
+                        transition={{ duration: 8, repeat: Infinity }}
+                      />
+                      <motion.div
+                        className="absolute bottom-20 left-10 w-48 h-48 rounded-full blur-3xl opacity-20"
+                        style={{ background: settings.accentColor }}
+                        animate={{ scale: [1.2, 1, 1.2], y: [0, -20, 0] }}
+                        transition={{ duration: 6, repeat: Infinity }}
+                      />
+                    </>
+                  )}
+                  
+                  {/* Profile Content */}
+                  <div className="relative z-10 max-w-md mx-auto text-center">
+                    {/* Avatar */}
+                    {settings.showAvatar && (
+                      <motion.div
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        className="relative w-24 h-24 mx-auto mb-4"
+                      >
+                        <div 
+                          className="w-full h-full rounded-full"
+                          style={{
+                            background: profile?.avatar 
+                              ? `url(${profile.avatar}) center/cover`
+                              : `linear-gradient(135deg, ${settings.accentColor}, ${colors.card})`,
+                            boxShadow: settings.glowEffect ? `0 0 40px ${settings.accentColor}40` : 'none',
+                          }}
+                        >
+                          {!profile?.avatar && (
+                            <div className="w-full h-full flex items-center justify-center text-3xl font-bold" style={{ color: colors.text }}>
+                              {(currentUser.name || 'U').charAt(0)}
+                            </div>
+                          )}
+                        </div>
+                      </motion.div>
+                    )}
+                    
+                    {/* Name & Username */}
+                    <h2 
+                      className={`font-bold mb-1 ${settings.layoutStyle === 'bold' ? 'text-3xl' : 'text-xl'}`}
+                      style={{ color: colors.text }}
+                    >
+                      {currentUser.name || 'Anonymous'}
+                    </h2>
+                    <p 
+                      className="text-sm mb-3"
+                      style={{ color: `${colors.text}80` }}
+                    >
+                      @{currentUser.username}
+                    </p>
+                    
+                    {/* Bio */}
+                    {settings.showBio && profile?.bio && (
+                      <p 
+                        className="text-sm mb-6 max-w-xs mx-auto"
+                        style={{ color: `${colors.text}90` }}
+                      >
+                        {profile.bio}
+                      </p>
+                    )}
+                    
+                    {/* Social Links */}
+                    {settings.showSocials && Object.keys(socials).length > 0 && (
+                      <div className="flex justify-center gap-3 mb-6">
+                        {Object.entries(socials).map(([platform, handle]) => {
+                          if (!handle) return null
+                          const Icon = SOCIAL_ICONS[platform]
+                          if (!Icon) return null
+                          return (
+                            <div
+                              key={platform}
+                              className="w-10 h-10 rounded-full flex items-center justify-center transition-transform hover:scale-110"
+                              style={{ 
+                                background: colors.card,
+                                boxShadow: settings.glowEffect ? `0 0 20px ${settings.accentColor}30` : 'none',
+                              }}
+                            >
+                              <Icon size={18} className="transition-colors" />
+                            </div>
+                          )
+                        })}
+                      </div>
+                    )}
+                    
+                    {/* Links */}
+                    <div className="space-y-3">
+                      {links.length > 0 ? (
+                        links.filter(l => l.isActive).slice(0, 5).map((link, index) => (
+                          <motion.div
+                            key={link.id}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: index * 0.1 }}
+                            className="w-full py-3 px-4 font-medium transition-all hover:scale-[1.02] cursor-pointer"
+                            style={{
+                              background: settings.layoutStyle === 'modern' 
+                                ? colors.card 
+                                : 'transparent',
+                              color: colors.text,
+                              borderRadius: settings.buttonRadius,
+                              border: `1px solid ${settings.accentColor}40`,
+                              boxShadow: settings.glowEffect && settings.layoutStyle === 'modern'
+                                ? `0 4px 20px ${settings.accentColor}20`
+                                : 'none',
+                            }}
+                          >
+                            {link.title}
+                          </motion.div>
+                        ))
+                      ) : (
+                        // Placeholder links
+                        ['My Website', 'YouTube Channel', 'Discord Server'].map((title, index) => (
+                          <motion.div
+                            key={title}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: index * 0.1 }}
+                            className="w-full py-3 px-4 font-medium transition-all hover:scale-[1.02] cursor-pointer"
+                            style={{
+                              background: settings.layoutStyle === 'modern' 
+                                ? colors.card 
+                                : 'transparent',
+                              color: colors.text,
+                              borderRadius: settings.buttonRadius,
+                              border: `1px solid ${settings.accentColor}40`,
+                              boxShadow: settings.glowEffect && settings.layoutStyle === 'modern'
+                                ? `0 4px 20px ${settings.accentColor}20`
+                                : 'none',
+                            }}
+                          >
+                            {title}
+                          </motion.div>
+                        ))
+                      )}
+                    </div>
+                    
+                    {/* Footer */}
+                    <div className="mt-8 pt-4 border-t" style={{ borderColor: `${colors.text}10` }}>
+                      <p className="text-xs" style={{ color: `${colors.text}50` }}>
+                        Powered by <span style={{ color: settings.accentColor }}>Eziox</span>
+                      </p>
+                    </div>
                   </div>
                 </div>
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input type="checkbox" checked={publishPublic} onChange={(e) => setPublishPublic(e.target.checked)} className="rounded" style={{ accentColor: theme.colors.primary }} />
-                  <span className="text-sm" style={{ color: theme.colors.foreground }}>Public</span>
-                </label>
-                <motion.button onClick={() => publishMutation.mutate()} disabled={!publishName || publishMutation.isPending} className="w-full py-2.5 rounded-lg text-sm font-medium text-white disabled:opacity-50 flex items-center justify-center gap-2" style={{ background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})` }} whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
-                  {publishMutation.isPending ? <Loader2 size={16} className="animate-spin" /> : <Upload size={16} />}
-                  Publish
-                </motion.button>
               </div>
-            </motion.div>
+            </div>
           </motion.div>
-        )}
-      </AnimatePresence>
+        </div>
+      </div>
     </div>
   )
 }
