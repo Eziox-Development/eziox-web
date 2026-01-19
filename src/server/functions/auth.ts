@@ -30,6 +30,9 @@ import {
   enableTwoFactor,
   disableTwoFactor,
   isTwoFactorEnabled,
+  getRecoveryCodesCount,
+  regenerateRecoveryCodes,
+  verifyRecoveryCode,
 } from '../lib/auth'
 import { checkRateLimit, RATE_LIMITS, sanitizeText, sanitizeURL, isValidReferralCode, generateCSRFToken, validateCSRFToken } from '@/lib/security'
 import { getRequestIP } from '@tanstack/react-start/server'
@@ -590,8 +593,8 @@ export const enableTwoFactorFn = createServerFn({ method: 'POST' })
       throw { message: 'Invalid session', status: 401 }
     }
 
-    const success = await enableTwoFactor(user.id, data.token)
-    if (!success) {
+    const result = await enableTwoFactor(user.id, data.token)
+    if (!result.success) {
       setResponseStatus(400)
       throw { message: 'Invalid verification code', status: 400 }
     }
@@ -602,7 +605,7 @@ export const enableTwoFactorFn = createServerFn({ method: 'POST' })
       void send2FAEnabledEmail(user.email, username, new Date())
     }
 
-    return { success: true, message: '2FA enabled successfully' }
+    return { success: true, message: '2FA enabled successfully', recoveryCodes: result.recoveryCodes }
   })
 
 export const disableTwoFactorFn = createServerFn({ method: 'POST' })
@@ -653,18 +656,60 @@ export const getTwoFactorStatusFn = createServerFn({ method: 'GET' }).handler(
   async () => {
     const token = getCookie('session-token')
     if (!token) {
-      return { enabled: false }
+      return { enabled: false, recoveryCodesCount: 0 }
     }
 
     const user = await validateSession(token)
     if (!user) {
-      return { enabled: false }
+      return { enabled: false, recoveryCodesCount: 0 }
     }
 
     const enabled = await isTwoFactorEnabled(user.id)
-    return { enabled }
+    const recoveryCodesCount = enabled ? await getRecoveryCodesCount(user.id) : 0
+    return { enabled, recoveryCodesCount }
   },
 )
+
+export const regenerateRecoveryCodesFn = createServerFn({ method: 'POST' })
+  .inputValidator(z.object({ token: z.string().length(6) }))
+  .handler(async ({ data }) => {
+    const sessionToken = getCookie('session-token')
+    if (!sessionToken) {
+      setResponseStatus(401)
+      throw { message: 'Not authenticated', status: 401 }
+    }
+
+    const user = await validateSession(sessionToken)
+    if (!user) {
+      setResponseStatus(401)
+      throw { message: 'Invalid session', status: 401 }
+    }
+
+    // Verify 2FA token before regenerating codes
+    const valid = await verifyTwoFactorToken(user.id, data.token)
+    if (!valid) {
+      setResponseStatus(400)
+      throw { message: 'Invalid verification code', status: 400 }
+    }
+
+    const codes = await regenerateRecoveryCodes(user.id)
+    logSecurityEvent('auth.recovery_codes_regenerated', { userId: user.id })
+
+    return { success: true, recoveryCodes: codes }
+  })
+
+export const verifyRecoveryCodeFn = createServerFn({ method: 'POST' })
+  .inputValidator(z.object({ userId: z.string().uuid(), code: z.string().min(1) }))
+  .handler(async ({ data }) => {
+    const valid = await verifyRecoveryCode(data.userId, data.code)
+    if (!valid) {
+      setResponseStatus(400)
+      throw { message: 'Invalid recovery code', status: 400 }
+    }
+    
+    logSecurityEvent('auth.recovery_code_used', { userId: data.userId })
+    return { success: true }
+  })
 
 export const getCsrfTokenFn = createServerFn({ method: 'GET' }).handler(
   async () => {

@@ -334,9 +334,13 @@ export async function verifyTwoFactorToken(userId: string, token: string): Promi
   return result.valid
 }
 
-export async function enableTwoFactor(userId: string, token: string): Promise<boolean> {
+export async function enableTwoFactor(userId: string, token: string): Promise<{ success: boolean; recoveryCodes?: string[] }> {
   const isValid = await verifyTwoFactorToken(userId, token)
-  if (!isValid) return false
+  if (!isValid) return { success: false }
+
+  // Generate recovery codes
+  const recoveryCodes = generateRecoveryCodes()
+  await saveRecoveryCodes(userId, recoveryCodes)
 
   await db
     .update(users)
@@ -346,7 +350,7 @@ export async function enableTwoFactor(userId: string, token: string): Promise<bo
     })
     .where(eq(users.id, userId))
 
-  return true
+  return { success: true, recoveryCodes }
 }
 
 export async function disableTwoFactor(userId: string): Promise<void> {
@@ -355,9 +359,99 @@ export async function disableTwoFactor(userId: string): Promise<void> {
     .set({
       twoFactorEnabled: false,
       twoFactorSecret: null,
+      twoFactorRecoveryCodes: null,
       updatedAt: new Date(),
     })
     .where(eq(users.id, userId))
+}
+
+// Generate 10 recovery codes for 2FA backup
+export function generateRecoveryCodes(): string[] {
+  const codes: string[] = []
+  for (let i = 0; i < 10; i++) {
+    // Generate 8-character alphanumeric codes in format XXXX-XXXX
+    const part1 = crypto.randomBytes(2).toString('hex').toUpperCase()
+    const part2 = crypto.randomBytes(2).toString('hex').toUpperCase()
+    codes.push(`${part1}-${part2}`)
+  }
+  return codes
+}
+
+// Save recovery codes (encrypted) - called when 2FA is enabled
+export async function saveRecoveryCodes(userId: string, codes: string[]): Promise<void> {
+  // Hash each code before storing (so we can verify without exposing them)
+  const hashedCodes = await Promise.all(
+    codes.map(async (code) => {
+      const hash = crypto.createHash('sha256').update(code).digest('hex')
+      return hash
+    })
+  )
+  
+  const encryptedCodes = encrypt(JSON.stringify(hashedCodes))
+  
+  await db
+    .update(users)
+    .set({
+      twoFactorRecoveryCodes: encryptedCodes,
+      updatedAt: new Date(),
+    })
+    .where(eq(users.id, userId))
+}
+
+// Verify and use a recovery code (one-time use)
+export async function verifyRecoveryCode(userId: string, code: string): Promise<boolean> {
+  const user = await findUserById(userId)
+  if (!user || !user.twoFactorRecoveryCodes) return false
+
+  try {
+    const decryptedCodes = decrypt(user.twoFactorRecoveryCodes)
+    const hashedCodes: string[] = JSON.parse(decryptedCodes)
+    
+    // Hash the provided code
+    const providedHash = crypto.createHash('sha256').update(code.toUpperCase()).digest('hex')
+    
+    // Find and remove the used code
+    const codeIndex = hashedCodes.findIndex(hash => hash === providedHash)
+    if (codeIndex === -1) return false
+    
+    // Remove the used code
+    hashedCodes.splice(codeIndex, 1)
+    
+    // Save remaining codes
+    const encryptedCodes = encrypt(JSON.stringify(hashedCodes))
+    await db
+      .update(users)
+      .set({
+        twoFactorRecoveryCodes: encryptedCodes,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, userId))
+    
+    return true
+  } catch {
+    return false
+  }
+}
+
+// Get remaining recovery codes count
+export async function getRecoveryCodesCount(userId: string): Promise<number> {
+  const user = await findUserById(userId)
+  if (!user || !user.twoFactorRecoveryCodes) return 0
+
+  try {
+    const decryptedCodes = decrypt(user.twoFactorRecoveryCodes)
+    const hashedCodes: string[] = JSON.parse(decryptedCodes)
+    return hashedCodes.length
+  } catch {
+    return 0
+  }
+}
+
+// Regenerate recovery codes (user can request new ones)
+export async function regenerateRecoveryCodes(userId: string): Promise<string[]> {
+  const codes = generateRecoveryCodes()
+  await saveRecoveryCodes(userId, codes)
+  return codes
 }
 
 export async function isTwoFactorEnabled(userId: string): Promise<boolean> {

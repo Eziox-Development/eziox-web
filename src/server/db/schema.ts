@@ -27,6 +27,7 @@ export const users = pgTable('users', {
   lockedUntil: timestamp('locked_until'),
   twoFactorSecret: text('two_factor_secret'),
   twoFactorEnabled: boolean('two_factor_enabled').default(false),
+  twoFactorRecoveryCodes: text('two_factor_recovery_codes'),
   passwordResetToken: text('password_reset_token'),
   passwordResetExpires: timestamp('password_reset_expires'),
   lastLoginAt: timestamp('last_login_at'),

@@ -14,6 +14,8 @@ export type SecurityEventType =
   | 'auth.2fa_disabled'
   | 'auth.account_locked'
   | 'auth.account_deleted'
+  | 'auth.recovery_codes_regenerated'
+  | 'auth.recovery_code_used'
   | 'rate_limit.exceeded'
   | 'csrf.invalid_token'
   | 'csrf.invalid_origin'
