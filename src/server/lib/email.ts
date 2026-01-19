@@ -245,6 +245,501 @@ export async function sendWelcomeEmail(
   }
 }
 
+export async function sendEmailVerificationEmail(
+  to: string,
+  username: string,
+  token: string
+): Promise<EmailResult> {
+  const verifyUrl = `${APP_URL}/verify-email?token=${token}`
+
+  try {
+    const { error } = await resend.emails.send({
+      from: FROM_EMAIL,
+      to,
+      subject: 'Verify your Eziox email address',
+      html: generateEmailTemplate({
+        title: 'Verify Your Email',
+        subtitle: `Hey @${username}, please verify your email address to complete your registration.`,
+        content: `
+          <p style="margin: 0 0 24px; font-size: 14px; color: rgba(255, 255, 255, 0.7); line-height: 1.6;">
+            Click the button below to verify your email address and activate all features of your Eziox account.
+          </p>
+        `,
+        buttonText: 'Verify Email',
+        buttonUrl: verifyUrl,
+        footer: 'This link expires in 24 hours. If you didn\'t create an account, you can safely ignore this email.',
+      }),
+    })
+
+    if (error) {
+      console.error('[Email] Failed to send verification email:', error)
+      return { success: false, error: error.message }
+    }
+
+    return { success: true }
+  } catch (err) {
+    console.error('[Email] Error sending verification email:', err)
+    return { success: false, error: 'Failed to send email' }
+  }
+}
+
+export async function sendPasswordChangedEmail(
+  to: string,
+  username: string,
+  ipAddress: string,
+  timestamp: Date
+): Promise<EmailResult> {
+  const formattedTime = formatTimestamp(timestamp)
+
+  try {
+    const { error } = await resend.emails.send({
+      from: FROM_EMAIL,
+      to,
+      subject: 'Your Eziox password was changed',
+      html: generateEmailTemplate({
+        title: 'Password Changed',
+        subtitle: `Hey @${username}, your password was successfully changed.`,
+        content: `
+          <table width="100%" cellpadding="0" cellspacing="0" style="background: rgba(255, 255, 255, 0.05); border-radius: 12px; overflow: hidden; margin-bottom: 24px;">
+            <tr>
+              <td style="padding: 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                <p style="margin: 0 0 4px; font-size: 12px; color: rgba(255, 255, 255, 0.5);">IP Address</p>
+                <p style="margin: 0; font-size: 14px; color: #ffffff;">${ipAddress}</p>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 16px;">
+                <p style="margin: 0 0 4px; font-size: 12px; color: rgba(255, 255, 255, 0.5);">Time</p>
+                <p style="margin: 0; font-size: 14px; color: #ffffff;">${formattedTime}</p>
+              </td>
+            </tr>
+          </table>
+        `,
+        footer: 'If you didn\'t make this change, please <a href="' + APP_URL + '/forgot-password" style="color: #8b5cf6;">reset your password</a> immediately and contact support.',
+      }),
+    })
+
+    if (error) {
+      console.error('[Email] Failed to send password changed email:', error)
+      return { success: false, error: error.message }
+    }
+
+    return { success: true }
+  } catch (err) {
+    console.error('[Email] Error sending password changed email:', err)
+    return { success: false, error: 'Failed to send email' }
+  }
+}
+
+export async function sendEmailChangedEmail(
+  oldEmail: string,
+  newEmail: string,
+  username: string,
+  timestamp: Date
+): Promise<EmailResult> {
+  const formattedTime = formatTimestamp(timestamp)
+
+  // Send to old email
+  try {
+    await resend.emails.send({
+      from: FROM_EMAIL,
+      to: oldEmail,
+      subject: 'Your Eziox email address was changed',
+      html: generateEmailTemplate({
+        title: 'Email Address Changed',
+        subtitle: `Hey @${username}, your email address was changed.`,
+        content: `
+          <table width="100%" cellpadding="0" cellspacing="0" style="background: rgba(255, 255, 255, 0.05); border-radius: 12px; overflow: hidden; margin-bottom: 24px;">
+            <tr>
+              <td style="padding: 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                <p style="margin: 0 0 4px; font-size: 12px; color: rgba(255, 255, 255, 0.5);">Old Email</p>
+                <p style="margin: 0; font-size: 14px; color: #ffffff;">${oldEmail}</p>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                <p style="margin: 0 0 4px; font-size: 12px; color: rgba(255, 255, 255, 0.5);">New Email</p>
+                <p style="margin: 0; font-size: 14px; color: #ffffff;">${newEmail}</p>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 16px;">
+                <p style="margin: 0 0 4px; font-size: 12px; color: rgba(255, 255, 255, 0.5);">Time</p>
+                <p style="margin: 0; font-size: 14px; color: #ffffff;">${formattedTime}</p>
+              </td>
+            </tr>
+          </table>
+        `,
+        footer: 'If you didn\'t make this change, please contact support immediately at <a href="mailto:support@eziox.link" style="color: #8b5cf6;">support@eziox.link</a>.',
+      }),
+    })
+
+    return { success: true }
+  } catch (err) {
+    console.error('[Email] Error sending email changed notification:', err)
+    return { success: false, error: 'Failed to send email' }
+  }
+}
+
+export async function sendAccountDeletedEmail(
+  to: string,
+  username: string
+): Promise<EmailResult> {
+  try {
+    const { error } = await resend.emails.send({
+      from: FROM_EMAIL,
+      to,
+      subject: 'Your Eziox account has been deleted',
+      html: generateEmailTemplate({
+        title: 'Account Deleted',
+        subtitle: `Goodbye @${username}, your account has been permanently deleted.`,
+        content: `
+          <p style="margin: 0 0 24px; font-size: 14px; color: rgba(255, 255, 255, 0.7); line-height: 1.6;">
+            All your data has been permanently removed from our servers, including:
+          </p>
+          <ul style="margin: 0 0 24px; padding-left: 20px; font-size: 14px; color: rgba(255, 255, 255, 0.7); line-height: 1.8;">
+            <li>Your profile and bio page</li>
+            <li>All your links and analytics data</li>
+            <li>Connected accounts (Spotify, etc.)</li>
+            <li>Session and activity history</li>
+          </ul>
+          <p style="margin: 0; font-size: 14px; color: rgba(255, 255, 255, 0.7); line-height: 1.6;">
+            We're sorry to see you go. If you ever want to come back, you're always welcome to create a new account.
+          </p>
+        `,
+        footer: 'Thank you for being part of Eziox. If you have any feedback, feel free to reach out at <a href="mailto:feedback@eziox.link" style="color: #8b5cf6;">feedback@eziox.link</a>.',
+      }),
+    })
+
+    if (error) {
+      console.error('[Email] Failed to send account deleted email:', error)
+      return { success: false, error: error.message }
+    }
+
+    return { success: true }
+  } catch (err) {
+    console.error('[Email] Error sending account deleted email:', err)
+    return { success: false, error: 'Failed to send email' }
+  }
+}
+
+export async function send2FAEnabledEmail(
+  to: string,
+  username: string,
+  timestamp: Date
+): Promise<EmailResult> {
+  const formattedTime = formatTimestamp(timestamp)
+
+  try {
+    const { error } = await resend.emails.send({
+      from: FROM_EMAIL,
+      to,
+      subject: 'Two-factor authentication enabled on your Eziox account',
+      html: generateEmailTemplate({
+        title: '2FA Enabled ✓',
+        subtitle: `Hey @${username}, two-factor authentication is now active on your account.`,
+        content: `
+          <div style="background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3); border-radius: 12px; padding: 16px; margin-bottom: 24px;">
+            <p style="margin: 0; font-size: 14px; color: #22c55e; text-align: center;">
+              🔒 Your account is now more secure
+            </p>
+          </div>
+          <p style="margin: 0 0 16px; font-size: 14px; color: rgba(255, 255, 255, 0.7); line-height: 1.6;">
+            From now on, you'll need to enter a verification code from your authenticator app when signing in.
+          </p>
+          <p style="margin: 0; font-size: 13px; color: rgba(255, 255, 255, 0.5);">
+            Enabled at: ${formattedTime}
+          </p>
+        `,
+        footer: 'Make sure to keep your recovery codes in a safe place. If you lose access to your authenticator app, you\'ll need them to sign in.',
+      }),
+    })
+
+    if (error) {
+      console.error('[Email] Failed to send 2FA enabled email:', error)
+      return { success: false, error: error.message }
+    }
+
+    return { success: true }
+  } catch (err) {
+    console.error('[Email] Error sending 2FA enabled email:', err)
+    return { success: false, error: 'Failed to send email' }
+  }
+}
+
+export async function send2FADisabledEmail(
+  to: string,
+  username: string,
+  ipAddress: string,
+  timestamp: Date
+): Promise<EmailResult> {
+  const formattedTime = formatTimestamp(timestamp)
+
+  try {
+    const { error } = await resend.emails.send({
+      from: FROM_EMAIL,
+      to,
+      subject: '⚠️ Two-factor authentication disabled on your Eziox account',
+      html: generateEmailTemplate({
+        title: '2FA Disabled',
+        subtitle: `Hey @${username}, two-factor authentication was disabled on your account.`,
+        content: `
+          <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 12px; padding: 16px; margin-bottom: 24px;">
+            <p style="margin: 0; font-size: 14px; color: #ef4444; text-align: center;">
+              ⚠️ Your account security has been reduced
+            </p>
+          </div>
+          <table width="100%" cellpadding="0" cellspacing="0" style="background: rgba(255, 255, 255, 0.05); border-radius: 12px; overflow: hidden; margin-bottom: 24px;">
+            <tr>
+              <td style="padding: 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                <p style="margin: 0 0 4px; font-size: 12px; color: rgba(255, 255, 255, 0.5);">IP Address</p>
+                <p style="margin: 0; font-size: 14px; color: #ffffff;">${ipAddress}</p>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 16px;">
+                <p style="margin: 0 0 4px; font-size: 12px; color: rgba(255, 255, 255, 0.5);">Time</p>
+                <p style="margin: 0; font-size: 14px; color: #ffffff;">${formattedTime}</p>
+              </td>
+            </tr>
+          </table>
+        `,
+        buttonText: 'Re-enable 2FA',
+        buttonUrl: `${APP_URL}/profile/settings`,
+        footer: 'If you didn\'t make this change, please secure your account immediately by changing your password and re-enabling 2FA.',
+      }),
+    })
+
+    if (error) {
+      console.error('[Email] Failed to send 2FA disabled email:', error)
+      return { success: false, error: error.message }
+    }
+
+    return { success: true }
+  } catch (err) {
+    console.error('[Email] Error sending 2FA disabled email:', err)
+    return { success: false, error: 'Failed to send email' }
+  }
+}
+
+export async function sendSubscriptionEmail(
+  to: string,
+  username: string,
+  tier: string,
+  action: 'upgraded' | 'downgraded' | 'cancelled' | 'renewed'
+): Promise<EmailResult> {
+  const titles: Record<typeof action, string> = {
+    upgraded: `Welcome to ${tier}! 🎉`,
+    downgraded: 'Subscription Changed',
+    cancelled: 'Subscription Cancelled',
+    renewed: `${tier} Renewed ✓`,
+  }
+
+  const subtitles: Record<typeof action, string> = {
+    upgraded: `Hey @${username}, you've been upgraded to ${tier}!`,
+    downgraded: `Hey @${username}, your subscription has been changed.`,
+    cancelled: `Hey @${username}, your subscription has been cancelled.`,
+    renewed: `Hey @${username}, your ${tier} subscription has been renewed.`,
+  }
+
+  const contents: Record<typeof action, string> = {
+    upgraded: `
+      <div style="background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 12px; padding: 16px; margin-bottom: 24px;">
+        <p style="margin: 0; font-size: 14px; color: #8b5cf6; text-align: center;">
+          ✨ Thank you for supporting Eziox!
+        </p>
+      </div>
+      <p style="margin: 0 0 16px; font-size: 14px; color: rgba(255, 255, 255, 0.7); line-height: 1.6;">
+        You now have access to all ${tier} features. Enjoy your enhanced experience!
+      </p>
+    `,
+    downgraded: `
+      <p style="margin: 0 0 16px; font-size: 14px; color: rgba(255, 255, 255, 0.7); line-height: 1.6;">
+        Your subscription has been changed. Some features may no longer be available.
+      </p>
+    `,
+    cancelled: `
+      <p style="margin: 0 0 16px; font-size: 14px; color: rgba(255, 255, 255, 0.7); line-height: 1.6;">
+        Your subscription has been cancelled. You'll continue to have access to your current features until the end of your billing period.
+      </p>
+      <p style="margin: 0; font-size: 14px; color: rgba(255, 255, 255, 0.7); line-height: 1.6;">
+        We'd love to have you back anytime. If you have feedback about why you cancelled, please let us know.
+      </p>
+    `,
+    renewed: `
+      <p style="margin: 0 0 16px; font-size: 14px; color: rgba(255, 255, 255, 0.7); line-height: 1.6;">
+        Your ${tier} subscription has been renewed. Thank you for your continued support!
+      </p>
+    `,
+  }
+
+  try {
+    const { error } = await resend.emails.send({
+      from: FROM_EMAIL,
+      to,
+      subject: titles[action],
+      html: generateEmailTemplate({
+        title: titles[action],
+        subtitle: subtitles[action],
+        content: contents[action],
+        buttonText: action === 'cancelled' ? 'Resubscribe' : 'View Your Account',
+        buttonUrl: action === 'cancelled' ? `${APP_URL}/pricing` : `${APP_URL}/profile/settings`,
+        footer: 'Questions about your subscription? Contact us at <a href="mailto:billing@eziox.link" style="color: #8b5cf6;">billing@eziox.link</a>.',
+      }),
+    })
+
+    if (error) {
+      console.error('[Email] Failed to send subscription email:', error)
+      return { success: false, error: error.message }
+    }
+
+    return { success: true }
+  } catch (err) {
+    console.error('[Email] Error sending subscription email:', err)
+    return { success: false, error: 'Failed to send email' }
+  }
+}
+
+export async function sendWeeklyDigestEmail(
+  to: string,
+  username: string,
+  stats: {
+    profileViews: number
+    linkClicks: number
+    newFollowers: number
+    topLink?: { title: string; clicks: number }
+  }
+): Promise<EmailResult> {
+  try {
+    const { error } = await resend.emails.send({
+      from: FROM_EMAIL,
+      to,
+      subject: `Your weekly Eziox stats 📊`,
+      html: generateEmailTemplate({
+        title: 'Weekly Stats',
+        subtitle: `Hey @${username}, here's how your page performed this week.`,
+        content: `
+          <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 24px;">
+            <tr>
+              <td style="padding: 16px; background: rgba(139, 92, 246, 0.1); border-radius: 12px; text-align: center; width: 33%;">
+                <p style="margin: 0 0 4px; font-size: 24px; font-weight: 700; color: #8b5cf6;">${stats.profileViews}</p>
+                <p style="margin: 0; font-size: 12px; color: rgba(255, 255, 255, 0.5);">Profile Views</p>
+              </td>
+              <td style="width: 8px;"></td>
+              <td style="padding: 16px; background: rgba(34, 197, 94, 0.1); border-radius: 12px; text-align: center; width: 33%;">
+                <p style="margin: 0 0 4px; font-size: 24px; font-weight: 700; color: #22c55e;">${stats.linkClicks}</p>
+                <p style="margin: 0; font-size: 12px; color: rgba(255, 255, 255, 0.5);">Link Clicks</p>
+              </td>
+              <td style="width: 8px;"></td>
+              <td style="padding: 16px; background: rgba(59, 130, 246, 0.1); border-radius: 12px; text-align: center; width: 33%;">
+                <p style="margin: 0 0 4px; font-size: 24px; font-weight: 700; color: #3b82f6;">${stats.newFollowers}</p>
+                <p style="margin: 0; font-size: 12px; color: rgba(255, 255, 255, 0.5);">New Followers</p>
+              </td>
+            </tr>
+          </table>
+          ${stats.topLink ? `
+          <div style="background: rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 16px; margin-bottom: 24px;">
+            <p style="margin: 0 0 8px; font-size: 12px; color: rgba(255, 255, 255, 0.5);">🔥 Top Performing Link</p>
+            <p style="margin: 0; font-size: 14px; color: #ffffff;">${stats.topLink.title} — <span style="color: #22c55e;">${stats.topLink.clicks} clicks</span></p>
+          </div>
+          ` : ''}
+        `,
+        buttonText: 'View Full Analytics',
+        buttonUrl: `${APP_URL}/profile/analytics`,
+        footer: 'You can manage your email preferences in your <a href="' + APP_URL + '/profile/settings" style="color: #8b5cf6;">account settings</a>.',
+      }),
+    })
+
+    if (error) {
+      console.error('[Email] Failed to send weekly digest:', error)
+      return { success: false, error: error.message }
+    }
+
+    return { success: true }
+  } catch (err) {
+    console.error('[Email] Error sending weekly digest:', err)
+    return { success: false, error: 'Failed to send email' }
+  }
+}
+
+// Helper function to generate consistent email templates
+function generateEmailTemplate(options: {
+  title: string
+  subtitle: string
+  content: string
+  buttonText?: string
+  buttonUrl?: string
+  footer?: string
+}): string {
+  const { title, subtitle, content, buttonText, buttonUrl, footer } = options
+
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; background-color: #0a0a0f; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #0a0a0f; padding: 40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 480px; background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.05)); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; overflow: hidden;">
+          <tr>
+            <td style="padding: 40px 32px; text-align: center;">
+              <img src="${APP_URL}/icon.png" alt="Eziox" width="48" height="48" style="border-radius: 12px; margin-bottom: 24px;">
+              <h1 style="margin: 0 0 8px; font-size: 24px; font-weight: 700; color: #ffffff;">${title}</h1>
+              <p style="margin: 0; font-size: 14px; color: rgba(255, 255, 255, 0.6);">${subtitle}</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 0 32px 32px;">
+              ${content}
+              ${buttonText && buttonUrl ? `
+              <a href="${buttonUrl}" style="display: block; padding: 16px 24px; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #ffffff; text-decoration: none; font-weight: 600; font-size: 16px; text-align: center; border-radius: 12px; margin-top: 24px;">
+                ${buttonText}
+              </a>
+              ` : ''}
+              ${footer ? `
+              <p style="margin: 24px 0 0; font-size: 13px; color: rgba(255, 255, 255, 0.5); text-align: center;">
+                ${footer}
+              </p>
+              ` : ''}
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 24px 32px; border-top: 1px solid rgba(255, 255, 255, 0.1); text-align: center;">
+              <p style="margin: 0 0 8px; font-size: 12px; color: rgba(255, 255, 255, 0.4);">
+                © ${new Date().getFullYear()} Eziox. All rights reserved.
+              </p>
+              <p style="margin: 0; font-size: 11px; color: rgba(255, 255, 255, 0.3);">
+                <a href="${APP_URL}/privacy" style="color: rgba(255, 255, 255, 0.4); text-decoration: none;">Privacy</a> · 
+                <a href="${APP_URL}/terms" style="color: rgba(255, 255, 255, 0.4); text-decoration: none;">Terms</a> · 
+                <a href="${APP_URL}/profile/settings" style="color: rgba(255, 255, 255, 0.4); text-decoration: none;">Unsubscribe</a>
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+  `
+}
+
+function formatTimestamp(timestamp: Date): string {
+  return timestamp.toLocaleString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZoneName: 'short',
+  })
+}
+
 function parseUserAgent(ua: string): string {
   if (!ua) return 'Unknown device'
 
