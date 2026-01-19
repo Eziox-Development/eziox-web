@@ -8,7 +8,7 @@ import { useServerFn } from '@tanstack/react-start'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { getNotificationSettingsFn, updateNotificationSettingsFn } from '@/server/functions/notifications'
-import { setupTwoFactorFn, enableTwoFactorFn, disableTwoFactorFn, getTwoFactorStatusFn, deleteAccountFn, exportUserDataFn } from '@/server/functions/auth'
+import { setupTwoFactorFn, enableTwoFactorFn, disableTwoFactorFn, getTwoFactorStatusFn, deleteAccountFn, exportUserDataFn, regenerateRecoveryCodesFn } from '@/server/functions/auth'
 
 interface SettingsTabProps {
   formData: ProfileFormData
@@ -23,6 +23,9 @@ export function SettingsTab({ formData, updateField, currentUser, copyToClipboar
   const [show2FASetup, setShow2FASetup] = useState(false)
   const [twoFactorCode, setTwoFactorCode] = useState('')
   const [twoFactorError, setTwoFactorError] = useState('')
+  const [recoveryCodes, setRecoveryCodes] = useState<string[] | null>(null)
+  const [showRecoveryCodes, setShowRecoveryCodes] = useState(false)
+  const [regenerateCode, setRegenerateCode] = useState('')
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [deletePassword, setDeletePassword] = useState('')
   const [deleteError, setDeleteError] = useState('')
@@ -38,6 +41,7 @@ export function SettingsTab({ formData, updateField, currentUser, copyToClipboar
   const get2FAStatus = useServerFn(getTwoFactorStatusFn)
   const deleteAccount = useServerFn(deleteAccountFn)
   const exportData = useServerFn(exportUserDataFn)
+  const regenerateCodes = useServerFn(regenerateRecoveryCodesFn)
 
   const { data: notificationSettings, isLoading: settingsLoading } = useQuery({
     queryKey: ['notificationSettings'],
@@ -57,11 +61,31 @@ export function SettingsTab({ formData, updateField, currentUser, copyToClipboar
 
   const enable2FAMutation = useMutation({
     mutationFn: (token: string) => enable2FA({ data: { token } }),
-    onSuccess: () => {
+    onSuccess: (data) => {
       void queryClient.invalidateQueries({ queryKey: ['twoFactorStatus'] })
       setShow2FASetup(false)
       setTwoFactorCode('')
       setTwoFactorError('')
+      // Show recovery codes after enabling 2FA
+      if (data.recoveryCodes) {
+        setRecoveryCodes(data.recoveryCodes)
+        setShowRecoveryCodes(true)
+      }
+    },
+    onError: (error: { message?: string }) => {
+      setTwoFactorError(error.message || 'Invalid code')
+    },
+  })
+
+  const regenerateCodesMutation = useMutation({
+    mutationFn: (token: string) => regenerateCodes({ data: { token } }),
+    onSuccess: (data) => {
+      if (data.recoveryCodes) {
+        setRecoveryCodes(data.recoveryCodes)
+        setShowRecoveryCodes(true)
+      }
+      setRegenerateCode('')
+      void queryClient.invalidateQueries({ queryKey: ['twoFactorStatus'] })
     },
     onError: (error: { message?: string }) => {
       setTwoFactorError(error.message || 'Invalid code')
@@ -109,6 +133,71 @@ export function SettingsTab({ formData, updateField, currentUser, copyToClipboar
 
   return (
     <motion.div key="settings" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="space-y-6">
+      {/* Recovery Codes Modal */}
+      <AnimatePresence>
+        {showRecoveryCodes && recoveryCodes && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            style={{ background: 'rgba(0, 0, 0, 0.8)' }}
+            onClick={() => setShowRecoveryCodes(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="w-full max-w-md rounded-2xl p-6 space-y-4"
+              style={{ background: 'var(--card)', border: '1px solid var(--border)' }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <KeyRound size={20} style={{ color: formData.accentColor }} />
+                  <h3 className="text-lg font-bold" style={{ color: 'var(--foreground)' }}>Recovery Codes</h3>
+                </div>
+                <button onClick={() => setShowRecoveryCodes(false)} className="p-2 rounded-lg hover:bg-white/10">
+                  <X size={18} style={{ color: 'var(--foreground-muted)' }} />
+                </button>
+              </div>
+              
+              <div className="p-3 rounded-lg" style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)' }}>
+                <p className="text-xs" style={{ color: '#ef4444' }}>
+                  <strong>Important:</strong> Save these codes in a secure place. Each code can only be used once. You won't be able to see them again!
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                {recoveryCodes.map((code, i) => (
+                  <button
+                    key={i}
+                    onClick={() => copyToClipboard(code, `Recovery Code ${i + 1}`)}
+                    className="flex items-center justify-between px-3 py-2 rounded-lg font-mono text-sm"
+                    style={{ background: 'var(--background-secondary)', border: '1px solid var(--border)', color: 'var(--foreground)' }}
+                  >
+                    {code}
+                    {copiedField === `Recovery Code ${i + 1}` ? <Check size={12} className="text-green-500" /> : <Copy size={12} style={{ color: 'var(--foreground-muted)' }} />}
+                  </button>
+                ))}
+              </div>
+
+              <button
+                onClick={() => copyToClipboard(recoveryCodes.join('\n'), 'All Recovery Codes')}
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-medium"
+                style={{ background: formData.accentColor, color: 'white' }}
+              >
+                {copiedField === 'All Recovery Codes' ? <Check size={16} /> : <Copy size={16} />}
+                {copiedField === 'All Recovery Codes' ? 'Copied!' : 'Copy All Codes'}
+              </button>
+
+              <p className="text-xs text-center" style={{ color: 'var(--foreground-muted)' }}>
+                Store these codes securely. They are your backup if you lose access to your authenticator app.
+              </p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
       <div className="rounded-2xl overflow-hidden" style={{ background: 'var(--card)', border: '1px solid var(--border)' }}>
         <div className="p-5 border-b" style={{ borderColor: 'var(--border)' }}>
           <div className="flex items-center gap-2">
@@ -126,11 +215,57 @@ export function SettingsTab({ formData, updateField, currentUser, copyToClipboar
             <div className="space-y-4">
               <div className="flex items-center gap-3 p-4 rounded-xl" style={{ background: 'rgba(34, 197, 94, 0.1)', border: '1px solid rgba(34, 197, 94, 0.2)' }}>
                 <Check className="w-5 h-5" style={{ color: '#22c55e' }} />
-                <div>
+                <div className="flex-1">
                   <p className="font-medium text-sm" style={{ color: 'var(--foreground)' }}>2FA is enabled</p>
                   <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>Your account is protected with authenticator app</p>
                 </div>
+                <div className="text-right">
+                  <p className="text-xs font-medium" style={{ color: 'var(--foreground-muted)' }}>Recovery codes</p>
+                  <p className="text-sm font-bold" style={{ color: twoFactorStatus.recoveryCodesCount > 3 ? '#22c55e' : twoFactorStatus.recoveryCodesCount > 0 ? '#f59e0b' : '#ef4444' }}>
+                    {twoFactorStatus.recoveryCodesCount} remaining
+                  </p>
+                </div>
               </div>
+
+              {/* Recovery Codes Section */}
+              <div className="space-y-3 p-4 rounded-xl" style={{ background: 'var(--background-secondary)', border: '1px solid var(--border)' }}>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium" style={{ color: 'var(--foreground)' }}>Recovery Codes</p>
+                    <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>Use these if you lose access to your authenticator</p>
+                  </div>
+                  <KeyRound size={18} style={{ color: formData.accentColor }} />
+                </div>
+                {twoFactorStatus.recoveryCodesCount < 3 && (
+                  <div className="flex items-center gap-2 p-3 rounded-lg" style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)' }}>
+                    <AlertTriangle size={16} style={{ color: '#ef4444' }} />
+                    <p className="text-xs" style={{ color: '#ef4444' }}>Low recovery codes! Consider regenerating new ones.</p>
+                  </div>
+                )}
+                <div className="space-y-2">
+                  <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>Enter 2FA code to regenerate recovery codes:</p>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={regenerateCode}
+                      onChange={(e) => { setRegenerateCode(e.target.value.replace(/\D/g, '').slice(0, 6)); setTwoFactorError('') }}
+                      placeholder="000000"
+                      className="flex-1 px-4 py-2 rounded-xl text-center font-mono tracking-widest"
+                      style={{ background: 'var(--card)', border: '1px solid var(--border)', color: 'var(--foreground)' }}
+                      maxLength={6}
+                    />
+                    <button
+                      onClick={() => regenerateCode.length === 6 && regenerateCodesMutation.mutate(regenerateCode)}
+                      disabled={regenerateCode.length !== 6 || regenerateCodesMutation.isPending}
+                      className="px-4 py-2 rounded-xl font-medium text-white disabled:opacity-50"
+                      style={{ background: formData.accentColor }}
+                    >
+                      {regenerateCodesMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Regenerate'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
               <div className="space-y-3">
                 <p className="text-sm font-medium" style={{ color: 'var(--foreground)' }}>Disable 2FA</p>
                 <div className="flex gap-2">
