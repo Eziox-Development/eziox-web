@@ -64,7 +64,7 @@ const footerSections: Record<string, FooterSection> = {
     links: [
       { label: 'Blog', href: '/blog', description: 'Tips & tutorials' },
       { label: 'Help Center', href: '/contact', description: 'Get support' },
-      { label: 'Status', href: 'https://status.eziox.link', description: 'System status', external: true },
+      { label: 'Status', href: '/status', description: 'System status' },
     ],
   },
   company: {

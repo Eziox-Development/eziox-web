@@ -17,14 +17,17 @@ import { Route as PublicIndexRouteImport } from './routes/_public/index'
 import { Route as ApiSpotifyCallbackRouteImport } from './routes/api/spotify-callback'
 import { Route as PublicTermsRouteImport } from './routes/_public/terms'
 import { Route as PublicTemplatesRouteImport } from './routes/_public/templates'
+import { Route as PublicStatusRouteImport } from './routes/_public/status'
 import { Route as PublicPrivacyRouteImport } from './routes/_public/privacy'
 import { Route as PublicPricingRouteImport } from './routes/_public/pricing'
 import { Route as PublicPartnersRouteImport } from './routes/_public/partners'
 import { Route as PublicLeaderboardRouteImport } from './routes/_public/leaderboard'
+import { Route as PublicImprintRouteImport } from './routes/_public/imprint'
 import { Route as PublicCreatorsRouteImport } from './routes/_public/creators'
 import { Route as PublicCookiesRouteImport } from './routes/_public/cookies'
 import { Route as PublicContactRouteImport } from './routes/_public/contact'
 import { Route as PublicChangelogRouteImport } from './routes/_public/changelog'
+import { Route as PublicBlogRouteImport } from './routes/_public/blog'
 import { Route as PublicAboutRouteImport } from './routes/_public/about'
 import { Route as ProtectedThemeBuilderRouteImport } from './routes/_protected/theme-builder'
 import { Route as ProtectedReferralsRouteImport } from './routes/_protected/referrals'
@@ -83,6 +86,11 @@ const PublicTemplatesRoute = PublicTemplatesRouteImport.update({
   path: '/templates',
   getParentRoute: () => PublicRoute,
 } as any)
+const PublicStatusRoute = PublicStatusRouteImport.update({
+  id: '/status',
+  path: '/status',
+  getParentRoute: () => PublicRoute,
+} as any)
 const PublicPrivacyRoute = PublicPrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
@@ -103,6 +111,11 @@ const PublicLeaderboardRoute = PublicLeaderboardRouteImport.update({
   path: '/leaderboard',
   getParentRoute: () => PublicRoute,
 } as any)
+const PublicImprintRoute = PublicImprintRouteImport.update({
+  id: '/imprint',
+  path: '/imprint',
+  getParentRoute: () => PublicRoute,
+} as any)
 const PublicCreatorsRoute = PublicCreatorsRouteImport.update({
   id: '/creators',
   path: '/creators',
@@ -121,6 +134,11 @@ const PublicContactRoute = PublicContactRouteImport.update({
 const PublicChangelogRoute = PublicChangelogRouteImport.update({
   id: '/changelog',
   path: '/changelog',
+  getParentRoute: () => PublicRoute,
+} as any)
+const PublicBlogRoute = PublicBlogRouteImport.update({
+  id: '/blog',
+  path: '/blog',
   getParentRoute: () => PublicRoute,
 } as any)
 const PublicAboutRoute = PublicAboutRouteImport.update({
@@ -247,14 +265,17 @@ export interface FileRoutesByFullPath {
   '/referrals': typeof ProtectedReferralsRoute
   '/theme-builder': typeof ProtectedThemeBuilderRoute
   '/about': typeof PublicAboutRoute
+  '/blog': typeof PublicBlogRoute
   '/changelog': typeof PublicChangelogRoute
   '/contact': typeof PublicContactRoute
   '/cookies': typeof PublicCookiesRoute
   '/creators': typeof PublicCreatorsRoute
+  '/imprint': typeof PublicImprintRoute
   '/leaderboard': typeof PublicLeaderboardRoute
   '/partners': typeof PublicPartnersRoute
   '/pricing': typeof PublicPricingRoute
   '/privacy': typeof PublicPrivacyRoute
+  '/status': typeof PublicStatusRoute
   '/templates': typeof PublicTemplatesRoute
   '/terms': typeof PublicTermsRoute
   '/api/spotify-callback': typeof ApiSpotifyCallbackRoute
@@ -282,14 +303,17 @@ export interface FileRoutesByTo {
   '/referrals': typeof ProtectedReferralsRoute
   '/theme-builder': typeof ProtectedThemeBuilderRoute
   '/about': typeof PublicAboutRoute
+  '/blog': typeof PublicBlogRoute
   '/changelog': typeof PublicChangelogRoute
   '/contact': typeof PublicContactRoute
   '/cookies': typeof PublicCookiesRoute
   '/creators': typeof PublicCreatorsRoute
+  '/imprint': typeof PublicImprintRoute
   '/leaderboard': typeof PublicLeaderboardRoute
   '/partners': typeof PublicPartnersRoute
   '/pricing': typeof PublicPricingRoute
   '/privacy': typeof PublicPrivacyRoute
+  '/status': typeof PublicStatusRoute
   '/templates': typeof PublicTemplatesRoute
   '/terms': typeof PublicTermsRoute
   '/api/spotify-callback': typeof ApiSpotifyCallbackRoute
@@ -322,14 +346,17 @@ export interface FileRoutesById {
   '/_protected/referrals': typeof ProtectedReferralsRoute
   '/_protected/theme-builder': typeof ProtectedThemeBuilderRoute
   '/_public/about': typeof PublicAboutRoute
+  '/_public/blog': typeof PublicBlogRoute
   '/_public/changelog': typeof PublicChangelogRoute
   '/_public/contact': typeof PublicContactRoute
   '/_public/cookies': typeof PublicCookiesRoute
   '/_public/creators': typeof PublicCreatorsRoute
+  '/_public/imprint': typeof PublicImprintRoute
   '/_public/leaderboard': typeof PublicLeaderboardRoute
   '/_public/partners': typeof PublicPartnersRoute
   '/_public/pricing': typeof PublicPricingRoute
   '/_public/privacy': typeof PublicPrivacyRoute
+  '/_public/status': typeof PublicStatusRoute
   '/_public/templates': typeof PublicTemplatesRoute
   '/_public/terms': typeof PublicTermsRoute
   '/api/spotify-callback': typeof ApiSpotifyCallbackRoute
@@ -359,14 +386,17 @@ export interface FileRouteTypes {
     | '/referrals'
     | '/theme-builder'
     | '/about'
+    | '/blog'
     | '/changelog'
     | '/contact'
     | '/cookies'
     | '/creators'
+    | '/imprint'
     | '/leaderboard'
     | '/partners'
     | '/pricing'
     | '/privacy'
+    | '/status'
     | '/templates'
     | '/terms'
     | '/api/spotify-callback'
@@ -394,14 +424,17 @@ export interface FileRouteTypes {
     | '/referrals'
     | '/theme-builder'
     | '/about'
+    | '/blog'
     | '/changelog'
     | '/contact'
     | '/cookies'
     | '/creators'
+    | '/imprint'
     | '/leaderboard'
     | '/partners'
     | '/pricing'
     | '/privacy'
+    | '/status'
     | '/templates'
     | '/terms'
     | '/api/spotify-callback'
@@ -433,14 +466,17 @@ export interface FileRouteTypes {
     | '/_protected/referrals'
     | '/_protected/theme-builder'
     | '/_public/about'
+    | '/_public/blog'
     | '/_public/changelog'
     | '/_public/contact'
     | '/_public/cookies'
     | '/_public/creators'
+    | '/_public/imprint'
     | '/_public/leaderboard'
     | '/_public/partners'
     | '/_public/pricing'
     | '/_public/privacy'
+    | '/_public/status'
     | '/_public/templates'
     | '/_public/terms'
     | '/api/spotify-callback'
@@ -522,6 +558,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicTemplatesRouteImport
       parentRoute: typeof PublicRoute
     }
+    '/_public/status': {
+      id: '/_public/status'
+      path: '/status'
+      fullPath: '/status'
+      preLoaderRoute: typeof PublicStatusRouteImport
+      parentRoute: typeof PublicRoute
+    }
     '/_public/privacy': {
       id: '/_public/privacy'
       path: '/privacy'
@@ -550,6 +593,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicLeaderboardRouteImport
       parentRoute: typeof PublicRoute
     }
+    '/_public/imprint': {
+      id: '/_public/imprint'
+      path: '/imprint'
+      fullPath: '/imprint'
+      preLoaderRoute: typeof PublicImprintRouteImport
+      parentRoute: typeof PublicRoute
+    }
     '/_public/creators': {
       id: '/_public/creators'
       path: '/creators'
@@ -576,6 +626,13 @@ declare module '@tanstack/react-router' {
       path: '/changelog'
       fullPath: '/changelog'
       preLoaderRoute: typeof PublicChangelogRouteImport
+      parentRoute: typeof PublicRoute
+    }
+    '/_public/blog': {
+      id: '/_public/blog'
+      path: '/blog'
+      fullPath: '/blog'
+      preLoaderRoute: typeof PublicBlogRouteImport
       parentRoute: typeof PublicRoute
     }
     '/_public/about': {
@@ -785,14 +842,17 @@ const ProtectedRouteWithChildren = ProtectedRoute._addFileChildren(
 
 interface PublicRouteChildren {
   PublicAboutRoute: typeof PublicAboutRoute
+  PublicBlogRoute: typeof PublicBlogRoute
   PublicChangelogRoute: typeof PublicChangelogRoute
   PublicContactRoute: typeof PublicContactRoute
   PublicCookiesRoute: typeof PublicCookiesRoute
   PublicCreatorsRoute: typeof PublicCreatorsRoute
+  PublicImprintRoute: typeof PublicImprintRoute
   PublicLeaderboardRoute: typeof PublicLeaderboardRoute
   PublicPartnersRoute: typeof PublicPartnersRoute
   PublicPricingRoute: typeof PublicPricingRoute
   PublicPrivacyRoute: typeof PublicPrivacyRoute
+  PublicStatusRoute: typeof PublicStatusRoute
   PublicTemplatesRoute: typeof PublicTemplatesRoute
   PublicTermsRoute: typeof PublicTermsRoute
   PublicIndexRoute: typeof PublicIndexRoute
@@ -802,14 +862,17 @@ interface PublicRouteChildren {
 
 const PublicRouteChildren: PublicRouteChildren = {
   PublicAboutRoute: PublicAboutRoute,
+  PublicBlogRoute: PublicBlogRoute,
   PublicChangelogRoute: PublicChangelogRoute,
   PublicContactRoute: PublicContactRoute,
   PublicCookiesRoute: PublicCookiesRoute,
   PublicCreatorsRoute: PublicCreatorsRoute,
+  PublicImprintRoute: PublicImprintRoute,
   PublicLeaderboardRoute: PublicLeaderboardRoute,
   PublicPartnersRoute: PublicPartnersRoute,
   PublicPricingRoute: PublicPricingRoute,
   PublicPrivacyRoute: PublicPrivacyRoute,
+  PublicStatusRoute: PublicStatusRoute,
   PublicTemplatesRoute: PublicTemplatesRoute,
   PublicTermsRoute: PublicTermsRoute,
   PublicIndexRoute: PublicIndexRoute,
