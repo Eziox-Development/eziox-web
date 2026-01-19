@@ -1,6 +1,17 @@
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+let resendInstance: Resend | null = null
+
+function getResend(): Resend {
+  if (!resendInstance) {
+    const apiKey = process.env.RESEND_API_KEY
+    if (!apiKey) {
+      throw new Error('RESEND_API_KEY environment variable is not set')
+    }
+    resendInstance = new Resend(apiKey)
+  }
+  return resendInstance
+}
 
 const FROM_EMAIL = process.env.EMAIL_FROM || 'Eziox <noreply@eziox.link>'
 const APP_URL = process.env.APP_URL || 'https://eziox.link'
@@ -18,7 +29,7 @@ export async function sendPasswordResetEmail(
   const resetUrl = `${APP_URL}/reset-password?token=${token}`
 
   try {
-    const { error } = await resend.emails.send({
+    const { error } = await getResend().emails.send({
       from: FROM_EMAIL,
       to,
       subject: 'Reset your Eziox password',
@@ -98,7 +109,7 @@ export async function sendLoginNotificationEmail(
   })
 
   try {
-    const { error } = await resend.emails.send({
+    const { error } = await getResend().emails.send({
       from: FROM_EMAIL,
       to,
       subject: 'New login to your Eziox account',
@@ -181,7 +192,7 @@ export async function sendWelcomeEmail(
   username: string
 ): Promise<EmailResult> {
   try {
-    const { error } = await resend.emails.send({
+    const { error } = await getResend().emails.send({
       from: FROM_EMAIL,
       to,
       subject: 'Welcome to Eziox! 🎉',
@@ -253,7 +264,7 @@ export async function sendEmailVerificationEmail(
   const verifyUrl = `${APP_URL}/verify-email?token=${token}`
 
   try {
-    const { error } = await resend.emails.send({
+    const { error } = await getResend().emails.send({
       from: FROM_EMAIL,
       to,
       subject: 'Verify your Eziox email address',
@@ -292,7 +303,7 @@ export async function sendPasswordChangedEmail(
   const formattedTime = formatTimestamp(timestamp)
 
   try {
-    const { error } = await resend.emails.send({
+    const { error } = await getResend().emails.send({
       from: FROM_EMAIL,
       to,
       subject: 'Your Eziox password was changed',
@@ -341,7 +352,7 @@ export async function sendEmailChangedEmail(
 
   // Send to old email
   try {
-    await resend.emails.send({
+    await getResend().emails.send({
       from: FROM_EMAIL,
       to: oldEmail,
       subject: 'Your Eziox email address was changed',
@@ -386,7 +397,7 @@ export async function sendAccountDeletedEmail(
   username: string
 ): Promise<EmailResult> {
   try {
-    const { error } = await resend.emails.send({
+    const { error } = await getResend().emails.send({
       from: FROM_EMAIL,
       to,
       subject: 'Your Eziox account has been deleted',
@@ -431,7 +442,7 @@ export async function send2FAEnabledEmail(
   const formattedTime = formatTimestamp(timestamp)
 
   try {
-    const { error } = await resend.emails.send({
+    const { error } = await getResend().emails.send({
       from: FROM_EMAIL,
       to,
       subject: 'Two-factor authentication enabled on your Eziox account',
@@ -476,7 +487,7 @@ export async function send2FADisabledEmail(
   const formattedTime = formatTimestamp(timestamp)
 
   try {
-    const { error } = await resend.emails.send({
+    const { error } = await getResend().emails.send({
       from: FROM_EMAIL,
       to,
       subject: '⚠️ Two-factor authentication disabled on your Eziox account',
@@ -574,7 +585,7 @@ export async function sendSubscriptionEmail(
   }
 
   try {
-    const { error } = await resend.emails.send({
+    const { error } = await getResend().emails.send({
       from: FROM_EMAIL,
       to,
       subject: titles[action],
@@ -611,7 +622,7 @@ export async function sendWeeklyDigestEmail(
   }
 ): Promise<EmailResult> {
   try {
-    const { error } = await resend.emails.send({
+    const { error } = await getResend().emails.send({
       from: FROM_EMAIL,
       to,
       subject: `Your weekly Eziox stats 📊`,

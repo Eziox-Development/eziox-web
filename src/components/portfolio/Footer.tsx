@@ -11,64 +11,89 @@ import {
   Palette,
   Shield,
   Zap,
-  Globe,
   Mail,
-  ChevronRight,
   ExternalLink,
   Users,
   Crown,
-  Star,
-  Code2,
   Headphones,
-  Gift,
-  TrendingUp,
+  Rocket,
+  BookOpen,
+  Award,
   MapPin,
-  Clock,
+  Send,
+  ArrowRight,
 } from 'lucide-react'
 
-const footerLinks = {
-  product: [
-    { label: 'Features', href: '/about', icon: Sparkles },
-    { label: 'Templates', href: '/templates', icon: Gift },
-    { label: 'Changelog', href: '/changelog', icon: Star },
-    { label: 'Playground', href: '/playground', icon: Palette },
-  ],
-  community: [
-    { label: 'Creators', href: '/creators', icon: Users },
-    { label: 'Partners', href: '/partners', icon: Shield },
-    { label: 'Leaderboard', href: '/leaderboard', icon: TrendingUp },
-  ],
-  resources: [
-    { label: 'About', href: '/about', icon: Globe },
-    { label: 'Blog', href: '/blog', icon: Code2 },
-    { label: 'Support', href: 'https://discord.com/invite/KD84DmNA89', icon: Headphones, external: true },
-  ],
-  legal: [
-    { label: 'Privacy Policy', href: '/privacy' },
-    { label: 'Terms of Service', href: '/terms' },
-    { label: 'Cookie Policy', href: '/cookies' },
-    { label: 'Imprint', href: '/imprint' },
-    { label: 'Security', href: 'mailto:security@eziox.link' },
-  ],
+interface FooterLink {
+  label: string
+  href: string
+  description?: string
+  external?: boolean
 }
 
-const features = [
-  { icon: LinkIcon, label: 'Bio Links', color: '#8b5cf6' },
-  { icon: BarChart3, label: 'Analytics', color: '#22c55e' },
-  { icon: Palette, label: '31 Themes', color: '#f59e0b' },
-  { icon: Shield, label: 'Secure', color: '#ef4444' },
-  { icon: Headphones, label: 'Spotify', color: '#1db954' },
+interface FooterSection {
+  title: string
+  icon: React.ElementType
+  links: FooterLink[]
+}
+
+const footerSections: Record<string, FooterSection> = {
+  platform: {
+    title: 'Platform',
+    icon: Rocket,
+    links: [
+      { label: 'Features', href: '/about', description: 'Explore all features' },
+      { label: 'Templates', href: '/templates', description: 'Browse 31+ themes' },
+      { label: 'Pricing', href: '/pricing', description: 'Plans for everyone' },
+      { label: 'Changelog', href: '/changelog', description: 'Latest updates' },
+      { label: 'Playground', href: '/playground', description: 'Try before signup' },
+    ],
+  },
+  community: {
+    title: 'Community',
+    icon: Users,
+    links: [
+      { label: 'Creators', href: '/creators', description: 'Featured profiles' },
+      { label: 'Partners', href: '/partners', description: 'Our partners' },
+      { label: 'Leaderboard', href: '/leaderboard', description: 'Top creators' },
+      { label: 'Discord', href: 'https://discord.com/invite/KD84DmNA89', description: 'Join 1,000+ members', external: true },
+    ],
+  },
+  resources: {
+    title: 'Resources',
+    icon: BookOpen,
+    links: [
+      { label: 'About Us', href: '/about', description: 'Our story' },
+      { label: 'Blog', href: '/blog', description: 'Tips & tutorials' },
+      { label: 'Help Center', href: 'https://discord.com/invite/KD84DmNA89', description: 'Get support', external: true },
+      { label: 'API Docs', href: '/docs', description: 'For developers' },
+    ],
+  },
+  company: {
+    title: 'Company',
+    icon: Award,
+    links: [
+      { label: 'Privacy Policy', href: '/privacy' },
+      { label: 'Terms of Service', href: '/terms' },
+      { label: 'Cookie Policy', href: '/cookies' },
+      { label: 'Imprint', href: '/imprint' },
+      { label: 'Security', href: 'mailto:security@eziox.link', external: true },
+    ],
+  },
+}
+
+const highlights = [
+  { icon: LinkIcon, label: 'Bio Links', value: 'Unlimited', color: '#8b5cf6' },
+  { icon: BarChart3, label: 'Analytics', value: 'Real-time', color: '#22c55e' },
+  { icon: Palette, label: 'Themes', value: '31+', color: '#f59e0b' },
+  { icon: Shield, label: 'Security', value: '2FA + SSL', color: '#ef4444' },
+  { icon: Headphones, label: 'Spotify', value: 'Integration', color: '#1db954' },
+  { icon: Zap, label: 'Performance', value: 'Optimized', color: '#3b82f6' },
 ]
 
 const socialLinks = [
   { icon: SiGithub, href: 'https://github.com/XSaitoKungX', label: 'GitHub', color: '#ffffff' },
   { icon: SiDiscord, href: 'https://discord.com/invite/KD84DmNA89', label: 'Discord', color: '#5865f2' },
-]
-
-const stats = [
-  { label: 'Uptime', value: '99.9%' },
-  { label: 'Response', value: '<100ms' },
-  { label: 'Regions', value: 'Global' },
 ]
 
 export function Footer() {
@@ -77,293 +102,285 @@ export function Footer() {
 
   return (
     <footer className="relative mt-auto overflow-hidden">
-      {/* Top Gradient Line */}
-      <div
-        className="absolute top-0 left-0 right-0 h-px"
-        style={{ background: `linear-gradient(90deg, transparent, ${theme.colors.primary}, ${theme.colors.accent}, ${theme.colors.primary}, transparent)` }}
-      />
-
-      {/* Background Effects */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      {/* Animated Top Border */}
+      <div className="relative h-1 overflow-hidden">
         <motion.div
-          className="absolute top-0 left-1/4 w-[600px] h-[600px] rounded-full blur-[180px] opacity-10"
+          className="absolute inset-0"
+          style={{ background: `linear-gradient(90deg, ${theme.colors.primary}, ${theme.colors.accent}, ${theme.colors.primary})`, backgroundSize: '200% 100%' }}
+          animate={{ backgroundPosition: ['0% 0%', '200% 0%'] }}
+          transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
+        />
+      </div>
+
+      {/* Background */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute inset-0" style={{ background: `linear-gradient(180deg, ${theme.colors.background}, ${theme.colors.card}20)` }} />
+        <motion.div
+          className="absolute -top-40 -left-40 w-[500px] h-[500px] rounded-full blur-[200px] opacity-20"
           style={{ background: theme.colors.primary }}
-          animate={{ scale: [1, 1.1, 1], x: [0, 30, 0] }}
-          transition={{ duration: 25, repeat: Infinity }}
+          animate={{ scale: [1, 1.2, 1], rotate: [0, 180, 360] }}
+          transition={{ duration: 40, repeat: Infinity }}
         />
         <motion.div
-          className="absolute bottom-0 right-1/4 w-[500px] h-[500px] rounded-full blur-[150px] opacity-10"
+          className="absolute -bottom-40 -right-40 w-[400px] h-[400px] rounded-full blur-[180px] opacity-15"
           style={{ background: theme.colors.accent }}
-          animate={{ scale: [1.1, 1, 1.1], y: [0, -30, 0] }}
+          animate={{ scale: [1.2, 1, 1.2] }}
           transition={{ duration: 30, repeat: Infinity }}
         />
       </div>
 
-      {/* Main Footer Content */}
       <div className="relative" style={{ background: theme.colors.background }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="py-16 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8">
-            {/* Brand Column */}
-            <div className="lg:col-span-4 space-y-6">
-              <Link to="/" className="inline-flex items-center gap-3 group">
+          
+          {/* Highlights Bar */}
+          <div className="py-8 overflow-hidden" style={{ borderBottom: `1px solid ${theme.colors.border}` }}>
+            <div className="flex flex-wrap justify-center gap-4 md:gap-8">
+              {highlights.map((item, i) => (
                 <motion.div
-                  className="w-14 h-14 rounded-xl overflow-hidden"
-                  whileHover={{ scale: 1.05, rotate: 2 }}
-                  style={{ boxShadow: `0 0 30px ${theme.colors.primary}40` }}
+                  key={item.label}
+                  className="flex items-center gap-3 px-4 py-2"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.1 }}
+                  viewport={{ once: true }}
+                >
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: `${item.color}15`, border: `1px solid ${item.color}30` }}>
+                    <item.icon size={18} style={{ color: item.color }} />
+                  </div>
+                  <div>
+                    <p className="text-xs font-medium" style={{ color: theme.colors.foregroundMuted }}>{item.label}</p>
+                    <p className="text-sm font-bold" style={{ color: theme.colors.foreground }}>{item.value}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+
+          {/* Main Content */}
+          <div className="py-16 grid grid-cols-1 lg:grid-cols-12 gap-12">
+            
+            {/* Brand Section */}
+            <div className="lg:col-span-4 space-y-6">
+              <Link to="/" className="inline-flex items-center gap-4 group">
+                <motion.div
+                  className="relative w-16 h-16 rounded-2xl overflow-hidden"
+                  whileHover={{ scale: 1.05, rotate: 3 }}
+                  style={{ boxShadow: `0 0 40px ${theme.colors.primary}50` }}
                 >
                   <img src="/icon.png" alt={siteConfig.metadata.title} className="w-full h-full object-cover" />
+                  <div className="absolute inset-0 bg-gradient-to-tr from-transparent to-white/10" />
                 </motion.div>
                 <div>
-                  <span className="text-2xl font-bold" style={{ color: theme.colors.foreground }}>
+                  <h3 className="text-2xl font-black tracking-tight" style={{ color: theme.colors.foreground }}>
                     {siteConfig.metadata.title}
-                  </span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-md text-white" style={{ background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})` }}>
+                  </h3>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="text-[10px] font-bold px-2.5 py-1 rounded-full text-white" style={{ background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})` }}>
                       v2.1.0
                     </span>
-                    <span className="text-xs" style={{ color: theme.colors.foregroundMuted }}>
+                    <span className="text-xs font-medium" style={{ color: theme.colors.foregroundMuted }}>
                       {themes.length} Themes
                     </span>
                   </div>
                 </div>
               </Link>
 
-              <p className="text-sm leading-relaxed max-w-sm" style={{ color: theme.colors.foregroundMuted }}>
-                The modern bio link platform for creators, streamers, and businesses.
-                Share everything you create with a single, beautiful link.
+              <p className="text-sm leading-relaxed" style={{ color: theme.colors.foregroundMuted }}>
+                The next-generation bio link platform built for creators, streamers, and businesses. 
+                Share your entire online presence with one beautiful, customizable link.
               </p>
 
-              {/* Feature Tags */}
-              <div className="flex flex-wrap gap-2">
-                {features.map((feature) => (
-                  <motion.div
-                    key={feature.label}
-                    className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium"
-                    style={{ background: `${feature.color}15`, color: feature.color, border: `1px solid ${feature.color}25` }}
-                    whileHover={{ scale: 1.05, y: -1 }}
+              {/* Newsletter */}
+              <div className="p-4 rounded-2xl" style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}` }}>
+                <p className="text-sm font-semibold mb-3" style={{ color: theme.colors.foreground }}>Stay Updated</p>
+                <div className="flex gap-2">
+                  <input
+                    type="email"
+                    placeholder="your@email.com"
+                    className="flex-1 px-4 py-2.5 rounded-xl text-sm outline-none"
+                    style={{ background: theme.colors.background, border: `1px solid ${theme.colors.border}`, color: theme.colors.foreground }}
+                  />
+                  <motion.button
+                    className="px-4 py-2.5 rounded-xl font-medium text-white"
+                    style={{ background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})` }}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                   >
-                    <feature.icon size={12} />
-                    {feature.label}
-                  </motion.div>
-                ))}
+                    <Send size={16} />
+                  </motion.button>
+                </div>
               </div>
 
               {/* Social Links */}
-              <div className="flex gap-2 pt-2">
+              <div className="flex gap-3">
                 {socialLinks.map((social) => (
                   <motion.a
                     key={social.label}
                     href={social.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-3 rounded-xl transition-all group"
+                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl group"
                     style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}` }}
-                    whileHover={{ scale: 1.1, y: -2, borderColor: social.color }}
-                    aria-label={social.label}
+                    whileHover={{ scale: 1.05, y: -2, borderColor: social.color }}
                   >
-                    <social.icon size={20} style={{ color: theme.colors.foregroundMuted }} className="group-hover:text-white transition-colors" />
+                    <social.icon size={18} style={{ color: theme.colors.foregroundMuted }} className="group-hover:text-white transition-colors" />
+                    <span className="text-xs font-medium hidden sm:inline" style={{ color: theme.colors.foregroundMuted }}>{social.label}</span>
                   </motion.a>
                 ))}
               </div>
             </div>
 
-            {/* Links Columns */}
-            <div className="lg:col-span-5 grid grid-cols-2 sm:grid-cols-3 gap-8">
-              {/* Product */}
-              <div className="space-y-4">
-                <h4 className="text-sm font-bold flex items-center gap-2" style={{ color: theme.colors.foreground }}>
-                  <Sparkles size={14} style={{ color: theme.colors.primary }} />
-                  Product
-                </h4>
-                <ul className="space-y-3">
-                  {footerLinks.product.map((link) => (
-                    <li key={link.label}>
-                      <Link
-                        to={link.href}
-                        className="flex items-center gap-2 text-sm transition-all group"
-                        style={{ color: theme.colors.foregroundMuted }}
-                      >
-                        <link.icon size={14} className="opacity-50 group-hover:opacity-100 transition-opacity" />
-                        <span className="group-hover:translate-x-0.5 transition-transform">{link.label}</span>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* Community */}
-              <div className="space-y-4">
-                <h4 className="text-sm font-bold flex items-center gap-2" style={{ color: theme.colors.foreground }}>
-                  <Users size={14} style={{ color: theme.colors.primary }} />
-                  Community
-                </h4>
-                <ul className="space-y-3">
-                  {footerLinks.community.map((link) => (
-                    <li key={link.label}>
-                      <Link
-                        to={link.href}
-                        className="flex items-center gap-2 text-sm transition-all group"
-                        style={{ color: theme.colors.foregroundMuted }}
-                      >
-                        <link.icon size={14} className="opacity-50 group-hover:opacity-100 transition-opacity" />
-                        <span className="group-hover:translate-x-0.5 transition-transform">{link.label}</span>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* Resources */}
-              <div className="space-y-4">
-                <h4 className="text-sm font-bold flex items-center gap-2" style={{ color: theme.colors.foreground }}>
-                  <Globe size={14} style={{ color: theme.colors.primary }} />
-                  Resources
-                </h4>
-                <ul className="space-y-3">
-                  {footerLinks.resources.map((link) => (
-                    <li key={link.label}>
-                      {link.external ? (
-                        <a
-                          href={link.href}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-2 text-sm transition-all group"
-                          style={{ color: theme.colors.foregroundMuted }}
-                        >
-                          <link.icon size={14} className="opacity-50 group-hover:opacity-100 transition-opacity" />
-                          <span className="group-hover:translate-x-0.5 transition-transform">{link.label}</span>
-                          <ExternalLink size={10} className="opacity-50" />
-                        </a>
-                      ) : (
-                        <Link
-                          to={link.href}
-                          className="flex items-center gap-2 text-sm transition-all group"
-                          style={{ color: theme.colors.foregroundMuted }}
-                        >
-                          <link.icon size={14} className="opacity-50 group-hover:opacity-100 transition-opacity" />
-                          <span className="group-hover:translate-x-0.5 transition-transform">{link.label}</span>
-                        </Link>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+            {/* Links Grid */}
+            <div className="lg:col-span-5 grid grid-cols-2 md:grid-cols-4 gap-8">
+              {Object.entries(footerSections).map(([key, section]) => (
+                <div key={key} className="space-y-4">
+                  <h4 className="text-sm font-bold flex items-center gap-2" style={{ color: theme.colors.foreground }}>
+                    <section.icon size={14} style={{ color: theme.colors.primary }} />
+                    {section.title}
+                  </h4>
+                  <ul className="space-y-2.5">
+                    {section.links.map((link) => (
+                      <li key={link.label}>
+                        {link.external ? (
+                          <a
+                            href={link.href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-1 text-sm transition-all group"
+                            style={{ color: theme.colors.foregroundMuted }}
+                          >
+                            <span className="group-hover:translate-x-1 transition-transform">{link.label}</span>
+                            <ExternalLink size={10} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+                          </a>
+                        ) : (
+                          <Link
+                            to={link.href}
+                            className="flex items-center gap-1 text-sm transition-all group"
+                            style={{ color: theme.colors.foregroundMuted }}
+                          >
+                            <span className="group-hover:translate-x-1 transition-transform">{link.label}</span>
+                            <ArrowRight size={10} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+                          </Link>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
             </div>
 
-            {/* Right Column - Stats & Contact */}
-            <div className="lg:col-span-3 space-y-6">
+            {/* Status & Contact */}
+            <div className="lg:col-span-3 space-y-4">
               {/* Status Card */}
               <motion.div
                 className="p-5 rounded-2xl"
                 style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}` }}
-                whileHover={{ scale: 1.01 }}
+                whileHover={{ scale: 1.02 }}
               >
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                  <span className="text-sm font-semibold" style={{ color: theme.colors.foreground }}>All Systems Operational</span>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="relative">
+                    <div className="w-3 h-3 rounded-full bg-green-500" />
+                    <div className="absolute inset-0 w-3 h-3 rounded-full bg-green-500 animate-ping opacity-75" />
+                  </div>
+                  <span className="text-sm font-bold" style={{ color: theme.colors.foreground }}>All Systems Operational</span>
                 </div>
-                <div className="grid grid-cols-3 gap-3">
-                  {stats.map((stat) => (
-                    <div key={stat.label} className="text-center">
-                      <p className="text-lg font-bold" style={{ color: theme.colors.primary }}>{stat.value}</p>
-                      <p className="text-[10px]" style={{ color: theme.colors.foregroundMuted }}>{stat.label}</p>
-                    </div>
-                  ))}
+                <div className="grid grid-cols-3 gap-2">
+                  <div className="text-center p-2 rounded-lg" style={{ background: theme.colors.background }}>
+                    <p className="text-lg font-black" style={{ color: theme.colors.primary }}>✓</p>
+                    <p className="text-[10px]" style={{ color: theme.colors.foregroundMuted }}>Secure</p>
+                  </div>
+                  <div className="text-center p-2 rounded-lg" style={{ background: theme.colors.background }}>
+                    <p className="text-lg font-black" style={{ color: theme.colors.accent }}>✓</p>
+                    <p className="text-[10px]" style={{ color: theme.colors.foregroundMuted }}>Fast</p>
+                  </div>
+                  <div className="text-center p-2 rounded-lg" style={{ background: theme.colors.background }}>
+                    <p className="text-lg font-black" style={{ color: '#22c55e' }}>✓</p>
+                    <p className="text-[10px]" style={{ color: theme.colors.foregroundMuted }}>Reliable</p>
+                  </div>
                 </div>
               </motion.div>
 
-              {/* Contact Info */}
-              <div className="space-y-3">
-                <motion.a
-                  href="mailto:contact@eziox.link"
-                  className="flex items-center gap-3 p-3 rounded-xl transition-all group"
-                  style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}` }}
-                  whileHover={{ scale: 1.02, x: 2 }}
-                >
-                  <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: `${theme.colors.primary}20` }}>
-                    <Mail size={18} style={{ color: theme.colors.primary }} />
-                  </div>
-                  <div>
-                    <p className="text-xs" style={{ color: theme.colors.foregroundMuted }}>Email</p>
-                    <p className="text-sm font-medium" style={{ color: theme.colors.foreground }}>contact@eziox.link</p>
-                  </div>
-                </motion.a>
+              {/* Contact Cards */}
+              <motion.a
+                href="mailto:contact@eziox.link"
+                className="flex items-center gap-3 p-4 rounded-xl group"
+                style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}` }}
+                whileHover={{ scale: 1.02, x: 4 }}
+              >
+                <div className="w-11 h-11 rounded-xl flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${theme.colors.primary}30, ${theme.colors.accent}30)` }}>
+                  <Mail size={20} style={{ color: theme.colors.primary }} />
+                </div>
+                <div className="flex-1">
+                  <p className="text-[10px] uppercase tracking-wider" style={{ color: theme.colors.foregroundMuted }}>Contact</p>
+                  <p className="text-sm font-semibold" style={{ color: theme.colors.foreground }}>contact@eziox.link</p>
+                </div>
+              </motion.a>
 
-                <motion.a
-                  href="https://eziox.link"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-3 p-3 rounded-xl transition-all group"
-                  style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}` }}
-                  whileHover={{ scale: 1.02, x: 2 }}
-                >
-                  <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: `${theme.colors.primary}20` }}>
-                    <Globe size={18} style={{ color: theme.colors.primary }} />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-xs" style={{ color: theme.colors.foregroundMuted }}>Website</p>
-                    <p className="text-sm font-medium" style={{ color: theme.colors.foreground }}>eziox.link</p>
-                  </div>
-                  <ExternalLink size={14} style={{ color: theme.colors.foregroundMuted }} />
-                </motion.a>
-              </div>
-            </div>
-          </div>
-
-          {/* Legal Links */}
-          <div className="py-6" style={{ borderTop: `1px solid ${theme.colors.border}` }}>
-            <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 mb-6">
-              {footerLinks.legal.map((link) => (
-                <Link
-                  key={link.label}
-                  to={link.href}
-                  className="text-xs transition-colors flex items-center gap-1 group"
-                  style={{ color: theme.colors.foregroundMuted }}
-                >
-                  {link.label}
-                  <ChevronRight size={10} className="opacity-0 group-hover:opacity-100 transition-opacity" />
-                </Link>
-              ))}
+              <motion.a
+                href="https://discord.com/invite/KD84DmNA89"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 p-4 rounded-xl group"
+                style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}` }}
+                whileHover={{ scale: 1.02, x: 4 }}
+              >
+                <div className="w-11 h-11 rounded-xl flex items-center justify-center" style={{ background: 'rgba(88, 101, 242, 0.2)' }}>
+                  <SiDiscord size={20} style={{ color: '#5865f2' }} />
+                </div>
+                <div className="flex-1">
+                  <p className="text-[10px] uppercase tracking-wider" style={{ color: theme.colors.foregroundMuted }}>Support</p>
+                  <p className="text-sm font-semibold" style={{ color: theme.colors.foreground }}>Join Discord</p>
+                </div>
+                <ExternalLink size={14} style={{ color: theme.colors.foregroundMuted }} />
+              </motion.a>
             </div>
           </div>
 
           {/* Bottom Bar */}
-          <div className="py-6 flex flex-col md:flex-row items-center justify-between gap-4" style={{ borderTop: `1px solid ${theme.colors.border}` }}>
-            <div className="flex flex-wrap items-center justify-center gap-3 text-xs" style={{ color: theme.colors.foregroundMuted }}>
-              <span>© {currentYear} {siteConfig.metadata.title}</span>
-              <span className="hidden md:inline">•</span>
-              <span className="flex items-center gap-1">
-                <MapPin size={10} />
-                Germany
-              </span>
-              <span className="hidden md:inline">•</span>
-              <span className="flex items-center gap-1">
-                <Clock size={10} />
-                {new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Berlin' })} CET
-              </span>
-            </div>
+          <div className="py-8" style={{ borderTop: `1px solid ${theme.colors.border}` }}>
+            <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
+              {/* Left */}
+              <div className="flex flex-wrap items-center justify-center gap-4 text-xs" style={{ color: theme.colors.foregroundMuted }}>
+                <span className="font-medium">© {currentYear} {siteConfig.metadata.title}. All rights reserved.</span>
+                <span className="hidden lg:inline">•</span>
+                <span className="flex items-center gap-1.5">
+                  <MapPin size={12} />
+                  Made in Germany
+                </span>
+              </div>
 
-            <div className="flex items-center gap-3 text-xs" style={{ color: theme.colors.foregroundMuted }}>
-              <span>Made with</span>
-              <motion.span animate={{ scale: [1, 1.2, 1] }} transition={{ duration: 1, repeat: Infinity, repeatDelay: 2 }}>
-                <Heart size={12} fill={theme.colors.primary} style={{ color: theme.colors.primary }} />
-              </motion.span>
-              <span>by</span>
-              <motion.a
-                href="https://github.com/XSaitoKungX"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-semibold flex items-center gap-1"
-                style={{ color: theme.colors.foreground }}
-                whileHover={{ color: theme.colors.primary }}
-              >
-                <Crown size={12} style={{ color: '#f59e0b' }} />
-                Saito
-              </motion.a>
-              <span className="flex items-center gap-1.5 px-2 py-1 rounded-md" style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}` }}>
-                <Zap size={10} style={{ color: theme.colors.accent }} />
-                React 19
-              </span>
+              {/* Center - Made with love */}
+              <div className="flex items-center gap-2 text-xs" style={{ color: theme.colors.foregroundMuted }}>
+                <span>Crafted with</span>
+                <motion.span animate={{ scale: [1, 1.3, 1] }} transition={{ duration: 1.5, repeat: Infinity }}>
+                  <Heart size={14} fill={theme.colors.primary} style={{ color: theme.colors.primary }} />
+                </motion.span>
+                <span>by</span>
+                <motion.a
+                  href="https://github.com/XSaitoKungX"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-bold flex items-center gap-1.5 px-2 py-1 rounded-lg"
+                  style={{ background: theme.colors.card, color: theme.colors.foreground }}
+                  whileHover={{ scale: 1.05 }}
+                >
+                  <Crown size={12} style={{ color: '#f59e0b' }} />
+                  Saito
+                </motion.a>
+              </div>
+
+              {/* Right - Tech Stack */}
+              <div className="flex items-center gap-2">
+                <span className="text-xs" style={{ color: theme.colors.foregroundMuted }}>Powered by</span>
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg" style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}` }}>
+                  <Zap size={12} style={{ color: '#61dafb' }} />
+                  <span className="text-xs font-bold" style={{ color: theme.colors.foreground }}>React 19</span>
+                </div>
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg" style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}` }}>
+                  <Sparkles size={12} style={{ color: theme.colors.accent }} />
+                  <span className="text-xs font-bold" style={{ color: theme.colors.foreground }}>TanStack</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
