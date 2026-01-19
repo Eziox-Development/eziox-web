@@ -15,6 +15,9 @@ import {
   getCreatorSettingsFn,
   updateCustomCSSFn,
   updateAnimatedProfileFn,
+  addCustomFontFn,
+  removeCustomFontFn,
+  updateOpenGraphFn,
 } from '@/server/functions/creator-features'
 import {
   publishTemplateFn,
@@ -44,8 +47,11 @@ import {
   Smartphone,
   FileUp,
   X,
+  Type,
+  Share2,
+  Plus,
 } from 'lucide-react'
-import type { CustomBackground, LayoutSettings, AnimatedProfileSettings } from '@/server/db/schema'
+import type { CustomBackground, LayoutSettings, AnimatedProfileSettings, CustomFont, OpenGraphSettings } from '@/server/db/schema'
 import { AnimatedBackground, VideoBackground, ANIMATED_PRESETS } from '@/components/backgrounds/AnimatedBackgrounds'
 import { TIER_CONFIG, canAccessFeature, type TierType } from '@/server/lib/stripe'
 import { Crown } from 'lucide-react'
@@ -88,8 +94,10 @@ function PlaygroundPage() {
   const canLayout = canAccessFeature(userTier, 'layoutCustomization')
   const canCSS = canAccessFeature(userTier, 'customCSS')
   const canAnimations = canAccessFeature(userTier, 'animatedProfiles')
+  const canFonts = canAccessFeature(userTier, 'customFonts')
+  const canOG = canAccessFeature(userTier, 'customOpenGraph')
   
-  const [activeTab, setActiveTab] = useState<'background' | 'layout' | 'css' | 'animations'>('background')
+  const [activeTab, setActiveTab] = useState<'background' | 'layout' | 'css' | 'animations' | 'fonts' | 'opengraph'>('background')
   const [showPreview, setShowPreview] = useState(true)
   const [previewDevice, setPreviewDevice] = useState<'desktop' | 'mobile'>('desktop')
   
@@ -106,6 +114,13 @@ function PlaygroundPage() {
   const [anim, setAnim] = useState<AnimatedProfileSettings>({
     enabled: false, avatarAnimation: 'none', bannerAnimation: 'none', linkHoverEffect: 'scale', pageTransition: 'fade',
   })
+  const [fonts, setFonts] = useState<CustomFont[]>([])
+  const [newFontName, setNewFontName] = useState('')
+  const [newFontUrl, setNewFontUrl] = useState('')
+  const [newFontType, setNewFontType] = useState<'display' | 'body'>('display')
+  const [og, setOg] = useState<OpenGraphSettings>({
+    useCustom: false, title: '', description: '', image: '',
+  })
   
   const getProfile = useServerFn(getProfileSettingsFn)
   const getCreator = useServerFn(getCreatorSettingsFn)
@@ -113,6 +128,9 @@ function PlaygroundPage() {
   const updateLayout = useServerFn(updateLayoutSettingsFn)
   const updateCss = useServerFn(updateCustomCSSFn)
   const updateAnim = useServerFn(updateAnimatedProfileFn)
+  const addFont = useServerFn(addCustomFontFn)
+  const removeFont = useServerFn(removeCustomFontFn)
+  const updateOG = useServerFn(updateOpenGraphFn)
   const publish = useServerFn(publishTemplateFn)
   const getTemplates = useServerFn(getMyTemplatesFn)
   const deleteTemplate = useServerFn(deleteTemplateFn)
@@ -138,6 +156,8 @@ function PlaygroundPage() {
       if (profileData.layoutSettings) setLayout(profileData.layoutSettings)
       if (creatorData.customCSS) setCss(creatorData.customCSS)
       if (creatorData.animatedProfile) setAnim(creatorData.animatedProfile)
+      if (creatorData.customFonts) setFonts(creatorData.customFonts)
+      if (creatorData.openGraphSettings) setOg(creatorData.openGraphSettings)
       setIsInitialized(true)
     }
   }, [profileData, creatorData, profileLoading, creatorLoading, isInitialized])
@@ -324,6 +344,8 @@ function PlaygroundPage() {
                 { id: 'layout', label: 'Layout', icon: LayoutGrid, tier: 'pro' as TierType, canAccess: canLayout },
                 { id: 'css', label: 'CSS', icon: Code2, tier: 'creator' as TierType, canAccess: canCSS },
                 { id: 'animations', label: 'Animations', icon: Sparkles, tier: 'creator' as TierType, canAccess: canAnimations },
+                { id: 'fonts', label: 'Fonts', icon: Type, tier: 'creator' as TierType, canAccess: canFonts },
+                { id: 'opengraph', label: 'OG', icon: Share2, tier: 'creator' as TierType, canAccess: canOG },
               ].map(({ id, label, icon: Icon, tier, canAccess }) => (
                 <motion.button
                   key={id}
@@ -570,6 +592,74 @@ function PlaygroundPage() {
                         <button key={e} onClick={() => setAnim({ ...anim, linkHoverEffect: e })} disabled={!anim.enabled} className="py-2 rounded-lg text-xs capitalize disabled:cursor-not-allowed" style={{ background: anim.linkHoverEffect === e ? theme.colors.primary : theme.colors.backgroundSecondary, color: anim.linkHoverEffect === e ? '#fff' : theme.colors.foreground }}>{e}</button>
                       ))}
                     </div>
+                  </div>
+                </motion.div>
+              )}
+
+              {activeTab === 'fonts' && (
+                <motion.div key="fonts" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-4">
+                  <div className="rounded-xl p-4" style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}` }}>
+                    <p className="text-sm font-medium mb-3" style={{ color: theme.colors.foreground }}>Add Custom Font</p>
+                    <div className="grid grid-cols-3 gap-2 mb-3">
+                      <input type="text" placeholder="Font name" value={newFontName} onChange={(e) => setNewFontName(e.target.value)} className="px-3 py-2 rounded-lg text-xs" style={{ background: theme.colors.backgroundSecondary, color: theme.colors.foreground, border: `1px solid ${theme.colors.border}` }} />
+                      <input type="url" placeholder="Google Fonts URL" value={newFontUrl} onChange={(e) => setNewFontUrl(e.target.value)} className="px-3 py-2 rounded-lg text-xs" style={{ background: theme.colors.backgroundSecondary, color: theme.colors.foreground, border: `1px solid ${theme.colors.border}` }} />
+                      <select value={newFontType} onChange={(e) => setNewFontType(e.target.value as 'display' | 'body')} className="px-3 py-2 rounded-lg text-xs" style={{ background: theme.colors.backgroundSecondary, color: theme.colors.foreground, border: `1px solid ${theme.colors.border}` }}>
+                        <option value="display">Display</option>
+                        <option value="body">Body</option>
+                      </select>
+                    </div>
+                    <motion.button onClick={() => { if (newFontName && newFontUrl) { addFont({ data: { id: crypto.randomUUID(), name: newFontName, url: newFontUrl, type: newFontType } }).then(() => { setNewFontName(''); setNewFontUrl(''); toast.success('Font added!'); void queryClient.invalidateQueries({ queryKey: ['creatorSettings'] }) }).catch(() => toast.error('Failed to add font')) }}} disabled={!newFontName || !newFontUrl || fonts.length >= 4} className="w-full py-2 rounded-lg text-xs font-medium disabled:opacity-50" style={{ background: theme.colors.primary, color: '#fff' }} whileHover={{ scale: newFontName && newFontUrl && fonts.length < 4 ? 1.02 : 1 }} whileTap={{ scale: 0.98 }}>
+                      <Plus size={14} className="inline mr-1" />Add Font ({fonts.length}/4)
+                    </motion.button>
+                  </div>
+                  {fonts.length > 0 && (
+                    <div className="rounded-xl p-4" style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}` }}>
+                      <p className="text-sm font-medium mb-3" style={{ color: theme.colors.foreground }}>Your Fonts</p>
+                      <div className="space-y-2">
+                        {fonts.map((font) => (
+                          <div key={font.id} className="flex items-center justify-between p-2 rounded-lg" style={{ background: theme.colors.backgroundSecondary }}>
+                            <div>
+                              <p className="text-xs font-medium" style={{ color: theme.colors.foreground }}>{font.name}</p>
+                              <p className="text-[10px]" style={{ color: theme.colors.foregroundMuted }}>{font.type}</p>
+                            </div>
+                            <motion.button onClick={() => removeFont({ data: { fontId: font.id } }).then(() => { toast.success('Font removed'); void queryClient.invalidateQueries({ queryKey: ['creatorSettings'] }) }).catch(() => toast.error('Failed'))} className="p-1 rounded" style={{ color: '#ef4444' }} whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                              <Trash2 size={12} />
+                            </motion.button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </motion.div>
+              )}
+
+              {activeTab === 'opengraph' && (
+                <motion.div key="og" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-4">
+                  <div className="rounded-xl p-4" style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}` }}>
+                    <div className="flex items-center justify-between mb-3">
+                      <p className="text-sm font-medium" style={{ color: theme.colors.foreground }}>Custom Open Graph</p>
+                      <button onClick={() => setOg({ ...og, useCustom: !og.useCustom })} className="w-10 h-5 rounded-full relative" style={{ background: og.useCustom ? '#3b82f6' : theme.colors.backgroundSecondary }}>
+                        <div className="absolute top-0.5 w-4 h-4 rounded-full bg-white transition-all" style={{ left: og.useCustom ? '22px' : '2px' }} />
+                      </button>
+                    </div>
+                    <div className="space-y-3" style={{ opacity: og.useCustom ? 1 : 0.5 }}>
+                      <div>
+                        <label className="text-xs mb-1 block" style={{ color: theme.colors.foregroundMuted }}>Title</label>
+                        <input type="text" placeholder="Custom title" value={og.title || ''} onChange={(e) => setOg({ ...og, title: e.target.value })} disabled={!og.useCustom} className="w-full px-3 py-2 rounded-lg text-xs" style={{ background: theme.colors.backgroundSecondary, color: theme.colors.foreground, border: `1px solid ${theme.colors.border}` }} />
+                      </div>
+                      <div>
+                        <label className="text-xs mb-1 block" style={{ color: theme.colors.foregroundMuted }}>Description</label>
+                        <textarea placeholder="Custom description" value={og.description || ''} onChange={(e) => setOg({ ...og, description: e.target.value })} disabled={!og.useCustom} rows={2} className="w-full px-3 py-2 rounded-lg text-xs resize-none" style={{ background: theme.colors.backgroundSecondary, color: theme.colors.foreground, border: `1px solid ${theme.colors.border}` }} />
+                      </div>
+                      <div>
+                        <label className="text-xs mb-1 block" style={{ color: theme.colors.foregroundMuted }}>Image URL</label>
+                        <input type="url" placeholder="https://..." value={og.image || ''} onChange={(e) => setOg({ ...og, image: e.target.value })} disabled={!og.useCustom} className="w-full px-3 py-2 rounded-lg text-xs" style={{ background: theme.colors.backgroundSecondary, color: theme.colors.foreground, border: `1px solid ${theme.colors.border}` }} />
+                      </div>
+                      {og.image && <img src={og.image} alt="OG Preview" className="w-full h-20 object-cover rounded-lg" />}
+                    </div>
+                    <motion.button onClick={() => updateOG({ data: og }).then(() => { toast.success('Open Graph saved!'); void queryClient.invalidateQueries({ queryKey: ['creatorSettings'] }) }).catch(() => toast.error('Failed'))} className="w-full mt-3 py-2 rounded-lg text-xs font-medium" style={{ background: '#3b82f6', color: '#fff' }} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                      Save Open Graph
+                    </motion.button>
                   </div>
                 </motion.div>
               )}
