@@ -5,9 +5,9 @@ import { useServerFn } from '@tanstack/react-start'
 import { getPlatformStatsFn } from '@/server/functions/stats'
 import { useTheme } from '@/components/portfolio/ThemeProvider'
 import {
-  Sparkles, Heart, Globe, Users, Shield, Rocket, Target, Code, ArrowRight,
+  Sparkles, Heart, Globe, Users, Shield, Target, Code, ArrowRight,
   Crown, Zap, Palette, Gamepad2, Cat, MonitorPlay, Brush, Code2, Minimize2,
-  Star, Lock, Sliders, RotateCcw, Grid3X3, CheckCircle2, TrendingUp,
+  Lock, Sliders, RotateCcw, Grid3X3, CheckCircle2, TrendingUp,
   Layers, MousePointerClick, BarChart3, Gift, Clock, Headphones,
   MessageCircle, Video, Terminal, Repeat,
 } from 'lucide-react'
@@ -610,63 +610,6 @@ function AboutPage() {
                   <span className="text-[10px]" style={{ color: theme.colors.foregroundMuted }}>{tech.desc}</span>
                 </motion.div>
               ))}
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="py-20 px-4">
-        <div className="max-w-4xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="relative"
-          >
-            <div className="absolute inset-0 rounded-3xl blur-2xl opacity-40" style={{ background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})` }} />
-            <div className="relative p-12 rounded-3xl text-center" style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}` }}>
-              <motion.div
-                initial={{ scale: 0 }}
-                whileInView={{ scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ type: 'spring', stiffness: 200, damping: 15 }}
-                className="w-20 h-20 mx-auto mb-6 rounded-2xl flex items-center justify-center"
-                style={{ background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})` }}
-              >
-                <Rocket size={40} className="text-white" />
-              </motion.div>
-
-              <h2 className="text-4xl font-bold mb-4" style={{ color: theme.colors.foreground }}>Ready to Get Started?</h2>
-              <p className="text-lg mb-8 max-w-xl mx-auto" style={{ color: theme.colors.foregroundMuted }}>
-                Join thousands of creators who trust Eziox to power their online presence.
-                Create your free bio link page in seconds.
-              </p>
-
-              <div className="flex flex-wrap justify-center gap-4">
-                <Link to="/sign-up">
-                  <motion.button
-                    className="flex items-center gap-2 px-8 py-4 rounded-2xl font-semibold text-white"
-                    style={{ background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`, boxShadow: `0 10px 40px ${theme.colors.primary}40` }}
-                    whileHover={{ scale: 1.02, y: -2 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    Create Your Page
-                    <ArrowRight size={20} />
-                  </motion.button>
-                </Link>
-                <Link to="/changelog">
-                  <motion.button
-                    className="flex items-center gap-2 px-8 py-4 rounded-2xl font-semibold"
-                    style={{ background: theme.colors.backgroundSecondary, border: `1px solid ${theme.colors.border}`, color: theme.colors.foreground }}
-                    whileHover={{ scale: 1.02, y: -2 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <Star size={20} style={{ color: theme.colors.primary }} />
-                    View Changelog
-                  </motion.button>
-                </Link>
-              </div>
             </div>
           </motion.div>
         </div>
