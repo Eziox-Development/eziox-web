@@ -7,6 +7,7 @@ import { getPlatformStatsFn } from '@/server/functions/stats'
 import { useAuth } from '@/hooks/use-auth'
 import { useTheme } from '@/components/portfolio/ThemeProvider'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { CTASection } from '@/components/portfolio/CTASection'
 import {
   Link2,
   Zap,
@@ -559,6 +560,9 @@ function HomePage() {
           </motion.div>
         </div>
       </section>
+
+      {/* CTA Section */}
+      <CTASection />
     </div>
   )
 }

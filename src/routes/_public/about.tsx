@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
 import { getPlatformStatsFn } from '@/server/functions/stats'
 import { useTheme } from '@/components/portfolio/ThemeProvider'
+import { CTASection } from '@/components/portfolio/CTASection'
 import {
   Sparkles, Heart, Globe, Users, Shield, Target, Code, ArrowRight,
   Crown, Zap, Palette, Gamepad2, Cat, MonitorPlay, Brush, Code2, Minimize2,
@@ -555,6 +556,8 @@ function AboutPage() {
         </div>
       </section>
 
+      {/* CTA Section */}
+      <CTASection />
     </div>
   )
 }
