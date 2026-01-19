@@ -8,16 +8,10 @@ import {
   Sparkles, Heart, Globe, Users, Shield, Target, Code, ArrowRight,
   Crown, Zap, Palette, Gamepad2, Cat, MonitorPlay, Brush, Code2, Minimize2,
   Lock, Sliders, RotateCcw, Grid3X3, CheckCircle2, TrendingUp,
-  Layers, MousePointerClick, BarChart3, Gift, Clock, Headphones,
+  Layers, MousePointerClick, BarChart3, Gift, Headphones,
   MessageCircle, Video, Terminal, Repeat,
 } from 'lucide-react'
-import { SiGithub, SiReact, SiTypescript, SiTailwindcss, SiPostgresql, SiVercel, SiBun, SiDrizzle } from 'react-icons/si'
-
-const DiscordIcon = ({ size = 20 }: { size?: number }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
-    <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
-  </svg>
-)
+import { SiGithub, SiReact, SiTypescript, SiTailwindcss, SiPostgresql, SiVercel, SiBun, SiDrizzle, SiDiscord } from 'react-icons/si'
 
 export const Route = createFileRoute('/_public/about')({
   head: () => ({
@@ -58,6 +52,7 @@ const techStack = [
   { icon: SiBun, name: 'Bun', color: '#fbf0df', desc: 'Runtime' },
   { icon: SiDrizzle, name: 'Drizzle ORM', color: '#c5f74f', desc: 'ORM' },
   { icon: SiVercel, name: 'Vercel Edge', color: '#ffffff', desc: 'Hosting' },
+  { icon: SiDiscord, name: "Discord", color: '#7289DA', desc: 'Community' },
 ]
 
 const premiumTiers = [
@@ -76,14 +71,6 @@ const features = [
   { icon: MousePointerClick, title: 'Link Scheduling', desc: 'Schedule links to go live', color: '#ec4899' },
   { icon: TrendingUp, title: 'Leaderboard', desc: 'Compete with other creators', color: '#6366f1' },
   { icon: Gift, title: 'Templates', desc: 'Apply community presets', color: '#14b8a6' },
-]
-
-const timeline = [
-  { version: '1.0', title: 'Launch', desc: 'Core bio link functionality', date: 'Jan 2026' },
-  { version: '1.5', title: 'Spotify', desc: 'Real-time music integration', date: 'Jan 2026' },
-  { version: '1.7', title: 'Premium', desc: 'Stripe subscriptions', date: 'Jan 2026' },
-  { version: '1.8', title: 'Creator', desc: 'Custom CSS & fonts', date: 'Jan 2026' },
-  { version: '2.0', title: 'Themes', desc: '31 modernized themes', date: 'Jan 2026' },
 ]
 
 function AboutPage() {
@@ -452,53 +439,6 @@ function AboutPage() {
         </div>
       </section>
 
-      {/* Timeline */}
-      <section className="py-20 px-4">
-        <div className="max-w-4xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
-          >
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-4" style={{ background: `${theme.colors.primary}15`, border: `1px solid ${theme.colors.primary}30` }}>
-              <Clock size={14} style={{ color: theme.colors.primary }} />
-              <span className="text-sm font-medium" style={{ color: theme.colors.foreground }}>Journey</span>
-            </div>
-            <h2 className="text-4xl font-bold" style={{ color: theme.colors.foreground }}>Our Timeline</h2>
-          </motion.div>
-
-          <div className="relative">
-            <div className="absolute left-1/2 top-0 bottom-0 w-px -translate-x-1/2" style={{ background: `linear-gradient(to bottom, ${theme.colors.primary}, ${theme.colors.accent}, transparent)` }} />
-            <div className="space-y-8">
-              {timeline.map((item, i) => (
-                <motion.div
-                  key={item.version}
-                  initial={{ opacity: 0, x: i % 2 === 0 ? -20 : 20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
-                  className={`flex items-center gap-4 ${i % 2 === 0 ? 'flex-row' : 'flex-row-reverse'}`}
-                >
-                  <div className={`w-1/2 ${i % 2 === 0 ? 'text-right pr-8' : 'text-left pl-8'}`}>
-                    <div className="inline-block p-4 rounded-xl" style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}` }}>
-                      <span className="text-xs font-bold px-2 py-1 rounded-md text-white mb-2 inline-block" style={{ background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})` }}>
-                        v{item.version}
-                      </span>
-                      <h3 className="font-bold" style={{ color: theme.colors.foreground }}>{item.title}</h3>
-                      <p className="text-sm" style={{ color: theme.colors.foregroundMuted }}>{item.desc}</p>
-                      <p className="text-xs mt-1" style={{ color: theme.colors.foregroundMuted }}>{item.date}</p>
-                    </div>
-                  </div>
-                  <div className="w-4 h-4 rounded-full z-10" style={{ background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`, boxShadow: `0 0 20px ${theme.colors.primary}` }} />
-                  <div className="w-1/2" />
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Creator Section */}
       <section className="py-20 px-4" style={{ background: theme.colors.backgroundSecondary }}>
         <div className="max-w-4xl mx-auto">
@@ -567,7 +507,7 @@ function AboutPage() {
                 style={{ background: theme.colors.backgroundSecondary, border: `1px solid ${theme.colors.border}` }}
                 whileHover={{ scale: 1.05, y: -2 }}
               >
-                <DiscordIcon size={20} />
+                <SiDiscord size={20} />
                 <span className="font-medium" style={{ color: theme.colors.foreground }}>Discord</span>
               </motion.a>
             </div>
@@ -615,12 +555,6 @@ function AboutPage() {
         </div>
       </section>
 
-      {/* Footer Note */}
-      <div className="py-8 text-center">
-        <p className="text-sm" style={{ color: theme.colors.foregroundMuted }}>
-          Version 2.0.0 • Made with <Heart size={12} className="inline mx-1" style={{ color: '#ef4444' }} /> by Saito
-        </p>
-      </div>
     </div>
   )
 }

@@ -43,6 +43,13 @@
       "when": 1768788815197,
       "tag": "0005_mean_wildside",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1768830980848,
+      "tag": "0006_add_custom_themes",
+      "breakpoints": true
     }
   ]
 }

@@ -2,7 +2,7 @@ import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
 import { getCookie, setResponseStatus } from '@tanstack/react-start/server'
 import { db } from '../db'
-import { users, profiles, type CustomBackground, type LayoutSettings, type ProfileBackup } from '../db/schema'
+import { users, profiles, type CustomBackground, type LayoutSettings, type ProfileBackup, type CustomTheme } from '../db/schema'
 import { eq } from 'drizzle-orm'
 import { validateSession } from '../lib/auth'
 import type { TierType } from '../lib/stripe'
@@ -305,4 +305,316 @@ export const updateThemeFn = createServerFn({ method: 'POST' })
       .where(eq(profiles.userId, user.id))
 
     return { success: true }
+  })
+
+// Custom Theme Schema
+const customThemeSchema = z.object({
+  id: z.string().uuid(),
+  name: z.string().min(1).max(50),
+  createdAt: z.string(),
+  colors: z.object({
+    background: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
+    backgroundSecondary: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
+    foreground: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
+    foregroundMuted: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
+    primary: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
+    accent: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
+    border: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
+    card: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
+  }),
+  typography: z.object({
+    displayFont: z.string(),
+    bodyFont: z.string(),
+    displayFontUrl: z.string().optional(),
+    bodyFontUrl: z.string().optional(),
+  }),
+  effects: z.object({
+    glowIntensity: z.enum(['none', 'subtle', 'medium', 'strong']),
+    borderRadius: z.enum(['sharp', 'rounded', 'pill']),
+    cardStyle: z.enum(['flat', 'glass', 'neon', 'gradient']),
+  }),
+})
+
+// Get Custom Themes
+export const getCustomThemesFn = createServerFn({ method: 'GET' })
+  .handler(async () => {
+    const user = await getAuthenticatedUser()
+    
+    const [profile] = await db
+      .select({ 
+        customThemes: profiles.customThemes,
+        activeCustomThemeId: profiles.activeCustomThemeId,
+      })
+      .from(profiles)
+      .where(eq(profiles.userId, user.id))
+      .limit(1)
+    
+    const tier = await getUserTier(user.id)
+    const canCreate = ['pro', 'creator', 'lifetime'].includes(tier)
+    const maxThemes = tier === 'creator' || tier === 'lifetime' ? 10 : tier === 'pro' ? 5 : 0
+    
+    return {
+      themes: (profile?.customThemes || []) as CustomTheme[],
+      activeThemeId: profile?.activeCustomThemeId || null,
+      canCreate,
+      maxThemes,
+      tier,
+    }
+  })
+
+// Create Custom Theme
+export const createCustomThemeFn = createServerFn({ method: 'POST' })
+  .inputValidator(customThemeSchema)
+  .handler(async ({ data }) => {
+    const user = await getAuthenticatedUser()
+    const tier = await getUserTier(user.id)
+    
+    if (!['pro', 'creator', 'lifetime'].includes(tier)) {
+      setResponseStatus(403)
+      throw { message: 'Custom themes require Pro tier or higher', status: 403, code: 'TIER_REQUIRED' }
+    }
+    
+    const [profile] = await db
+      .select({ customThemes: profiles.customThemes })
+      .from(profiles)
+      .where(eq(profiles.userId, user.id))
+      .limit(1)
+    
+    const existingThemes = (profile?.customThemes || []) as CustomTheme[]
+    const maxThemes = tier === 'creator' || tier === 'lifetime' ? 10 : 5
+    
+    if (existingThemes.length >= maxThemes) {
+      setResponseStatus(400)
+      throw { message: `Maximum ${maxThemes} custom themes allowed`, status: 400 }
+    }
+    
+    const newTheme: CustomTheme = {
+      ...data,
+      createdAt: new Date().toISOString(),
+    }
+    
+    await db
+      .update(profiles)
+      .set({ 
+        customThemes: [...existingThemes, newTheme],
+        updatedAt: new Date(),
+      })
+      .where(eq(profiles.userId, user.id))
+    
+    return { success: true, theme: newTheme }
+  })
+
+// Update Custom Theme
+export const updateCustomThemeFn = createServerFn({ method: 'POST' })
+  .inputValidator(customThemeSchema)
+  .handler(async ({ data }) => {
+    const user = await getAuthenticatedUser()
+    const tier = await getUserTier(user.id)
+    
+    if (!['pro', 'creator', 'lifetime'].includes(tier)) {
+      setResponseStatus(403)
+      throw { message: 'Custom themes require Pro tier or higher', status: 403, code: 'TIER_REQUIRED' }
+    }
+    
+    const [profile] = await db
+      .select({ customThemes: profiles.customThemes })
+      .from(profiles)
+      .where(eq(profiles.userId, user.id))
+      .limit(1)
+    
+    const existingThemes = (profile?.customThemes || []) as CustomTheme[]
+    const themeIndex = existingThemes.findIndex(t => t.id === data.id)
+    
+    if (themeIndex === -1) {
+      setResponseStatus(404)
+      throw { message: 'Theme not found', status: 404 }
+    }
+    
+    const originalCreatedAt = existingThemes[themeIndex]?.createdAt || new Date().toISOString()
+    existingThemes[themeIndex] = { ...data, createdAt: originalCreatedAt }
+    
+    await db
+      .update(profiles)
+      .set({ 
+        customThemes: existingThemes,
+        updatedAt: new Date(),
+      })
+      .where(eq(profiles.userId, user.id))
+    
+    return { success: true }
+  })
+
+// Delete Custom Theme
+export const deleteCustomThemeFn = createServerFn({ method: 'POST' })
+  .inputValidator(z.object({ themeId: z.string().uuid() }))
+  .handler(async ({ data }) => {
+    const user = await getAuthenticatedUser()
+    
+    const [profile] = await db
+      .select({ 
+        customThemes: profiles.customThemes,
+        activeCustomThemeId: profiles.activeCustomThemeId,
+      })
+      .from(profiles)
+      .where(eq(profiles.userId, user.id))
+      .limit(1)
+    
+    const existingThemes = (profile?.customThemes || []) as CustomTheme[]
+    const filteredThemes = existingThemes.filter(t => t.id !== data.themeId)
+    
+    const updateData: Record<string, unknown> = {
+      customThemes: filteredThemes,
+      updatedAt: new Date(),
+    }
+    
+    if (profile?.activeCustomThemeId === data.themeId) {
+      updateData.activeCustomThemeId = null
+    }
+    
+    await db
+      .update(profiles)
+      .set(updateData)
+      .where(eq(profiles.userId, user.id))
+    
+    return { success: true }
+  })
+
+// Set Active Custom Theme
+export const setActiveCustomThemeFn = createServerFn({ method: 'POST' })
+  .inputValidator(z.object({ themeId: z.string().uuid().nullable() }))
+  .handler(async ({ data }) => {
+    const user = await getAuthenticatedUser()
+    const tier = await getUserTier(user.id)
+    
+    if (!['pro', 'creator', 'lifetime'].includes(tier)) {
+      setResponseStatus(403)
+      throw { message: 'Custom themes require Pro tier or higher', status: 403, code: 'TIER_REQUIRED' }
+    }
+    
+    if (data.themeId) {
+      const [profile] = await db
+        .select({ customThemes: profiles.customThemes })
+        .from(profiles)
+        .where(eq(profiles.userId, user.id))
+        .limit(1)
+      
+      const existingThemes = (profile?.customThemes || []) as CustomTheme[]
+      const themeExists = existingThemes.some(t => t.id === data.themeId)
+      
+      if (!themeExists) {
+        setResponseStatus(404)
+        throw { message: 'Theme not found', status: 404 }
+      }
+    }
+    
+    await db
+      .update(profiles)
+      .set({ 
+        activeCustomThemeId: data.themeId,
+        updatedAt: new Date(),
+      })
+      .where(eq(profiles.userId, user.id))
+    
+    return { success: true }
+  })
+
+// Export Theme
+export const exportCustomThemeFn = createServerFn({ method: 'POST' })
+  .inputValidator(z.object({ themeId: z.string().uuid() }))
+  .handler(async ({ data }) => {
+    const user = await getAuthenticatedUser()
+    
+    const [profile] = await db
+      .select({ customThemes: profiles.customThemes })
+      .from(profiles)
+      .where(eq(profiles.userId, user.id))
+      .limit(1)
+    
+    const existingThemes = (profile?.customThemes || []) as CustomTheme[]
+    const theme = existingThemes.find(t => t.id === data.themeId)
+    
+    if (!theme) {
+      setResponseStatus(404)
+      throw { message: 'Theme not found', status: 404 }
+    }
+    
+    const exportData = {
+      name: theme.name,
+      colors: theme.colors,
+      typography: theme.typography,
+      effects: theme.effects,
+      exportedAt: new Date().toISOString(),
+      version: '1.0',
+    }
+    
+    return { success: true, data: exportData }
+  })
+
+// Import Theme
+export const importCustomThemeFn = createServerFn({ method: 'POST' })
+  .inputValidator(z.object({
+    name: z.string().min(1).max(50),
+    colors: z.object({
+      background: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
+      backgroundSecondary: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
+      foreground: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
+      foregroundMuted: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
+      primary: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
+      accent: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
+      border: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
+      card: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
+    }),
+    typography: z.object({
+      displayFont: z.string(),
+      bodyFont: z.string(),
+      displayFontUrl: z.string().optional(),
+      bodyFontUrl: z.string().optional(),
+    }),
+    effects: z.object({
+      glowIntensity: z.enum(['none', 'subtle', 'medium', 'strong']),
+      borderRadius: z.enum(['sharp', 'rounded', 'pill']),
+      cardStyle: z.enum(['flat', 'glass', 'neon', 'gradient']),
+    }),
+  }))
+  .handler(async ({ data }) => {
+    const user = await getAuthenticatedUser()
+    const tier = await getUserTier(user.id)
+    
+    if (!['pro', 'creator', 'lifetime'].includes(tier)) {
+      setResponseStatus(403)
+      throw { message: 'Custom themes require Pro tier or higher', status: 403, code: 'TIER_REQUIRED' }
+    }
+    
+    const [profile] = await db
+      .select({ customThemes: profiles.customThemes })
+      .from(profiles)
+      .where(eq(profiles.userId, user.id))
+      .limit(1)
+    
+    const existingThemes = (profile?.customThemes || []) as CustomTheme[]
+    const maxThemes = tier === 'creator' || tier === 'lifetime' ? 10 : 5
+    
+    if (existingThemes.length >= maxThemes) {
+      setResponseStatus(400)
+      throw { message: `Maximum ${maxThemes} custom themes allowed`, status: 400 }
+    }
+    
+    const newTheme: CustomTheme = {
+      id: crypto.randomUUID(),
+      name: data.name,
+      createdAt: new Date().toISOString(),
+      colors: data.colors,
+      typography: data.typography,
+      effects: data.effects,
+    }
+    
+    await db
+      .update(profiles)
+      .set({ 
+        customThemes: [...existingThemes, newTheme],
+        updatedAt: new Date(),
+      })
+      .where(eq(profiles.userId, user.id))
+    
+    return { success: true, theme: newTheme }
   })

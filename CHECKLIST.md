@@ -241,10 +241,10 @@
 - [x] Premium badge display
 
 #### 9. Custom Themes
-- [ ] Theme builder for premium users
-- [ ] Custom colors, fonts, backgrounds
-- [ ] Theme presets marketplace
-- [ ] Import/Export themes
+- [x] Theme builder for premium users
+- [x] Custom colors, fonts, backgrounds
+- [x] Theme presets (6 quick-start presets)
+- [x] Import/Export themes
 
 ### Phase 5: Advanced Features (Priority: LOW)
 

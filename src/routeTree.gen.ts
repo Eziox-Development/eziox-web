@@ -25,6 +25,7 @@ import { Route as PublicCreatorsRouteImport } from './routes/_public/creators'
 import { Route as PublicCookiesRouteImport } from './routes/_public/cookies'
 import { Route as PublicChangelogRouteImport } from './routes/_public/changelog'
 import { Route as PublicAboutRouteImport } from './routes/_public/about'
+import { Route as ProtectedThemeBuilderRouteImport } from './routes/_protected/theme-builder'
 import { Route as ProtectedReferralsRouteImport } from './routes/_protected/referrals'
 import { Route as ProtectedProfileRouteImport } from './routes/_protected/profile'
 import { Route as ProtectedPlaygroundRouteImport } from './routes/_protected/playground'
@@ -118,6 +119,11 @@ const PublicAboutRoute = PublicAboutRouteImport.update({
   id: '/about',
   path: '/about',
   getParentRoute: () => PublicRoute,
+} as any)
+const ProtectedThemeBuilderRoute = ProtectedThemeBuilderRouteImport.update({
+  id: '/theme-builder',
+  path: '/theme-builder',
+  getParentRoute: () => ProtectedRoute,
 } as any)
 const ProtectedReferralsRoute = ProtectedReferralsRouteImport.update({
   id: '/referrals',
@@ -219,6 +225,7 @@ export interface FileRoutesByFullPath {
   '/playground': typeof ProtectedPlaygroundRoute
   '/profile': typeof ProtectedProfileRoute
   '/referrals': typeof ProtectedReferralsRoute
+  '/theme-builder': typeof ProtectedThemeBuilderRoute
   '/about': typeof PublicAboutRoute
   '/changelog': typeof PublicChangelogRoute
   '/cookies': typeof PublicCookiesRoute
@@ -250,6 +257,7 @@ export interface FileRoutesByTo {
   '/playground': typeof ProtectedPlaygroundRoute
   '/profile': typeof ProtectedProfileRoute
   '/referrals': typeof ProtectedReferralsRoute
+  '/theme-builder': typeof ProtectedThemeBuilderRoute
   '/about': typeof PublicAboutRoute
   '/changelog': typeof PublicChangelogRoute
   '/cookies': typeof PublicCookiesRoute
@@ -286,6 +294,7 @@ export interface FileRoutesById {
   '/_protected/playground': typeof ProtectedPlaygroundRoute
   '/_protected/profile': typeof ProtectedProfileRoute
   '/_protected/referrals': typeof ProtectedReferralsRoute
+  '/_protected/theme-builder': typeof ProtectedThemeBuilderRoute
   '/_public/about': typeof PublicAboutRoute
   '/_public/changelog': typeof PublicChangelogRoute
   '/_public/cookies': typeof PublicCookiesRoute
@@ -319,6 +328,7 @@ export interface FileRouteTypes {
     | '/playground'
     | '/profile'
     | '/referrals'
+    | '/theme-builder'
     | '/about'
     | '/changelog'
     | '/cookies'
@@ -350,6 +360,7 @@ export interface FileRouteTypes {
     | '/playground'
     | '/profile'
     | '/referrals'
+    | '/theme-builder'
     | '/about'
     | '/changelog'
     | '/cookies'
@@ -385,6 +396,7 @@ export interface FileRouteTypes {
     | '/_protected/playground'
     | '/_protected/profile'
     | '/_protected/referrals'
+    | '/_protected/theme-builder'
     | '/_public/about'
     | '/_public/changelog'
     | '/_public/cookies'
@@ -529,6 +541,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/about'
       preLoaderRoute: typeof PublicAboutRouteImport
       parentRoute: typeof PublicRoute
+    }
+    '/_protected/theme-builder': {
+      id: '/_protected/theme-builder'
+      path: '/theme-builder'
+      fullPath: '/theme-builder'
+      preLoaderRoute: typeof ProtectedThemeBuilderRouteImport
+      parentRoute: typeof ProtectedRoute
     }
     '/_protected/referrals': {
       id: '/_protected/referrals'
@@ -682,6 +701,7 @@ interface ProtectedRouteChildren {
   ProtectedPlaygroundRoute: typeof ProtectedPlaygroundRoute
   ProtectedProfileRoute: typeof ProtectedProfileRoute
   ProtectedReferralsRoute: typeof ProtectedReferralsRoute
+  ProtectedThemeBuilderRoute: typeof ProtectedThemeBuilderRoute
   ProtectedAdminPartnerApplicationsRoute: typeof ProtectedAdminPartnerApplicationsRoute
   ProtectedAdminIndexRoute: typeof ProtectedAdminIndexRoute
 }
@@ -692,6 +712,7 @@ const ProtectedRouteChildren: ProtectedRouteChildren = {
   ProtectedPlaygroundRoute: ProtectedPlaygroundRoute,
   ProtectedProfileRoute: ProtectedProfileRoute,
   ProtectedReferralsRoute: ProtectedReferralsRoute,
+  ProtectedThemeBuilderRoute: ProtectedThemeBuilderRoute,
   ProtectedAdminPartnerApplicationsRoute:
     ProtectedAdminPartnerApplicationsRoute,
   ProtectedAdminIndexRoute: ProtectedAdminIndexRoute,

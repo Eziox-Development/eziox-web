@@ -97,6 +97,33 @@ export interface OpenGraphSettings {
   useCustom: boolean
 }
 
+export interface CustomTheme {
+  id: string
+  name: string
+  createdAt: string
+  colors: {
+    background: string
+    backgroundSecondary: string
+    foreground: string
+    foregroundMuted: string
+    primary: string
+    accent: string
+    border: string
+    card: string
+  }
+  typography: {
+    displayFont: string
+    bodyFont: string
+    displayFontUrl?: string
+    bodyFontUrl?: string
+  }
+  effects: {
+    glowIntensity: 'none' | 'subtle' | 'medium' | 'strong'
+    borderRadius: 'sharp' | 'rounded' | 'pill'
+    cardStyle: 'flat' | 'glass' | 'neon' | 'gradient'
+  }
+}
+
 export const profiles = pgTable('profiles', {
   id: uuid('id').primaryKey().defaultRandom(),
   userId: uuid('user_id')
@@ -131,6 +158,8 @@ export const profiles = pgTable('profiles', {
   customFonts: jsonb('custom_fonts').$type<CustomFont[]>().default([]),
   animatedProfile: jsonb('animated_profile').$type<AnimatedProfileSettings>(),
   openGraphSettings: jsonb('open_graph_settings').$type<OpenGraphSettings>(),
+  customThemes: jsonb('custom_themes').$type<CustomTheme[]>().default([]),
+  activeCustomThemeId: varchar('active_custom_theme_id', { length: 50 }),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 })
