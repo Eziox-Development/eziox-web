@@ -1,12 +1,14 @@
 import { useState } from 'react'
-import { motion } from 'motion/react'
-import { Palette, Shield, Eye, EyeOff, Mail, AtSign, User, Calendar, Sparkles, Check, Copy, Music, Bell, UserPlus, Trophy, Megaphone } from 'lucide-react'
+import { motion, AnimatePresence } from 'motion/react'
+import { Palette, Shield, Eye, EyeOff, Mail, AtSign, User, Calendar, Sparkles, Check, Copy, Music, Bell, UserPlus, Trophy, Megaphone, Smartphone, Loader2, KeyRound, X, Trash2, AlertTriangle, Download } from 'lucide-react'
 import { ACCENT_COLORS, type ProfileFormData } from '@/routes/_protected/profile'
 import { SpotifyConnect } from '@/components/spotify'
 import { useTheme } from '@/components/portfolio/ThemeProvider'
 import { useServerFn } from '@tanstack/react-start'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useNavigate } from '@tanstack/react-router'
 import { getNotificationSettingsFn, updateNotificationSettingsFn } from '@/server/functions/notifications'
+import { setupTwoFactorFn, enableTwoFactorFn, disableTwoFactorFn, getTwoFactorStatusFn, deleteAccountFn, exportUserDataFn } from '@/server/functions/auth'
 
 interface SettingsTabProps {
   formData: ProfileFormData
@@ -18,15 +20,74 @@ interface SettingsTabProps {
 
 export function SettingsTab({ formData, updateField, currentUser, copyToClipboard, copiedField }: SettingsTabProps) {
   const [isInfoBlurred, setIsInfoBlurred] = useState(true)
+  const [show2FASetup, setShow2FASetup] = useState(false)
+  const [twoFactorCode, setTwoFactorCode] = useState('')
+  const [twoFactorError, setTwoFactorError] = useState('')
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [deletePassword, setDeletePassword] = useState('')
+  const [deleteError, setDeleteError] = useState('')
   const { theme } = useTheme()
   const queryClient = useQueryClient()
+  const navigate = useNavigate()
 
   const getSettings = useServerFn(getNotificationSettingsFn)
   const updateSettings = useServerFn(updateNotificationSettingsFn)
+  const setup2FA = useServerFn(setupTwoFactorFn)
+  const enable2FA = useServerFn(enableTwoFactorFn)
+  const disable2FA = useServerFn(disableTwoFactorFn)
+  const get2FAStatus = useServerFn(getTwoFactorStatusFn)
+  const deleteAccount = useServerFn(deleteAccountFn)
+  const exportData = useServerFn(exportUserDataFn)
 
   const { data: notificationSettings, isLoading: settingsLoading } = useQuery({
     queryKey: ['notificationSettings'],
     queryFn: () => getSettings(),
+  })
+
+  const { data: twoFactorStatus, isLoading: twoFactorLoading } = useQuery({
+    queryKey: ['twoFactorStatus'],
+    queryFn: () => get2FAStatus(),
+  })
+
+  const { data: twoFactorSetup, isLoading: setupLoading } = useQuery({
+    queryKey: ['twoFactorSetup'],
+    queryFn: () => setup2FA(),
+    enabled: show2FASetup && !twoFactorStatus?.enabled,
+  })
+
+  const enable2FAMutation = useMutation({
+    mutationFn: (token: string) => enable2FA({ data: { token } }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['twoFactorStatus'] })
+      setShow2FASetup(false)
+      setTwoFactorCode('')
+      setTwoFactorError('')
+    },
+    onError: (error: { message?: string }) => {
+      setTwoFactorError(error.message || 'Invalid code')
+    },
+  })
+
+  const disable2FAMutation = useMutation({
+    mutationFn: (token: string) => disable2FA({ data: { token } }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['twoFactorStatus'] })
+      setTwoFactorCode('')
+      setTwoFactorError('')
+    },
+    onError: (error: { message?: string }) => {
+      setTwoFactorError(error.message || 'Invalid code')
+    },
+  })
+
+  const deleteAccountMutation = useMutation({
+    mutationFn: (password: string) => deleteAccount({ data: { password } }),
+    onSuccess: async () => {
+      await navigate({ to: '/' })
+    },
+    onError: (error: { message?: string }) => {
+      setDeleteError(error.message || 'Failed to delete account')
+    },
   })
 
   const updateSettingsMutation = useMutation({
@@ -48,6 +109,132 @@ export function SettingsTab({ formData, updateField, currentUser, copyToClipboar
 
   return (
     <motion.div key="settings" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="space-y-6">
+      <div className="rounded-2xl overflow-hidden" style={{ background: 'var(--card)', border: '1px solid var(--border)' }}>
+        <div className="p-5 border-b" style={{ borderColor: 'var(--border)' }}>
+          <div className="flex items-center gap-2">
+            <Smartphone size={20} style={{ color: formData.accentColor }} />
+            <h2 className="text-lg font-bold" style={{ color: 'var(--foreground)' }}>Two-Factor Authentication</h2>
+          </div>
+          <p className="text-sm mt-1" style={{ color: 'var(--foreground-muted)' }}>Add an extra layer of security to your account</p>
+        </div>
+        <div className="p-5">
+          {twoFactorLoading ? (
+            <div className="flex items-center justify-center py-4">
+              <Loader2 className="w-6 h-6 animate-spin" style={{ color: formData.accentColor }} />
+            </div>
+          ) : twoFactorStatus?.enabled ? (
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 p-4 rounded-xl" style={{ background: 'rgba(34, 197, 94, 0.1)', border: '1px solid rgba(34, 197, 94, 0.2)' }}>
+                <Check className="w-5 h-5" style={{ color: '#22c55e' }} />
+                <div>
+                  <p className="font-medium text-sm" style={{ color: 'var(--foreground)' }}>2FA is enabled</p>
+                  <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>Your account is protected with authenticator app</p>
+                </div>
+              </div>
+              <div className="space-y-3">
+                <p className="text-sm font-medium" style={{ color: 'var(--foreground)' }}>Disable 2FA</p>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={twoFactorCode}
+                    onChange={(e) => { setTwoFactorCode(e.target.value.replace(/\D/g, '').slice(0, 6)); setTwoFactorError('') }}
+                    placeholder="Enter 6-digit code"
+                    className="flex-1 px-4 py-3 rounded-xl text-center font-mono text-lg tracking-widest"
+                    style={{ background: 'var(--background-secondary)', border: '1px solid var(--border)', color: 'var(--foreground)' }}
+                    maxLength={6}
+                  />
+                  <button
+                    onClick={() => twoFactorCode.length === 6 && disable2FAMutation.mutate(twoFactorCode)}
+                    disabled={twoFactorCode.length !== 6 || disable2FAMutation.isPending}
+                    className="px-4 py-3 rounded-xl font-medium text-white disabled:opacity-50"
+                    style={{ background: '#ef4444' }}
+                  >
+                    {disable2FAMutation.isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Disable'}
+                  </button>
+                </div>
+                {twoFactorError && <p className="text-xs text-red-400">{twoFactorError}</p>}
+              </div>
+            </div>
+          ) : show2FASetup ? (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <p className="font-medium" style={{ color: 'var(--foreground)' }}>Setup Authenticator</p>
+                <button onClick={() => { setShow2FASetup(false); setTwoFactorCode(''); setTwoFactorError('') }} className="p-2 rounded-lg hover:bg-white/10">
+                  <X size={18} style={{ color: 'var(--foreground-muted)' }} />
+                </button>
+              </div>
+              {setupLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="w-8 h-8 animate-spin" style={{ color: formData.accentColor }} />
+                </div>
+              ) : twoFactorSetup ? (
+                <>
+                  <div className="text-center space-y-3">
+                    <p className="text-sm" style={{ color: 'var(--foreground-muted)' }}>Scan this QR code with your authenticator app</p>
+                    <div className="inline-block p-4 rounded-xl bg-white">
+                      <img src={twoFactorSetup.qrCodeUrl} alt="2FA QR Code" className="w-48 h-48" />
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>Or enter this code manually:</p>
+                      <button
+                        onClick={() => copyToClipboard(twoFactorSetup.secret, '2FA Secret')}
+                        className="inline-flex items-center gap-2 px-3 py-2 rounded-lg font-mono text-sm"
+                        style={{ background: 'var(--background-secondary)', color: 'var(--foreground)' }}
+                      >
+                        {twoFactorSetup.secret}
+                        {copiedField === '2FA Secret' ? <Check size={14} className="text-green-500" /> : <Copy size={14} />}
+                      </button>
+                    </div>
+                  </div>
+                  <div className="space-y-3 pt-4 border-t" style={{ borderColor: 'var(--border)' }}>
+                    <p className="text-sm font-medium" style={{ color: 'var(--foreground)' }}>Enter verification code</p>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={twoFactorCode}
+                        onChange={(e) => { setTwoFactorCode(e.target.value.replace(/\D/g, '').slice(0, 6)); setTwoFactorError('') }}
+                        placeholder="000000"
+                        className="flex-1 px-4 py-3 rounded-xl text-center font-mono text-lg tracking-widest"
+                        style={{ background: 'var(--background-secondary)', border: '1px solid var(--border)', color: 'var(--foreground)' }}
+                        maxLength={6}
+                      />
+                      <button
+                        onClick={() => twoFactorCode.length === 6 && enable2FAMutation.mutate(twoFactorCode)}
+                        disabled={twoFactorCode.length !== 6 || enable2FAMutation.isPending}
+                        className="px-4 py-3 rounded-xl font-medium text-white disabled:opacity-50"
+                        style={{ background: formData.accentColor }}
+                      >
+                        {enable2FAMutation.isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Verify'}
+                      </button>
+                    </div>
+                    {twoFactorError && <p className="text-xs text-red-400">{twoFactorError}</p>}
+                  </div>
+                </>
+              ) : null}
+            </div>
+          ) : (
+            <div className="flex items-center justify-between p-4 rounded-xl" style={{ background: 'var(--background-secondary)' }}>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: `${formData.accentColor}20` }}>
+                  <KeyRound size={20} style={{ color: formData.accentColor }} />
+                </div>
+                <div>
+                  <p className="font-medium text-sm" style={{ color: 'var(--foreground)' }}>Authenticator App</p>
+                  <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>Use Google Authenticator or similar</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShow2FASetup(true)}
+                className="px-4 py-2 rounded-xl font-medium text-white text-sm"
+                style={{ background: formData.accentColor }}
+              >
+                Setup
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
       <div className="rounded-2xl overflow-hidden" style={{ background: 'var(--card)', border: '1px solid var(--border)' }}>
         <div className="p-5 border-b" style={{ borderColor: 'var(--border)' }}>
           <div className="flex items-center gap-2">
@@ -167,6 +354,136 @@ export function SettingsTab({ formData, updateField, currentUser, copyToClipboar
               </div>
             </button>
           ))}
+        </div>
+      </div>
+
+      {/* Privacy & Data */}
+      <div className="rounded-2xl overflow-hidden" style={{ background: 'var(--card)', border: '1px solid var(--border)' }}>
+        <div className="p-5 border-b flex items-center gap-2" style={{ borderColor: 'var(--border)' }}>
+          <Download size={20} style={{ color: formData.accentColor }} />
+          <h2 className="text-lg font-bold" style={{ color: 'var(--foreground)' }}>Privacy & Data</h2>
+        </div>
+        <div className="p-5 space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="font-medium text-sm" style={{ color: 'var(--foreground)' }}>Export Your Data</p>
+              <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>Download all your personal data (GDPR)</p>
+            </div>
+            <button
+              onClick={async () => {
+                try {
+                  const data = await exportData()
+                  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+                  const url = URL.createObjectURL(blob)
+                  const a = document.createElement('a')
+                  a.href = url
+                  a.download = `eziox-data-export-${new Date().toISOString().split('T')[0]}.json`
+                  document.body.appendChild(a)
+                  a.click()
+                  document.body.removeChild(a)
+                  URL.revokeObjectURL(url)
+                } catch (error) {
+                  console.error('Export failed:', error)
+                }
+              }}
+              className="px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+              style={{ background: formData.accentColor, color: 'white' }}
+            >
+              <Download size={16} className="inline mr-2" />
+              Export
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Danger Zone */}
+      <div className="rounded-2xl overflow-hidden" style={{ background: 'var(--card)', border: '1px solid rgba(239, 68, 68, 0.3)' }}>
+        <div className="p-5 border-b flex items-center gap-2" style={{ borderColor: 'rgba(239, 68, 68, 0.2)' }}>
+          <AlertTriangle size={20} className="text-red-500" />
+          <h2 className="text-lg font-bold text-red-500">Danger Zone</h2>
+        </div>
+        <div className="p-5 space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="font-medium text-sm" style={{ color: 'var(--foreground)' }}>Delete Account</p>
+              <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>Permanently delete your account and all data</p>
+            </div>
+            <button
+              onClick={() => setShowDeleteConfirm(true)}
+              className="px-4 py-2 rounded-lg text-sm font-medium text-white bg-red-500 hover:bg-red-600 transition-colors"
+            >
+              <Trash2 size={16} className="inline mr-2" />
+              Delete
+            </button>
+          </div>
+
+          <AnimatePresence>
+            {showDeleteConfirm && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="p-4 rounded-xl space-y-4"
+                style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)' }}
+              >
+                <div className="flex items-start gap-3">
+                  <AlertTriangle size={20} className="text-red-500 shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-medium text-sm text-red-500">This action cannot be undone</p>
+                    <p className="text-xs mt-1" style={{ color: 'var(--foreground-muted)' }}>
+                      All your data including profile, links, analytics, and connected services will be permanently deleted.
+                    </p>
+                  </div>
+                </div>
+
+                {deleteError && (
+                  <p className="text-xs text-red-500 bg-red-500/10 p-2 rounded">{deleteError}</p>
+                )}
+
+                <div>
+                  <label className="block text-xs font-medium mb-2" style={{ color: 'var(--foreground)' }}>
+                    Enter your password to confirm
+                  </label>
+                  <input
+                    type="password"
+                    value={deletePassword}
+                    onChange={(e) => {
+                      setDeletePassword(e.target.value)
+                      setDeleteError('')
+                    }}
+                    placeholder="Your password"
+                    className="w-full px-3 py-2 rounded-lg text-sm outline-none"
+                    style={{ background: 'var(--background)', border: '1px solid var(--border)', color: 'var(--foreground)' }}
+                  />
+                </div>
+
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => {
+                      setShowDeleteConfirm(false)
+                      setDeletePassword('')
+                      setDeleteError('')
+                    }}
+                    className="flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                    style={{ background: 'var(--background-secondary)', color: 'var(--foreground)' }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => deleteAccountMutation.mutate(deletePassword)}
+                    disabled={!deletePassword || deleteAccountMutation.isPending}
+                    className="flex-1 px-4 py-2 rounded-lg text-sm font-medium text-white bg-red-500 hover:bg-red-600 transition-colors disabled:opacity-50"
+                  >
+                    {deleteAccountMutation.isPending ? (
+                      <Loader2 size={16} className="inline animate-spin" />
+                    ) : (
+                      'Delete Forever'
+                    )}
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
     </motion.div>

@@ -42,6 +42,7 @@ import { checkSpotifyConnectionFn } from '@/server/functions/spotify'
 import type { TierType } from '@/server/lib/stripe'
 import type { CustomBackground, LayoutSettings, AnimatedProfileSettings, CustomFont } from '@/server/db/schema'
 import { AnimatedBackground, VideoBackground } from '@/components/backgrounds/AnimatedBackgrounds'
+import { sanitizeCSS, sanitizeFontURL, escapeHTML } from '@/lib/security'
 
 const socialIconMap: Record<string, ComponentType<{ size?: number }>> = {
   twitter: SiX,
@@ -420,29 +421,27 @@ function BioPage() {
 
   return (
     <div className="min-h-screen relative" style={getBackgroundStyle()}>
-      {/* Animated/Video Background */}
       {renderAnimatedBackground()}
       
-      {/* Custom CSS injection */}
       {customCSS && (
-        <style dangerouslySetInnerHTML={{ __html: customCSS }} />
+        <style dangerouslySetInnerHTML={{ __html: sanitizeCSS(customCSS) }} />
       )}
       
-      {/* Custom Fonts */}
       {customFonts && customFonts.length > 0 && (
         <>
-          {customFonts.map(font => (
-            <link key={font.id} rel="stylesheet" href={font.url} />
-          ))}
-          <style dangerouslySetInnerHTML={{ __html: customFonts.map(font => 
-            font.type === 'display' 
-              ? `h1, h2, h3, .display-font { font-family: '${font.name}', sans-serif !important; }`
-              : `body, p, span, .body-font { font-family: '${font.name}', sans-serif !important; }`
-          ).join('\n') }} />
+          {customFonts.map(font => {
+            const safeUrl = sanitizeFontURL(font.url)
+            return safeUrl ? <link key={font.id} rel="stylesheet" href={safeUrl} /> : null
+          })}
+          <style dangerouslySetInnerHTML={{ __html: customFonts.map(font => {
+            const safeName = escapeHTML(font.name).replace(/['"\\]/g, '')
+            return font.type === 'display' 
+              ? `h1, h2, h3, .display-font { font-family: '${safeName}', sans-serif !important; }`
+              : `body, p, span, .body-font { font-family: '${safeName}', sans-serif !important; }`
+          }).join('\n') }} />
         </>
       )}
       
-      {/* Image background overlay for opacity */}
       {customBackground?.type === 'image' && customBackground.imageOpacity !== undefined && customBackground.imageOpacity < 1 && (
         <div 
           className="fixed inset-0 pointer-events-none" 
@@ -450,7 +449,6 @@ function BioPage() {
         />
       )}
       
-      {/* Background Effects */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <motion.div
           className="absolute -top-40 -right-40 w-80 h-80 rounded-full blur-3xl opacity-20"

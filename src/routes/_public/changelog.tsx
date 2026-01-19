@@ -65,6 +65,38 @@ const typeConfig: Record<ChangeType, { label: string; color: string; bgColor: st
 
 const changelog: ChangelogEntry[] = [
   {
+    version: '2.1.0',
+    date: 'January 19, 2026',
+    title: 'Security & Privacy Features',
+    description: 'Comprehensive security overhaul with Cloudflare Turnstile, OAuth encryption, GDPR compliance, admin audit logging, and self-service data management.',
+    icon: Shield,
+    type: 'security',
+    highlights: [
+      'Cloudflare Turnstile bot protection',
+      'OAuth token encryption (AES-256-GCM)',
+      'GDPR data export & account deletion',
+      'Admin audit logging system',
+    ],
+    changes: [
+      { type: 'security', text: 'Cloudflare Turnstile integration on sign-up, sign-in, and forgot-password' },
+      { type: 'security', text: 'CSRF protection with token generation and validation' },
+      { type: 'security', text: 'OAuth tokens encrypted at rest with AES-256-GCM' },
+      { type: 'security', text: 'Magic bytes validation for file uploads' },
+      { type: 'security', text: 'Security event logging system for audit trails' },
+      { type: 'feature', text: 'Admin audit log table for tracking admin actions' },
+      { type: 'feature', text: 'Authorization helpers for role-based access control' },
+      { type: 'feature', text: 'Self-service data export (GDPR compliance)' },
+      { type: 'feature', text: 'Account deletion with complete data purge' },
+      { type: 'feature', text: 'HSTS headers for HTTPS enforcement' },
+      { type: 'improvement', text: 'Enhanced security headers (CSP, X-Frame-Options, etc.)' },
+      { type: 'improvement', text: 'Updated Privacy Policy with self-service options' },
+      { type: 'improvement', text: 'Updated Cookie Policy with Turnstile information' },
+      { type: 'improvement', text: 'Added Security contact to footer' },
+      { type: 'fix', text: 'Removed old custom bot protection system' },
+      { type: 'fix', text: 'Improved session validation and error handling' },
+    ],
+  },
+  {
     version: '2.0.0',
     date: 'January 19, 2026',
     title: 'Theme System Modernization',

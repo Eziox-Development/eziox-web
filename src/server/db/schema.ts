@@ -18,11 +18,19 @@ export const users = pgTable('users', {
   passwordHash: text('password_hash').notNull(),
   name: varchar('name', { length: 100 }),
   emailVerified: boolean('email_verified').default(false),
-  role: varchar('role', { length: 20 }).default('user'), // user, admin, owner
-  tier: varchar('tier', { length: 20 }).default('free'), // free, pro, creator
+  role: varchar('role', { length: 20 }).default('user'),
+  tier: varchar('tier', { length: 20 }).default('free'),
   stripeCustomerId: varchar('stripe_customer_id', { length: 255 }),
   stripeSubscriptionId: varchar('stripe_subscription_id', { length: 255 }),
   tierExpiresAt: timestamp('tier_expires_at'),
+  failedLoginAttempts: integer('failed_login_attempts').default(0),
+  lockedUntil: timestamp('locked_until'),
+  twoFactorSecret: text('two_factor_secret'),
+  twoFactorEnabled: boolean('two_factor_enabled').default(false),
+  passwordResetToken: text('password_reset_token'),
+  passwordResetExpires: timestamp('password_reset_expires'),
+  lastLoginAt: timestamp('last_login_at'),
+  lastLoginIp: varchar('last_login_ip', { length: 45 }),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 })
@@ -255,7 +263,6 @@ export const userStatsRelations = relations(userStats, ({ one }) => ({
   }),
 }))
 
-// SESSIONS TABLE (for auth)
 export const sessions = pgTable('sessions', {
   id: uuid('id').primaryKey().defaultRandom(),
   userId: uuid('user_id')
@@ -265,6 +272,8 @@ export const sessions = pgTable('sessions', {
   expiresAt: timestamp('expires_at').notNull(),
   userAgent: text('user_agent'),
   ipAddress: varchar('ip_address', { length: 45 }),
+  rememberMe: boolean('remember_me').default(false),
+  lastActivityAt: timestamp('last_activity_at').defaultNow(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 })
 
@@ -625,6 +634,28 @@ export const templateLikesRelations = relations(templateLikes, ({ one }) => ({
   }),
 }))
 
+// ADMIN AUDIT LOG TABLE
+export const adminAuditLog = pgTable('admin_audit_log', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  adminId: uuid('admin_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  action: varchar('action', { length: 100 }).notNull(),
+  targetType: varchar('target_type', { length: 50 }).notNull(),
+  targetId: uuid('target_id'),
+  details: jsonb('details'),
+  ipAddress: varchar('ip_address', { length: 45 }),
+  userAgent: text('user_agent'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+})
+
+export const adminAuditLogRelations = relations(adminAuditLog, ({ one }) => ({
+  admin: one(users, {
+    fields: [adminAuditLog.adminId],
+    references: [users.id],
+  }),
+}))
+
 // TYPE EXPORTS
 export type User = typeof users.$inferSelect
 export type NewUser = typeof users.$inferInsert
@@ -657,3 +688,5 @@ export type NewSubscription = typeof subscriptions.$inferInsert
 export type CommunityTemplate = typeof communityTemplates.$inferSelect
 export type NewCommunityTemplate = typeof communityTemplates.$inferInsert
 export type TemplateLike = typeof templateLikes.$inferSelect
+export type AdminAuditLog = typeof adminAuditLog.$inferSelect
+export type NewAdminAuditLog = typeof adminAuditLog.$inferInsert

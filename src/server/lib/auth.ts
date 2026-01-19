@@ -1,18 +1,17 @@
-/**
- * Authentication Library
- * JWT-based auth with bcrypt password hashing
- */
-
 import bcrypt from 'bcryptjs'
 import { db } from '../db'
 import { users, profiles, userStats, sessions } from '../db/schema'
-import { eq, and, gt } from 'drizzle-orm'
+import { eq, and, gt, lt } from 'drizzle-orm'
+import crypto from 'crypto'
+import { generateSecret as otpGenerateSecret, verify as otpVerify, generateURI } from 'otplib'
+import QRCode from 'qrcode'
+import { encrypt, decrypt } from './encryption'
 
 const SESSION_EXPIRY_DAYS = 7
-
-// ============================================================================
-// Password Hashing
-// ============================================================================
+const SESSION_EXPIRY_DAYS_REMEMBER = 30
+const MAX_FAILED_ATTEMPTS = 5
+const LOCKOUT_DURATION_MINUTES = 30
+const APP_NAME = 'Eziox'
 
 export async function hashPassword(password: string): Promise<string> {
   return bcrypt.hash(password, 12)
@@ -25,22 +24,9 @@ export async function verifyPassword(
   return bcrypt.compare(password, hash)
 }
 
-// ============================================================================
-// Session Token Generation
-// ============================================================================
-
-function generateToken(): string {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
-  let token = ''
-  for (let i = 0; i < 64; i++) {
-    token += chars.charAt(Math.floor(Math.random() * chars.length))
-  }
-  return token
+function generateToken(length = 64): string {
+  return crypto.randomBytes(length).toString('base64url')
 }
-
-// ============================================================================
-// User Management
-// ============================================================================
 
 export async function createUser(data: {
   email: string
@@ -50,7 +36,6 @@ export async function createUser(data: {
 }) {
   const passwordHash = await hashPassword(data.password)
 
-  // Create user
   const [user] = await db
     .insert(users)
     .values({
@@ -109,18 +94,15 @@ export async function findUserById(id: string) {
   return user || null
 }
 
-// ============================================================================
-// Session Management
-// ============================================================================
-
 export async function createSession(
   userId: string,
   userAgent?: string,
-  ipAddress?: string
+  ipAddress?: string,
+  rememberMe = false
 ) {
   const token = generateToken()
   const expiresAt = new Date()
-  expiresAt.setDate(expiresAt.getDate() + SESSION_EXPIRY_DAYS)
+  expiresAt.setDate(expiresAt.getDate() + (rememberMe ? SESSION_EXPIRY_DAYS_REMEMBER : SESSION_EXPIRY_DAYS))
 
   const [session] = await db
     .insert(sessions)
@@ -130,6 +112,7 @@ export async function createSession(
       expiresAt,
       userAgent,
       ipAddress,
+      rememberMe,
     })
     .returning()
 
@@ -164,9 +147,223 @@ export async function deleteAllUserSessions(userId: string) {
   await db.delete(sessions).where(eq(sessions.userId, userId))
 }
 
-// ============================================================================
-// Profile Management
-// ============================================================================
+export async function refreshSession(token: string) {
+  const [session] = await db
+    .select()
+    .from(sessions)
+    .where(eq(sessions.token, token))
+    .limit(1)
+
+  if (!session) return null
+
+  const newToken = generateToken()
+  const expiresAt = new Date()
+  expiresAt.setDate(expiresAt.getDate() + (session.rememberMe ? SESSION_EXPIRY_DAYS_REMEMBER : SESSION_EXPIRY_DAYS))
+
+  await db.delete(sessions).where(eq(sessions.id, session.id))
+
+  const [newSession] = await db
+    .insert(sessions)
+    .values({
+      userId: session.userId,
+      token: newToken,
+      expiresAt,
+      userAgent: session.userAgent,
+      ipAddress: session.ipAddress,
+      rememberMe: session.rememberMe,
+    })
+    .returning()
+
+  return newSession
+}
+
+export async function updateSessionActivity(token: string) {
+  await db
+    .update(sessions)
+    .set({ lastActivityAt: new Date() })
+    .where(eq(sessions.token, token))
+}
+
+export async function isAccountLocked(userId: string): Promise<boolean> {
+  const user = await findUserById(userId)
+  if (!user) return false
+  if (!user.lockedUntil) return false
+  return user.lockedUntil > new Date()
+}
+
+export async function recordFailedLogin(userId: string): Promise<{ locked: boolean; attemptsRemaining: number }> {
+  const user = await findUserById(userId)
+  if (!user) return { locked: false, attemptsRemaining: MAX_FAILED_ATTEMPTS }
+
+  const attempts = (user.failedLoginAttempts || 0) + 1
+
+  if (attempts >= MAX_FAILED_ATTEMPTS) {
+    const lockedUntil = new Date()
+    lockedUntil.setMinutes(lockedUntil.getMinutes() + LOCKOUT_DURATION_MINUTES)
+
+    await db
+      .update(users)
+      .set({
+        failedLoginAttempts: attempts,
+        lockedUntil,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, userId))
+
+    return { locked: true, attemptsRemaining: 0 }
+  }
+
+  await db
+    .update(users)
+    .set({
+      failedLoginAttempts: attempts,
+      updatedAt: new Date(),
+    })
+    .where(eq(users.id, userId))
+
+  return { locked: false, attemptsRemaining: MAX_FAILED_ATTEMPTS - attempts }
+}
+
+export async function resetFailedLoginAttempts(userId: string) {
+  await db
+    .update(users)
+    .set({
+      failedLoginAttempts: 0,
+      lockedUntil: null,
+      updatedAt: new Date(),
+    })
+    .where(eq(users.id, userId))
+}
+
+export async function recordSuccessfulLogin(userId: string, ipAddress?: string) {
+  await db
+    .update(users)
+    .set({
+      failedLoginAttempts: 0,
+      lockedUntil: null,
+      lastLoginAt: new Date(),
+      lastLoginIp: ipAddress || null,
+      updatedAt: new Date(),
+    })
+    .where(eq(users.id, userId))
+}
+
+export async function generatePasswordResetToken(userId: string): Promise<string> {
+  const token = generateToken(32)
+  const expires = new Date()
+  expires.setHours(expires.getHours() + 1)
+
+  await db
+    .update(users)
+    .set({
+      passwordResetToken: token,
+      passwordResetExpires: expires,
+      updatedAt: new Date(),
+    })
+    .where(eq(users.id, userId))
+
+  return token
+}
+
+export async function validatePasswordResetToken(token: string) {
+  const [user] = await db
+    .select()
+    .from(users)
+    .where(
+      and(
+        eq(users.passwordResetToken, token),
+        gt(users.passwordResetExpires, new Date())
+      )
+    )
+    .limit(1)
+
+  return user || null
+}
+
+export async function resetPassword(userId: string, newPassword: string) {
+  const passwordHash = await hashPassword(newPassword)
+
+  await db
+    .update(users)
+    .set({
+      passwordHash,
+      passwordResetToken: null,
+      passwordResetExpires: null,
+      updatedAt: new Date(),
+    })
+    .where(eq(users.id, userId))
+
+  await deleteAllUserSessions(userId)
+}
+
+export async function cleanupExpiredSessions() {
+  await db.delete(sessions).where(lt(sessions.expiresAt, new Date()))
+}
+
+export async function generateTwoFactorSecret(userId: string): Promise<{ secret: string; qrCodeUrl: string }> {
+  const user = await findUserById(userId)
+  if (!user) throw new Error('User not found')
+
+  const secret = otpGenerateSecret()
+  const encryptedSecret = encrypt(secret)
+
+  await db
+    .update(users)
+    .set({
+      twoFactorSecret: encryptedSecret,
+      updatedAt: new Date(),
+    })
+    .where(eq(users.id, userId))
+
+  const otpauth = generateURI({
+    issuer: APP_NAME,
+    label: user.email,
+    secret,
+  })
+  const qrCodeUrl = await QRCode.toDataURL(otpauth)
+
+  return { secret, qrCodeUrl }
+}
+
+export async function verifyTwoFactorToken(userId: string, token: string): Promise<boolean> {
+  const user = await findUserById(userId)
+  if (!user || !user.twoFactorSecret) return false
+
+  const decryptedSecret = decrypt(user.twoFactorSecret)
+  const result = await otpVerify({ secret: decryptedSecret, token })
+  return result.valid
+}
+
+export async function enableTwoFactor(userId: string, token: string): Promise<boolean> {
+  const isValid = await verifyTwoFactorToken(userId, token)
+  if (!isValid) return false
+
+  await db
+    .update(users)
+    .set({
+      twoFactorEnabled: true,
+      updatedAt: new Date(),
+    })
+    .where(eq(users.id, userId))
+
+  return true
+}
+
+export async function disableTwoFactor(userId: string): Promise<void> {
+  await db
+    .update(users)
+    .set({
+      twoFactorEnabled: false,
+      twoFactorSecret: null,
+      updatedAt: new Date(),
+    })
+    .where(eq(users.id, userId))
+}
+
+export async function isTwoFactorEnabled(userId: string): Promise<boolean> {
+  const user = await findUserById(userId)
+  return user?.twoFactorEnabled ?? false
+}
 
 export async function getUserWithProfile(userId: string) {
   const [result] = await db
@@ -247,10 +444,6 @@ export async function updateUser(
 
   return updated
 }
-
-// ============================================================================
-// Stats Management
-// ============================================================================
 
 export async function incrementProfileViews(userId: string) {
   await db

@@ -253,7 +253,7 @@ function PricingPage() {
                             </span>
                             {config.price > 0 && (
                               <span className="text-sm" style={{ color: theme.colors.foregroundMuted }}>
-                                {config.billingType === 'lifetime' ? ' einmalig' : '/Monat'}
+                                {config.billingType === 'lifetime' ? ' onetime' : '/month'}
                               </span>
                             )}
                           </div>

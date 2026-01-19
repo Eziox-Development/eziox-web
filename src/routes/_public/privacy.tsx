@@ -84,7 +84,7 @@ export const Route = createFileRoute('/_public/privacy')({
   component: PrivacyPage,
 })
 
-const LAST_UPDATED = 'January 16, 2026'
+const LAST_UPDATED = 'January 19, 2026'
 
 const SECTIONS = [
   {
@@ -236,6 +236,10 @@ For more details, see our [Cookie Policy](/cookies).`,
 **Objection:** Object to certain processing activities
 **Withdraw Consent:** Withdraw consent at any time
 
+**Self-Service Options:**
+• **Export Your Data:** Go to Profile Settings → Privacy & Data → Export to download all your personal data in JSON format
+• **Delete Your Account:** Go to Profile Settings → Danger Zone → Delete Account to permanently delete your account and all associated data
+
 **For EU/EEA Residents (GDPR):**
 • We process data based on consent and legitimate interests
 • You can file a complaint with your local data protection authority
@@ -245,7 +249,7 @@ For more details, see our [Cookie Policy](/cookies).`,
 • You can request deletion of your data
 • We do not sell personal information
 
-To exercise these rights, contact us at privacy@eziox.link`,
+For additional assistance, contact us at privacy@eziox.link`,
   },
   {
     id: 'data-retention',

@@ -50,6 +50,7 @@ const footerLinks = {
     { label: 'Terms of Service', href: '/terms' },
     { label: 'Cookie Policy', href: '/cookies' },
     { label: 'Imprint', href: '/imprint' },
+    { label: 'Security', href: 'mailto:security@eziox.link' },
   ],
 }
 

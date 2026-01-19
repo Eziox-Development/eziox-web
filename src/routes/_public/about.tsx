@@ -7,7 +7,7 @@ import { useTheme } from '@/components/portfolio/ThemeProvider'
 import {
   Sparkles, Heart, Globe, Users, Shield, Target, Code, ArrowRight,
   Crown, Zap, Palette, Gamepad2, Cat, MonitorPlay, Brush, Code2, Minimize2,
-  Lock, Sliders, RotateCcw, Grid3X3, CheckCircle2, TrendingUp,
+  Lock, CheckCircle2, TrendingUp,
   Layers, MousePointerClick, BarChart3, Gift, Headphones,
   MessageCircle, Video, Terminal, Repeat,
 } from 'lucide-react'
@@ -39,9 +39,9 @@ const themeCategories = [
 ]
 
 const securityFeatures = [
-  { icon: Sliders, label: 'Slider Challenge', desc: 'Drag to precise position' },
-  { icon: RotateCcw, label: 'Rotate Challenge', desc: 'Click to rotate dial' },
-  { icon: Grid3X3, label: 'Pattern Challenge', desc: 'Sequence recognition' },
+  { icon: Shield, label: 'Cloudflare Turnstile', desc: 'Invisible bot protection' },
+  { icon: Lock, label: 'Encrypted Data', desc: 'AES-256 encryption at rest' },
+  { icon: CheckCircle2, label: 'GDPR Compliant', desc: 'Data export & deletion' },
 ]
 
 const techStack = [

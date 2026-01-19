@@ -1,8 +1,10 @@
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
+import { getRequestIP } from '@tanstack/react-start/server'
 import { db } from '../db'
 import { users, profiles, userStats, userLinks } from '../db/schema'
 import { eq, desc, asc, sql } from 'drizzle-orm'
+import { checkRateLimit, RATE_LIMITS } from '@/lib/security'
 
 export const getPublicProfileFn = createServerFn({ method: 'GET' })
   .inputValidator(
@@ -68,10 +70,17 @@ export const trackProfileViewFn = createServerFn({ method: 'POST' })
     }),
   )
   .handler(async ({ data }) => {
+    const ip = getRequestIP() || 'unknown'
+    const rateLimit = checkRateLimit(
+      `profile-view:${data.userId}:${ip}`,
+      RATE_LIMITS.PROFILE_VIEW.maxRequests,
+      RATE_LIMITS.PROFILE_VIEW.windowMs
+    )
+    if (!rateLimit.allowed) {
+      return { success: false }
+    }
+
     try {
-      // Only increment if this session hasn't viewed this profile yet
-      // Session ID is generated client-side and stored in sessionStorage
-      // This prevents counting views on tab switches
       await db
         .update(userStats)
         .set({

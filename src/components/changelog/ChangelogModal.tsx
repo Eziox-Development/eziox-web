@@ -21,7 +21,7 @@ import {
   Gift,
 } from 'lucide-react'
 
-export const CURRENT_VERSION = '2.0.0'
+export const CURRENT_VERSION = '2.1.0'
 
 interface ChangelogChange {
   type: 'feature' | 'improvement' | 'fix' | 'security' | 'breaking'
@@ -29,12 +29,14 @@ interface ChangelogChange {
 }
 
 const latestChanges: ChangelogChange[] = [
-  { type: 'feature', text: '31 modernized themes with Tailwind color palettes' },
-  { type: 'feature', text: 'New eziox-default theme as the signature look' },
-  { type: 'improvement', text: 'All themes updated with deeper, richer colors' },
-  { type: 'improvement', text: 'Modern typography: Inter, Plus Jakarta Sans, Outfit' },
-  { type: 'improvement', text: 'Cleaned up site-config.ts - removed unused properties' },
-  { type: 'fix', text: 'Fixed duplicate pastel-dream theme' },
+  { type: 'security', text: 'Cloudflare Turnstile bot protection on auth forms' },
+  { type: 'security', text: 'OAuth tokens encrypted at rest (AES-256-GCM)' },
+  { type: 'security', text: 'CSRF protection with token validation' },
+  { type: 'feature', text: 'Self-service data export (GDPR compliance)' },
+  { type: 'feature', text: 'Account deletion with complete data purge' },
+  { type: 'feature', text: 'Admin audit log for tracking admin actions' },
+  { type: 'improvement', text: 'Enhanced security headers (HSTS, CSP)' },
+  { type: 'improvement', text: 'Magic bytes validation for file uploads' },
 ]
 
 const typeConfig: Record<ChangelogChange['type'], { icon: React.ElementType; color: string }> = {

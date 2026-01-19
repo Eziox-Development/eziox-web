@@ -50,6 +50,20 @@
       "when": 1768830980848,
       "tag": "0006_add_custom_themes",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1768833852300,
+      "tag": "0007_sudden_post",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1768843211556,
+      "tag": "0008_hesitant_patch",
+      "breakpoints": true
     }
   ]
 }

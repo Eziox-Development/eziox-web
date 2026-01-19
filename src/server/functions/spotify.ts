@@ -1,10 +1,12 @@
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
-import { getCookie, setCookie, setResponseStatus } from '@tanstack/react-start/server'
+import { getCookie, setCookie, setResponseStatus, getRequestIP } from '@tanstack/react-start/server'
 import { db } from '../db'
 import { spotifyConnections } from '../db/schema'
 import { eq } from 'drizzle-orm'
 import { validateSession } from '../lib/auth'
+import { checkRateLimit, RATE_LIMITS } from '@/lib/security'
+import { encrypt, decrypt } from '../lib/encryption'
 
 const SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID!
 const SPOTIFY_CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET!
@@ -81,8 +83,8 @@ async function refreshAccessToken(userId: string, refreshToken: string): Promise
     await db
       .update(spotifyConnections)
       .set({
-        accessToken: data.access_token,
-        refreshToken: data.refresh_token || refreshToken,
+        accessToken: encrypt(data.access_token),
+        refreshToken: encrypt(data.refresh_token || refreshToken),
         expiresAt,
         updatedAt: new Date(),
       })
@@ -103,10 +105,10 @@ async function getValidAccessToken(userId: string): Promise<string | null> {
   if (!connection) return null
 
   if (new Date() >= connection.expiresAt) {
-    return refreshAccessToken(userId, connection.refreshToken)
+    return refreshAccessToken(userId, decrypt(connection.refreshToken))
   }
 
-  return connection.accessToken
+  return decrypt(connection.accessToken)
 }
 
 export const getSpotifyAuthUrlFn = createServerFn({ method: 'GET' }).handler(async () => {
@@ -204,8 +206,8 @@ export const handleSpotifyCallbackFn = createServerFn({ method: 'POST' })
       await db
         .update(spotifyConnections)
         .set({
-          accessToken: tokenData.access_token,
-          refreshToken: tokenData.refresh_token,
+          accessToken: encrypt(tokenData.access_token),
+          refreshToken: encrypt(tokenData.refresh_token),
           expiresAt,
           scope: tokenData.scope,
           updatedAt: new Date(),
@@ -214,8 +216,8 @@ export const handleSpotifyCallbackFn = createServerFn({ method: 'POST' })
     } else {
       await db.insert(spotifyConnections).values({
         userId: stateData.userId,
-        accessToken: tokenData.access_token,
-        refreshToken: tokenData.refresh_token,
+        accessToken: encrypt(tokenData.access_token),
+        refreshToken: encrypt(tokenData.refresh_token),
         expiresAt,
         scope: tokenData.scope,
       })
@@ -339,6 +341,12 @@ export const getNowPlayingFn = createServerFn({ method: 'GET' }).handler(async (
 export const getUserNowPlayingFn = createServerFn({ method: 'GET' })
   .inputValidator(z.object({ userId: z.string().uuid() }))
   .handler(async ({ data }): Promise<NowPlayingData> => {
+    const ip = getRequestIP() || 'unknown'
+    const rateLimit = checkRateLimit(`spotify:${ip}`, RATE_LIMITS.API_SPOTIFY.maxRequests, RATE_LIMITS.API_SPOTIFY.windowMs)
+    if (!rateLimit.allowed) {
+      return { isPlaying: false, track: null }
+    }
+
     const connection = await db.query.spotifyConnections.findFirst({
       where: eq(spotifyConnections.userId, data.userId),
     })
@@ -393,6 +401,12 @@ export const getUserNowPlayingFn = createServerFn({ method: 'GET' })
 export const getRecentlyPlayedFn = createServerFn({ method: 'GET' })
   .inputValidator(z.object({ userId: z.string().uuid().optional(), limit: z.number().min(1).max(50).default(5) }))
   .handler(async ({ data }) => {
+    const ip = getRequestIP() || 'unknown'
+    const rateLimit = checkRateLimit(`spotify:${ip}`, RATE_LIMITS.API_SPOTIFY.maxRequests, RATE_LIMITS.API_SPOTIFY.windowMs)
+    if (!rateLimit.allowed) {
+      return { tracks: [] }
+    }
+
     let targetUserId: string
 
     if (data.userId) {

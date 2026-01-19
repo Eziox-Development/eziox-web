@@ -9,6 +9,83 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.1.0] - 2026-01-19
+
+### Added - Security & Privacy Features 🔒
+
+**Authentication & Bot Protection:**
+- **Cloudflare Turnstile Integration** - Replaced custom bot protection with Cloudflare Turnstile
+  - Invisible CAPTCHA on sign-up, sign-in, and forgot-password forms
+  - Server-side token verification
+  - Reusable `TurnstileWidget` component
+- **CSRF Protection** - Token generation and validation for state-changing operations
+  - `getCsrfTokenFn` and `validateCsrfTokenFn` server functions
+  - Origin/Referer header verification
+- **2FA Email Notifications** - Login alerts with IP address and timestamp
+
+**Data Security:**
+- **OAuth Token Encryption** - AES-256-GCM encryption for Spotify tokens at rest
+- **Magic Bytes Validation** - File upload security with MIME type verification
+- **Security Event Logging** - Comprehensive logging system for security events
+  - Tracks login, logout, signup, account deletion, admin actions
+  - `security-logger.ts` utility with event types and filtering
+
+**Admin & Authorization:**
+- **Admin Audit Log** - New `adminAuditLog` table for tracking admin actions
+  - Logs badge assignments, user bans, role changes
+  - `logAdminAction` utility in `audit.ts`
+- **Authorization Helpers** - Role-based access control functions
+  - `canPerformAdminAction`, `canPerformOwnerAction`
+  - `validateResourceOwnership` for mutation protection
+  - Server-side referral code validation
+
+**Privacy & GDPR Compliance:**
+- **Data Export** - Self-service data export functionality
+  - `exportUserDataFn` exports all user data in JSON format
+  - UI in Profile Settings → Privacy & Data section
+- **Account Deletion** - Complete account deletion with data purge
+  - `deleteAccountFn` with password confirmation
+  - Revokes OAuth tokens, deletes sessions and user data
+  - UI in Profile Settings → Danger Zone
+
+**Infrastructure:**
+- **HSTS Headers** - Strict-Transport-Security for HTTPS enforcement
+- **Enhanced Security Headers** - Complete set of security headers in `SECURITY_HEADERS`
+- **Email Utilities** - Password reset and login notification emails
+
+### Changed
+
+**Security Improvements:**
+- Updated CSP headers to include Cloudflare Turnstile domains
+- All OAuth tokens now encrypted before database storage
+- Enhanced rate limiting on authentication endpoints
+- Resource ownership validation on all mutations
+
+**UI/UX Updates:**
+- Updated About page security features (Turnstile, Encryption, GDPR)
+- Added Privacy & Data section to Profile Settings
+- Added Danger Zone section for account deletion
+- Updated Privacy Policy with self-service options
+- Updated Cookie Policy with Turnstile cookie information
+- Added Security contact (security@eziox.link) to footer
+
+**Documentation:**
+- Updated all legal pages (Privacy, Terms, Cookies) to January 19, 2026
+- Added comprehensive security documentation in CHECKLIST.md
+- Documented all new security features and implementations
+
+### Removed
+- **Old Bot Protection System** - Removed custom bot protection (`bot-protection.ts`)
+  - Deleted Slider, Rotate, and Pattern challenges
+  - Removed `TURNSTILE_INTEGRATION.md` guide
+
+### Fixed
+- Password reset flow now uses Turnstile for bot protection
+- Session validation improved with better error handling
+- File upload validation now checks magic bytes, not just extensions
+
+---
+
 ## [2.0.0] - 2026-01-19
 
 ### Added - Theme System Modernization 🎨

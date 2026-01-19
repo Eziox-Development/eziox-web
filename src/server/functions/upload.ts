@@ -5,17 +5,15 @@
 
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
-import { getCookie, setResponseStatus } from '@tanstack/react-start/server'
+import { getCookie, setResponseStatus, getRequestIP } from '@tanstack/react-start/server'
 import { db } from '../db'
 import { profiles } from '../db/schema'
 import { eq } from 'drizzle-orm'
 import { validateSession } from '../lib/auth'
 import { uploadAvatar, uploadBanner } from '../lib/cloudinary'
+import { checkRateLimit, RATE_LIMITS } from '@/lib/security'
 
-// ============================================================================
 // Validation Schemas
-// ============================================================================
-
 const uploadAvatarSchema = z.object({
   image: z.string().min(1, 'Image data is required'),
 })
@@ -24,10 +22,7 @@ const uploadBannerSchema = z.object({
   image: z.string().min(1, 'Image data is required'),
 })
 
-// ============================================================================
 // Upload Avatar
-// ============================================================================
-
 export const uploadAvatarFn = createServerFn({ method: 'POST' })
   .inputValidator(uploadAvatarSchema)
   .handler(async ({ data }) => {
@@ -41,6 +36,13 @@ export const uploadAvatarFn = createServerFn({ method: 'POST' })
     if (!user) {
       setResponseStatus(401)
       throw { message: 'Not authenticated', status: 401 }
+    }
+
+    const ip = getRequestIP() || 'unknown'
+    const rateLimit = checkRateLimit(`upload:${user.id}:${ip}`, RATE_LIMITS.API_UPLOAD.maxRequests, RATE_LIMITS.API_UPLOAD.windowMs)
+    if (!rateLimit.allowed) {
+      setResponseStatus(429)
+      throw { message: 'Too many uploads. Please try again later.', status: 429 }
     }
 
     try {
@@ -69,10 +71,7 @@ export const uploadAvatarFn = createServerFn({ method: 'POST' })
     }
   })
 
-// ============================================================================
 // Upload Banner
-// ============================================================================
-
 export const uploadBannerFn = createServerFn({ method: 'POST' })
   .inputValidator(uploadBannerSchema)
   .handler(async ({ data }) => {
@@ -86,6 +85,13 @@ export const uploadBannerFn = createServerFn({ method: 'POST' })
     if (!user) {
       setResponseStatus(401)
       throw { message: 'Not authenticated', status: 401 }
+    }
+
+    const ip = getRequestIP() || 'unknown'
+    const rateLimit = checkRateLimit(`upload:${user.id}:${ip}`, RATE_LIMITS.API_UPLOAD.maxRequests, RATE_LIMITS.API_UPLOAD.windowMs)
+    if (!rateLimit.allowed) {
+      setResponseStatus(429)
+      throw { message: 'Too many uploads. Please try again later.', status: 429 }
     }
 
     try {
@@ -114,10 +120,7 @@ export const uploadBannerFn = createServerFn({ method: 'POST' })
     }
   })
 
-// ============================================================================
 // Remove Avatar
-// ============================================================================
-
 export const removeAvatarFn = createServerFn({ method: 'POST' }).handler(
   async () => {
     const token = getCookie('session-token')
@@ -155,10 +158,7 @@ export const removeAvatarFn = createServerFn({ method: 'POST' }).handler(
   }
 )
 
-// ============================================================================
 // Remove Banner
-// ============================================================================
-
 export const removeBannerFn = createServerFn({ method: 'POST' }).handler(
   async () => {
     const token = getCookie('session-token')
@@ -196,9 +196,6 @@ export const removeBannerFn = createServerFn({ method: 'POST' }).handler(
   }
 )
 
-// ============================================================================
 // Type Exports
-// ============================================================================
-
 export type UploadAvatarInput = z.infer<typeof uploadAvatarSchema>
 export type UploadBannerInput = z.infer<typeof uploadBannerSchema>

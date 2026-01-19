@@ -35,6 +35,8 @@ import { Route as BioUsernameRouteImport } from './routes/_bio/$username'
 import { Route as AuthSignUpRouteImport } from './routes/_auth/sign-up'
 import { Route as AuthSignOutRouteImport } from './routes/_auth/sign-out'
 import { Route as AuthSignInRouteImport } from './routes/_auth/sign-in'
+import { Route as AuthResetPasswordRouteImport } from './routes/_auth/reset-password'
+import { Route as AuthForgotPasswordRouteImport } from './routes/_auth/forgot-password'
 import { Route as ApiSitemapRouteImport } from './routes/_api/sitemap'
 import { Route as ApiRssRouteImport } from './routes/_api/rss'
 import { Route as ApiHelloRouteImport } from './routes/_api/hello'
@@ -170,6 +172,16 @@ const AuthSignInRoute = AuthSignInRouteImport.update({
   path: '/sign-in',
   getParentRoute: () => AuthRoute,
 } as any)
+const AuthResetPasswordRoute = AuthResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => AuthRoute,
+} as any)
+const AuthForgotPasswordRoute = AuthForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
+  getParentRoute: () => AuthRoute,
+} as any)
 const ApiSitemapRoute = ApiSitemapRouteImport.update({
   id: '/_api/sitemap',
   path: '/sitemap',
@@ -216,6 +228,8 @@ export interface FileRoutesByFullPath {
   '/hello': typeof ApiHelloRoute
   '/rss': typeof ApiRssRoute
   '/sitemap': typeof ApiSitemapRoute
+  '/forgot-password': typeof AuthForgotPasswordRoute
+  '/reset-password': typeof AuthResetPasswordRoute
   '/sign-in': typeof AuthSignInRoute
   '/sign-out': typeof AuthSignOutRoute
   '/sign-up': typeof AuthSignUpRoute
@@ -248,6 +262,8 @@ export interface FileRoutesByTo {
   '/hello': typeof ApiHelloRoute
   '/rss': typeof ApiRssRoute
   '/sitemap': typeof ApiSitemapRoute
+  '/forgot-password': typeof AuthForgotPasswordRoute
+  '/reset-password': typeof AuthResetPasswordRoute
   '/sign-in': typeof AuthSignInRoute
   '/sign-out': typeof AuthSignOutRoute
   '/sign-up': typeof AuthSignUpRoute
@@ -285,6 +301,8 @@ export interface FileRoutesById {
   '/_api/hello': typeof ApiHelloRoute
   '/_api/rss': typeof ApiRssRoute
   '/_api/sitemap': typeof ApiSitemapRoute
+  '/_auth/forgot-password': typeof AuthForgotPasswordRoute
+  '/_auth/reset-password': typeof AuthResetPasswordRoute
   '/_auth/sign-in': typeof AuthSignInRoute
   '/_auth/sign-out': typeof AuthSignOutRoute
   '/_auth/sign-up': typeof AuthSignUpRoute
@@ -319,6 +337,8 @@ export interface FileRouteTypes {
     | '/hello'
     | '/rss'
     | '/sitemap'
+    | '/forgot-password'
+    | '/reset-password'
     | '/sign-in'
     | '/sign-out'
     | '/sign-up'
@@ -351,6 +371,8 @@ export interface FileRouteTypes {
     | '/hello'
     | '/rss'
     | '/sitemap'
+    | '/forgot-password'
+    | '/reset-password'
     | '/sign-in'
     | '/sign-out'
     | '/sign-up'
@@ -387,6 +409,8 @@ export interface FileRouteTypes {
     | '/_api/hello'
     | '/_api/rss'
     | '/_api/sitemap'
+    | '/_auth/forgot-password'
+    | '/_auth/reset-password'
     | '/_auth/sign-in'
     | '/_auth/sign-out'
     | '/_auth/sign-up'
@@ -612,6 +636,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthSignInRouteImport
       parentRoute: typeof AuthRoute
     }
+    '/_auth/reset-password': {
+      id: '/_auth/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof AuthResetPasswordRouteImport
+      parentRoute: typeof AuthRoute
+    }
+    '/_auth/forgot-password': {
+      id: '/_auth/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof AuthForgotPasswordRouteImport
+      parentRoute: typeof AuthRoute
+    }
     '/_api/sitemap': {
       id: '/_api/sitemap'
       path: '/sitemap'
@@ -672,12 +710,16 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthRouteChildren {
+  AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
+  AuthResetPasswordRoute: typeof AuthResetPasswordRoute
   AuthSignInRoute: typeof AuthSignInRoute
   AuthSignOutRoute: typeof AuthSignOutRoute
   AuthSignUpRoute: typeof AuthSignUpRoute
 }
 
 const AuthRouteChildren: AuthRouteChildren = {
+  AuthForgotPasswordRoute: AuthForgotPasswordRoute,
+  AuthResetPasswordRoute: AuthResetPasswordRoute,
   AuthSignInRoute: AuthSignInRoute,
   AuthSignOutRoute: AuthSignOutRoute,
   AuthSignUpRoute: AuthSignUpRoute,

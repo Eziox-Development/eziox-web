@@ -84,7 +84,7 @@ export const Route = createFileRoute('/_public/cookies')({
   component: CookiesPage,
 })
 
-const LAST_UPDATED = 'January 16, 2026'
+const LAST_UPDATED = 'January 19, 2026'
 
 const COOKIE_TYPES = [
   {
@@ -98,6 +98,12 @@ const COOKIE_TYPES = [
         name: 'session-token',
         purpose: 'Maintains your login session',
         duration: '7 days',
+        type: 'HTTP Cookie',
+      },
+      {
+        name: 'cf_clearance',
+        purpose: 'Cloudflare Turnstile bot protection',
+        duration: '30 minutes',
         type: 'HTTP Cookie',
       },
     ],

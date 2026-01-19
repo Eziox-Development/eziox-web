@@ -1,11 +1,12 @@
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
-import { getCookie, setResponseStatus } from '@tanstack/react-start/server'
+import { getCookie, setResponseStatus, getRequestIP } from '@tanstack/react-start/server'
 import { db } from '@/server/db'
 import { profiles, users, userStats } from '@/server/db/schema'
 import { eq, sql } from 'drizzle-orm'
 import { validateSession } from '@/server/lib/auth'
 import { BADGES, BADGE_IDS, type BadgeId } from '@/lib/badges'
+import { logAdminAction } from '@/server/lib/audit'
 
 async function requireAuth() {
   const token = getCookie('session-token')
@@ -69,6 +70,16 @@ export const assignBadgeFn = createServerFn({ method: 'POST' })
       .set({ badges: newBadges, updatedAt: new Date() })
       .where(eq(profiles.userId, data.userId))
 
+    const admin = await requireAdmin()
+    await logAdminAction({
+      adminId: admin.id,
+      action: 'badge.assign',
+      targetType: 'badge',
+      targetId: data.userId,
+      details: { badgeId: data.badgeId, badgeName: badge.name },
+      ipAddress: getRequestIP() || undefined,
+    })
+
     return { success: true, message: `Badge "${badge.name}" assigned`, badges: newBadges }
   })
 
@@ -104,6 +115,16 @@ export const removeBadgeFn = createServerFn({ method: 'POST' })
       .update(profiles)
       .set({ badges: newBadges, updatedAt: new Date() })
       .where(eq(profiles.userId, data.userId))
+
+    const admin = await requireAdmin()
+    await logAdminAction({
+      adminId: admin.id,
+      action: 'badge.remove',
+      targetType: 'badge',
+      targetId: data.userId,
+      details: { badgeId: data.badgeId },
+      ipAddress: getRequestIP() || undefined,
+    })
 
     return { success: true, message: 'Badge removed', badges: newBadges }
   })

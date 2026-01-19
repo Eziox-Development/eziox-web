@@ -272,74 +272,122 @@
 
 ---
 
-## 🗄️ Database Schema Updates Needed
-
-### New Tables
-```sql
--- Referrals
-CREATE TABLE referrals (
-  id UUID PRIMARY KEY,
-  referrer_id UUID REFERENCES users(id),
-  referred_id UUID REFERENCES users(id),
-  code VARCHAR(20) UNIQUE,
-  created_at TIMESTAMP
-);
-
--- Spotify Connections
-CREATE TABLE spotify_connections (
-  id UUID PRIMARY KEY,
-  user_id UUID REFERENCES users(id) UNIQUE,
-  access_token TEXT,
-  refresh_token TEXT,
-  expires_at TIMESTAMP,
-  is_public BOOLEAN DEFAULT true,
-  created_at TIMESTAMP,
-  updated_at TIMESTAMP
-);
-
--- Notifications
-CREATE TABLE notifications (
-  id UUID PRIMARY KEY,
-  user_id UUID REFERENCES users(id),
-  type VARCHAR(50),
-  title VARCHAR(255),
-  message TEXT,
-  data JSONB,
-  is_read BOOLEAN DEFAULT false,
-  created_at TIMESTAMP
-);
-
--- Badges (extend profiles.badges JSONB or create table)
-CREATE TABLE user_badges (
-  id UUID PRIMARY KEY,
-  user_id UUID REFERENCES users(id),
-  badge_type VARCHAR(50),
-  awarded_at TIMESTAMP,
-  awarded_by UUID REFERENCES users(id)
-);
-```
-
-### Schema Modifications
-```sql
--- Add to profiles
-ALTER TABLE profiles ADD COLUMN referral_code VARCHAR(20) UNIQUE;
-ALTER TABLE profiles ADD COLUMN referred_by UUID REFERENCES users(id);
-ALTER TABLE profiles ADD COLUMN creator_type VARCHAR(50); -- vtuber, streamer, artist, etc.
-ALTER TABLE profiles ADD COLUMN is_featured BOOLEAN DEFAULT false;
-
--- Add to user_stats
-ALTER TABLE user_stats ADD COLUMN referral_count INTEGER DEFAULT 0;
-```
-
----
-
 ## 🔒 Security Considerations
 
-- [ ] Rate limit Spotify API calls
-- [ ] Validate referral codes server-side
-- [ ] Sanitize creator page content
-- [ ] Secure OAuth token storage
-- [ ] Admin-only badge assignment
+### Authentication & Sessions
+- [x] Secure password hashing (bcrypt with cost 12)
+- [x] HTTP-only session cookies
+- [x] Secure cookie flag in production
+- [x] SameSite=Lax cookie policy
+- [x] Session expiry (7 days / 30 days with Remember Me)
+- [x] Password complexity requirements (uppercase, lowercase, number, min 8 chars)
+- [x] Session refresh/rotation on sensitive actions
+- [x] "Remember me" option (30 days vs 7 days session)
+- [x] Account lockout after 5 failed login attempts (30 min)
+- [x] 2FA/MFA support (TOTP with QR code)
+- [x] Password reset with rate limiting (3/hour)
+- [x] Login notification emails (Resend integration)
+
+### Rate Limiting & DDoS Protection
+- [x] Global API rate limiting (requests per minute per IP)
+- [x] Per-endpoint rate limiting (stricter for auth endpoints)
+- [x] Rate limit Spotify API calls (30/min per IP)
+- [x] Rate limit file uploads (10/min per user)
+- [x] Rate limit profile views tracking (1000/min per profile/IP)
+- [x] Implement exponential backoff for repeated failures
+- [x] Add Cloudflare/similar DDoS protection (DNS active, WAF/Bot Fight Mode enabled)
+- [x] Bot detection and CAPTCHA for forms (Cloudflare Turnstile fully integrated)
+
+### Input Validation & Sanitization
+- [x] Zod schema validation on all server functions
+- [x] Email validation and normalization (lowercase)
+- [x] Username validation (alphanumeric + underscore/hyphen only)
+- [x] **Sanitize Custom CSS before injection** (sanitizeCSS in security.ts)
+- [x] Sanitize custom font URLs (whitelist trusted font providers)
+- [x] Sanitize bio/description content (XSS prevention via sanitizeText)
+- [x] Validate and sanitize all URL inputs (sanitizeURL)
+- [x] Validate file upload MIME types server-side (JPEG, PNG, WebP, GIF)
+- [x] Limit file upload sizes (5MB max)
+- [ ] Sanitize OpenGraph metadata
+
+### SQL Injection & Database Security
+- [x] Using Drizzle ORM (parameterized queries)
+- [x] No raw SQL queries
+- [x] Database connection pooling (Neon HTTP handles automatically)
+- [x] Database user with minimal permissions (Neon managed)
+- [x] Regular database backups (Neon automatic backups)
+- [x] Encrypt sensitive data at rest (2FA secrets with AES-256-GCM)
+- [x] Deploy ENCRYPTION_KEY to production secrets (generated locally on 2026-01-19)
+
+### XSS (Cross-Site Scripting) Prevention
+- [x] React auto-escapes by default
+- [x] **Reviewed and secured dangerouslySetInnerHTML in $username.tsx**
+- [x] CSP (Content Security Policy) headers defined in security.ts
+- [x] Sanitize user-generated HTML content (all user inputs rendered as text, no rich-text editor yet)
+- [x] Validate and sanitize custom theme colors (hex only) - isValidColor/sanitizeHexColor
+- [ ] Add HTML sanitization library (DOMPurify) when rich-text features are implemented
+
+### CSRF (Cross-Site Request Forgery) Protection
+- [x] SameSite cookie policy
+- [x] Add CSRF tokens for state-changing operations (getCsrfTokenFn/validateCsrfTokenFn in auth.ts)
+- [x] Verify Origin/Referer headers (verifyOrigin in security.ts)
+
+### Authorization & Access Control
+- [x] Server-side session validation on protected routes
+- [x] Role-based access control (user, admin, owner)
+- [x] Tier-based feature gating
+- [x] Admin-only badge assignment
+- [x] Validate referral codes server-side (isValidReferralCode in security.ts)
+- [x] Audit log for admin actions (adminAuditLog table + logAdminAction utility)
+- [x] Prevent privilege escalation attacks (canPerformAdminAction/canPerformOwnerAction helpers)
+- [x] Resource ownership validation on all mutations (validateResourceOwnership helper, verified in links.ts)
+
+### OAuth & Third-Party Security
+- [x] Secure OAuth token storage in database
+- [x] Encrypt OAuth tokens at rest (AES-256-GCM via encrypt/decrypt)
+- [x] OAuth state parameter validation (Spotify: state cookie with timestamp)
+- [x] Token refresh handling (refreshAccessToken in spotify.ts)
+- [x] Revoke tokens on account deletion (deleteAccountFn clears spotifyConnections)
+- [x] Validate OAuth redirect URIs (hardcoded in env, not user-controllable)
+
+### File Upload Security
+- [x] Validate file types (magic bytes, not just extension) - validateMagicBytes in cloudinary.ts
+- [ ] Scan uploads for malware (Cloudinary handles basic scanning)
+- [x] Store uploads outside web root (Cloudinary CDN)
+- [x] Generate random filenames (Cloudinary auto-generates)
+- [x] Set proper Content-Type headers on serve (Cloudinary handles)
+- [x] Limit upload frequency per user (rate limiting in upload.ts)
+
+### API Security
+- [ ] API versioning (not needed for current single-version API)
+- [x] Request size limits (Zod schema validation, file size limits)
+- [x] Timeout limits on long-running operations (Vercel function timeout)
+- [x] Proper error messages (no stack traces in production) - custom error objects
+- [x] Remove sensitive data from responses (passwordHash, tokens never exposed)
+- [x] Log security events (security-logger.ts with logSecurityEvent)
+
+### Infrastructure Security
+- [x] HTTPS everywhere (HSTS headers) - Strict-Transport-Security in SECURITY_HEADERS
+- [x] Security headers (X-Frame-Options, X-Content-Type-Options, etc.) - SECURITY_HEADERS in security.ts
+- [x] Environment variables for secrets (never in code) - all secrets in .env
+- [ ] Regular dependency updates (npm audit) - manual process
+- [ ] Secrets rotation policy - document needed
+- [x] Monitoring and alerting for suspicious activity - security-logger.ts
+
+### Privacy & Data Protection (GDPR/DSGVO)
+- [x] Privacy policy page
+- [x] Cookie consent
+- [x] Data export functionality (exportUserDataFn + UI in SettingsTab)
+- [x] Account deletion with data purge (deleteAccountFn + UI in SettingsTab)
+- [ ] Data retention policies - document needed
+- [x] Anonymize analytics data (IP addresses not stored in analytics)
+- [ ] Document data processing activities - document needed
+
+### Incident Response
+- [ ] Security incident response plan - document needed
+- [x] Contact email for security reports (security@eziox.link in footer/contact)
+- [ ] Bug bounty program consideration - future consideration
+- [ ] Regular security audits - manual process
 
 ---
 
