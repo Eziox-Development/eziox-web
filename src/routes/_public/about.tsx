@@ -56,13 +56,6 @@ const techStack = [
   { icon: SiDiscord, name: "Discord", color: '#7289DA', desc: 'Community' },
 ]
 
-const premiumTiers = [
-  { name: 'Core', price: 'Free', color: '#6b7280', features: ['Unlimited links', 'Basic analytics', '10 themes', 'Embeds'] },
-  { name: 'Pro', price: '€4.99/mo', color: '#3b82f6', features: ['Remove branding', 'Custom backgrounds', 'Realtime analytics', '20+ themes'] },
-  { name: 'Creator', price: '€9.99/mo', color: '#8b5cf6', features: ['Custom CSS', 'Custom fonts', 'A/B testing', 'All themes'] },
-  { name: 'Lifetime', price: '€30', color: '#f59e0b', features: ['All features forever', 'Exclusive badge', 'Priority support', 'Early access'] },
-]
-
 const features = [
   { icon: Layers, title: 'Unlimited Links', desc: 'Add as many links as you need', color: '#8b5cf6' },
   { icon: BarChart3, title: 'Analytics', desc: 'Track views, clicks & referrers', color: '#22c55e' },
@@ -87,7 +80,7 @@ function AboutPage() {
     { value: platformStats?.totalUsers?.toLocaleString() || '0', label: 'Creators', icon: Users, color: '#8b5cf6' },
     { value: platformStats?.totalLinks?.toLocaleString() || '0', label: 'Links Created', icon: Globe, color: '#22c55e' },
     { value: themes.length.toString(), label: 'Themes', icon: Palette, color: '#f59e0b' },
-    { value: '99.9%', label: 'Uptime', icon: Zap, color: '#ef4444' },
+    { value: '9', label: 'Categories', icon: Zap, color: '#ef4444' },
   ]
 
   const values = [
@@ -343,61 +336,6 @@ function AboutPage() {
               </div>
             </div>
           </motion.div>
-        </div>
-      </section>
-
-      {/* Premium Tiers */}
-      <section className="py-20 px-4">
-        <div className="max-w-6xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
-          >
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-4" style={{ background: `${theme.colors.primary}15`, border: `1px solid ${theme.colors.primary}30` }}>
-              <Crown size={14} style={{ color: theme.colors.primary }} />
-              <span className="text-sm font-medium" style={{ color: theme.colors.foreground }}>Premium</span>
-            </div>
-            <h2 className="text-4xl font-bold mb-4" style={{ color: theme.colors.foreground }}>Plans for Everyone</h2>
-            <p className="text-lg max-w-2xl mx-auto" style={{ color: theme.colors.foregroundMuted }}>
-              Start free, upgrade when you need more. No hidden fees.
-            </p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {premiumTiers.map((tier, i) => (
-              <motion.div
-                key={tier.name}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="relative p-6 rounded-2xl"
-                style={{ background: theme.colors.card, border: `1px solid ${tier.name === 'Lifetime' ? tier.color : theme.colors.border}` }}
-                whileHover={{ scale: 1.02, y: -4 }}
-              >
-                {tier.name === 'Lifetime' && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-xs font-bold text-black" style={{ background: tier.color }}>
-                    BEST VALUE
-                  </div>
-                )}
-                <div className="w-10 h-10 rounded-lg flex items-center justify-center mb-4" style={{ background: `${tier.color}20` }}>
-                  <Crown size={20} style={{ color: tier.color }} />
-                </div>
-                <h3 className="text-xl font-bold mb-1" style={{ color: theme.colors.foreground }}>{tier.name}</h3>
-                <p className="text-2xl font-bold mb-4" style={{ color: tier.color }}>{tier.price}</p>
-                <ul className="space-y-2">
-                  {tier.features.map((feature) => (
-                    <li key={feature} className="flex items-center gap-2 text-sm" style={{ color: theme.colors.foregroundMuted }}>
-                      <CheckCircle2 size={14} style={{ color: tier.color }} />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-              </motion.div>
-            ))}
-          </div>
         </div>
       </section>
 

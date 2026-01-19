@@ -56,17 +56,15 @@ const footerSections: Record<string, FooterSection> = {
       { label: 'Creators', href: '/creators', description: 'Featured profiles' },
       { label: 'Partners', href: '/partners', description: 'Our partners' },
       { label: 'Leaderboard', href: '/leaderboard', description: 'Top creators' },
-      { label: 'Discord', href: 'https://discord.com/invite/KD84DmNA89', description: 'Join 1,000+ members', external: true },
     ],
   },
   resources: {
     title: 'Resources',
     icon: BookOpen,
     links: [
-      { label: 'About Us', href: '/about', description: 'Our story' },
       { label: 'Blog', href: '/blog', description: 'Tips & tutorials' },
-      { label: 'Help Center', href: 'https://discord.com/invite/KD84DmNA89', description: 'Get support', external: true },
-      { label: 'API Docs', href: '/docs', description: 'For developers' },
+      { label: 'Help Center', href: '/contact', description: 'Get support' },
+      { label: 'Status', href: 'https://status.eziox.link', description: 'System status', external: true },
     ],
   },
   company: {
