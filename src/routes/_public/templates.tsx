@@ -127,7 +127,7 @@ function TemplatesPage() {
   const totalLikes = templatesData?.templates?.reduce((acc, t) => acc + (t.likes || 0), 0) || 0
 
   return (
-    <div className="min-h-screen pt-16" style={{ background: theme.colors.background }}>
+    <div className="min-h-screen pt-24" style={{ background: theme.colors.background }}>
       <section className="relative py-10 overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-0 left-1/4 w-80 h-80 rounded-full blur-3xl opacity-10" style={{ background: theme.colors.primary }} />
