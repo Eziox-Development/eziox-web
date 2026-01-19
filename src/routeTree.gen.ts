@@ -22,7 +22,6 @@ import { Route as PublicPrivacyRouteImport } from './routes/_public/privacy'
 import { Route as PublicPricingRouteImport } from './routes/_public/pricing'
 import { Route as PublicPartnersRouteImport } from './routes/_public/partners'
 import { Route as PublicLeaderboardRouteImport } from './routes/_public/leaderboard'
-import { Route as PublicImprintRouteImport } from './routes/_public/imprint'
 import { Route as PublicCreatorsRouteImport } from './routes/_public/creators'
 import { Route as PublicCookiesRouteImport } from './routes/_public/cookies'
 import { Route as PublicContactRouteImport } from './routes/_public/contact'
@@ -109,11 +108,6 @@ const PublicPartnersRoute = PublicPartnersRouteImport.update({
 const PublicLeaderboardRoute = PublicLeaderboardRouteImport.update({
   id: '/leaderboard',
   path: '/leaderboard',
-  getParentRoute: () => PublicRoute,
-} as any)
-const PublicImprintRoute = PublicImprintRouteImport.update({
-  id: '/imprint',
-  path: '/imprint',
   getParentRoute: () => PublicRoute,
 } as any)
 const PublicCreatorsRoute = PublicCreatorsRouteImport.update({
@@ -270,7 +264,6 @@ export interface FileRoutesByFullPath {
   '/contact': typeof PublicContactRoute
   '/cookies': typeof PublicCookiesRoute
   '/creators': typeof PublicCreatorsRoute
-  '/imprint': typeof PublicImprintRoute
   '/leaderboard': typeof PublicLeaderboardRoute
   '/partners': typeof PublicPartnersRoute
   '/pricing': typeof PublicPricingRoute
@@ -308,7 +301,6 @@ export interface FileRoutesByTo {
   '/contact': typeof PublicContactRoute
   '/cookies': typeof PublicCookiesRoute
   '/creators': typeof PublicCreatorsRoute
-  '/imprint': typeof PublicImprintRoute
   '/leaderboard': typeof PublicLeaderboardRoute
   '/partners': typeof PublicPartnersRoute
   '/pricing': typeof PublicPricingRoute
@@ -351,7 +343,6 @@ export interface FileRoutesById {
   '/_public/contact': typeof PublicContactRoute
   '/_public/cookies': typeof PublicCookiesRoute
   '/_public/creators': typeof PublicCreatorsRoute
-  '/_public/imprint': typeof PublicImprintRoute
   '/_public/leaderboard': typeof PublicLeaderboardRoute
   '/_public/partners': typeof PublicPartnersRoute
   '/_public/pricing': typeof PublicPricingRoute
@@ -391,7 +382,6 @@ export interface FileRouteTypes {
     | '/contact'
     | '/cookies'
     | '/creators'
-    | '/imprint'
     | '/leaderboard'
     | '/partners'
     | '/pricing'
@@ -429,7 +419,6 @@ export interface FileRouteTypes {
     | '/contact'
     | '/cookies'
     | '/creators'
-    | '/imprint'
     | '/leaderboard'
     | '/partners'
     | '/pricing'
@@ -471,7 +460,6 @@ export interface FileRouteTypes {
     | '/_public/contact'
     | '/_public/cookies'
     | '/_public/creators'
-    | '/_public/imprint'
     | '/_public/leaderboard'
     | '/_public/partners'
     | '/_public/pricing'
@@ -591,13 +579,6 @@ declare module '@tanstack/react-router' {
       path: '/leaderboard'
       fullPath: '/leaderboard'
       preLoaderRoute: typeof PublicLeaderboardRouteImport
-      parentRoute: typeof PublicRoute
-    }
-    '/_public/imprint': {
-      id: '/_public/imprint'
-      path: '/imprint'
-      fullPath: '/imprint'
-      preLoaderRoute: typeof PublicImprintRouteImport
       parentRoute: typeof PublicRoute
     }
     '/_public/creators': {
@@ -847,7 +828,6 @@ interface PublicRouteChildren {
   PublicContactRoute: typeof PublicContactRoute
   PublicCookiesRoute: typeof PublicCookiesRoute
   PublicCreatorsRoute: typeof PublicCreatorsRoute
-  PublicImprintRoute: typeof PublicImprintRoute
   PublicLeaderboardRoute: typeof PublicLeaderboardRoute
   PublicPartnersRoute: typeof PublicPartnersRoute
   PublicPricingRoute: typeof PublicPricingRoute
@@ -867,7 +847,6 @@ const PublicRouteChildren: PublicRouteChildren = {
   PublicContactRoute: PublicContactRoute,
   PublicCookiesRoute: PublicCookiesRoute,
   PublicCreatorsRoute: PublicCreatorsRoute,
-  PublicImprintRoute: PublicImprintRoute,
   PublicLeaderboardRoute: PublicLeaderboardRoute,
   PublicPartnersRoute: PublicPartnersRoute,
   PublicPricingRoute: PublicPricingRoute,

@@ -68,13 +68,12 @@ const footerSections: Record<string, FooterSection> = {
     ],
   },
   company: {
-    title: 'Company',
+    title: 'Legal',
     icon: Award,
     links: [
       { label: 'Privacy Policy', href: '/privacy' },
       { label: 'Terms of Service', href: '/terms' },
       { label: 'Cookie Policy', href: '/cookies' },
-      { label: 'Imprint', href: '/imprint' },
       { label: 'Security', href: 'mailto:security@eziox.link', external: true },
     ],
   },
