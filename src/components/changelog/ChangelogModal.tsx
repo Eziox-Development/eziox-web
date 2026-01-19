@@ -21,7 +21,7 @@ import {
   Gift,
 } from 'lucide-react'
 
-export const CURRENT_VERSION = '1.6.0'
+export const CURRENT_VERSION = '1.8.0'
 
 interface ChangelogChange {
   type: 'feature' | 'improvement' | 'fix' | 'security' | 'breaking'
@@ -29,11 +29,12 @@ interface ChangelogChange {
 }
 
 const latestChanges: ChangelogChange[] = [
-  { type: 'feature', text: 'Analytics Dashboard with charts and exports' },
-  { type: 'feature', text: 'Real-time notification system' },
-  { type: 'feature', text: 'Notification settings in profile' },
-  { type: 'improvement', text: 'Theme-aware components' },
-  { type: 'improvement', text: 'Smooth animations throughout' },
+  { type: 'feature', text: 'Custom CSS editor with sandboxed validation' },
+  { type: 'feature', text: 'Custom fonts & animated profiles' },
+  { type: 'feature', text: 'Featured links, scheduling & A/B testing' },
+  { type: 'feature', text: '6 new premium themes for Pro tier' },
+  { type: 'feature', text: 'Custom backgrounds & layout controls' },
+  { type: 'improvement', text: 'Profile backups & restore' },
 ]
 
 const typeConfig: Record<ChangelogChange['type'], { icon: React.ElementType; color: string }> = {

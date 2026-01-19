@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
 import { Link } from '@tanstack/react-router'
 import { useTheme } from '@/components/portfolio/ThemeProvider'
+import { toast } from 'sonner'
 import {
   getCreatorSettingsFn,
   updateCustomCSSFn,
@@ -100,15 +101,27 @@ export function CreatorTab() {
   const [localAnimated, setLocalAnimated] = useState<AnimatedProfileSettings>(DEFAULT_ANIMATED_SETTINGS)
   const [localOG, setLocalOG] = useState<OpenGraphSettings>(DEFAULT_OG_SETTINGS)
 
+  useEffect(() => {
+    if (settings?.customCSS) setCssInput(settings.customCSS)
+    if (settings?.animatedProfile) setLocalAnimated(settings.animatedProfile)
+    if (settings?.openGraphSettings) setLocalOG(settings.openGraphSettings)
+  }, [settings])
+
   const cssMutation = useMutation({
     mutationFn: (css: string) => updateCSS({ data: { css } }),
     onSuccess: (result) => {
       if (result.errors && result.errors.length > 0) {
         setCssErrors(result.errors)
+        toast.warning('CSS saved with warnings', { description: 'Some patterns were removed for security.' })
       } else {
         setCssErrors([])
+        toast.success('Custom CSS saved!', { description: 'Your bio page has been updated.' })
       }
       void queryClient.invalidateQueries({ queryKey: ['creatorSettings'] })
+      void queryClient.invalidateQueries({ queryKey: ['publicProfile'] })
+    },
+    onError: () => {
+      toast.error('Failed to save CSS', { description: 'Please try again.' })
     },
   })
 
@@ -116,30 +129,50 @@ export function CreatorTab() {
     mutationFn: (font: { name: string; url: string; type: 'display' | 'body' }) => 
       addFont({ data: { id: crypto.randomUUID(), ...font } }),
     onSuccess: () => {
+      toast.success('Font added!', { description: `"${newFontName}" is now available.` })
       setNewFontName('')
       setNewFontUrl('')
       void queryClient.invalidateQueries({ queryKey: ['creatorSettings'] })
+      void queryClient.invalidateQueries({ queryKey: ['publicProfile'] })
+    },
+    onError: () => {
+      toast.error('Failed to add font', { description: 'Please check the URL and try again.' })
     },
   })
 
   const removeFontMutation = useMutation({
     mutationFn: (fontId: string) => removeFont({ data: { fontId } }),
     onSuccess: () => {
+      toast.success('Font removed')
       void queryClient.invalidateQueries({ queryKey: ['creatorSettings'] })
+      void queryClient.invalidateQueries({ queryKey: ['publicProfile'] })
+    },
+    onError: () => {
+      toast.error('Failed to remove font')
     },
   })
 
   const animatedMutation = useMutation({
     mutationFn: (data: AnimatedProfileSettings) => updateAnimated({ data }),
     onSuccess: () => {
+      toast.success('Animation settings saved!', { description: 'Your bio page has been updated.' })
       void queryClient.invalidateQueries({ queryKey: ['creatorSettings'] })
+      void queryClient.invalidateQueries({ queryKey: ['publicProfile'] })
+    },
+    onError: () => {
+      toast.error('Failed to save', { description: 'Please try again.' })
     },
   })
 
   const ogMutation = useMutation({
     mutationFn: (data: OpenGraphSettings) => updateOG({ data }),
     onSuccess: () => {
+      toast.success('Open Graph settings saved!', { description: 'Social previews have been updated.' })
       void queryClient.invalidateQueries({ queryKey: ['creatorSettings'] })
+      void queryClient.invalidateQueries({ queryKey: ['publicProfile'] })
+    },
+    onError: () => {
+      toast.error('Failed to save', { description: 'Please try again.' })
     },
   })
 

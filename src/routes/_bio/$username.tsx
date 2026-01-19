@@ -40,6 +40,7 @@ import { SpotifyWidget } from '@/components/spotify'
 import { useTheme } from '@/components/portfolio/ThemeProvider'
 import { checkSpotifyConnectionFn } from '@/server/functions/spotify'
 import type { TierType } from '@/server/lib/stripe'
+import type { CustomBackground, LayoutSettings, AnimatedProfileSettings, CustomFont } from '@/server/db/schema'
 
 const socialIconMap: Record<string, ComponentType<{ size?: number }>> = {
   twitter: SiX,
@@ -314,9 +315,108 @@ function BioPage() {
 
   const profileData = profile.profile && 'bio' in profile.profile ? profile.profile : null
   const accentColor = profileData?.accentColor || 'var(--primary)'
+  
+  // Customization settings
+  const customBackground = profileData?.customBackground as CustomBackground | null
+  const layoutSettings = profileData?.layoutSettings as LayoutSettings | null
+  const customCSS = profileData?.customCSS as string | null
+  const animatedProfile = profileData?.animatedProfile as AnimatedProfileSettings | null
+  const customFonts = profileData?.customFonts as CustomFont[] | null
+  
+  // Get layout values with defaults
+  const cardSpacing = layoutSettings?.cardSpacing ?? 12
+  const cardBorderRadius = layoutSettings?.cardBorderRadius ?? 16
+  const cardPadding = layoutSettings?.cardPadding ?? 16
+  const cardShadow = layoutSettings?.cardShadow ?? 'md'
+  const linkStyle = layoutSettings?.linkStyle ?? 'default'
+  
+  // Shadow map
+  const shadowMap: Record<string, string> = {
+    none: 'none',
+    sm: '0 1px 2px rgba(0,0,0,0.05)',
+    md: '0 4px 6px rgba(0,0,0,0.1)',
+    lg: '0 10px 15px rgba(0,0,0,0.15)',
+    xl: '0 20px 25px rgba(0,0,0,0.2)',
+  }
+  
+  // Animation classes based on settings
+  const getAvatarAnimation = () => {
+    if (!animatedProfile?.enabled) return {}
+    switch (animatedProfile.avatarAnimation) {
+      case 'pulse': return { animate: { scale: [1, 1.05, 1] }, transition: { duration: 2, repeat: Infinity } }
+      case 'glow': return { animate: { boxShadow: [`0 0 20px ${accentColor}40`, `0 0 40px ${accentColor}60`, `0 0 20px ${accentColor}40`] }, transition: { duration: 2, repeat: Infinity } }
+      case 'bounce': return { animate: { y: [0, -5, 0] }, transition: { duration: 1.5, repeat: Infinity } }
+      case 'rotate': return { animate: { rotate: [0, 5, -5, 0] }, transition: { duration: 3, repeat: Infinity } }
+      case 'shake': return { animate: { x: [0, -2, 2, -2, 0] }, transition: { duration: 0.5, repeat: Infinity, repeatDelay: 2 } }
+      default: return {}
+    }
+  }
+  
+  const getLinkHoverEffect = () => {
+    if (!animatedProfile?.enabled) return { scale: 1.02, y: -2 }
+    switch (animatedProfile.linkHoverEffect) {
+      case 'scale': return { scale: 1.05 }
+      case 'glow': return { scale: 1.02, boxShadow: `0 0 30px ${accentColor}40` }
+      case 'slide': return { x: 5 }
+      case 'shake': return { x: [0, -2, 2, -2, 0] }
+      case 'flip': return { rotateY: 5 }
+      default: return { scale: 1.02, y: -2 }
+    }
+  }
+  
+  // Link style variants
+  const getLinkStyle = () => {
+    switch (linkStyle) {
+      case 'minimal': return { background: 'transparent', border: `1px solid ${accentColor}30` }
+      case 'bold': return { background: `${accentColor}20`, border: 'none' }
+      case 'glass': return { background: 'rgba(255,255,255,0.05)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.1)' }
+      default: return { background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }
+    }
+  }
+  
+  // Background style
+  const getBackgroundStyle = (): React.CSSProperties => {
+    if (!customBackground) return { background: 'var(--background)' }
+    switch (customBackground.type) {
+      case 'solid': return { background: customBackground.value || 'var(--background)' }
+      case 'gradient': return { background: customBackground.value || 'var(--background)' }
+      case 'image': return {
+        background: `url(${customBackground.imageUrl}) center/cover fixed`,
+        ...(customBackground.imageBlur ? { filter: `blur(${customBackground.imageBlur}px)` } : {}),
+      }
+      default: return { background: 'var(--background)' }
+    }
+  }
 
   return (
-    <div className="min-h-screen relative" style={{ background: 'var(--background)' }}>
+    <div className="min-h-screen relative" style={getBackgroundStyle()}>
+      {/* Custom CSS injection */}
+      {customCSS && (
+        <style dangerouslySetInnerHTML={{ __html: customCSS }} />
+      )}
+      
+      {/* Custom Fonts */}
+      {customFonts && customFonts.length > 0 && (
+        <>
+          {customFonts.map(font => (
+            <link key={font.id} rel="stylesheet" href={font.url} />
+          ))}
+          <style dangerouslySetInnerHTML={{ __html: customFonts.map(font => 
+            font.type === 'display' 
+              ? `h1, h2, h3, .display-font { font-family: '${font.name}', sans-serif !important; }`
+              : `body, p, span, .body-font { font-family: '${font.name}', sans-serif !important; }`
+          ).join('\n') }} />
+        </>
+      )}
+      
+      {/* Image background overlay for opacity */}
+      {customBackground?.type === 'image' && customBackground.imageOpacity !== undefined && customBackground.imageOpacity < 1 && (
+        <div 
+          className="fixed inset-0 pointer-events-none" 
+          style={{ background: `rgba(0,0,0,${1 - customBackground.imageOpacity})` }} 
+        />
+      )}
+      
       {/* Background Effects */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <motion.div
@@ -386,24 +486,26 @@ function BioPage() {
             transition={{ delay: 0.1 }}
             className="absolute -bottom-12 left-1/2 -translate-x-1/2"
           >
-            <div
-              className="w-28 h-28 rounded-3xl overflow-hidden"
+            <motion.div
+              className="w-28 h-28 overflow-hidden"
               style={{
+                borderRadius: cardBorderRadius,
                 boxShadow: `0 0 0 4px var(--background), 0 0 30px ${accentColor}40`,
                 background: 'var(--background-secondary)',
               }}
+              {...getAvatarAnimation()}
             >
               {profileData?.avatar ? (
                 <img src={profileData.avatar} alt={profile.user.name || username} className="w-full h-full object-cover" />
               ) : (
                 <div
-                  className="w-full h-full flex items-center justify-center text-4xl font-bold"
+                  className="w-full h-full flex items-center justify-center text-4xl font-bold display-font"
                   style={{ background: `linear-gradient(135deg, ${accentColor}, var(--accent))`, color: 'white' }}
                 >
                   {(profile.user.name?.[0] || username?.[0] || 'U').toUpperCase()}
                 </div>
               )}
-            </div>
+            </motion.div>
             
           </motion.div>
         </motion.div>
@@ -596,10 +698,26 @@ function BioPage() {
         )}
 
         {/* Links */}
-        <div className="space-y-3 mb-12">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: `${cardSpacing}px` }} className="mb-12">
           <AnimatePresence>
             {profile.links && profile.links.length > 0 ? (
-              profile.links.map((link, index) => (
+              profile.links.map((link, index) => {
+                const isFeatured = link.isFeatured
+                const featuredStyle = link.featuredStyle || 'default'
+                
+                // Featured link styles
+                const getFeaturedBorder = () => {
+                  if (!isFeatured) return {}
+                  switch (featuredStyle) {
+                    case 'glow': return { boxShadow: `0 0 20px ${accentColor}60` }
+                    case 'gradient': return { background: `linear-gradient(135deg, ${accentColor}40, var(--accent)40)` }
+                    case 'outline': return { border: `2px dashed ${accentColor}` }
+                    case 'neon': return { boxShadow: `0 0 10px ${accentColor}, 0 0 20px ${accentColor}60, 0 0 30px ${accentColor}40` }
+                    default: return { border: `2px solid ${accentColor}` }
+                  }
+                }
+                
+                return (
                 <motion.button
                   key={link.id}
                   initial={{ opacity: 0, y: 20, scale: 0.95 }}
@@ -613,17 +731,16 @@ function BioPage() {
                   }}
                   onClick={() => handleLinkClick(link.id, link.url)}
                   disabled={clickedLink === link.id}
-                  className="w-full p-4 rounded-2xl text-left transition-all disabled:opacity-50 group relative overflow-hidden"
+                  className="w-full text-left transition-all disabled:opacity-50 group relative overflow-hidden"
                   style={{
-                    background: link.backgroundColor || 'rgba(255,255,255,0.03)',
-                    border: `1px solid ${link.backgroundColor ? 'transparent' : 'rgba(255,255,255,0.08)'}`,
-                    backdropFilter: 'blur(12px)',
+                    padding: cardPadding,
+                    borderRadius: cardBorderRadius,
+                    boxShadow: shadowMap[cardShadow],
+                    ...getLinkStyle(),
+                    ...(link.backgroundColor ? { background: link.backgroundColor, border: 'none' } : {}),
+                    ...getFeaturedBorder(),
                   }}
-                  whileHover={{ 
-                    scale: 1.02, 
-                    y: -2,
-                    boxShadow: `0 8px 32px ${accentColor}20`
-                  }}
+                  whileHover={getLinkHoverEffect()}
                   whileTap={{ scale: 0.98 }}
                 >
                   {/* Hover glow effect */}
@@ -670,7 +787,7 @@ function BioPage() {
                     </motion.div>
                   </div>
                 </motion.button>
-              ))
+              )})
             ) : (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}

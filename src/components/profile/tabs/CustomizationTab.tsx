@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
 import { Link } from '@tanstack/react-router'
 import { useTheme } from '@/components/portfolio/ThemeProvider'
+import { toast } from 'sonner'
 import {
   getProfileSettingsFn,
   updateCustomBackgroundFn,
@@ -14,26 +15,26 @@ import {
 } from '@/server/functions/profile-settings'
 import {
   Palette,
-  Image,
-  Layout,
+  ImageIcon,
+  LayoutGrid,
   Save,
   RotateCcw,
   Trash2,
   Plus,
   Crown,
   Loader2,
-  Sliders,
   History,
   ChevronRight,
+  Sliders,
 } from 'lucide-react'
 import type { CustomBackground, LayoutSettings } from '@/server/db/schema'
 
 const SHADOW_OPTIONS = [
-  { value: 'none', label: 'None' },
-  { value: 'sm', label: 'Small' },
-  { value: 'md', label: 'Medium' },
-  { value: 'lg', label: 'Large' },
-  { value: 'xl', label: 'Extra Large' },
+  { value: 'none', label: 'None', preview: 'shadow-none' },
+  { value: 'sm', label: 'Subtle', preview: 'shadow-sm' },
+  { value: 'md', label: 'Medium', preview: 'shadow-md' },
+  { value: 'lg', label: 'Large', preview: 'shadow-lg' },
+  { value: 'xl', label: 'Dramatic', preview: 'shadow-xl' },
 ] as const
 
 const LAYOUT_OPTIONS = [
@@ -43,10 +44,10 @@ const LAYOUT_OPTIONS = [
 ] as const
 
 const LINK_STYLE_OPTIONS = [
-  { value: 'default', label: 'Default' },
-  { value: 'minimal', label: 'Minimal' },
-  { value: 'bold', label: 'Bold' },
-  { value: 'glass', label: 'Glass' },
+  { value: 'default', label: 'Default', desc: 'Classic look' },
+  { value: 'minimal', label: 'Minimal', desc: 'Clean borders' },
+  { value: 'bold', label: 'Bold', desc: 'Accent background' },
+  { value: 'glass', label: 'Glass', desc: 'Frosted effect' },
 ] as const
 
 const DEFAULT_LAYOUT: LayoutSettings = {
@@ -79,40 +80,72 @@ export function CustomizationTab() {
   const [localBackground, setLocalBackground] = useState<CustomBackground | null>(null)
   const [localLayout, setLocalLayout] = useState<LayoutSettings>(DEFAULT_LAYOUT)
 
+  useEffect(() => {
+    if (settings?.customBackground) {
+      setLocalBackground(settings.customBackground)
+    }
+    if (settings?.layoutSettings) {
+      setLocalLayout(settings.layoutSettings)
+    }
+  }, [settings])
+
   const backgroundMutation = useMutation({
     mutationFn: (bg: CustomBackground | null) => updateBackground({ data: bg }),
     onSuccess: () => {
+      toast.success('Background saved!', { description: 'Your changes are now live on your bio page.' })
       void queryClient.invalidateQueries({ queryKey: ['profileSettings'] })
+      void queryClient.invalidateQueries({ queryKey: ['publicProfile'] })
+    },
+    onError: () => {
+      toast.error('Failed to save', { description: 'Please try again.' })
     },
   })
 
   const layoutMutation = useMutation({
     mutationFn: (layout: Partial<LayoutSettings>) => updateLayout({ data: layout }),
     onSuccess: () => {
+      toast.success('Layout saved!', { description: 'Your bio page has been updated.' })
       void queryClient.invalidateQueries({ queryKey: ['profileSettings'] })
+      void queryClient.invalidateQueries({ queryKey: ['publicProfile'] })
+    },
+    onError: () => {
+      toast.error('Failed to save', { description: 'Please try again.' })
     },
   })
 
   const backupMutation = useMutation({
     mutationFn: (name: string) => createBackup({ data: { name } }),
     onSuccess: () => {
+      toast.success('Backup created!', { description: `"${backupName}" has been saved.` })
       setBackupName('')
       void queryClient.invalidateQueries({ queryKey: ['profileSettings'] })
+    },
+    onError: () => {
+      toast.error('Failed to create backup', { description: 'Please try again.' })
     },
   })
 
   const restoreMutation = useMutation({
     mutationFn: (backupId: string) => restoreBackup({ data: { backupId } }),
     onSuccess: () => {
+      toast.success('Backup restored!', { description: 'Your profile has been restored.' })
       void queryClient.invalidateQueries({ queryKey: ['profileSettings'] })
       void queryClient.invalidateQueries({ queryKey: ['profile'] })
+      void queryClient.invalidateQueries({ queryKey: ['publicProfile'] })
+    },
+    onError: () => {
+      toast.error('Failed to restore', { description: 'Please try again.' })
     },
   })
 
   const deleteMutation = useMutation({
     mutationFn: (backupId: string) => deleteBackup({ data: { backupId } }),
     onSuccess: () => {
+      toast.success('Backup deleted')
       void queryClient.invalidateQueries({ queryKey: ['profileSettings'] })
+    },
+    onError: () => {
+      toast.error('Failed to delete', { description: 'Please try again.' })
     },
   })
 
@@ -181,8 +214,8 @@ export function CustomizationTab() {
         style={{ background: theme.colors.backgroundSecondary, border: `1px solid ${theme.colors.border}` }}
       >
         {[
-          { id: 'background', label: 'Background', icon: Image },
-          { id: 'layout', label: 'Layout', icon: Layout },
+          { id: 'background', label: 'Background', icon: ImageIcon },
+          { id: 'layout', label: 'Layout', icon: LayoutGrid },
           { id: 'backups', label: 'Backups', icon: History },
         ].map(({ id, label, icon: Icon }) => (
           <motion.button
