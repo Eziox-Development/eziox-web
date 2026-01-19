@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
 import { useTheme } from '@/components/portfolio/ThemeProvider'
 import {
@@ -10,6 +10,7 @@ import {
   updateLinkUTMFn,
   updateEmbedSettingsFn,
 } from '@/server/functions/creator-features'
+import { getLinkAnalyticsFn } from '@/server/functions/links'
 import {
   X,
   Star,
@@ -22,6 +23,10 @@ import {
   Plus,
   Trash2,
   Crown,
+  BarChart3,
+  Monitor,
+  Smartphone,
+  Globe,
 } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
 
@@ -67,13 +72,20 @@ const FEATURED_STYLES = [
 export function LinkAdvancedSettings({ link, isCreator, onClose }: LinkAdvancedSettingsProps) {
   const { theme } = useTheme()
   const queryClient = useQueryClient()
-  const [activeTab, setActiveTab] = useState<'featured' | 'schedule' | 'abtest' | 'utm' | 'embed'>('featured')
+  const [activeTab, setActiveTab] = useState<'analytics' | 'featured' | 'schedule' | 'abtest' | 'utm' | 'embed'>('analytics')
 
   const updateSchedule = useServerFn(updateLinkScheduleFn)
   const updateFeatured = useServerFn(updateFeaturedLinkFn)
   const updateABTest = useServerFn(updateABTestFn)
   const updateUTM = useServerFn(updateLinkUTMFn)
   const updateEmbed = useServerFn(updateEmbedSettingsFn)
+  const getLinkAnalytics = useServerFn(getLinkAnalyticsFn)
+
+  const { data: analyticsData, isLoading: analyticsLoading } = useQuery({
+    queryKey: ['link-analytics', link.id],
+    queryFn: () => getLinkAnalytics({ data: { linkId: link.id, days: 30 } }),
+    enabled: isCreator,
+  })
 
   const [localFeatured, setLocalFeatured] = useState({
     isFeatured: link.isFeatured || false,
@@ -236,6 +248,7 @@ export function LinkAdvancedSettings({ link, isCreator, onClose }: LinkAdvancedS
 
         <div className="p-3 border-b flex gap-1 overflow-x-auto" style={{ borderColor: theme.colors.border }}>
           {[
+            { id: 'analytics', label: 'Analytics', icon: BarChart3 },
             { id: 'featured', label: 'Featured', icon: Star },
             { id: 'schedule', label: 'Schedule', icon: Clock },
             { id: 'abtest', label: 'A/B Test', icon: FlaskConical },
@@ -259,6 +272,91 @@ export function LinkAdvancedSettings({ link, isCreator, onClose }: LinkAdvancedS
 
         <div className="flex-1 overflow-y-auto p-4">
           <AnimatePresence mode="wait">
+            {activeTab === 'analytics' && (
+              <motion.div key="analytics" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-4">
+                {analyticsLoading ? (
+                  <div className="text-center py-8">
+                    <Loader2 className="w-6 h-6 mx-auto mb-2 animate-spin" style={{ color: theme.colors.primary }} />
+                    <p className="text-sm" style={{ color: theme.colors.foregroundMuted }}>Loading analytics...</p>
+                  </div>
+                ) : analyticsData ? (
+                  <>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="p-4 rounded-xl" style={{ background: theme.colors.backgroundSecondary }}>
+                        <p className="text-xs mb-1" style={{ color: theme.colors.foregroundMuted }}>Total Clicks</p>
+                        <p className="text-2xl font-bold" style={{ color: theme.colors.foreground }}>{analyticsData.totalClicks}</p>
+                      </div>
+                      <div className="p-4 rounded-xl" style={{ background: theme.colors.backgroundSecondary }}>
+                        <p className="text-xs mb-1" style={{ color: theme.colors.foregroundMuted }}>Period</p>
+                        <p className="text-lg font-semibold" style={{ color: theme.colors.foreground }}>Last 30 days</p>
+                      </div>
+                    </div>
+
+                    <div>
+                      <h4 className="text-sm font-semibold mb-2 flex items-center gap-2" style={{ color: theme.colors.foreground }}>
+                        <Monitor size={14} /> Devices
+                      </h4>
+                      <div className="flex gap-2 flex-wrap">
+                        {Object.entries(analyticsData.deviceStats || {}).map(([device, count]) => (
+                          <span key={device} className="px-3 py-1.5 rounded-lg text-sm flex items-center gap-1" style={{ background: theme.colors.backgroundSecondary, color: theme.colors.foreground }}>
+                            {device === 'mobile' ? <Smartphone size={12} /> : <Monitor size={12} />}
+                            {device}: {count as number}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <h4 className="text-sm font-semibold mb-2 flex items-center gap-2" style={{ color: theme.colors.foreground }}>
+                        <Globe size={14} /> Browsers
+                      </h4>
+                      <div className="flex gap-2 flex-wrap">
+                        {Object.entries(analyticsData.browserStats || {}).map(([browser, count]) => (
+                          <span key={browser} className="px-3 py-1.5 rounded-lg text-sm" style={{ background: theme.colors.backgroundSecondary, color: theme.colors.foreground }}>
+                            {browser}: {count as number}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <h4 className="text-sm font-semibold mb-2 flex items-center gap-2" style={{ color: theme.colors.foreground }}>
+                        <Clock size={14} /> Click Heatmap (by hour)
+                      </h4>
+                      <div className="grid grid-cols-12 gap-1">
+                        {Array.from({ length: 24 }, (_, hour) => {
+                          const totalForHour = Object.entries(analyticsData.hourlyClicks || {})
+                            .filter(([key]) => key.endsWith(`-${hour}`))
+                            .reduce((sum, [, count]) => sum + (count as number), 0)
+                          const maxClicks = Math.max(...Object.values(analyticsData.hourlyClicks || {}).map(v => v as number), 1)
+                          const intensity = totalForHour / maxClicks
+                          return (
+                            <div
+                              key={hour}
+                              className="aspect-square rounded text-xs flex items-center justify-center"
+                              style={{
+                                background: `rgba(139, 92, 246, ${0.1 + intensity * 0.8})`,
+                                color: intensity > 0.5 ? 'white' : theme.colors.foregroundMuted,
+                              }}
+                              title={`${hour}:00 - ${totalForHour} clicks`}
+                            >
+                              {hour}
+                            </div>
+                          )
+                        })}
+                      </div>
+                      <p className="text-xs mt-1" style={{ color: theme.colors.foregroundMuted }}>Hours (0-23)</p>
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-center py-8">
+                    <BarChart3 className="w-10 h-10 mx-auto mb-2 opacity-50" style={{ color: theme.colors.foregroundMuted }} />
+                    <p className="text-sm" style={{ color: theme.colors.foregroundMuted }}>No analytics data yet</p>
+                  </div>
+                )}
+              </motion.div>
+            )}
+
             {activeTab === 'featured' && (
               <motion.div key="featured" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-4">
                 <div className="flex items-center justify-between">

@@ -32,7 +32,6 @@ import { Route as ProtectedThemeBuilderRouteImport } from './routes/_protected/t
 import { Route as ProtectedReferralsRouteImport } from './routes/_protected/referrals'
 import { Route as ProtectedProfileRouteImport } from './routes/_protected/profile'
 import { Route as ProtectedPlaygroundRouteImport } from './routes/_protected/playground'
-import { Route as ProtectedLinksRouteImport } from './routes/_protected/links'
 import { Route as ProtectedAnalyticsRouteImport } from './routes/_protected/analytics'
 import { Route as BioUsernameRouteImport } from './routes/_bio/$username'
 import { Route as AuthSignUpRouteImport } from './routes/_auth/sign-up'
@@ -160,11 +159,6 @@ const ProtectedPlaygroundRoute = ProtectedPlaygroundRouteImport.update({
   path: '/playground',
   getParentRoute: () => ProtectedRoute,
 } as any)
-const ProtectedLinksRoute = ProtectedLinksRouteImport.update({
-  id: '/links',
-  path: '/links',
-  getParentRoute: () => ProtectedRoute,
-} as any)
 const ProtectedAnalyticsRoute = ProtectedAnalyticsRouteImport.update({
   id: '/analytics',
   path: '/analytics',
@@ -253,7 +247,6 @@ export interface FileRoutesByFullPath {
   '/sign-up': typeof AuthSignUpRoute
   '/$username': typeof BioUsernameRoute
   '/analytics': typeof ProtectedAnalyticsRoute
-  '/links': typeof ProtectedLinksRoute
   '/playground': typeof ProtectedPlaygroundRoute
   '/profile': typeof ProtectedProfileRoute
   '/referrals': typeof ProtectedReferralsRoute
@@ -290,7 +283,6 @@ export interface FileRoutesByTo {
   '/sign-up': typeof AuthSignUpRoute
   '/$username': typeof BioUsernameRoute
   '/analytics': typeof ProtectedAnalyticsRoute
-  '/links': typeof ProtectedLinksRoute
   '/playground': typeof ProtectedPlaygroundRoute
   '/profile': typeof ProtectedProfileRoute
   '/referrals': typeof ProtectedReferralsRoute
@@ -332,7 +324,6 @@ export interface FileRoutesById {
   '/_auth/sign-up': typeof AuthSignUpRoute
   '/_bio/$username': typeof BioUsernameRoute
   '/_protected/analytics': typeof ProtectedAnalyticsRoute
-  '/_protected/links': typeof ProtectedLinksRoute
   '/_protected/playground': typeof ProtectedPlaygroundRoute
   '/_protected/profile': typeof ProtectedProfileRoute
   '/_protected/referrals': typeof ProtectedReferralsRoute
@@ -371,7 +362,6 @@ export interface FileRouteTypes {
     | '/sign-up'
     | '/$username'
     | '/analytics'
-    | '/links'
     | '/playground'
     | '/profile'
     | '/referrals'
@@ -408,7 +398,6 @@ export interface FileRouteTypes {
     | '/sign-up'
     | '/$username'
     | '/analytics'
-    | '/links'
     | '/playground'
     | '/profile'
     | '/referrals'
@@ -449,7 +438,6 @@ export interface FileRouteTypes {
     | '/_auth/sign-up'
     | '/_bio/$username'
     | '/_protected/analytics'
-    | '/_protected/links'
     | '/_protected/playground'
     | '/_protected/profile'
     | '/_protected/referrals'
@@ -651,13 +639,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedPlaygroundRouteImport
       parentRoute: typeof ProtectedRoute
     }
-    '/_protected/links': {
-      id: '/_protected/links'
-      path: '/links'
-      fullPath: '/links'
-      preLoaderRoute: typeof ProtectedLinksRouteImport
-      parentRoute: typeof ProtectedRoute
-    }
     '/_protected/analytics': {
       id: '/_protected/analytics'
       path: '/analytics'
@@ -796,7 +777,6 @@ const BioRouteWithChildren = BioRoute._addFileChildren(BioRouteChildren)
 
 interface ProtectedRouteChildren {
   ProtectedAnalyticsRoute: typeof ProtectedAnalyticsRoute
-  ProtectedLinksRoute: typeof ProtectedLinksRoute
   ProtectedPlaygroundRoute: typeof ProtectedPlaygroundRoute
   ProtectedProfileRoute: typeof ProtectedProfileRoute
   ProtectedReferralsRoute: typeof ProtectedReferralsRoute
@@ -807,7 +787,6 @@ interface ProtectedRouteChildren {
 
 const ProtectedRouteChildren: ProtectedRouteChildren = {
   ProtectedAnalyticsRoute: ProtectedAnalyticsRoute,
-  ProtectedLinksRoute: ProtectedLinksRoute,
   ProtectedPlaygroundRoute: ProtectedPlaygroundRoute,
   ProtectedProfileRoute: ProtectedProfileRoute,
   ProtectedReferralsRoute: ProtectedReferralsRoute,

@@ -25,6 +25,16 @@ const createLinkSchema = z.object({
   textColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(),
 })
 
+const linkScheduleSchema = z.object({
+  enabled: z.boolean(),
+  startDate: z.string().optional(),
+  endDate: z.string().optional(),
+  timezone: z.string().optional(),
+  showCountdown: z.boolean().optional(),
+  countdownStyle: z.enum(['minimal', 'detailed', 'badge']).optional(),
+  hideWhenExpired: z.boolean().optional(),
+}).optional()
+
 const updateLinkSchema = z.object({
   id: z.uuid(),
   title: z.string().min(1).max(100).optional(),
@@ -35,6 +45,7 @@ const updateLinkSchema = z.object({
   textColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(),
   isActive: z.boolean().optional(),
   order: z.number().int().min(0).optional(),
+  schedule: linkScheduleSchema,
 })
 
 const deleteLinkSchema = z.object({
