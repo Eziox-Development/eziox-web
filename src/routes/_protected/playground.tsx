@@ -237,12 +237,12 @@ function PlaygroundPage() {
   }
 
   return (
-    <div className="min-h-screen" style={{ background: theme.colors.background }}>
-      <div className="max-w-7xl mx-auto px-4 py-6">
+    <div className="h-screen overflow-hidden pt-16" style={{ background: theme.colors.background }}>
+      <div className="max-w-7xl mx-auto px-4 py-4 h-full flex flex-col">
         <motion.div 
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6"
+          className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4 shrink-0"
         >
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})` }}>
@@ -308,8 +308,8 @@ function PlaygroundPage() {
           </div>
         </motion.div>
         
-        <div className={`grid gap-6 ${showPreview ? 'lg:grid-cols-[1fr,380px]' : 'grid-cols-1'}`}>
-          <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="space-y-4">
+        <div className={`grid gap-4 flex-1 min-h-0 ${showPreview ? 'lg:grid-cols-[1fr,360px]' : 'grid-cols-1'}`}>
+          <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="space-y-3 overflow-y-auto pr-1">
             <div className="flex items-center gap-1 p-1 rounded-xl" style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}` }}>
               {[
                 { id: 'background', label: 'Background', icon: Palette },
@@ -584,27 +584,27 @@ function PlaygroundPage() {
           </motion.div>
           
           {showPreview && (
-            <motion.div initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} className="lg:sticky lg:top-20 h-fit">
-              <div className="rounded-xl overflow-hidden" style={{ border: `1px solid ${theme.colors.border}` }}>
-                <div className="flex items-center justify-between p-2.5" style={{ background: theme.colors.card }}>
+            <motion.div initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} className="h-full flex flex-col">
+              <div className="rounded-xl overflow-hidden flex-1 flex flex-col" style={{ border: `1px solid ${theme.colors.border}` }}>
+                <div className="flex items-center justify-between p-2 shrink-0" style={{ background: theme.colors.card }}>
                   <div className="flex items-center gap-2">
                     <div className="flex gap-1">
-                      <div className="w-2.5 h-2.5 rounded-full bg-red-500" />
-                      <div className="w-2.5 h-2.5 rounded-full bg-yellow-500" />
-                      <div className="w-2.5 h-2.5 rounded-full bg-green-500" />
+                      <div className="w-2 h-2 rounded-full bg-red-500" />
+                      <div className="w-2 h-2 rounded-full bg-yellow-500" />
+                      <div className="w-2 h-2 rounded-full bg-green-500" />
                     </div>
                     <span className="text-xs" style={{ color: theme.colors.foregroundMuted }}>Preview</span>
                   </div>
                   <div className="flex gap-1">
                     <button onClick={() => setPreviewDevice('desktop')} className="p-1 rounded" style={{ background: previewDevice === 'desktop' ? theme.colors.primary : 'transparent' }}>
-                      <Monitor size={14} style={{ color: previewDevice === 'desktop' ? '#fff' : theme.colors.foregroundMuted }} />
+                      <Monitor size={12} style={{ color: previewDevice === 'desktop' ? '#fff' : theme.colors.foregroundMuted }} />
                     </button>
                     <button onClick={() => setPreviewDevice('mobile')} className="p-1 rounded" style={{ background: previewDevice === 'mobile' ? theme.colors.primary : 'transparent' }}>
-                      <Smartphone size={14} style={{ color: previewDevice === 'mobile' ? '#fff' : theme.colors.foregroundMuted }} />
+                      <Smartphone size={12} style={{ color: previewDevice === 'mobile' ? '#fff' : theme.colors.foregroundMuted }} />
                     </button>
                   </div>
                 </div>
-                <div className={`relative overflow-hidden ${previewDevice === 'mobile' ? 'max-w-[320px] mx-auto' : ''}`} style={{ height: previewDevice === 'mobile' ? '500px' : '420px', ...getBgStyle() }}>
+                <div className={`relative overflow-hidden flex-1 ${previewDevice === 'mobile' ? 'max-w-[280px] mx-auto' : ''}`} style={{ ...getBgStyle() }}>
                   {renderBgPreview()}
                   {css && <style dangerouslySetInnerHTML={{ __html: css }} />}
                   <div className="relative z-10 p-5 flex flex-col items-center">
