@@ -306,7 +306,12 @@ interface TemplateCardProps {
 }
 
 function TemplateCard({ template, theme, onApply, onLike, onPreview, canApply, isApplying, featured, listView }: TemplateCardProps) {
-  const settings = template.settings as { accentColor?: string; customBackground?: { type: string; value?: string; imageUrl?: string } }
+  const settings = template.settings as { 
+    accentColor?: string
+    customBackground?: { type: string; value?: string; imageUrl?: string }
+    customCSS?: string
+    animatedProfile?: { enabled?: boolean }
+  }
   const accentColor = settings?.accentColor || theme.colors.primary
   const bgPreview = settings?.customBackground?.type === 'image' && settings.customBackground.imageUrl
     ? `url(${settings.customBackground.imageUrl}) center/cover`
@@ -315,6 +320,9 @@ function TemplateCard({ template, theme, onApply, onLike, onPreview, canApply, i
     : settings?.customBackground?.type === 'solid'
     ? settings.customBackground.value
     : `linear-gradient(135deg, ${accentColor}, ${theme.colors.accent})`
+  
+  const hasCreatorFeatures = !!(settings?.customCSS || settings?.animatedProfile?.enabled)
+  const requiredTier = hasCreatorFeatures ? 'Creator' : 'Pro'
 
   if (listView) {
     return (
@@ -324,7 +332,11 @@ function TemplateCard({ template, theme, onApply, onLike, onPreview, canApply, i
         whileHover={{ scale: 1.005 }}
         transition={{ type: 'spring', stiffness: 400, damping: 25 }}
       >
-        <div className="w-12 h-12 rounded-lg shrink-0" style={{ background: bgPreview }} />
+        <div className="w-12 h-12 rounded-lg shrink-0 relative" style={{ background: bgPreview }}>
+          <div className="absolute -top-1 -left-1 px-1 py-0.5 rounded text-[8px] font-medium flex items-center gap-0.5" style={{ background: hasCreatorFeatures ? '#8b5cf6' : '#3b82f6', color: '#fff' }}>
+            <Crown size={6} />{requiredTier[0]}
+          </div>
+        </div>
         <div className="flex-1 min-w-0">
           <h3 className="font-medium text-sm truncate" style={{ color: theme.colors.foreground }}>{template.name}</h3>
           <div className="flex items-center gap-2 mt-0.5 text-[10px]" style={{ color: theme.colors.foregroundMuted }}>
@@ -357,6 +369,9 @@ function TemplateCard({ template, theme, onApply, onLike, onPreview, canApply, i
       onClick={onPreview}
     >
       <div className="h-20 relative overflow-hidden" style={{ background: bgPreview }}>
+        <div className="absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded text-[9px] font-medium flex items-center gap-0.5 backdrop-blur-md" style={{ background: hasCreatorFeatures ? '#8b5cf6cc' : '#3b82f6cc', color: '#fff' }}>
+          <Crown size={8} />{requiredTier}+
+        </div>
         {featured && (
           <div className="absolute top-1.5 right-1.5 px-1.5 py-0.5 rounded text-[10px] font-medium flex items-center gap-0.5 backdrop-blur-md" style={{ background: `${theme.colors.primary}cc`, color: '#fff' }}>
             <Sparkles size={8} />Featured

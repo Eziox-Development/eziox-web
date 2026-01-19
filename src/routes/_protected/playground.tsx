@@ -47,6 +47,8 @@ import {
 } from 'lucide-react'
 import type { CustomBackground, LayoutSettings, AnimatedProfileSettings } from '@/server/db/schema'
 import { AnimatedBackground, VideoBackground, ANIMATED_PRESETS } from '@/components/backgrounds/AnimatedBackgrounds'
+import { TIER_CONFIG, canAccessFeature, type TierType } from '@/server/lib/stripe'
+import { Crown } from 'lucide-react'
 
 export const Route = createFileRoute('/_protected/playground')({
   component: PlaygroundPage,
@@ -80,6 +82,12 @@ function PlaygroundPage() {
   const imageInputRef = useRef<HTMLInputElement>(null)
   const videoInputRef = useRef<HTMLInputElement>(null)
   const [isInitialized, setIsInitialized] = useState(false)
+  
+  const userTier = (currentUser?.tier || 'free') as TierType
+  const canCustomBg = canAccessFeature(userTier, 'customBackgrounds')
+  const canLayout = canAccessFeature(userTier, 'layoutCustomization')
+  const canCSS = canAccessFeature(userTier, 'customCSS')
+  const canAnimations = canAccessFeature(userTier, 'animatedProfiles')
   
   const [activeTab, setActiveTab] = useState<'background' | 'layout' | 'css' | 'animations'>('background')
   const [showPreview, setShowPreview] = useState(true)
@@ -237,7 +245,7 @@ function PlaygroundPage() {
   }
 
   return (
-    <div className="h-screen overflow-hidden pt-16" style={{ background: theme.colors.background }}>
+    <div className="h-screen overflow-hidden pt-22" style={{ background: theme.colors.background }}>
       <div className="max-w-7xl mx-auto px-4 py-4 h-full flex flex-col">
         <motion.div 
           initial={{ opacity: 0, y: 10 }}
@@ -312,24 +320,29 @@ function PlaygroundPage() {
           <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="space-y-3 overflow-y-auto pr-1">
             <div className="flex items-center gap-1 p-1 rounded-xl" style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}` }}>
               {[
-                { id: 'background', label: 'Background', icon: Palette },
-                { id: 'layout', label: 'Layout', icon: LayoutGrid },
-                { id: 'css', label: 'CSS', icon: Code2 },
-                { id: 'animations', label: 'Animations', icon: Sparkles },
-              ].map(({ id, label, icon: Icon }) => (
+                { id: 'background', label: 'Background', icon: Palette, tier: 'pro' as TierType, canAccess: canCustomBg },
+                { id: 'layout', label: 'Layout', icon: LayoutGrid, tier: 'pro' as TierType, canAccess: canLayout },
+                { id: 'css', label: 'CSS', icon: Code2, tier: 'creator' as TierType, canAccess: canCSS },
+                { id: 'animations', label: 'Animations', icon: Sparkles, tier: 'creator' as TierType, canAccess: canAnimations },
+              ].map(({ id, label, icon: Icon, tier, canAccess }) => (
                 <motion.button
                   key={id}
-                  onClick={() => setActiveTab(id as typeof activeTab)}
-                  className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium"
+                  onClick={() => canAccess && setActiveTab(id as typeof activeTab)}
+                  className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium relative"
                   style={{
                     background: activeTab === id ? theme.colors.primary : 'transparent',
-                    color: activeTab === id ? '#fff' : theme.colors.foregroundMuted,
+                    color: activeTab === id ? '#fff' : canAccess ? theme.colors.foregroundMuted : theme.colors.foregroundMuted + '60',
+                    opacity: canAccess ? 1 : 0.6,
+                    cursor: canAccess ? 'pointer' : 'not-allowed',
                   }}
-                  whileHover={{ scale: activeTab === id ? 1 : 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                  whileHover={{ scale: canAccess && activeTab !== id ? 1.02 : 1 }}
+                  whileTap={{ scale: canAccess ? 0.98 : 1 }}
+                  title={!canAccess ? `${TIER_CONFIG[tier].name} required` : undefined}
                 >
+                  {!canAccess && <Lock size={10} className="absolute top-1 right-1" style={{ color: theme.colors.foregroundMuted }} />}
                   <Icon size={16} />
                   <span className="hidden sm:inline">{label}</span>
+                  {!canAccess && <Crown size={12} style={{ color: '#fbbf24' }} />}
                 </motion.button>
               ))}
             </div>
