@@ -404,8 +404,10 @@
 - [x] Email verification template (ready for implementation)
 - [x] Consistent email template design (dark theme, Eziox branding)
 - [x] Footer with Privacy/Terms/Unsubscribe links
-- [ ] Email preferences UI in settings
-- [ ] Weekly digest cron job
+- [x] Contact form emails (admin notification + user confirmation)
+- [x] Recovery codes download as .txt file
+- [x] Email preferences UI in settings (login alerts, security alerts, weekly digest, product updates)
+- [ ] Weekly digest cron job (future)
 
 ---
 

@@ -327,6 +327,10 @@ export const getNotificationSettingsFn = createServerFn({ method: 'GET' }).handl
       notifyNewFollower: profiles.notifyNewFollower,
       notifyMilestones: profiles.notifyMilestones,
       notifySystemUpdates: profiles.notifySystemUpdates,
+      emailLoginAlerts: profiles.emailLoginAlerts,
+      emailSecurityAlerts: profiles.emailSecurityAlerts,
+      emailWeeklyDigest: profiles.emailWeeklyDigest,
+      emailProductUpdates: profiles.emailProductUpdates,
       lastSeenChangelog: profiles.lastSeenChangelog,
     })
     .from(profiles)
@@ -337,6 +341,10 @@ export const getNotificationSettingsFn = createServerFn({ method: 'GET' }).handl
     notifyNewFollower: profile?.notifyNewFollower ?? true,
     notifyMilestones: profile?.notifyMilestones ?? true,
     notifySystemUpdates: profile?.notifySystemUpdates ?? true,
+    emailLoginAlerts: profile?.emailLoginAlerts ?? true,
+    emailSecurityAlerts: profile?.emailSecurityAlerts ?? true,
+    emailWeeklyDigest: profile?.emailWeeklyDigest ?? true,
+    emailProductUpdates: profile?.emailProductUpdates ?? true,
     lastSeenChangelog: profile?.lastSeenChangelog || null,
   }
 })
@@ -347,6 +355,10 @@ export const updateNotificationSettingsFn = createServerFn({ method: 'POST' })
       notifyNewFollower: z.boolean().optional(),
       notifyMilestones: z.boolean().optional(),
       notifySystemUpdates: z.boolean().optional(),
+      emailLoginAlerts: z.boolean().optional(),
+      emailSecurityAlerts: z.boolean().optional(),
+      emailWeeklyDigest: z.boolean().optional(),
+      emailProductUpdates: z.boolean().optional(),
     })
   )
   .handler(async ({ data }) => {

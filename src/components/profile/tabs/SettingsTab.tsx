@@ -115,14 +115,14 @@ export function SettingsTab({ formData, updateField, currentUser, copyToClipboar
   })
 
   const updateSettingsMutation = useMutation({
-    mutationFn: (data: { notifyNewFollower?: boolean; notifyMilestones?: boolean; notifySystemUpdates?: boolean }) =>
+    mutationFn: (data: { notifyNewFollower?: boolean; notifyMilestones?: boolean; notifySystemUpdates?: boolean; emailLoginAlerts?: boolean; emailSecurityAlerts?: boolean; emailWeeklyDigest?: boolean; emailProductUpdates?: boolean }) =>
       updateSettings({ data }),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['notificationSettings'] })
     },
   })
 
-  const handleToggleSetting = (key: 'notifyNewFollower' | 'notifyMilestones' | 'notifySystemUpdates') => {
+  const handleToggleSetting = (key: 'notifyNewFollower' | 'notifyMilestones' | 'notifySystemUpdates' | 'emailLoginAlerts' | 'emailSecurityAlerts' | 'emailWeeklyDigest' | 'emailProductUpdates') => {
     if (!notificationSettings) return
     updateSettingsMutation.mutate({ [key]: !notificationSettings[key] })
   }
@@ -182,14 +182,35 @@ export function SettingsTab({ formData, updateField, currentUser, copyToClipboar
                 ))}
               </div>
 
-              <button
-                onClick={() => copyToClipboard(recoveryCodes.join('\n'), 'All Recovery Codes')}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-medium"
-                style={{ background: formData.accentColor, color: 'white' }}
-              >
-                {copiedField === 'All Recovery Codes' ? <Check size={16} /> : <Copy size={16} />}
-                {copiedField === 'All Recovery Codes' ? 'Copied!' : 'Copy All Codes'}
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => copyToClipboard(recoveryCodes.join('\n'), 'All Recovery Codes')}
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-medium"
+                  style={{ background: formData.accentColor, color: 'white' }}
+                >
+                  {copiedField === 'All Recovery Codes' ? <Check size={16} /> : <Copy size={16} />}
+                  {copiedField === 'All Recovery Codes' ? 'Copied!' : 'Copy All'}
+                </button>
+                <button
+                  onClick={() => {
+                    const content = `Eziox Recovery Codes\n${'='.repeat(30)}\nGenerated: ${new Date().toLocaleString()}\nUsername: ${currentUser.username}\n\nKeep these codes safe! Each code can only be used once.\n\n${recoveryCodes.map((code, i) => `${i + 1}. ${code}`).join('\n')}\n\n${'='.repeat(30)}\nIf you lose access to your authenticator app,\nuse one of these codes to sign in.\n`
+                    const blob = new Blob([content], { type: 'text/plain' })
+                    const url = URL.createObjectURL(blob)
+                    const a = document.createElement('a')
+                    a.href = url
+                    a.download = `eziox-recovery-codes-${currentUser.username}.txt`
+                    document.body.appendChild(a)
+                    a.click()
+                    document.body.removeChild(a)
+                    URL.revokeObjectURL(url)
+                  }}
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-medium"
+                  style={{ background: 'var(--background-secondary)', border: '1px solid var(--border)', color: 'var(--foreground)' }}
+                >
+                  <Download size={16} />
+                  Download .txt
+                </button>
+              </div>
 
               <p className="text-xs text-center" style={{ color: 'var(--foreground-muted)' }}>
                 Store these codes securely. They are your backup if you lose access to your authenticator app.
@@ -446,6 +467,63 @@ export function SettingsTab({ formData, updateField, currentUser, copyToClipboar
                 description="Platform updates and announcements"
                 enabled={notificationSettings?.notifySystemUpdates ?? true}
                 onToggle={() => handleToggleSetting('notifySystemUpdates')}
+                accentColor={formData.accentColor}
+                isPending={updateSettingsMutation.isPending}
+              />
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* Email Preferences */}
+      <div className="rounded-2xl overflow-hidden" style={{ background: 'var(--card)', border: '1px solid var(--border)' }}>
+        <div className="p-5 border-b" style={{ borderColor: 'var(--border)' }}>
+          <div className="flex items-center gap-2">
+            <Mail size={20} style={{ color: formData.accentColor }} />
+            <h2 className="text-lg font-bold" style={{ color: 'var(--foreground)' }}>Email Preferences</h2>
+          </div>
+          <p className="text-sm mt-1" style={{ color: 'var(--foreground-muted)' }}>Control which emails you receive</p>
+        </div>
+        <div className="p-5 space-y-4">
+          {settingsLoading ? (
+            <div className="flex items-center justify-center py-4">
+              <div className="w-6 h-6 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor: formData.accentColor, borderTopColor: 'transparent' }} />
+            </div>
+          ) : (
+            <>
+              <NotificationToggle
+                icon={Shield}
+                title="Login Alerts"
+                description="Get notified when someone logs into your account"
+                enabled={notificationSettings?.emailLoginAlerts ?? true}
+                onToggle={() => handleToggleSetting('emailLoginAlerts')}
+                accentColor={formData.accentColor}
+                isPending={updateSettingsMutation.isPending}
+              />
+              <NotificationToggle
+                icon={AlertTriangle}
+                title="Security Alerts"
+                description="Password changes, 2FA updates, and security events"
+                enabled={notificationSettings?.emailSecurityAlerts ?? true}
+                onToggle={() => handleToggleSetting('emailSecurityAlerts')}
+                accentColor={formData.accentColor}
+                isPending={updateSettingsMutation.isPending}
+              />
+              <NotificationToggle
+                icon={Calendar}
+                title="Weekly Digest"
+                description="Weekly summary of your profile stats and activity"
+                enabled={notificationSettings?.emailWeeklyDigest ?? true}
+                onToggle={() => handleToggleSetting('emailWeeklyDigest')}
+                accentColor={formData.accentColor}
+                isPending={updateSettingsMutation.isPending}
+              />
+              <NotificationToggle
+                icon={Sparkles}
+                title="Product Updates"
+                description="New features, improvements, and platform news"
+                enabled={notificationSettings?.emailProductUpdates ?? true}
+                onToggle={() => handleToggleSetting('emailProductUpdates')}
                 accentColor={formData.accentColor}
                 isPending={updateSettingsMutation.isPending}
               />
