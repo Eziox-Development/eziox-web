@@ -20,8 +20,9 @@ import {
   AlertTriangle,
   Gift,
 } from 'lucide-react'
+import { APP_VERSION } from '@/lib/version'
 
-export const CURRENT_VERSION = '2.3.0'
+export const CURRENT_VERSION = APP_VERSION
 
 interface ChangelogChange {
   type: 'feature' | 'improvement' | 'fix' | 'security' | 'breaking'

@@ -1,8 +1,11 @@
 import { Link } from '@tanstack/react-router'
 import { motion } from 'motion/react'
 import { Home, Search, ArrowLeft } from 'lucide-react'
+import { useTheme } from '@/components/portfolio/ThemeProvider'
 
 export function NotFoundComponent() {
+  const { theme } = useTheme()
+
   return (
     <div className="relative min-h-[calc(100vh-200px)] flex items-center justify-center px-4 sm:px-6">
       <div className="relative max-w-2xl w-full text-center space-y-8">
@@ -10,8 +13,7 @@ export function NotFoundComponent() {
         <div
           className="absolute inset-0 opacity-20 pointer-events-none"
           style={{
-            background:
-              'radial-gradient(circle at center, var(--primary), transparent 70%)',
+            background: `radial-gradient(circle at center, ${theme.colors.primary}, transparent 70%)`,
           }}
         />
 
@@ -29,17 +31,14 @@ export function NotFoundComponent() {
             <div
               className="mx-auto w-32 h-32 rounded-2xl flex items-center justify-center mb-6"
               style={{
-                background:
-                  'linear-gradient(135deg, var(--primary), var(--accent))',
-                boxShadow:
-                  '0 0 60px rgba(var(--primary-rgb, 99, 102, 241), 0.4)',
+                background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
+                boxShadow: `0 0 60px ${theme.colors.primary}40`,
               }}
             >
               <span
                 className="text-5xl font-bold"
                 style={{
-                  color: 'var(--primary-foreground)',
-                  fontFamily: 'var(--font-display)',
+                  color: 'white',
                 }}
               >
                 404
@@ -54,10 +53,7 @@ export function NotFoundComponent() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
           className="text-4xl sm:text-5xl font-bold"
-          style={{
-            color: 'var(--foreground)',
-            fontFamily: 'var(--font-display)',
-          }}
+          style={{ color: theme.colors.foreground }}
         >
           Page not found
         </motion.h1>
@@ -68,7 +64,7 @@ export function NotFoundComponent() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
           className="text-lg max-w-md mx-auto"
-          style={{ color: 'var(--foreground-muted)' }}
+          style={{ color: theme.colors.foregroundMuted }}
         >
           The page you're looking for doesn't exist or has been moved.
         </motion.p>
@@ -84,11 +80,9 @@ export function NotFoundComponent() {
             to="/"
             className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all hover:scale-105"
             style={{
-              background:
-                'linear-gradient(135deg, var(--primary), var(--accent))',
-              color: 'var(--primary-foreground)',
-              boxShadow:
-                '0 4px 20px rgba(var(--primary-rgb, 99, 102, 241), 0.3)',
+              background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
+              color: 'white',
+              boxShadow: `0 4px 20px ${theme.colors.primary}40`,
             }}
           >
             <Home size={18} />
@@ -99,9 +93,9 @@ export function NotFoundComponent() {
             to="/creators"
             className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all hover:scale-105"
             style={{
-              backgroundColor: 'var(--background-secondary)',
-              border: '1px solid var(--border)',
-              color: 'var(--foreground)',
+              background: theme.colors.card,
+              border: `1px solid ${theme.colors.border}`,
+              color: theme.colors.foreground,
             }}
           >
             <Search size={18} />
@@ -118,7 +112,7 @@ export function NotFoundComponent() {
           <button
             onClick={() => window.history.back()}
             className="inline-flex items-center gap-2 text-sm transition-colors hover:opacity-80"
-            style={{ color: 'var(--foreground-muted)' }}
+            style={{ color: theme.colors.foregroundMuted }}
           >
             <ArrowLeft size={14} />
             Go back to previous page

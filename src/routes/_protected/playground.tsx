@@ -379,14 +379,14 @@ function PlaygroundPage() {
               </div>
             </div>
 
-            {/* Preview Content - Direct Preview without extra padding */}
+            {/* Preview Content */}
             <div
               className={`transition-all duration-300 overflow-hidden ${viewMode === 'mobile' ? 'max-w-[400px] mx-auto' : ''}`}
               style={{
                 borderRadius: viewMode === 'mobile' ? '2.5rem' : '1.5rem',
                 boxShadow: '0 25px 50px -12px rgba(0,0,0,0.4)',
                 border: viewMode === 'mobile' ? `8px solid ${theme.colors.card}` : `1px solid ${theme.colors.border}`,
-                minHeight: viewMode === 'mobile' ? '75vh' : '80vh',
+                height: viewMode === 'mobile' ? 'calc(100vh - 200px)' : 'calc(100vh - 180px)',
               }}
             >
               {/* Bio Preview */}

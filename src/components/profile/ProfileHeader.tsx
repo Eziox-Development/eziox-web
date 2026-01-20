@@ -32,7 +32,8 @@ export function ProfileHeader({
   const { theme } = useTheme()
   const accentColor = theme.colors.primary
   const userBadges = (currentUser.profile?.badges || []) as string[]
-  const creatorTypes = (currentUser.profile?.creatorTypes as string[]) || []
+  const creatorTypesRaw = currentUser.profile?.creatorTypes
+  const creatorTypes = Array.isArray(creatorTypesRaw) ? creatorTypesRaw : []
   const pronouns = currentUser.profile?.pronouns
 
   return (

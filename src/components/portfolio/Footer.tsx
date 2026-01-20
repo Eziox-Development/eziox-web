@@ -2,6 +2,7 @@ import { Link } from '@tanstack/react-router'
 import { siteConfig } from '@/lib/site-config'
 import { motion } from 'motion/react'
 import { useTheme } from './ThemeProvider'
+import { APP_VERSION_LABEL } from '@/lib/version'
 import { SiGithub, SiDiscord } from 'react-icons/si'
 import {
   Heart,
@@ -173,7 +174,7 @@ export function Footer() {
                   </h3>
                   <div className="flex items-center gap-2 mt-1">
                     <span className="text-[10px] font-bold px-2.5 py-1 rounded-full text-white" style={{ background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})` }}>
-                      v2.2.0
+                      {APP_VERSION_LABEL}
                     </span>
                     <span className="text-xs font-medium" style={{ color: theme.colors.foregroundMuted }}>
                       {themes.length} Themes
