@@ -285,7 +285,7 @@ export function SubscriptionTab() {
             <div className="flex-1">
               <h3 className="font-bold text-lg" style={{ color: theme.colors.foreground }}>Upgrade Your Experience</h3>
               <p className="text-sm" style={{ color: theme.colors.foregroundMuted }}>
-                Unlock custom CSS, animations, priority support and more
+                Unlock custom CSS, fonts, custom domains, and more
               </p>
             </div>
             <Link

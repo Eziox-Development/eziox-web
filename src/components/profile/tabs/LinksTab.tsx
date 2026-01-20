@@ -174,7 +174,6 @@ export function LinksTab() {
                   <div className="flex items-center gap-2 mt-1">
                     {(link.clicks ?? 0) > 0 && <span className="text-xs" style={{ color: accentColor }}>{link.clicks} clicks</span>}
                     {link.schedule?.enabled && <span className="text-xs px-1.5 py-0.5 rounded" style={{ background: 'rgba(34, 197, 94, 0.15)', color: '#22c55e' }}>Scheduled</span>}
-                    {link.abTestEnabled && <span className="text-xs px-1.5 py-0.5 rounded" style={{ background: 'rgba(139, 92, 246, 0.15)', color: '#8b5cf6' }}>A/B</span>}
                   </div>
                 </div>
                 <div className="flex items-center gap-1">

@@ -5,6 +5,7 @@ import { useQuery, useMutation } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
 import { useTheme } from '@/components/portfolio/ThemeProvider'
 import { useAuth } from '@/hooks/use-auth'
+import { CTASection } from '@/components/portfolio/CTASection'
 import {
   getTierConfigFn,
   getCurrentSubscriptionFn,
@@ -397,60 +398,7 @@ function PricingPage() {
         </div>
       </section>
 
-      <section className="py-20">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            className="rounded-3xl p-8 md:p-12 text-center relative overflow-hidden"
-            style={{ background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})` }}
-          >
-            <div className="absolute inset-0 opacity-20">
-              <div className="absolute top-0 left-0 w-40 h-40 rounded-full blur-3xl bg-white" />
-              <div className="absolute bottom-0 right-0 w-60 h-60 rounded-full blur-3xl bg-white" />
-            </div>
-
-            <div className="relative">
-              <motion.div
-                initial={{ scale: 0 }}
-                whileInView={{ scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ type: 'spring', stiffness: 200 }}
-                className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center mx-auto mb-6"
-              >
-                <Sparkles size={32} className="text-white" />
-              </motion.div>
-
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-                Ready to level up your bio?
-              </h2>
-              <p className="text-white/80 mb-8 max-w-xl mx-auto">
-                Join thousands of creators who trust Eziox for their bio link page.
-                Start free, upgrade anytime.
-              </p>
-
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link
-                  to="/sign-up"
-                  className="px-8 py-4 rounded-xl font-semibold bg-white flex items-center justify-center gap-2 transition-all hover:scale-105"
-                  style={{ color: theme.colors.primary }}
-                >
-                  <Zap size={18} />
-                  Start Free
-                </Link>
-                <Link
-                  to="/templates"
-                  className="px-8 py-4 rounded-xl font-semibold bg-white/20 backdrop-blur-sm text-white flex items-center justify-center gap-2 transition-all hover:bg-white/30"
-                >
-                  View Templates
-                  <ArrowRight size={18} />
-                </Link>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      </section>
+      <CTASection />
     </div>
   )
 }

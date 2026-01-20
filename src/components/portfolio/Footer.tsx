@@ -104,7 +104,7 @@ export function Footer() {
       <div className="relative h-1 overflow-hidden">
         <motion.div
           className="absolute inset-0"
-          style={{ background: `linear-gradient(90deg, ${theme.colors.primary}, ${theme.colors.accent}, ${theme.colors.primary})`, backgroundSize: '200% 100%' }}
+          style={{ backgroundImage: `linear-gradient(90deg, ${theme.colors.primary}, ${theme.colors.accent}, ${theme.colors.primary})`, backgroundSize: '200% 100%' }}
           animate={{ backgroundPosition: ['0% 0%', '200% 0%'] }}
           transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
         />

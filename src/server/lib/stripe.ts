@@ -13,48 +13,36 @@ export const stripe = process.env.STRIPE_SECRET_KEY
 export type TierType = 'free' | 'pro' | 'creator' | 'lifetime'
 
 export interface TierLimits {
-  maxLinks: number
-  // Analytics
-  realtimeAnalytics: boolean
-  analyticsRetentionDays: number
-  perLinkAnalytics: boolean
-  referrerTracking: boolean
-  dateRangeFilters: boolean
-  exportAnalytics: boolean
-  // Customization - Basic (Free)
-  basicThemes: boolean
-  basicBackgrounds: boolean // solid, gradient
-  layoutCustomization: boolean
-  basicAnimations: boolean // simple hover effects
-  presetFonts: boolean
-  socialIcons: boolean
-  accentColors: boolean
-  // Customization - Advanced (Pro+)
-  extendedThemes: boolean
-  advancedBackgrounds: boolean
+  // === FREE FOR EVERYONE ===
+  // Links: unlimited
+  // Short links: unlimited
+  // All themes: yes
+  // All backgrounds: yes
+  // All animations: yes
+  // All embeds (Spotify, YouTube, etc.): yes
+  // Social icons: yes
+  // Profile customization: yes
+
+  // === PAID FEATURES (rare/complex) ===
+  // Pro+
   customCSS: boolean
   customFonts: boolean
-  advancedAnimations: boolean
-  disableBranding: boolean
   profileBackups: boolean
-  // Integrations
-  spotifyIntegration: boolean
-  soundcloudIntegration: boolean
-  youtubeIntegration: boolean
-  advancedEmbedControls: boolean
-  // Link Features
-  featuredLinks: boolean
-  linkScheduling: boolean
-  abTesting: boolean
-  utmSupport: boolean
-  // Other
+  analyticsExport: boolean
+  removeBranding: boolean
+
+  // Creator+
+  customDomain: boolean
+  passwordProtectedLinks: boolean
+  linkExpiration: boolean
+  emailCollection: boolean
   customOpenGraph: boolean
-  priorityCDN: boolean
+
+  // Support & Badges
   prioritySupport: boolean
-  featureVoting: boolean
   earlyAccess: boolean
-  apiAccess: boolean
-  premiumBadge: boolean
+  proBadge: boolean
+  creatorBadge: boolean
   lifetimeBadge: boolean
 }
 
@@ -70,207 +58,145 @@ export interface TierConfig {
   limits: TierLimits
 }
 
-const DEFAULT_LIMITS: TierLimits = {
-  maxLinks: -1,
-  // Analytics - Basic for free
-  realtimeAnalytics: false,
-  analyticsRetentionDays: 30,
-  perLinkAnalytics: false,
-  referrerTracking: false,
-  dateRangeFilters: false,
-  exportAnalytics: false,
-  // Customization - Basic enabled for ALL users
-  basicThemes: true,
-  basicBackgrounds: true,
-  layoutCustomization: true,
-  basicAnimations: true,
-  presetFonts: true,
-  socialIcons: true,
-  accentColors: true,
-  // Customization - Advanced (now available to ALL users)
-  extendedThemes: true,
-  advancedBackgrounds: true,
+const FREE_LIMITS: TierLimits = {
+  // Pro+ features
   customCSS: false,
   customFonts: false,
-  advancedAnimations: true,
-  disableBranding: false,
   profileBackups: false,
-  // Integrations - Basic enabled for all
-  spotifyIntegration: true,
-  soundcloudIntegration: true,
-  youtubeIntegration: true,
-  advancedEmbedControls: false,
-  // Link Features
-  featuredLinks: false,
-  linkScheduling: false,
-  abTesting: false,
-  utmSupport: false,
-  // Other
+  analyticsExport: false,
+  removeBranding: false,
+
+  // Creator+ features
+  customDomain: false,
+  passwordProtectedLinks: false,
+  linkExpiration: false,
+  emailCollection: false,
   customOpenGraph: false,
-  priorityCDN: false,
+
+  // Support & Badges
   prioritySupport: false,
-  featureVoting: false,
   earlyAccess: false,
-  apiAccess: false,
-  premiumBadge: false,
+  proBadge: false,
+  creatorBadge: false,
   lifetimeBadge: false,
 }
 
 export const TIER_CONFIG: Record<TierType, TierConfig> = {
   free: {
-    name: 'Eziox Core',
-    tagline: 'Free Forever',
-    description: 'Full creative freedom, no cost',
+    name: 'Free',
+    tagline: 'No Limits',
+    description: 'Full bio page experience, completely free',
     price: 0,
     priceId: null,
     billingType: 'free',
     features: [
       'Unlimited links',
-      'Profile picture, banner & bio',
-      'All themes & accent colors',
+      'Unlimited short links',
+      'All themes & colors',
       'All backgrounds (solid, gradient, image, video, animated)',
-      'Layout customization',
-      'All animations (avatar, banner, page, hover)',
-      'Preset Google Fonts',
-      'Social links integration',
+      'All animations & effects',
       'Spotify, SoundCloud & YouTube embeds',
-      'Basic analytics (30 days)',
+      'Social media icons',
+      'Profile picture & banner',
+      'Full analytics dashboard',
       'Mobile-optimized design',
     ],
     limits: {
-      ...DEFAULT_LIMITS,
+      ...FREE_LIMITS,
     },
   },
   pro: {
     name: 'Pro',
-    tagline: 'Enhanced Control',
-    description: 'Advanced insights & customization',
-    price: 4.99,
+    tagline: 'Power User',
+    description: 'Advanced customization & tools',
+    price: 2.99,
     priceId: process.env.STRIPE_PRO_PRICE_ID || null,
     billingType: 'monthly',
     popular: true,
     features: [
       'Everything in Free',
+      'Custom CSS styling',
+      'Upload custom fonts',
       'Remove Eziox branding',
-      'Realtime analytics (no delay)',
-      'Per-link click tracking',
-      'Referrer & date filters',
+      'Profile backups & restore',
       'Export analytics (CSV/JSON)',
-      'Profile backups & history',
-      'Priority CDN',
-      'Pro badge',
+      'Pro badge on profile',
     ],
     limits: {
-      ...DEFAULT_LIMITS,
-      realtimeAnalytics: true,
-      analyticsRetentionDays: 365,
-      perLinkAnalytics: true,
-      referrerTracking: true,
-      dateRangeFilters: true,
-      exportAnalytics: true,
-      extendedThemes: true,
-      advancedBackgrounds: true,
-      disableBranding: true,
+      ...FREE_LIMITS,
+      customCSS: true,
+      customFonts: true,
       profileBackups: true,
-      priorityCDN: true,
-      premiumBadge: true,
+      analyticsExport: true,
+      removeBranding: true,
+      proBadge: true,
     },
   },
   creator: {
     name: 'Creator',
-    tagline: 'Full Creative Freedom',
-    description: 'Complete customization & tools',
-    price: 9.99,
+    tagline: 'Professional',
+    description: 'Exclusive features for serious creators',
+    price: 5.99,
     priceId: process.env.STRIPE_CREATOR_PRICE_ID || null,
     billingType: 'monthly',
     features: [
       'Everything in Pro',
-      'Custom CSS (sandboxed)',
-      'Custom font uploads',
-      'Advanced profile animations',
-      'Advanced embed controls',
-      'Featured/highlighted links',
-      'Link scheduling',
-      'A/B testing for links',
-      'UTM parameter support',
+      'Custom domain (yourdomain.com)',
+      'Password protected links',
+      'Link expiration dates',
+      'Email collection from visitors',
       'Custom Open Graph previews',
-      'Priority support',
-      'Feature voting access',
-      'Early access to features',
-      'API access',
-      'Creator badge',
+      'Priority email support',
+      'Early access to new features',
+      'Creator badge on profile',
     ],
     limits: {
-      ...DEFAULT_LIMITS,
-      realtimeAnalytics: true,
-      analyticsRetentionDays: -1,
-      perLinkAnalytics: true,
-      referrerTracking: true,
-      dateRangeFilters: true,
-      exportAnalytics: true,
-      extendedThemes: true,
-      advancedBackgrounds: true,
+      ...FREE_LIMITS,
       customCSS: true,
       customFonts: true,
-      advancedAnimations: true,
-      disableBranding: true,
-      advancedEmbedControls: true,
-      featuredLinks: true,
-      linkScheduling: true,
-      abTesting: true,
-      utmSupport: true,
-      customOpenGraph: true,
       profileBackups: true,
-      priorityCDN: true,
+      analyticsExport: true,
+      removeBranding: true,
+      customDomain: true,
+      passwordProtectedLinks: true,
+      linkExpiration: true,
+      emailCollection: true,
+      customOpenGraph: true,
       prioritySupport: true,
-      featureVoting: true,
       earlyAccess: true,
-      apiAccess: true,
-      premiumBadge: true,
+      creatorBadge: true,
     },
   },
   lifetime: {
     name: 'Lifetime',
-    tagline: 'Forever Supporter',
-    description: 'One payment, forever access',
-    price: 30,
+    tagline: 'Forever',
+    description: 'One payment, all features forever',
+    price: 29,
     priceId: process.env.STRIPE_LIFETIME_PRICE_ID || null,
     billingType: 'lifetime',
     features: [
-      'Everything in Creator, permanently',
-      'All future Creator features',
+      'Everything in Creator',
+      'One-time payment',
+      'All future features included',
       'Exclusive Lifetime badge',
-      'Internal supporter recognition',
-      'Priority in feature requests',
-      'No renewals ever',
+      'Priority support forever',
+      'Never pay again',
     ],
     limits: {
-      ...DEFAULT_LIMITS,
-      realtimeAnalytics: true,
-      analyticsRetentionDays: -1,
-      perLinkAnalytics: true,
-      referrerTracking: true,
-      dateRangeFilters: true,
-      exportAnalytics: true,
-      extendedThemes: true,
-      advancedBackgrounds: true,
+      ...FREE_LIMITS,
       customCSS: true,
       customFonts: true,
-      advancedAnimations: true,
-      disableBranding: true,
-      advancedEmbedControls: true,
-      featuredLinks: true,
-      linkScheduling: true,
-      abTesting: true,
-      utmSupport: true,
-      customOpenGraph: true,
       profileBackups: true,
-      priorityCDN: true,
+      analyticsExport: true,
+      removeBranding: true,
+      customDomain: true,
+      passwordProtectedLinks: true,
+      linkExpiration: true,
+      emailCollection: true,
+      customOpenGraph: true,
       prioritySupport: true,
-      featureVoting: true,
       earlyAccess: true,
-      apiAccess: true,
-      premiumBadge: true,
+      creatorBadge: true,
       lifetimeBadge: true,
     },
   },
@@ -293,12 +219,12 @@ export function canAccessFeature(tier: TierType, feature: keyof TierLimits): boo
   return false
 }
 
-export function getMaxLinks(tier: TierType): number {
-  return TIER_CONFIG[tier]?.limits.maxLinks ?? -1
+export function getMaxLinks(): number {
+  return -1 // Unlimited for everyone
 }
 
-export function getAnalyticsRetention(tier: TierType): number {
-  return TIER_CONFIG[tier]?.limits.analyticsRetentionDays ?? 7
+export function getMaxShortLinks(): number {
+  return -1 // Unlimited for everyone
 }
 
 export function isPremiumTier(tier: TierType): boolean {

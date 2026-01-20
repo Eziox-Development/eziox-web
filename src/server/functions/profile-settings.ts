@@ -32,19 +32,19 @@ async function getUserTier(userId: string): Promise<TierType> {
   return (tier === 'standard' || !tier ? 'free' : tier) as TierType
 }
 
-type FeatureKey = 'basicBackgrounds' | 'advancedBackgrounds' | 'layoutCustomization' | 'profileBackups' | 'extendedThemes' | 'basicThemes' | 'presetFonts' | 'basicAnimations'
+type FeatureKey = 'customCSS' | 'customFonts' | 'profileBackups' | 'analyticsExport' | 'removeBranding' | 'customDomain' | 'passwordProtectedLinks' | 'linkExpiration' | 'emailCollection' | 'customOpenGraph'
 
 function canAccessFeature(tier: TierType, feature: FeatureKey): boolean {
-  // Features available to ALL users (including free)
-  const freeFeatures: FeatureKey[] = ['basicBackgrounds', 'layoutCustomization', 'basicThemes', 'presetFonts', 'basicAnimations']
-  if (freeFeatures.includes(feature)) {
-    return true
-  }
-  
-  // Features requiring Pro or higher
-  const proFeatures: FeatureKey[] = ['advancedBackgrounds', 'profileBackups', 'extendedThemes']
+  // Pro+ features
+  const proFeatures: FeatureKey[] = ['customCSS', 'customFonts', 'profileBackups', 'analyticsExport', 'removeBranding']
   if (proFeatures.includes(feature)) {
     return ['pro', 'creator', 'lifetime'].includes(tier)
+  }
+  
+  // Creator+ features
+  const creatorFeatures: FeatureKey[] = ['customDomain', 'passwordProtectedLinks', 'linkExpiration', 'emailCollection', 'customOpenGraph']
+  if (creatorFeatures.includes(feature)) {
+    return ['creator', 'lifetime'].includes(tier)
   }
   
   return false
@@ -94,16 +94,19 @@ export const getProfileSettingsFn = createServerFn({ method: 'GET' }).handler(as
 
   return {
     tier,
-    // Basic customization - available to ALL users
-    canBasicBackgrounds: canAccessFeature(tier, 'basicBackgrounds'),
-    canLayoutCustomize: canAccessFeature(tier, 'layoutCustomization'),
-    canBasicThemes: canAccessFeature(tier, 'basicThemes'),
-    canPresetFonts: canAccessFeature(tier, 'presetFonts'),
-    canBasicAnimations: canAccessFeature(tier, 'basicAnimations'),
-    // Advanced customization - Pro+ only
-    canAdvancedBackgrounds: canAccessFeature(tier, 'advancedBackgrounds'),
+    // Pro+ features
     canBackup: canAccessFeature(tier, 'profileBackups'),
-    canExtendedThemes: canAccessFeature(tier, 'extendedThemes'),
+    canRemoveBranding: canAccessFeature(tier, 'removeBranding'),
+    canCustomCSS: canAccessFeature(tier, 'customCSS'),
+    canCustomFonts: canAccessFeature(tier, 'customFonts'),
+    canExportAnalytics: canAccessFeature(tier, 'analyticsExport'),
+    // Creator+ features
+    canCustomDomain: canAccessFeature(tier, 'customDomain'),
+    canPasswordProtectedLinks: canAccessFeature(tier, 'passwordProtectedLinks'),
+    canLinkExpiration: canAccessFeature(tier, 'linkExpiration'),
+    canEmailCollection: canAccessFeature(tier, 'emailCollection'),
+    canCustomOpenGraph: canAccessFeature(tier, 'customOpenGraph'),
+    // Profile data
     customBackground: profile?.customBackground as CustomBackground | null,
     layoutSettings: profile?.layoutSettings as LayoutSettings | null,
     profileBackups: (profile?.profileBackups || []) as ProfileBackup[],
@@ -317,14 +320,8 @@ export const updateThemeFn = createServerFn({ method: 'POST' })
   }))
   .handler(async ({ data }) => {
     const user = await getAuthenticatedUser()
-    const tier = await getUserTier(user.id)
 
-    const premiumThemes = ['aurora', 'sunset', 'ocean', 'forest', 'neon', 'pastel', 'monochrome', 'cyberpunk']
-    if (data.themeId && premiumThemes.includes(data.themeId) && !canAccessFeature(tier, 'extendedThemes')) {
-      setResponseStatus(403)
-      throw { message: 'Extended themes require Pro tier or higher', status: 403, code: 'TIER_REQUIRED' }
-    }
-
+    // All themes are now available to all users
     const updateData: Record<string, unknown> = { updatedAt: new Date() }
     if (data.themeId !== undefined) updateData.themeId = data.themeId
     if (data.accentColor !== undefined) updateData.accentColor = data.accentColor
