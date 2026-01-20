@@ -25,8 +25,10 @@ export function BadgesTab({ badges, referralCount, isEarlyAdopter }: BadgesTabPr
   const [isChecking, setIsChecking] = useState(false)
   const [newBadges, setNewBadges] = useState<string[]>([])
 
-  const earnedBadges = sortBadgesByRarity(getBadgeConfigs(badges))
-  const allBadges = BADGE_LIST.filter(b => !b.adminOnly || badges.includes(b.id))
+  // Ensure badges is always an array
+  const safeBadges = Array.isArray(badges) ? badges : []
+  const earnedBadges = sortBadgesByRarity(getBadgeConfigs(safeBadges))
+  const allBadges = BADGE_LIST.filter(b => !b.adminOnly || safeBadges.includes(b.id))
 
   const handleCheckBadges = async () => {
     setIsChecking(true)

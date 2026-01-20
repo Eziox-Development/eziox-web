@@ -125,6 +125,9 @@ function MultiSelectField({ label, selected, onChange, options, hint, max = 5 }:
 }) {
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
+  
+  // Ensure selected is always an array
+  const safeSelected = Array.isArray(selected) ? selected : []
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -137,14 +140,14 @@ function MultiSelectField({ label, selected, onChange, options, hint, max = 5 }:
   }, [])
 
   const toggleOption = (value: string) => {
-    if (selected.includes(value)) {
-      onChange(selected.filter(v => v !== value))
-    } else if (selected.length < max) {
-      onChange([...selected, value])
+    if (safeSelected.includes(value)) {
+      onChange(safeSelected.filter(v => v !== value))
+    } else if (safeSelected.length < max) {
+      onChange([...safeSelected, value])
     }
   }
 
-  const selectedLabels = selected.map(v => options.find(o => o.value === v)?.label).filter(Boolean)
+  const selectedLabels = safeSelected.map(v => options.find(o => o.value === v)?.label).filter(Boolean)
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -164,8 +167,8 @@ function MultiSelectField({ label, selected, onChange, options, hint, max = 5 }:
         <div className="absolute z-50 w-full mt-2 rounded-xl overflow-hidden shadow-xl" style={{ background: 'var(--card)', border: '1px solid var(--border)' }}>
           <div className="max-h-64 overflow-y-auto p-2">
             {options.map((opt) => {
-              const isSelected = selected.includes(opt.value)
-              const isDisabled = !isSelected && selected.length >= max
+              const isSelected = safeSelected.includes(opt.value)
+              const isDisabled = !isSelected && safeSelected.length >= max
               return (
                 <button
                   key={opt.value}
@@ -185,7 +188,7 @@ function MultiSelectField({ label, selected, onChange, options, hint, max = 5 }:
           </div>
         </div>
       )}
-      {hint && <p className="text-xs mt-1" style={{ color: 'var(--foreground-muted)' }}>{hint} ({selected.length}/{max})</p>}
+      {hint && <p className="text-xs mt-1" style={{ color: 'var(--foreground-muted)' }}>{hint} ({safeSelected.length}/{max})</p>}
     </div>
   )
 }
