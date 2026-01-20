@@ -9,6 +9,119 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.4.0] - 2026-01-20
+
+### Changed - Tier System Simplification 💎
+
+**Simplified Subscription Model:**
+- **Free Tier Expanded** - All core features now completely free:
+  - Unlimited links and short links
+  - All 30+ themes and colors
+  - All backgrounds (solid, gradient, image, video, animated)
+  - All animations and effects
+  - Spotify, SoundCloud & YouTube embeds
+  - Social media icons
+  - Profile picture & banner
+  - Full analytics dashboard (30 days retention)
+  - Mobile-optimized design
+
+- **Pro Tier ($2.99/month)** - Advanced customization tools:
+  - Custom CSS styling
+  - Upload custom fonts
+  - Remove Eziox branding
+  - Profile backups & restore
+  - Export analytics (CSV/JSON)
+  - Pro badge on profile
+
+- **Creator Tier ($5.99/month)** - Professional features:
+  - Everything in Pro
+  - Custom domain (yourdomain.com)
+  - Password protected links
+  - Link expiration dates
+  - Email collection from visitors
+  - Custom Open Graph previews
+  - Priority email support
+  - Early access to new features
+  - Creator badge on profile
+
+- **Lifetime ($29 one-time)** - Forever access:
+  - Everything in Creator
+  - All future features included
+  - Exclusive Lifetime badge
+  - Priority support forever
+  - Never pay again
+
+**Removed Artificial Limits:**
+- No more link limits for any tier
+- No more analytics paywalls
+- No more theme restrictions
+- No more basic customization locks
+
+**Updated Components:**
+- Simplified `stripe.ts` tier configuration
+- Removed `canAdvancedBackgrounds` and other redundant checks
+- Updated `CustomizationTab` to reflect new free features
+- Cleaned up `LinkAdvancedSettings` (removed A/B testing, UTM, embed controls)
+- Updated pricing page with new tier structure
+
+### Improved - Profile Page Architecture 🏗️
+
+**Modular Profile System:**
+- **ProfileDashboard** - New main container with state management
+- **ProfileSidebar** - Categorized navigation (Dashboard, Premium, Account)
+- **ProfileHeader** - Banner + Avatar + Badges display
+- **ProfileStats** - Animated stats cards
+- Centralized constants in `constants.ts`
+- Centralized types in `types.ts`
+
+**Profile Route Optimization:**
+- Reduced from 461 to 22 lines
+- All logic moved to ProfileDashboard component
+- Better separation of concerns
+- Improved maintainability
+
+**Tab Updates:**
+- All tabs now use centralized constants and types
+- Consistent theme integration with `useTheme()`
+- No hardcoded styles - all use CSS variables
+- Fixed TypeScript errors across all tabs
+
+### Improved - Public Pages Redesign 🎨
+
+**About Page:**
+- Simplified hero section with cleaner messaging
+- "No paywalls" philosophy front and center
+- Reduced from verbose to concise feature highlights
+- Privacy-first messaging
+- Modern tech stack showcase
+- Creator quote section with Saito's philosophy
+
+**Homepage:**
+- Performance optimizations (removed heavy animations)
+- Static gradients instead of animated blobs
+- Cleaner button hover states (CSS transitions instead of motion)
+- New sections: Theme showcase, Integrations, Analytics
+- Better mobile responsiveness
+- Improved loading performance
+
+**Pricing Page:**
+- Updated with new tier structure and pricing
+- Clearer feature differentiation
+- Reusable CTASection component
+
+### Fixed
+- **TypeScript Error** - Removed `canAdvancedBackgrounds` reference in CustomizationTab
+- **Build Optimization** - Reduced bundle size with static elements
+- **Consistency** - All components now use same theming approach
+
+### Technical
+- Build size: 14.8 MB (4.29 MB gzip)
+- All TypeScript checks passing
+- No console warnings or errors
+- Improved code maintainability
+
+---
+
 ## [2.3.0] - 2026-01-20
 
 ### Added - Playground & Theme Refactor 🎨

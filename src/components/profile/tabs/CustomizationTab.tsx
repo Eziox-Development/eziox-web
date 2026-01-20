@@ -177,11 +177,6 @@ export function CustomizationTab() {
     )
   }
 
-  // All customization is now available to ALL users (Free Tier expanded)
-  const _canAdvancedBackgrounds = settings?.canAdvancedBackgrounds ?? true
-  const _canBackup = settings?.canBackup ?? false
-  void _canAdvancedBackgrounds // Used for future feature gating
-  void _canBackup // Used for future feature gating
 
   const currentBackground =
     localBackground ?? settings?.customBackground ?? null

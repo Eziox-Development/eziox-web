@@ -1,6 +1,6 @@
 {
   "name": "eziox-web",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "Modern anime-inspired portfolio with animated UI, blog engine, and TanStack Router.",
   "private": true,
   "type": "module",
