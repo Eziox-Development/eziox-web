@@ -14,29 +14,41 @@ export type TierType = 'free' | 'pro' | 'creator' | 'lifetime'
 
 export interface TierLimits {
   maxLinks: number
+  // Analytics
   realtimeAnalytics: boolean
   analyticsRetentionDays: number
   perLinkAnalytics: boolean
   referrerTracking: boolean
   dateRangeFilters: boolean
   exportAnalytics: boolean
-  customBackgrounds: boolean
-  extendedThemes: boolean
+  // Customization - Basic (Free)
+  basicThemes: boolean
+  basicBackgrounds: boolean // solid, gradient
   layoutCustomization: boolean
-  disableBranding: boolean
+  basicAnimations: boolean // simple hover effects
+  presetFonts: boolean
+  socialIcons: boolean
+  accentColors: boolean
+  // Customization - Advanced (Pro+)
+  extendedThemes: boolean
+  advancedBackgrounds: boolean
   customCSS: boolean
   customFonts: boolean
-  animatedProfiles: boolean
+  advancedAnimations: boolean
+  disableBranding: boolean
+  profileBackups: boolean
+  // Integrations
   spotifyIntegration: boolean
   soundcloudIntegration: boolean
   youtubeIntegration: boolean
   advancedEmbedControls: boolean
+  // Link Features
   featuredLinks: boolean
   linkScheduling: boolean
   abTesting: boolean
   utmSupport: boolean
+  // Other
   customOpenGraph: boolean
-  profileBackups: boolean
   priorityCDN: boolean
   prioritySupport: boolean
   featureVoting: boolean
@@ -60,29 +72,41 @@ export interface TierConfig {
 
 const DEFAULT_LIMITS: TierLimits = {
   maxLinks: -1,
+  // Analytics - Basic for free
   realtimeAnalytics: false,
-  analyticsRetentionDays: 7,
+  analyticsRetentionDays: 30,
   perLinkAnalytics: false,
   referrerTracking: false,
   dateRangeFilters: false,
   exportAnalytics: false,
-  customBackgrounds: false,
-  extendedThemes: false,
-  layoutCustomization: false,
-  disableBranding: false,
+  // Customization - Basic enabled for ALL users
+  basicThemes: true,
+  basicBackgrounds: true,
+  layoutCustomization: true,
+  basicAnimations: true,
+  presetFonts: true,
+  socialIcons: true,
+  accentColors: true,
+  // Customization - Advanced (now available to ALL users)
+  extendedThemes: true,
+  advancedBackgrounds: true,
   customCSS: false,
   customFonts: false,
-  animatedProfiles: false,
+  advancedAnimations: true,
+  disableBranding: false,
+  profileBackups: false,
+  // Integrations - Basic enabled for all
   spotifyIntegration: true,
   soundcloudIntegration: true,
   youtubeIntegration: true,
   advancedEmbedControls: false,
+  // Link Features
   featuredLinks: false,
   linkScheduling: false,
   abTesting: false,
   utmSupport: false,
+  // Other
   customOpenGraph: false,
-  profileBackups: false,
   priorityCDN: false,
   prioritySupport: false,
   featureVoting: false,
@@ -96,31 +120,31 @@ export const TIER_CONFIG: Record<TierType, TierConfig> = {
   free: {
     name: 'Eziox Core',
     tagline: 'Free Forever',
-    description: 'The complete Eziox experience',
+    description: 'Full creative freedom, no cost',
     price: 0,
     priceId: null,
     billingType: 'free',
     features: [
       'Unlimited links',
       'Profile picture, banner & bio',
-      'All standard layouts',
-      'Custom username',
-      'Mobile-optimized design',
-      'Public & private links',
-      'Spotify, SoundCloud & YouTube embeds',
-      'Basic analytics (24h delay)',
-      'Standard themes & accent colors',
+      'All themes & accent colors',
+      'All backgrounds (solid, gradient, image, video, animated)',
+      'Layout customization',
+      'All animations (avatar, banner, page, hover)',
+      'Preset Google Fonts',
       'Social links integration',
+      'Spotify, SoundCloud & YouTube embeds',
+      'Basic analytics (30 days)',
+      'Mobile-optimized design',
     ],
     limits: {
       ...DEFAULT_LIMITS,
-      analyticsRetentionDays: 30,
     },
   },
   pro: {
     name: 'Pro',
     tagline: 'Enhanced Control',
-    description: 'Better insights & customization',
+    description: 'Advanced insights & customization',
     price: 4.99,
     priceId: process.env.STRIPE_PRO_PRICE_ID || null,
     billingType: 'monthly',
@@ -132,9 +156,6 @@ export const TIER_CONFIG: Record<TierType, TierConfig> = {
       'Per-link click tracking',
       'Referrer & date filters',
       'Export analytics (CSV/JSON)',
-      'Extended premium themes',
-      'Custom backgrounds',
-      'Layout fine-tuning',
       'Profile backups & history',
       'Priority CDN',
       'Pro badge',
@@ -147,9 +168,8 @@ export const TIER_CONFIG: Record<TierType, TierConfig> = {
       referrerTracking: true,
       dateRangeFilters: true,
       exportAnalytics: true,
-      customBackgrounds: true,
       extendedThemes: true,
-      layoutCustomization: true,
+      advancedBackgrounds: true,
       disableBranding: true,
       profileBackups: true,
       priorityCDN: true,
@@ -167,7 +187,7 @@ export const TIER_CONFIG: Record<TierType, TierConfig> = {
       'Everything in Pro',
       'Custom CSS (sandboxed)',
       'Custom font uploads',
-      'Animated profiles & effects',
+      'Advanced profile animations',
       'Advanced embed controls',
       'Featured/highlighted links',
       'Link scheduling',
@@ -188,13 +208,12 @@ export const TIER_CONFIG: Record<TierType, TierConfig> = {
       referrerTracking: true,
       dateRangeFilters: true,
       exportAnalytics: true,
-      customBackgrounds: true,
       extendedThemes: true,
-      layoutCustomization: true,
-      disableBranding: true,
+      advancedBackgrounds: true,
       customCSS: true,
       customFonts: true,
-      animatedProfiles: true,
+      advancedAnimations: true,
+      disableBranding: true,
       advancedEmbedControls: true,
       featuredLinks: true,
       linkScheduling: true,
@@ -233,13 +252,12 @@ export const TIER_CONFIG: Record<TierType, TierConfig> = {
       referrerTracking: true,
       dateRangeFilters: true,
       exportAnalytics: true,
-      customBackgrounds: true,
       extendedThemes: true,
-      layoutCustomization: true,
-      disableBranding: true,
+      advancedBackgrounds: true,
       customCSS: true,
       customFonts: true,
-      animatedProfiles: true,
+      advancedAnimations: true,
+      disableBranding: true,
       advancedEmbedControls: true,
       featuredLinks: true,
       linkScheduling: true,

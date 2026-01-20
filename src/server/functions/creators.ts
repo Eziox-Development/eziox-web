@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { db } from '../db'
 import { users, profiles, userStats } from '../db/schema'
 import { eq, desc, and, isNotNull, sql } from 'drizzle-orm'
+import type { SQL } from 'drizzle-orm'
 
 export const getCreatorsFn = createServerFn({ method: 'GET' })
   .inputValidator(
@@ -19,17 +20,14 @@ export const getCreatorsFn = createServerFn({ method: 'GET' })
     const category = data?.category
     const featured = data?.featured
 
-    let whereConditions = and(
-      isNotNull(profiles.creatorType),
-      eq(profiles.isPublic, true)
-    )
+    let whereClause: SQL<unknown> = eq(profiles.isPublic, true)
 
     if (category && category !== 'all') {
-      whereConditions = and(whereConditions, eq(profiles.creatorType, category))
+      whereClause = and(whereClause, sql`${profiles.creatorTypes} ? ${category}`)!
     }
 
     if (featured) {
-      whereConditions = and(whereConditions, eq(profiles.isFeatured, true))
+      whereClause = and(whereClause, eq(profiles.isFeatured, true))!
     }
 
     const results = await db
@@ -47,7 +45,7 @@ export const getCreatorsFn = createServerFn({ method: 'GET' })
           banner: profiles.banner,
           badges: profiles.badges,
           accentColor: profiles.accentColor,
-          creatorType: profiles.creatorType,
+          creatorTypes: profiles.creatorTypes,
           isFeatured: profiles.isFeatured,
           socials: profiles.socials,
           referredBy: profiles.referredBy,
@@ -60,7 +58,7 @@ export const getCreatorsFn = createServerFn({ method: 'GET' })
       .from(profiles)
       .innerJoin(users, eq(users.id, profiles.userId))
       .leftJoin(userStats, eq(userStats.userId, profiles.userId))
-      .where(whereConditions)
+      .where(whereClause)
       .orderBy(desc(profiles.isFeatured), desc(userStats.followers))
       .limit(limit)
       .offset(offset)
@@ -89,7 +87,7 @@ export const getCreatorsFn = createServerFn({ method: 'GET' })
       .select({ count: sql<number>`COUNT(*)` })
       .from(profiles)
       .innerJoin(users, eq(users.id, profiles.userId))
-      .where(whereConditions)
+      .where(whereClause)
 
     return {
       creators: creatorsWithReferrer,
@@ -122,7 +120,7 @@ export const getFeaturedCreatorsFn = createServerFn({ method: 'GET' })
           banner: profiles.banner,
           badges: profiles.badges,
           accentColor: profiles.accentColor,
-          creatorType: profiles.creatorType,
+          creatorTypes: profiles.creatorTypes,
           socials: profiles.socials,
         },
         stats: {
@@ -136,7 +134,7 @@ export const getFeaturedCreatorsFn = createServerFn({ method: 'GET' })
       .where(and(
         eq(profiles.isFeatured, true),
         eq(profiles.isPublic, true),
-        isNotNull(profiles.creatorType)
+        sql`jsonb_array_length(${profiles.creatorTypes}) > 0`
       ))
       .orderBy(desc(userStats.followers))
       .limit(limit)
@@ -146,65 +144,83 @@ export const getFeaturedCreatorsFn = createServerFn({ method: 'GET' })
 
 export const getCreatorCategoriesFn = createServerFn({ method: 'GET' })
   .handler(async () => {
-    const results = await db
+    const allProfiles = await db
       .select({
-        category: profiles.creatorType,
-        count: sql<number>`COUNT(*)`,
+        creatorTypes: profiles.creatorTypes,
       })
       .from(profiles)
-      .where(and(
-        isNotNull(profiles.creatorType),
-        eq(profiles.isPublic, true)
-      ))
-      .groupBy(profiles.creatorType)
-      .orderBy(desc(sql`COUNT(*)`))
+      .where(eq(profiles.isPublic, true))
 
-    return results.filter(r => r.category !== null) as { category: string; count: number }[]
+    // Flatten creatorTypes arrays and count each category
+    const categoryMap = new Map<string, number>()
+    for (const profile of allProfiles) {
+      const raw = profile.creatorTypes
+      const types = Array.isArray(raw) ? raw : []
+      for (const type of types) {
+        if (typeof type === 'string') {
+          categoryMap.set(type, (categoryMap.get(type) || 0) + 1)
+        }
+      }
+    }
+    return Array.from(categoryMap.entries())
+      .map(([category, count]) => ({ category, count }))
+      .sort((a, b) => b.count - a.count)
   })
 
 export const getCreatorStatsFn = createServerFn({ method: 'GET' })
   .handler(async () => {
-    const [totalCreators] = await db
-      .select({ count: sql<number>`COUNT(*)` })
-      .from(profiles)
-      .where(and(
-        isNotNull(profiles.creatorType),
-        eq(profiles.isPublic, true)
-      ))
+    try {
+      const [totalCreators] = await db
+        .select({ count: sql<number>`COUNT(*)::int` })
+        .from(profiles)
+        .where(eq(profiles.isPublic, true))
 
-    const [featuredCount] = await db
-      .select({ count: sql<number>`COUNT(*)` })
-      .from(profiles)
-      .where(and(
-        eq(profiles.isFeatured, true),
-        eq(profiles.isPublic, true)
-      ))
+      const [featuredCount] = await db
+        .select({ count: sql<number>`COUNT(*)::int` })
+        .from(profiles)
+        .where(and(
+          eq(profiles.isFeatured, true),
+          eq(profiles.isPublic, true)
+        ))
 
-    const categories = await db
-      .select({
-        category: profiles.creatorType,
-      })
-      .from(profiles)
-      .where(and(
-        isNotNull(profiles.creatorType),
-        eq(profiles.isPublic, true)
-      ))
-      .groupBy(profiles.creatorType)
+      const allProfiles = await db
+        .select({
+          creatorTypes: profiles.creatorTypes,
+        })
+        .from(profiles)
+        .where(eq(profiles.isPublic, true))
 
-    const [referredCreators] = await db
-      .select({ count: sql<number>`COUNT(*)` })
-      .from(profiles)
-      .where(and(
-        isNotNull(profiles.creatorType),
-        isNotNull(profiles.referredBy),
-        eq(profiles.isPublic, true)
-      ))
+      const uniqueCategories = new Set<string>()
+      for (const profile of allProfiles) {
+        const raw = profile.creatorTypes
+        const types = Array.isArray(raw) ? raw : []
+        for (const t of types) {
+          if (typeof t === 'string') uniqueCategories.add(t)
+        }
+      }
 
-    return {
-      totalCreators: totalCreators?.count || 0,
-      featuredCount: featuredCount?.count || 0,
-      categoryCount: categories.length,
-      referredCreators: referredCreators?.count || 0,
+      const [referredCreators] = await db
+        .select({ count: sql<number>`COUNT(*)::int` })
+        .from(profiles)
+        .where(and(
+          isNotNull(profiles.referredBy),
+          eq(profiles.isPublic, true)
+        ))
+
+      return {
+        totalCreators: totalCreators?.count ?? 0,
+        featuredCount: featuredCount?.count ?? 0,
+        categoryCount: uniqueCategories.size,
+        referredCreators: referredCreators?.count ?? 0,
+      }
+    } catch (error) {
+      console.error('getCreatorStatsFn error:', error)
+      return {
+        totalCreators: 0,
+        featuredCount: 0,
+        categoryCount: 0,
+        referredCreators: 0,
+      }
     }
   })
 

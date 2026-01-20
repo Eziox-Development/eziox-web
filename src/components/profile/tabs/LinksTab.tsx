@@ -9,6 +9,7 @@ import { getMyLinksFn, createLinkFn, updateLinkFn, deleteLinkFn } from '@/server
 import { Link as LinkIcon, Eye, EyeOff, MousePointerClick, TrendingUp, Plus, X, Save, Loader2, Edit3, Trash2, GripVertical, Settings2, Star } from 'lucide-react'
 import { LinkAdvancedSettings } from '@/components/profile/LinkAdvancedSettings'
 import { useAuth } from '@/hooks/use-auth'
+import { useTheme } from '@/components/portfolio/ThemeProvider'
 
 const linkSchema = z.object({
   title: z.string().min(1, 'Title is required').max(100),
@@ -18,11 +19,9 @@ const linkSchema = z.object({
 
 type LinkFormData = z.infer<typeof linkSchema>
 
-interface LinksTabProps {
-  accentColor: string
-}
-
-export function LinksTab({ accentColor }: LinksTabProps) {
+export function LinksTab() {
+  const { theme } = useTheme()
+  const accentColor = theme.colors.primary
   const queryClient = useQueryClient()
   const getMyLinks = useServerFn(getMyLinksFn)
   const createLink = useServerFn(createLinkFn)

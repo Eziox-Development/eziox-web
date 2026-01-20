@@ -1,6 +1,9 @@
+import { useState, useRef, useEffect } from 'react'
 import { motion } from 'motion/react'
-import { User, AtSign, MapPin, Globe, Cake, Pencil } from 'lucide-react'
-import { SOCIAL_PLATFORMS, CREATOR_TYPES, PRONOUNS_OPTIONS, type ProfileFormData } from '@/routes/_protected/profile'
+import { User, AtSign, MapPin, Globe, Cake, Pencil, ChevronDown, Check } from 'lucide-react'
+import { SOCIAL_PLATFORMS, CREATOR_TYPES, PRONOUNS_OPTIONS } from '@/components/profile/constants'
+import type { ProfileFormData } from '@/components/profile/types'
+import { useTheme } from '@/components/portfolio/ThemeProvider'
 
 interface ProfileTabProps {
   formData: ProfileFormData
@@ -11,13 +14,15 @@ interface ProfileTabProps {
 }
 
 export function ProfileTab({ formData, updateField, updateSocial, customPronouns, setCustomPronouns }: ProfileTabProps) {
+  const { theme } = useTheme()
+  const accentColor = theme.colors.primary
   return (
     <motion.div key="profile" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="space-y-6">
       {/* Basic Info */}
-      <div className="rounded-2xl overflow-hidden" style={{ background: 'var(--card)', border: '1px solid var(--border)' }}>
+      <div className="rounded-2xl" style={{ background: 'var(--card)', border: '1px solid var(--border)', overflow: 'visible' }}>
         <div className="p-5 border-b" style={{ borderColor: 'var(--border)' }}>
           <div className="flex items-center gap-2">
-            <User size={20} style={{ color: formData.accentColor }} />
+            <User size={20} style={{ color: accentColor }} />
             <h2 className="text-lg font-bold" style={{ color: 'var(--foreground)' }}>Basic Information</h2>
           </div>
         </div>
@@ -49,7 +54,14 @@ export function ProfileTab({ formData, updateField, updateSocial, customPronouns
             <InputField label="Custom Pronouns" value={customPronouns} onChange={setCustomPronouns} placeholder="Enter pronouns" />
           )}
 
-          <SelectField label="Creator Type" value={formData.creatorType} onChange={(v) => updateField('creatorType', v)} options={CREATOR_TYPES} hint="Helps show your profile to the right audience" />
+          <MultiSelectField 
+            label="Creator Types" 
+            selected={formData.creatorTypes} 
+            onChange={(v) => updateField('creatorTypes', v)} 
+            options={CREATOR_TYPES.filter(t => t.value !== '')} 
+            hint="Select up to 5 types that describe you best"
+            max={5}
+          />
         </div>
       </div>
 
@@ -57,7 +69,7 @@ export function ProfileTab({ formData, updateField, updateSocial, customPronouns
       <div className="rounded-2xl overflow-hidden" style={{ background: 'var(--card)', border: '1px solid var(--border)' }}>
         <div className="p-5 border-b" style={{ borderColor: 'var(--border)' }}>
           <div className="flex items-center gap-2">
-            <Globe size={20} style={{ color: formData.accentColor }} />
+            <Globe size={20} style={{ color: accentColor }} />
             <h2 className="text-lg font-bold" style={{ color: 'var(--foreground)' }}>Social Links</h2>
           </div>
         </div>
@@ -94,7 +106,7 @@ function InputField({ label, icon: Icon, value, onChange, placeholder, type = 't
 }
 
 function SelectField({ label, value, onChange, options, hint }: {
-  label: string; value: string; onChange: (v: string) => void; options: { value: string; label: string }[]; hint?: string
+  label: string; value: string; onChange: (v: string) => void; options: readonly { readonly value: string; readonly label: string }[]; hint?: string
 }) {
   return (
     <div>
@@ -104,6 +116,76 @@ function SelectField({ label, value, onChange, options, hint }: {
         {options.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
       </select>
       {hint && <p className="text-xs mt-1" style={{ color: 'var(--foreground-muted)' }}>{hint}</p>}
+    </div>
+  )
+}
+
+function MultiSelectField({ label, selected, onChange, options, hint, max = 5 }: {
+  label: string; selected: string[]; onChange: (v: string[]) => void; options: readonly { readonly value: string; readonly label: string }[]; hint?: string; max?: number
+}) {
+  const [isOpen, setIsOpen] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  const toggleOption = (value: string) => {
+    if (selected.includes(value)) {
+      onChange(selected.filter(v => v !== value))
+    } else if (selected.length < max) {
+      onChange([...selected, value])
+    }
+  }
+
+  const selectedLabels = selected.map(v => options.find(o => o.value === v)?.label).filter(Boolean)
+
+  return (
+    <div className="relative" ref={dropdownRef}>
+      <label className="block text-sm font-medium mb-2" style={{ color: 'var(--foreground)' }}>{label}</label>
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full px-4 py-3 rounded-xl text-left flex items-center justify-between"
+        style={{ background: 'var(--background-secondary)', color: 'var(--foreground)', border: '1px solid var(--border)' }}
+      >
+        <span className={selectedLabels.length ? '' : 'opacity-50'}>
+          {selectedLabels.length ? selectedLabels.join(', ') : 'Select types...'}
+        </span>
+        <ChevronDown size={18} style={{ color: 'var(--foreground-muted)', transform: isOpen ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 0.2s' }} />
+      </button>
+      {isOpen && (
+        <div className="absolute z-50 w-full mt-2 rounded-xl overflow-hidden shadow-xl" style={{ background: 'var(--card)', border: '1px solid var(--border)' }}>
+          <div className="max-h-64 overflow-y-auto p-2">
+            {options.map((opt) => {
+              const isSelected = selected.includes(opt.value)
+              const isDisabled = !isSelected && selected.length >= max
+              return (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => !isDisabled && toggleOption(opt.value)}
+                  disabled={isDisabled}
+                  className="w-full px-3 py-2.5 rounded-lg text-left flex items-center gap-3 transition-colors hover:bg-[var(--background-secondary)]"
+                  style={{ opacity: isDisabled ? 0.5 : 1, cursor: isDisabled ? 'not-allowed' : 'pointer' }}
+                >
+                  <div className="w-5 h-5 rounded border-2 flex items-center justify-center" style={{ borderColor: isSelected ? 'var(--primary)' : 'var(--border)', background: isSelected ? 'var(--primary)' : 'transparent' }}>
+                    {isSelected && <Check size={14} style={{ color: '#fff' }} />}
+                  </div>
+                  <span style={{ color: 'var(--foreground)' }}>{opt.label}</span>
+                </button>
+              )
+            })}
+          </div>
+        </div>
+      )}
+      {hint && <p className="text-xs mt-1" style={{ color: 'var(--foreground-muted)' }}>{hint} ({selected.length}/{max})</p>}
     </div>
   )
 }

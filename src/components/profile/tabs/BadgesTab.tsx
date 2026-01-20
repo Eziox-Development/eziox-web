@@ -10,15 +10,17 @@ import { BADGE_LIST, getBadgeConfigs, sortBadgesByRarity, type BadgeConfig } fro
 import { Award, Sparkles, Lock, CheckCircle, Loader2 } from 'lucide-react'
 import * as LucideIcons from 'lucide-react'
 import { useState } from 'react'
+import { useTheme } from '@/components/portfolio/ThemeProvider'
 
 interface BadgesTabProps {
   badges: string[]
-  accentColor: string
   referralCount: number
   isEarlyAdopter: boolean
 }
 
-export function BadgesTab({ badges, accentColor, referralCount, isEarlyAdopter }: BadgesTabProps) {
+export function BadgesTab({ badges, referralCount, isEarlyAdopter }: BadgesTabProps) {
+  const { theme } = useTheme()
+  const accentColor = theme.colors.primary
   const checkBadges = useServerFn(checkAndAwardBadgesFn)
   const [isChecking, setIsChecking] = useState(false)
   const [newBadges, setNewBadges] = useState<string[]>([])

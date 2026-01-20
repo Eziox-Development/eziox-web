@@ -32,23 +32,33 @@ async function getUserTier(userId: string): Promise<TierType> {
   return (tier === 'standard' || !tier ? 'free' : tier) as TierType
 }
 
-function canAccessFeature(tier: TierType, feature: 'customBackgrounds' | 'layoutCustomization' | 'profileBackups' | 'extendedThemes'): boolean {
-  const proFeatures = ['customBackgrounds', 'layoutCustomization', 'profileBackups', 'extendedThemes']
+type FeatureKey = 'basicBackgrounds' | 'advancedBackgrounds' | 'layoutCustomization' | 'profileBackups' | 'extendedThemes' | 'basicThemes' | 'presetFonts' | 'basicAnimations'
+
+function canAccessFeature(tier: TierType, feature: FeatureKey): boolean {
+  // Features available to ALL users (including free)
+  const freeFeatures: FeatureKey[] = ['basicBackgrounds', 'layoutCustomization', 'basicThemes', 'presetFonts', 'basicAnimations']
+  if (freeFeatures.includes(feature)) {
+    return true
+  }
+  
+  // Features requiring Pro or higher
+  const proFeatures: FeatureKey[] = ['advancedBackgrounds', 'profileBackups', 'extendedThemes']
   if (proFeatures.includes(feature)) {
     return ['pro', 'creator', 'lifetime'].includes(tier)
   }
+  
   return false
 }
 
 const customBackgroundSchema = z.object({
   type: z.enum(['solid', 'gradient', 'image', 'video', 'animated']),
-  value: z.string(),
+  value: z.string().default(''),
   gradientAngle: z.number().min(0).max(360).optional(),
   gradientColors: z.array(z.string()).optional(),
-  imageUrl: z.string().url().optional(),
+  imageUrl: z.string().optional(),
   imageOpacity: z.number().min(0).max(1).optional(),
   imageBlur: z.number().min(0).max(20).optional(),
-  videoUrl: z.string().url().optional(),
+  videoUrl: z.string().optional(),
   videoLoop: z.boolean().optional(),
   videoMuted: z.boolean().optional(),
   animatedPreset: z.string().optional(),
@@ -84,8 +94,14 @@ export const getProfileSettingsFn = createServerFn({ method: 'GET' }).handler(as
 
   return {
     tier,
-    canCustomize: canAccessFeature(tier, 'customBackgrounds'),
+    // Basic customization - available to ALL users
+    canBasicBackgrounds: canAccessFeature(tier, 'basicBackgrounds'),
     canLayoutCustomize: canAccessFeature(tier, 'layoutCustomization'),
+    canBasicThemes: canAccessFeature(tier, 'basicThemes'),
+    canPresetFonts: canAccessFeature(tier, 'presetFonts'),
+    canBasicAnimations: canAccessFeature(tier, 'basicAnimations'),
+    // Advanced customization - Pro+ only
+    canAdvancedBackgrounds: canAccessFeature(tier, 'advancedBackgrounds'),
     canBackup: canAccessFeature(tier, 'profileBackups'),
     canExtendedThemes: canAccessFeature(tier, 'extendedThemes'),
     customBackground: profile?.customBackground as CustomBackground | null,
@@ -102,20 +118,36 @@ export const updateCustomBackgroundFn = createServerFn({ method: 'POST' })
     const user = await getAuthenticatedUser()
     const tier = await getUserTier(user.id)
 
-    if (!canAccessFeature(tier, 'customBackgrounds')) {
-      setResponseStatus(403)
-      throw { message: 'Custom backgrounds require Pro tier or higher', status: 403, code: 'TIER_REQUIRED' }
-    }
+    // All background types are now available to ALL users
+    void tier
+
+    // Ensure we pass the complete data object to the database
+    const backgroundData = data ? {
+      type: data.type,
+      value: data.value || '',
+      gradientAngle: data.gradientAngle,
+      gradientColors: data.gradientColors,
+      imageUrl: data.imageUrl,
+      imageOpacity: data.imageOpacity,
+      imageBlur: data.imageBlur,
+      videoUrl: data.videoUrl,
+      videoLoop: data.videoLoop,
+      videoMuted: data.videoMuted,
+      animatedPreset: data.animatedPreset,
+      animatedSpeed: data.animatedSpeed,
+      animatedIntensity: data.animatedIntensity,
+      animatedColors: data.animatedColors,
+    } : null
 
     await db
       .update(profiles)
       .set({ 
-        customBackground: data,
+        customBackground: backgroundData,
         updatedAt: new Date(),
       })
       .where(eq(profiles.userId, user.id))
 
-    return { success: true, customBackground: data }
+    return { success: true, customBackground: backgroundData }
   })
 
 export const updateLayoutSettingsFn = createServerFn({ method: 'POST' })
@@ -124,10 +156,8 @@ export const updateLayoutSettingsFn = createServerFn({ method: 'POST' })
     const user = await getAuthenticatedUser()
     const tier = await getUserTier(user.id)
 
-    if (!canAccessFeature(tier, 'layoutCustomization')) {
-      setResponseStatus(403)
-      throw { message: 'Layout customization requires Pro tier or higher', status: 403, code: 'TIER_REQUIRED' }
-    }
+    // Layout customization is now available to ALL users
+    void tier
 
     const [currentProfile] = await db
       .select({ layoutSettings: profiles.layoutSettings })
@@ -350,8 +380,8 @@ export const getCustomThemesFn = createServerFn({ method: 'GET' })
       .limit(1)
     
     const tier = await getUserTier(user.id)
-    const canCreate = ['pro', 'creator', 'lifetime'].includes(tier)
-    const maxThemes = tier === 'creator' || tier === 'lifetime' ? 10 : tier === 'pro' ? 5 : 0
+    const canCreate = true // All users can create themes now
+    const maxThemes = tier === 'creator' || tier === 'lifetime' ? 10 : tier === 'pro' ? 5 : 1 // Free users get 1 theme
     
     return {
       themes: (profile?.customThemes || []) as CustomTheme[],
@@ -369,11 +399,6 @@ export const createCustomThemeFn = createServerFn({ method: 'POST' })
     const user = await getAuthenticatedUser()
     const tier = await getUserTier(user.id)
     
-    if (!['pro', 'creator', 'lifetime'].includes(tier)) {
-      setResponseStatus(403)
-      throw { message: 'Custom themes require Pro tier or higher', status: 403, code: 'TIER_REQUIRED' }
-    }
-    
     const [profile] = await db
       .select({ customThemes: profiles.customThemes })
       .from(profiles)
@@ -381,7 +406,7 @@ export const createCustomThemeFn = createServerFn({ method: 'POST' })
       .limit(1)
     
     const existingThemes = (profile?.customThemes || []) as CustomTheme[]
-    const maxThemes = tier === 'creator' || tier === 'lifetime' ? 10 : 5
+    const maxThemes = tier === 'creator' || tier === 'lifetime' ? 10 : tier === 'pro' ? 5 : 1
     
     if (existingThemes.length >= maxThemes) {
       setResponseStatus(400)

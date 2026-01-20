@@ -153,7 +153,7 @@ export const profiles = pgTable('profiles', {
   showActivity: boolean('show_activity').default(true),
   referralCode: varchar('referral_code', { length: 20 }),
   referredBy: uuid('referred_by').references(() => users.id, { onDelete: 'set null' }),
-  creatorType: varchar('creator_type', { length: 50 }),
+  creatorTypes: jsonb('creator_types').$type<string[]>().default([]),
   isFeatured: boolean('is_featured').default(false),
   notifyNewFollower: boolean('notify_new_follower').default(true),
   notifyMilestones: boolean('notify_milestones').default(true),

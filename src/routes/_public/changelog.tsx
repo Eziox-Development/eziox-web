@@ -65,6 +65,32 @@ const typeConfig: Record<ChangeType, { label: string; color: string; bgColor: st
 
 const changelog: ChangelogEntry[] = [
   {
+    version: '2.3.0',
+    date: 'January 20, 2026',
+    title: 'Playground & Theme Refactor',
+    description: 'Completely redesigned Playground with live preview, animated backgrounds, and unified theme system. Removed redundant Appearance settings in favor of ThemeSwitcher.',
+    icon: Sliders,
+    type: 'feature',
+    highlights: [
+      'New modern Playground with live preview',
+      'Animated background presets',
+      'Unified theme system via ThemeSwitcher',
+      'Removed redundant Appearance settings',
+    ],
+    changes: [
+      { type: 'feature', text: 'Completely redesigned Playground with live data preview' },
+      { type: 'feature', text: 'Desktop/Mobile preview toggle in Playground' },
+      { type: 'feature', text: 'Animated background presets (30+ presets in 5 categories)' },
+      { type: 'feature', text: 'Contained animation mode for preview containers' },
+      { type: 'improvement', text: 'Unified theme system - ThemeSwitcher now controls all colors' },
+      { type: 'improvement', text: 'Removed Appearance section from Settings (redundant with ThemeSwitcher)' },
+      { type: 'improvement', text: 'Live Preview now larger and more prominent' },
+      { type: 'fix', text: 'Fixed Vite HMR warning for ANIMATED_PRESETS export' },
+      { type: 'fix', text: 'Fixed animated backgrounds not showing on Bio Page' },
+      { type: 'fix', text: 'Fixed TypeScript error for non-existent /archive route' },
+    ],
+  },
+  {
     version: '2.2.0',
     date: 'January 20, 2026',
     title: 'Link Analytics & Scheduling',

@@ -504,7 +504,7 @@ function AnalyticsPage() {
                   <Link2 size={32} className="mx-auto mb-3 opacity-30" style={{ color: theme.colors.foregroundMuted }} />
                   <p className="text-sm" style={{ color: theme.colors.foregroundMuted }}>No link data yet</p>
                   <Link
-                    to="/links"
+                    to="/profile"
                     className="inline-flex items-center gap-1 text-xs mt-2 hover:underline"
                     style={{ color: theme.colors.primary }}
                   >

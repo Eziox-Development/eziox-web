@@ -9,6 +9,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.3.0] - 2026-01-20
+
+### Added - Playground & Theme Refactor 🎨
+
+**New Playground:**
+- **Live Preview** - Real-time preview with actual user data (profile, links, socials, badges)
+- **Desktop/Mobile Toggle** - Switch between device views in preview
+- **Background Editor** - Edit solid, gradient, image, video, and animated backgrounds
+- **Layout Editor** - Customize card spacing, border radius, padding, shadows, and link styles
+- **Animated Presets** - 30+ animated background presets in 5 categories:
+  - VTuber/Anime: Sakura, Neon City, Starfield, Holographic, Sparkles
+  - Gamer: Matrix Rain, Cyber Grid, RGB Wave, Particles, Glitch
+  - Developer: Code Rain, Binary Flow, Terminal, Circuit, Gradient Mesh
+  - Nature: Aurora, Ocean, Fireflies, Clouds, Rain, Snow
+  - Abstract: Fluid, Geometric, Waves, Bokeh, Noise, Vortex
+
+**Theme System Unification:**
+- **ThemeSwitcher** now controls all colors (removed redundant accentColor)
+- **Appearance Section** removed from Settings (was duplicate of ThemeSwitcher)
+- All components now use `theme.colors.primary` instead of `accentColor`
+
+### Fixed
+
+- **Vite HMR Warning** - Moved `ANIMATED_PRESETS` to separate file to fix Fast Refresh
+- **Animated Backgrounds** - Fixed z-index issues causing animations to disappear on Bio Page
+- **TypeScript Error** - Fixed non-existent `/archive` route in not-found component
+- **Contained Animations** - Added `contained` prop for animations in preview containers
+
+### Changed
+
+- **Live Preview** - Now larger and more prominent (80vh desktop, 75vh mobile)
+- **Decorative Blobs** - Hidden when animated/video background is active
+- **ProfileFormData** - Removed `accentColor` field
+- **All Profile Components** - Updated to use `useTheme()` instead of `accentColor` prop
+
+---
+
 ## [2.2.0] - 2026-01-20
 
 ### Added - Link Analytics & Scheduling System 📊

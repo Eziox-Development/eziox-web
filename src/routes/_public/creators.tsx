@@ -4,7 +4,7 @@ import { motion } from 'motion/react'
 import { useQuery } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
 import { getCreatorsFn, getCreatorStatsFn } from '@/server/functions/creators'
-import { BadgeDisplay } from '@/components/ui/BadgeDisplay'
+import { BadgeDisplay } from '@/components/ui/badge-display'
 import { useTheme } from '@/components/portfolio/ThemeProvider'
 import {
   Sparkles, Search, Loader2, Users2, Star, TrendingUp, Activity,
@@ -65,7 +65,7 @@ function CreatorsPage() {
 
   const { data: statsData } = useQuery({
     queryKey: ['creator-stats'],
-    queryFn: () => getStats(),
+    queryFn: () => getStats({}),
     refetchInterval: 30000,
   })
 
@@ -303,7 +303,8 @@ function CreatorsPage() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {featuredCreators.map((creator, index) => {
-                const catConfig = getCategoryConfig(creator.profile.creatorType)
+                const creatorTypes = (creator.profile.creatorTypes as string[]) || []
+                const catConfig = getCategoryConfig(creatorTypes[0])
                 return (
                   <motion.div
                     key={creator.user.id}
@@ -422,7 +423,8 @@ function CreatorsPage() {
             ) : (
               <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {regularCreators.map((creator, index) => {
-                  const catConfig = getCategoryConfig(creator.profile.creatorType)
+                  const creatorTypes = (creator.profile.creatorTypes as string[]) || []
+                const catConfig = getCategoryConfig(creatorTypes[0])
                   return (
                     <motion.div
                       key={creator.user.id}

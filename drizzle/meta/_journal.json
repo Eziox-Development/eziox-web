@@ -64,6 +64,13 @@
       "when": 1768843211556,
       "tag": "0008_hesitant_patch",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1768916516443,
+      "tag": "0009_creator_types_array",
+      "breakpoints": true
     }
   ]
 }

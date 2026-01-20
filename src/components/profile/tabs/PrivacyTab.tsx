@@ -1,6 +1,7 @@
 import { motion } from 'motion/react'
 import { Lock, Eye, Activity, Crown, Zap, Users, Settings } from 'lucide-react'
-import { type ProfileFormData } from '@/routes/_protected/profile'
+import type { ProfileFormData } from '@/components/profile/types'
+import { useTheme } from '@/components/portfolio/ThemeProvider'
 
 interface PrivacyTabProps {
   formData: ProfileFormData
@@ -9,13 +10,15 @@ interface PrivacyTabProps {
 }
 
 export function PrivacyTab({ formData, updateField, isOwner }: PrivacyTabProps) {
+  const { theme } = useTheme()
+  const accentColor = theme.colors.primary
   return (
     <motion.div key="privacy" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="space-y-6">
       {/* Privacy Settings */}
       <div className="rounded-2xl overflow-hidden" style={{ background: 'var(--card)', border: '1px solid var(--border)' }}>
         <div className="p-5 border-b" style={{ borderColor: 'var(--border)' }}>
           <div className="flex items-center gap-2">
-            <Lock size={20} style={{ color: formData.accentColor }} />
+            <Lock size={20} style={{ color: accentColor }} />
             <h2 className="text-lg font-bold" style={{ color: 'var(--foreground)' }}>Privacy Settings</h2>
           </div>
         </div>
@@ -26,7 +29,7 @@ export function PrivacyTab({ formData, updateField, isOwner }: PrivacyTabProps) 
             icon={Eye}
             checked={formData.isPublic}
             onChange={(v) => updateField('isPublic', v)}
-            accentColor={formData.accentColor}
+            accentColor={accentColor}
           />
           <ToggleField
             label="Show Activity"
@@ -34,7 +37,7 @@ export function PrivacyTab({ formData, updateField, isOwner }: PrivacyTabProps) 
             icon={Activity}
             checked={formData.showActivity}
             onChange={(v) => updateField('showActivity', v)}
-            accentColor={formData.accentColor}
+            accentColor={accentColor}
           />
         </div>
       </div>

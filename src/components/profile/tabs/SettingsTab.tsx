@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { Palette, Shield, Eye, EyeOff, Mail, AtSign, User, Calendar, Sparkles, Check, Copy, Music, Bell, UserPlus, Trophy, Megaphone, Smartphone, Loader2, KeyRound, X, Trash2, AlertTriangle, Download } from 'lucide-react'
-import { ACCENT_COLORS, type ProfileFormData } from '@/routes/_protected/profile'
+import { Shield, Eye, EyeOff, Mail, AtSign, User, Calendar, Sparkles, Check, Copy, Music, Bell, UserPlus, Trophy, Megaphone, Smartphone, Loader2, KeyRound, X, Trash2, AlertTriangle, Download } from 'lucide-react'
 import { SpotifyConnect } from '@/components/spotify'
 import { useTheme } from '@/components/portfolio/ThemeProvider'
 import { useServerFn } from '@tanstack/react-start'
@@ -11,14 +10,12 @@ import { getNotificationSettingsFn, updateNotificationSettingsFn } from '@/serve
 import { setupTwoFactorFn, enableTwoFactorFn, disableTwoFactorFn, getTwoFactorStatusFn, deleteAccountFn, exportUserDataFn, regenerateRecoveryCodesFn } from '@/server/functions/auth'
 
 interface SettingsTabProps {
-  formData: ProfileFormData
-  updateField: <K extends keyof ProfileFormData>(key: K, value: ProfileFormData[K]) => void
   currentUser: { id: string; email: string | null; username: string; role: string | null; createdAt: string }
   copyToClipboard: (text: string, field: string) => void
   copiedField: string | null
 }
 
-export function SettingsTab({ formData, updateField, currentUser, copyToClipboard, copiedField }: SettingsTabProps) {
+export function SettingsTab({ currentUser, copyToClipboard, copiedField }: SettingsTabProps) {
   const [isInfoBlurred, setIsInfoBlurred] = useState(true)
   const [show2FASetup, setShow2FASetup] = useState(false)
   const [twoFactorCode, setTwoFactorCode] = useState('')
@@ -154,7 +151,7 @@ export function SettingsTab({ formData, updateField, currentUser, copyToClipboar
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <KeyRound size={20} style={{ color: formData.accentColor }} />
+                  <KeyRound size={20} style={{ color: theme.colors.primary }} />
                   <h3 className="text-lg font-bold" style={{ color: 'var(--foreground)' }}>Recovery Codes</h3>
                 </div>
                 <button onClick={() => setShowRecoveryCodes(false)} className="p-2 rounded-lg hover:bg-white/10">
@@ -186,7 +183,7 @@ export function SettingsTab({ formData, updateField, currentUser, copyToClipboar
                 <button
                   onClick={() => copyToClipboard(recoveryCodes.join('\n'), 'All Recovery Codes')}
                   className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-medium"
-                  style={{ background: formData.accentColor, color: 'white' }}
+                  style={{ background: theme.colors.primary, color: 'white' }}
                 >
                   {copiedField === 'All Recovery Codes' ? <Check size={16} /> : <Copy size={16} />}
                   {copiedField === 'All Recovery Codes' ? 'Copied!' : 'Copy All'}
@@ -222,7 +219,7 @@ export function SettingsTab({ formData, updateField, currentUser, copyToClipboar
       <div className="rounded-2xl overflow-hidden" style={{ background: 'var(--card)', border: '1px solid var(--border)' }}>
         <div className="p-5 border-b" style={{ borderColor: 'var(--border)' }}>
           <div className="flex items-center gap-2">
-            <Smartphone size={20} style={{ color: formData.accentColor }} />
+            <Smartphone size={20} style={{ color: theme.colors.primary }} />
             <h2 className="text-lg font-bold" style={{ color: 'var(--foreground)' }}>Two-Factor Authentication</h2>
           </div>
           <p className="text-sm mt-1" style={{ color: 'var(--foreground-muted)' }}>Add an extra layer of security to your account</p>
@@ -230,7 +227,7 @@ export function SettingsTab({ formData, updateField, currentUser, copyToClipboar
         <div className="p-5">
           {twoFactorLoading ? (
             <div className="flex items-center justify-center py-4">
-              <Loader2 className="w-6 h-6 animate-spin" style={{ color: formData.accentColor }} />
+              <Loader2 className="w-6 h-6 animate-spin" style={{ color: theme.colors.primary }} />
             </div>
           ) : twoFactorStatus?.enabled ? (
             <div className="space-y-4">
@@ -255,7 +252,7 @@ export function SettingsTab({ formData, updateField, currentUser, copyToClipboar
                     <p className="text-sm font-medium" style={{ color: 'var(--foreground)' }}>Recovery Codes</p>
                     <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>Use these if you lose access to your authenticator</p>
                   </div>
-                  <KeyRound size={18} style={{ color: formData.accentColor }} />
+                  <KeyRound size={18} style={{ color: theme.colors.primary }} />
                 </div>
                 {twoFactorStatus.recoveryCodesCount < 3 && (
                   <div className="flex items-center gap-2 p-3 rounded-lg" style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)' }}>
@@ -279,7 +276,7 @@ export function SettingsTab({ formData, updateField, currentUser, copyToClipboar
                       onClick={() => regenerateCode.length === 6 && regenerateCodesMutation.mutate(regenerateCode)}
                       disabled={regenerateCode.length !== 6 || regenerateCodesMutation.isPending}
                       className="px-4 py-2 rounded-xl font-medium text-white disabled:opacity-50"
-                      style={{ background: formData.accentColor }}
+                      style={{ background: theme.colors.primary }}
                     >
                       {regenerateCodesMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Regenerate'}
                     </button>
@@ -321,7 +318,7 @@ export function SettingsTab({ formData, updateField, currentUser, copyToClipboar
               </div>
               {setupLoading ? (
                 <div className="flex items-center justify-center py-8">
-                  <Loader2 className="w-8 h-8 animate-spin" style={{ color: formData.accentColor }} />
+                  <Loader2 className="w-8 h-8 animate-spin" style={{ color: theme.colors.primary }} />
                 </div>
               ) : twoFactorSetup ? (
                 <>
@@ -358,7 +355,7 @@ export function SettingsTab({ formData, updateField, currentUser, copyToClipboar
                         onClick={() => twoFactorCode.length === 6 && enable2FAMutation.mutate(twoFactorCode)}
                         disabled={twoFactorCode.length !== 6 || enable2FAMutation.isPending}
                         className="px-4 py-3 rounded-xl font-medium text-white disabled:opacity-50"
-                        style={{ background: formData.accentColor }}
+                        style={{ background: theme.colors.primary }}
                       >
                         {enable2FAMutation.isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Verify'}
                       </button>
@@ -371,8 +368,8 @@ export function SettingsTab({ formData, updateField, currentUser, copyToClipboar
           ) : (
             <div className="flex items-center justify-between p-4 rounded-xl" style={{ background: 'var(--background-secondary)' }}>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: `${formData.accentColor}20` }}>
-                  <KeyRound size={20} style={{ color: formData.accentColor }} />
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: `${theme.colors.primary}20` }}>
+                  <KeyRound size={20} style={{ color: theme.colors.primary }} />
                 </div>
                 <div>
                   <p className="font-medium text-sm" style={{ color: 'var(--foreground)' }}>Authenticator App</p>
@@ -382,7 +379,7 @@ export function SettingsTab({ formData, updateField, currentUser, copyToClipboar
               <button
                 onClick={() => setShow2FASetup(true)}
                 className="px-4 py-2 rounded-xl font-medium text-white text-sm"
-                style={{ background: formData.accentColor }}
+                style={{ background: theme.colors.primary }}
               >
                 Setup
               </button>
@@ -403,35 +400,11 @@ export function SettingsTab({ formData, updateField, currentUser, copyToClipboar
         </div>
       </div>
 
-      {/* Appearance */}
-      <div className="rounded-2xl overflow-hidden" style={{ background: 'var(--card)', border: '1px solid var(--border)' }}>
-        <div className="p-5 border-b" style={{ borderColor: 'var(--border)' }}>
-          <div className="flex items-center gap-2">
-            <Palette size={20} style={{ color: formData.accentColor }} />
-            <h2 className="text-lg font-bold" style={{ color: 'var(--foreground)' }}>Appearance</h2>
-          </div>
-        </div>
-        <div className="p-5">
-          <label className="block text-sm font-medium mb-3" style={{ color: 'var(--foreground)' }}>Accent Color</label>
-          <div className="flex flex-wrap gap-2">
-            {ACCENT_COLORS.map((color) => (
-              <button key={color} onClick={() => updateField('accentColor', color)} className="w-10 h-10 rounded-xl transition-all" style={{ background: color, boxShadow: formData.accentColor === color ? `0 0 0 3px var(--background), 0 0 0 5px ${color}` : 'none' }}>
-                {formData.accentColor === color && <Check size={20} className="text-white mx-auto" />}
-              </button>
-            ))}
-          </div>
-          <div className="mt-3 flex items-center gap-2">
-            <input type="color" value={formData.accentColor} onChange={(e) => updateField('accentColor', e.target.value)} className="w-10 h-10 rounded-lg cursor-pointer border-0" />
-            <input type="text" value={formData.accentColor} onChange={(e) => /^#[0-9A-Fa-f]{6}$/.test(e.target.value) && updateField('accentColor', e.target.value)} className="px-3 py-2 rounded-lg font-mono text-sm w-28" style={{ background: 'var(--background-secondary)', color: 'var(--foreground)', border: '1px solid var(--border)' }} />
-          </div>
-        </div>
-      </div>
-
       {/* Notifications */}
       <div className="rounded-2xl overflow-hidden" style={{ background: 'var(--card)', border: '1px solid var(--border)' }}>
         <div className="p-5 border-b" style={{ borderColor: 'var(--border)' }}>
           <div className="flex items-center gap-2">
-            <Bell size={20} style={{ color: formData.accentColor }} />
+            <Bell size={20} style={{ color: theme.colors.primary }} />
             <h2 className="text-lg font-bold" style={{ color: 'var(--foreground)' }}>Notifications</h2>
           </div>
           <p className="text-sm mt-1" style={{ color: 'var(--foreground-muted)' }}>Choose what you want to be notified about</p>
@@ -439,7 +412,7 @@ export function SettingsTab({ formData, updateField, currentUser, copyToClipboar
         <div className="p-5 space-y-4">
           {settingsLoading ? (
             <div className="flex items-center justify-center py-4">
-              <div className="w-6 h-6 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor: formData.accentColor, borderTopColor: 'transparent' }} />
+              <div className="w-6 h-6 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor: theme.colors.primary, borderTopColor: 'transparent' }} />
             </div>
           ) : (
             <>
@@ -449,7 +422,7 @@ export function SettingsTab({ formData, updateField, currentUser, copyToClipboar
                 description="Get notified when someone follows you"
                 enabled={notificationSettings?.notifyNewFollower ?? true}
                 onToggle={() => handleToggleSetting('notifyNewFollower')}
-                accentColor={formData.accentColor}
+                accentColor={theme.colors.primary}
                 isPending={updateSettingsMutation.isPending}
               />
               <NotificationToggle
@@ -458,7 +431,7 @@ export function SettingsTab({ formData, updateField, currentUser, copyToClipboar
                 description="Profile views and link click milestones"
                 enabled={notificationSettings?.notifyMilestones ?? true}
                 onToggle={() => handleToggleSetting('notifyMilestones')}
-                accentColor={formData.accentColor}
+                accentColor={theme.colors.primary}
                 isPending={updateSettingsMutation.isPending}
               />
               <NotificationToggle
@@ -467,7 +440,7 @@ export function SettingsTab({ formData, updateField, currentUser, copyToClipboar
                 description="Platform updates and announcements"
                 enabled={notificationSettings?.notifySystemUpdates ?? true}
                 onToggle={() => handleToggleSetting('notifySystemUpdates')}
-                accentColor={formData.accentColor}
+                accentColor={theme.colors.primary}
                 isPending={updateSettingsMutation.isPending}
               />
             </>
@@ -479,7 +452,7 @@ export function SettingsTab({ formData, updateField, currentUser, copyToClipboar
       <div className="rounded-2xl overflow-hidden" style={{ background: 'var(--card)', border: '1px solid var(--border)' }}>
         <div className="p-5 border-b" style={{ borderColor: 'var(--border)' }}>
           <div className="flex items-center gap-2">
-            <Mail size={20} style={{ color: formData.accentColor }} />
+            <Mail size={20} style={{ color: theme.colors.primary }} />
             <h2 className="text-lg font-bold" style={{ color: 'var(--foreground)' }}>Email Preferences</h2>
           </div>
           <p className="text-sm mt-1" style={{ color: 'var(--foreground-muted)' }}>Control which emails you receive</p>
@@ -487,7 +460,7 @@ export function SettingsTab({ formData, updateField, currentUser, copyToClipboar
         <div className="p-5 space-y-4">
           {settingsLoading ? (
             <div className="flex items-center justify-center py-4">
-              <div className="w-6 h-6 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor: formData.accentColor, borderTopColor: 'transparent' }} />
+              <div className="w-6 h-6 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor: theme.colors.primary, borderTopColor: 'transparent' }} />
             </div>
           ) : (
             <>
@@ -497,7 +470,7 @@ export function SettingsTab({ formData, updateField, currentUser, copyToClipboar
                 description="Get notified when someone logs into your account"
                 enabled={notificationSettings?.emailLoginAlerts ?? true}
                 onToggle={() => handleToggleSetting('emailLoginAlerts')}
-                accentColor={formData.accentColor}
+                accentColor={theme.colors.primary}
                 isPending={updateSettingsMutation.isPending}
               />
               <NotificationToggle
@@ -506,7 +479,7 @@ export function SettingsTab({ formData, updateField, currentUser, copyToClipboar
                 description="Password changes, 2FA updates, and security events"
                 enabled={notificationSettings?.emailSecurityAlerts ?? true}
                 onToggle={() => handleToggleSetting('emailSecurityAlerts')}
-                accentColor={formData.accentColor}
+                accentColor={theme.colors.primary}
                 isPending={updateSettingsMutation.isPending}
               />
               <NotificationToggle
@@ -515,7 +488,7 @@ export function SettingsTab({ formData, updateField, currentUser, copyToClipboar
                 description="Weekly summary of your profile stats and activity"
                 enabled={notificationSettings?.emailWeeklyDigest ?? true}
                 onToggle={() => handleToggleSetting('emailWeeklyDigest')}
-                accentColor={formData.accentColor}
+                accentColor={theme.colors.primary}
                 isPending={updateSettingsMutation.isPending}
               />
               <NotificationToggle
@@ -524,7 +497,7 @@ export function SettingsTab({ formData, updateField, currentUser, copyToClipboar
                 description="New features, improvements, and platform news"
                 enabled={notificationSettings?.emailProductUpdates ?? true}
                 onToggle={() => handleToggleSetting('emailProductUpdates')}
-                accentColor={formData.accentColor}
+                accentColor={theme.colors.primary}
                 isPending={updateSettingsMutation.isPending}
               />
             </>
@@ -536,7 +509,7 @@ export function SettingsTab({ formData, updateField, currentUser, copyToClipboar
       <div className="rounded-2xl overflow-hidden" style={{ background: 'var(--card)', border: '1px solid var(--border)' }}>
         <div className="p-5 border-b flex items-center justify-between" style={{ borderColor: 'var(--border)' }}>
           <div className="flex items-center gap-2">
-            <Shield size={20} style={{ color: formData.accentColor }} />
+            <Shield size={20} style={{ color: theme.colors.primary }} />
             <h2 className="text-lg font-bold" style={{ color: 'var(--foreground)' }}>Account Details</h2>
           </div>
           <button onClick={() => setIsInfoBlurred(!isInfoBlurred)} className="flex items-center gap-2 px-3 py-2 rounded-lg" style={{ background: 'var(--background-secondary)' }}>
@@ -555,7 +528,7 @@ export function SettingsTab({ formData, updateField, currentUser, copyToClipboar
             <button key={item.label} onClick={() => copyToClipboard(item.value, item.label)} className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-white/5 group" style={{ background: 'var(--background-secondary)' }}>
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: 'var(--card)' }}>
-                  <item.icon size={16} style={{ color: formData.accentColor }} />
+                  <item.icon size={16} style={{ color: theme.colors.primary }} />
                 </div>
                 <div className="text-left">
                   <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>{item.label}</p>
@@ -573,7 +546,7 @@ export function SettingsTab({ formData, updateField, currentUser, copyToClipboar
       {/* Privacy & Data */}
       <div className="rounded-2xl overflow-hidden" style={{ background: 'var(--card)', border: '1px solid var(--border)' }}>
         <div className="p-5 border-b flex items-center gap-2" style={{ borderColor: 'var(--border)' }}>
-          <Download size={20} style={{ color: formData.accentColor }} />
+          <Download size={20} style={{ color: theme.colors.primary }} />
           <h2 className="text-lg font-bold" style={{ color: 'var(--foreground)' }}>Privacy & Data</h2>
         </div>
         <div className="p-5 space-y-4">
@@ -600,7 +573,7 @@ export function SettingsTab({ formData, updateField, currentUser, copyToClipboar
                 }
               }}
               className="px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-              style={{ background: formData.accentColor, color: 'white' }}
+              style={{ background: theme.colors.primary, color: 'white' }}
             >
               <Download size={16} className="inline mr-2" />
               Export

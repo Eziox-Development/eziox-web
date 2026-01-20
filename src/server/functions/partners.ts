@@ -22,7 +22,7 @@ export const getPartnersFn = createServerFn({ method: 'GET' })
           banner: profiles.banner,
           badges: profiles.badges,
           accentColor: profiles.accentColor,
-          creatorType: profiles.creatorType,
+          creatorTypes: profiles.creatorTypes,
           isFeatured: profiles.isFeatured,
           socials: profiles.socials,
         },

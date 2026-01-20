@@ -22,7 +22,7 @@ import {
   UserMinus,
   Heart,
 } from 'lucide-react'
-import { BadgeDisplay } from '@/components/ui/BadgeDisplay'
+import { BadgeDisplay } from '@/components/ui/badge-display'
 import {
   SiX,
   SiGithub,
@@ -322,7 +322,7 @@ function BioPage() {
   }
 
   const profileData = profile.profile && 'bio' in profile.profile ? profile.profile : null
-  const accentColor = profileData?.accentColor || 'var(--primary)'
+  const accentColor = 'var(--primary)'
   
   // Customization settings
   const customBackground = profileData?.customBackground as CustomBackground | null
@@ -426,8 +426,11 @@ function BioPage() {
   }
 
   return (
-    <div className="min-h-screen relative" style={getBackgroundStyle()}>
-      {renderAnimatedBackground()}
+    <div className="min-h-screen relative overflow-hidden" style={getBackgroundStyle()}>
+      {/* Animated Background Layer - z-index 1 */}
+      <div className="fixed inset-0 z-1">
+        {renderAnimatedBackground()}
+      </div>
       
       {customCSS && (
         <style dangerouslySetInnerHTML={{ __html: sanitizeCSS(customCSS) }} />
@@ -455,20 +458,23 @@ function BioPage() {
         />
       )}
       
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <motion.div
-          className="absolute -top-40 -right-40 w-80 h-80 rounded-full blur-3xl opacity-20"
-          style={{ background: accentColor }}
-          animate={{ scale: [1, 1.2, 1], x: [0, 20, 0] }}
-          transition={{ duration: 10, repeat: Infinity }}
-        />
-        <motion.div
-          className="absolute -bottom-40 -left-40 w-96 h-96 rounded-full blur-3xl opacity-15"
-          style={{ background: 'var(--accent)' }}
-          animate={{ scale: [1.2, 1, 1.2], y: [0, -20, 0] }}
-          transition={{ duration: 12, repeat: Infinity }}
-        />
-      </div>
+      {/* Decorative blobs - only show when no animated/video background */}
+      {(!customBackground || (customBackground.type !== 'animated' && customBackground.type !== 'video')) && (
+        <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+          <motion.div
+            className="absolute -top-40 -right-40 w-80 h-80 rounded-full blur-3xl opacity-20"
+            style={{ background: accentColor }}
+            animate={{ scale: [1, 1.2, 1], x: [0, 20, 0] }}
+            transition={{ duration: 10, repeat: Infinity }}
+          />
+          <motion.div
+            className="absolute -bottom-40 -left-40 w-96 h-96 rounded-full blur-3xl opacity-15"
+            style={{ background: 'var(--accent)' }}
+            animate={{ scale: [1.2, 1, 1.2], y: [0, -20, 0] }}
+            transition={{ duration: 12, repeat: Infinity }}
+          />
+        </div>
+      )}
 
       {/* Main Content */}
       <div className="relative z-10 max-w-lg mx-auto px-4 py-8">

@@ -504,7 +504,7 @@ export async function updateProfile(
     isPublic: boolean
     showActivity: boolean
     birthday: Date
-    creatorType: string
+    creatorTypes: string[]
     socials: Record<string, string>
   }>
 ) {

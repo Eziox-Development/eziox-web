@@ -7,7 +7,7 @@ import { useServerFn } from '@tanstack/react-start'
 import { getAllUsersWithBadgesFn, assignBadgeFn, removeBadgeFn } from '@/server/functions/badges'
 import { adminSetUserTierFn } from '@/server/functions/subscriptions'
 import { BADGE_LIST, type BadgeId } from '@/lib/badges'
-import { BadgeDisplay } from '@/components/ui/BadgeDisplay'
+import { BadgeDisplay } from '@/components/ui/badge-display'
 import type { TierType } from '@/server/lib/stripe'
 import {
   ShieldCheck, Search, Loader2, Plus, Minus, CheckCircle2, XCircle,

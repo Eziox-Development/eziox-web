@@ -5,12 +5,11 @@ import { useQuery } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
 import { getReferralCodeFn, getReferralStatsFn } from '@/server/functions/referrals'
 import { Users, Trophy, TrendingUp, Star, QrCode, Copy, Check, Share2, Loader2, Sparkles, ArrowRight } from 'lucide-react'
+import { useTheme } from '@/components/portfolio/ThemeProvider'
 
-interface ReferralsTabProps {
-  accentColor: string
-}
-
-export function ReferralsTab({ accentColor }: ReferralsTabProps) {
+export function ReferralsTab() {
+  const { theme } = useTheme()
+  const accentColor = theme.colors.primary
   const [copied, setCopied] = useState(false)
   const getReferralCode = useServerFn(getReferralCodeFn)
   const getReferralStats = useServerFn(getReferralStatsFn)

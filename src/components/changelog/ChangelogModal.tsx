@@ -21,7 +21,7 @@ import {
   Gift,
 } from 'lucide-react'
 
-export const CURRENT_VERSION = '2.2.0'
+export const CURRENT_VERSION = '2.3.0'
 
 interface ChangelogChange {
   type: 'feature' | 'improvement' | 'fix' | 'security' | 'breaking'
@@ -29,14 +29,13 @@ interface ChangelogChange {
 }
 
 const latestChanges: ChangelogChange[] = [
-  { type: 'feature', text: 'Per-link click analytics with device, browser & geographic data' },
-  { type: 'feature', text: 'Link scheduling with start/end dates and countdown timers' },
-  { type: 'feature', text: 'Click heatmap visualization by hour (0-23)' },
-  { type: 'feature', text: 'Analytics tab in Link Advanced Settings' },
-  { type: 'fix', text: 'Fixed Cloudflare Turnstile infinite verification loop' },
-  { type: 'improvement', text: 'Enhanced OG, SEO, and social sharing metadata' },
-  { type: 'improvement', text: 'Footer now uses full viewport width' },
-  { type: 'improvement', text: 'Links management moved to profile tabs' },
+  { type: 'feature', text: 'Completely redesigned Playground with live data preview' },
+  { type: 'feature', text: 'Desktop/Mobile preview toggle in Playground' },
+  { type: 'feature', text: '30+ animated background presets in 5 categories' },
+  { type: 'improvement', text: 'Unified theme system - ThemeSwitcher now controls all colors' },
+  { type: 'improvement', text: 'Removed redundant Appearance section from Settings' },
+  { type: 'fix', text: 'Fixed animated backgrounds not showing on Bio Page' },
+  { type: 'fix', text: 'Fixed Vite HMR warning for ANIMATED_PRESETS' },
 ]
 
 const typeConfig: Record<ChangelogChange['type'], { icon: React.ElementType; color: string }> = {

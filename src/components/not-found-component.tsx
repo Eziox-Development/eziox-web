@@ -96,7 +96,7 @@ export function NotFoundComponent() {
           </Link>
 
           <Link
-            to="/archive"
+            to="/creators"
             className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all hover:scale-105"
             style={{
               backgroundColor: 'var(--background-secondary)',
@@ -105,7 +105,7 @@ export function NotFoundComponent() {
             }}
           >
             <Search size={18} />
-            Browse Archive
+            Browse Creators
           </Link>
         </motion.div>
 

@@ -354,7 +354,7 @@ export const getCurrentUser = createServerFn({ method: 'GET' }).handler(
               isPublic: userData.profile.isPublic,
               showActivity: userData.profile.showActivity,
               birthday: userData.profile.birthday?.toISOString() || null,
-              creatorType: userData.profile.creatorType,
+              creatorTypes: userData.profile.creatorTypes,
               referralCode: userData.profile.referralCode,
             }
           : null,
@@ -397,7 +397,7 @@ export const updateProfileFn = createServerFn({ method: 'POST' })
       isPublic: z.boolean().optional(),
       showActivity: z.boolean().optional(),
       birthday: z.string().optional(), // ISO date string
-      creatorType: z.string().max(50).optional(),
+      creatorTypes: z.array(z.string().max(50)).max(5).optional(),
       socials: z.record(z.string(), z.string()).optional(), // { twitter: "@handle", instagram: "handle", etc. }
     }),
   )
@@ -451,7 +451,7 @@ export const updateProfileFn = createServerFn({ method: 'POST' })
         isPublic: data.isPublic,
         showActivity: data.showActivity,
         birthday: data.birthday ? new Date(data.birthday) : undefined,
-        creatorType: data.creatorType ? sanitizeText(data.creatorType, 50) : undefined,
+        creatorTypes: data.creatorTypes ? data.creatorTypes.map(t => sanitizeText(t, 50)).filter(Boolean) : undefined,
         socials: sanitizedSocials,
       })
 
@@ -859,7 +859,7 @@ export const exportUserDataFn = createServerFn({ method: 'GET' }).handler(
         location: profileData.location,
         website: profileData.website,
         pronouns: profileData.pronouns,
-        creatorType: profileData.creatorType,
+        creatorTypes: profileData.creatorTypes,
         avatar: profileData.avatar,
         banner: profileData.banner,
         accentColor: profileData.accentColor,

@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
 import { getTopUsersFn } from '@/server/functions/users'
 import { getPlatformStatsFn } from '@/server/functions/stats'
-import { BadgeDisplay } from '@/components/ui/BadgeDisplay'
+import { BadgeDisplay } from '@/components/ui/badge-display'
 import { useTheme } from '@/components/portfolio/ThemeProvider'
 import {
   Trophy, Crown, Medal, Star, Users2, TrendingUp, Activity,
