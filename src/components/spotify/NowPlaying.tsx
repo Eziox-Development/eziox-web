@@ -288,7 +288,7 @@ export function SpotifyWidget({ userId, theme }: { userId: string; theme: NowPla
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3 }}
     >
-      <NowPlaying userId={userId} theme={theme} showRecentIfNotPlaying={false} />
+      <NowPlaying userId={userId} theme={theme} showRecentIfNotPlaying={true} />
     </motion.div>
   )
 }
