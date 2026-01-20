@@ -243,6 +243,7 @@ const ApiWebhooksStripeRoute = ApiWebhooksStripeRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
+  '/': typeof PublicIndexRoute
   '/hello': typeof ApiHelloRoute
   '/rss': typeof ApiRssRoute
   '/sitemap': typeof ApiSitemapRoute
@@ -272,14 +273,14 @@ export interface FileRoutesByFullPath {
   '/terms': typeof PublicTermsRoute
   '/api/health': typeof ApiHealthRoute
   '/api/spotify-callback': typeof ApiSpotifyCallbackRoute
-  '/': typeof PublicIndexRoute
   '/webhooks/stripe': typeof ApiWebhooksStripeRoute
   '/admin/partner-applications': typeof ProtectedAdminPartnerApplicationsRoute
   '/join/$code': typeof PublicJoinCodeRoute
   '/s/$code': typeof PublicSCodeRoute
-  '/admin': typeof ProtectedAdminIndexRoute
+  '/admin/': typeof ProtectedAdminIndexRoute
 }
 export interface FileRoutesByTo {
+  '/': typeof PublicIndexRoute
   '/hello': typeof ApiHelloRoute
   '/rss': typeof ApiRssRoute
   '/sitemap': typeof ApiSitemapRoute
@@ -309,7 +310,6 @@ export interface FileRoutesByTo {
   '/terms': typeof PublicTermsRoute
   '/api/health': typeof ApiHealthRoute
   '/api/spotify-callback': typeof ApiSpotifyCallbackRoute
-  '/': typeof PublicIndexRoute
   '/webhooks/stripe': typeof ApiWebhooksStripeRoute
   '/admin/partner-applications': typeof ProtectedAdminPartnerApplicationsRoute
   '/join/$code': typeof PublicJoinCodeRoute
@@ -361,6 +361,7 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/'
     | '/hello'
     | '/rss'
     | '/sitemap'
@@ -390,14 +391,14 @@ export interface FileRouteTypes {
     | '/terms'
     | '/api/health'
     | '/api/spotify-callback'
-    | '/'
     | '/webhooks/stripe'
     | '/admin/partner-applications'
     | '/join/$code'
     | '/s/$code'
-    | '/admin'
+    | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/'
     | '/hello'
     | '/rss'
     | '/sitemap'
@@ -427,7 +428,6 @@ export interface FileRouteTypes {
     | '/terms'
     | '/api/health'
     | '/api/spotify-callback'
-    | '/'
     | '/webhooks/stripe'
     | '/admin/partner-applications'
     | '/join/$code'
@@ -494,28 +494,28 @@ declare module '@tanstack/react-router' {
     '/_public': {
       id: '/_public'
       path: ''
-      fullPath: ''
+      fullPath: '/'
       preLoaderRoute: typeof PublicRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_protected': {
       id: '/_protected'
       path: ''
-      fullPath: ''
+      fullPath: '/'
       preLoaderRoute: typeof ProtectedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_bio': {
       id: '/_bio'
       path: ''
-      fullPath: ''
+      fullPath: '/'
       preLoaderRoute: typeof BioRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_auth': {
       id: '/_auth'
       path: ''
-      fullPath: ''
+      fullPath: '/'
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
@@ -732,7 +732,7 @@ declare module '@tanstack/react-router' {
     '/_protected/admin/': {
       id: '/_protected/admin/'
       path: '/admin'
-      fullPath: '/admin'
+      fullPath: '/admin/'
       preLoaderRoute: typeof ProtectedAdminIndexRouteImport
       parentRoute: typeof ProtectedRoute
     }
