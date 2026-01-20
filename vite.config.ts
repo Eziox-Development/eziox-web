@@ -49,54 +49,66 @@ const config = defineConfig({
       output: {
         manualChunks: (id) => {
           if (id.includes('node_modules')) {
-            // React core - largest chunk, split separately
+            // React DOM - separate for better caching
             if (id.includes('react-dom')) {
               return 'react-dom'
             }
-            if (id.includes('react') && !id.includes('react-dom')) {
-              return 'react-vendor'
+            // React core only (not react-dom, not other react-* packages)
+            if (id.includes('/react/') || id.includes('react/index') || id.includes('react/jsx')) {
+              return 'react-core'
             }
-            // TanStack ecosystem
-            if (id.includes('@tanstack/react-router')) {
+            // Charts - large, lazy load
+            if (id.includes('recharts') || id.includes('d3-')) {
+              return 'charts-vendor'
+            }
+            // TanStack Router
+            if (id.includes('@tanstack/react-router') || id.includes('@tanstack/router')) {
               return 'tanstack-router'
             }
-            if (id.includes('@tanstack/react-query')) {
+            // TanStack Query
+            if (id.includes('@tanstack/react-query') || id.includes('@tanstack/query')) {
               return 'tanstack-query'
             }
+            // Other TanStack
             if (id.includes('@tanstack')) {
               return 'tanstack-vendor'
             }
             // Motion/animation library
-            if (id.includes('motion')) {
+            if (id.includes('motion') || id.includes('framer-motion')) {
               return 'motion-vendor'
+            }
+            // Radix UI components - split by category
+            if (id.includes('@radix-ui')) {
+              return 'radix-vendor'
+            }
+            // Form/validation
+            if (id.includes('zod') || id.includes('react-hook-form') || id.includes('@hookform')) {
+              return 'form-vendor'
             }
             // UI utilities
             if (
               id.includes('lucide-react') ||
               id.includes('class-variance-authority') ||
               id.includes('clsx') ||
-              id.includes('tailwind-merge')
+              id.includes('tailwind-merge') ||
+              id.includes('cmdk')
             ) {
               return 'ui-vendor'
-            }
-            // Radix UI components
-            if (id.includes('@radix-ui')) {
-              return 'radix-vendor'
-            }
-            // Form/validation
-            if (id.includes('zod') || id.includes('react-hook-form')) {
-              return 'form-vendor'
             }
             // Date utilities
             if (id.includes('date-fns')) {
               return 'date-vendor'
+            }
+            // Stripe
+            if (id.includes('stripe')) {
+              return 'stripe-vendor'
             }
           }
           return undefined
         },
       },
     },
-    chunkSizeWarningLimit: 600,
+    chunkSizeWarningLimit: 800,
   },
   optimizeDeps: {
     exclude: ['react', 'react-dom'],

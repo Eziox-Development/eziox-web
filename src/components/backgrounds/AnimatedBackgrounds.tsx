@@ -403,7 +403,6 @@ export function AnimatedBackground({ preset, speed = 'normal', intensity = 'norm
           drawBokeh()
           break
         case 'particles':
-        case 'fireflies':
         default:
           drawParticles()
           break

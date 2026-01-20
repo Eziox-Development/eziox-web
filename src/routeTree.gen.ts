@@ -15,6 +15,7 @@ import { Route as BioRouteImport } from './routes/_bio'
 import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
 import { Route as ApiSpotifyCallbackRouteImport } from './routes/api/spotify-callback'
+import { Route as ApiHealthRouteImport } from './routes/api/health'
 import { Route as PublicTermsRouteImport } from './routes/_public/terms'
 import { Route as PublicTemplatesRouteImport } from './routes/_public/templates'
 import { Route as PublicStatusRouteImport } from './routes/_public/status'
@@ -72,6 +73,11 @@ const PublicIndexRoute = PublicIndexRouteImport.update({
 const ApiSpotifyCallbackRoute = ApiSpotifyCallbackRouteImport.update({
   id: '/api/spotify-callback',
   path: '/api/spotify-callback',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiHealthRoute = ApiHealthRouteImport.update({
+  id: '/api/health',
+  path: '/api/health',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PublicTermsRoute = PublicTermsRouteImport.update({
@@ -264,6 +270,7 @@ export interface FileRoutesByFullPath {
   '/status': typeof PublicStatusRoute
   '/templates': typeof PublicTemplatesRoute
   '/terms': typeof PublicTermsRoute
+  '/api/health': typeof ApiHealthRoute
   '/api/spotify-callback': typeof ApiSpotifyCallbackRoute
   '/': typeof PublicIndexRoute
   '/webhooks/stripe': typeof ApiWebhooksStripeRoute
@@ -300,6 +307,7 @@ export interface FileRoutesByTo {
   '/status': typeof PublicStatusRoute
   '/templates': typeof PublicTemplatesRoute
   '/terms': typeof PublicTermsRoute
+  '/api/health': typeof ApiHealthRoute
   '/api/spotify-callback': typeof ApiSpotifyCallbackRoute
   '/': typeof PublicIndexRoute
   '/webhooks/stripe': typeof ApiWebhooksStripeRoute
@@ -341,6 +349,7 @@ export interface FileRoutesById {
   '/_public/status': typeof PublicStatusRoute
   '/_public/templates': typeof PublicTemplatesRoute
   '/_public/terms': typeof PublicTermsRoute
+  '/api/health': typeof ApiHealthRoute
   '/api/spotify-callback': typeof ApiSpotifyCallbackRoute
   '/_public/': typeof PublicIndexRoute
   '/_api/webhooks/stripe': typeof ApiWebhooksStripeRoute
@@ -379,6 +388,7 @@ export interface FileRouteTypes {
     | '/status'
     | '/templates'
     | '/terms'
+    | '/api/health'
     | '/api/spotify-callback'
     | '/'
     | '/webhooks/stripe'
@@ -415,6 +425,7 @@ export interface FileRouteTypes {
     | '/status'
     | '/templates'
     | '/terms'
+    | '/api/health'
     | '/api/spotify-callback'
     | '/'
     | '/webhooks/stripe'
@@ -455,6 +466,7 @@ export interface FileRouteTypes {
     | '/_public/status'
     | '/_public/templates'
     | '/_public/terms'
+    | '/api/health'
     | '/api/spotify-callback'
     | '/_public/'
     | '/_api/webhooks/stripe'
@@ -472,6 +484,7 @@ export interface RootRouteChildren {
   ApiHelloRoute: typeof ApiHelloRoute
   ApiRssRoute: typeof ApiRssRoute
   ApiSitemapRoute: typeof ApiSitemapRoute
+  ApiHealthRoute: typeof ApiHealthRoute
   ApiSpotifyCallbackRoute: typeof ApiSpotifyCallbackRoute
   ApiWebhooksStripeRoute: typeof ApiWebhooksStripeRoute
 }
@@ -518,6 +531,13 @@ declare module '@tanstack/react-router' {
       path: '/api/spotify-callback'
       fullPath: '/api/spotify-callback'
       preLoaderRoute: typeof ApiSpotifyCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/health': {
+      id: '/api/health'
+      path: '/api/health'
+      fullPath: '/api/health'
+      preLoaderRoute: typeof ApiHealthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_public/terms': {
@@ -849,6 +869,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiHelloRoute: ApiHelloRoute,
   ApiRssRoute: ApiRssRoute,
   ApiSitemapRoute: ApiSitemapRoute,
+  ApiHealthRoute: ApiHealthRoute,
   ApiSpotifyCallbackRoute: ApiSpotifyCallbackRoute,
   ApiWebhooksStripeRoute: ApiWebhooksStripeRoute,
 }
