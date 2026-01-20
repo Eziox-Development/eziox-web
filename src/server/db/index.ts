@@ -4,11 +4,6 @@ import * as schema from './schema'
 
 // Configure Neon for optimal serverless performance
 neonConfig.fetchConnectionCache = true
-neonConfig.fetchEndpoint = (host) => {
-  // Use pooler endpoint if available
-  const poolerHost = host.replace(/\.neon\.tech$/, '-pooler.neon.tech')
-  return `https://${poolerHost}`
-}
 
 let _db: NeonHttpDatabase<typeof schema> | null = null
 

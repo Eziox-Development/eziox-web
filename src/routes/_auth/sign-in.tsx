@@ -55,7 +55,6 @@ const signInSchema = z.object({
   email: z.email({ error: 'Invalid email address' }),
   password: z.string().min(1, 'Password is required'),
   rememberMe: z.boolean(),
-  acceptTerms: z.boolean().refine(val => val, { message: 'Required' }),
 })
 
 type SignInFormData = z.infer<typeof signInSchema>
@@ -76,7 +75,6 @@ function SignInPage() {
       email: '',
       password: '',
       rememberMe: false,
-      acceptTerms: false,
     },
   })
 
@@ -267,23 +265,6 @@ function SignInPage() {
                 onExpire={() => setTurnstileToken('')}
               />
             </div>
-
-            <label className="flex items-start gap-3 cursor-pointer">
-              <div className="relative mt-0.5">
-                <input type="checkbox" {...form.register('acceptTerms')} className="sr-only peer" />
-                <div className="w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all peer-checked:border-purple-500 peer-checked:bg-purple-500" style={{ borderColor: 'var(--border)' }}>
-                  <motion.div initial={false} animate={{ scale: form.watch('acceptTerms') ? 1 : 0 }}>
-                    <CheckCircle2 className="w-3.5 h-3.5 text-white" />
-                  </motion.div>
-                </div>
-              </div>
-              <span className="text-sm" style={{ color: 'var(--foreground-muted)' }}>
-                I agree to the{' '}
-                <Link to="/terms" className="font-medium underline" style={{ color: 'var(--primary)' }}>Terms</Link>
-                {' & '}
-                <Link to="/privacy" className="font-medium underline" style={{ color: 'var(--primary)' }}>Privacy</Link>
-              </span>
-            </label>
 
             <motion.button
               type="submit"
