@@ -65,6 +65,34 @@ const typeConfig: Record<ChangeType, { label: string; color: string; bgColor: st
 
 const changelog: ChangelogEntry[] = [
   {
+    version: '2.2.0',
+    date: 'January 20, 2026',
+    title: 'Link Analytics & Scheduling',
+    description: 'Comprehensive link analytics system with per-click tracking, geographic data, device stats, and click heatmaps. Plus advanced link scheduling with countdown timers.',
+    icon: BarChart3,
+    type: 'feature',
+    highlights: [
+      'Per-link click analytics',
+      'Geographic & device tracking',
+      'Click heatmap by hour',
+      'Link scheduling with countdown',
+    ],
+    changes: [
+      { type: 'feature', text: 'Per-link click analytics with detailed tracking' },
+      { type: 'feature', text: 'Geographic data: country, city, region tracking' },
+      { type: 'feature', text: 'Device/browser/OS statistics' },
+      { type: 'feature', text: 'Click heatmap visualization by hour (0-23)' },
+      { type: 'feature', text: 'Link scheduling with start/end dates' },
+      { type: 'feature', text: 'Countdown timer display (minimal, detailed, badge styles)' },
+      { type: 'feature', text: 'Analytics tab in Link Advanced Settings' },
+      { type: 'fix', text: 'Fixed Cloudflare Turnstile infinite verification loop' },
+      { type: 'improvement', text: 'Enhanced OG, SEO, and social sharing metadata' },
+      { type: 'improvement', text: 'Footer now uses full viewport width' },
+      { type: 'improvement', text: 'Links management consolidated in profile tabs' },
+      { type: 'improvement', text: 'Updated PWA manifest with Eziox branding' },
+    ],
+  },
+  {
     version: '2.1.0',
     date: 'January 19, 2026',
     title: 'Security & Privacy Features',

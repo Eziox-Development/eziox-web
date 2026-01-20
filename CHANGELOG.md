@@ -9,6 +9,83 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.2.0] - 2026-01-20
+
+### Added - Link Analytics & Scheduling System 📊
+
+**Link Scheduling:**
+- **Schedule Links** - Set start and end dates for links to appear/disappear automatically
+- **Time-Limited Links** - Links can auto-hide when expired with `hideWhenExpired` option
+- **Countdown Timer Display** - Show countdown on scheduled links with 3 styles:
+  - `minimal` - Simple time remaining
+  - `detailed` - Full breakdown (days, hours, minutes)
+  - `badge` - Compact badge style
+- **Timezone Support** - Schedule respects user timezone settings
+
+**Link Analytics:**
+- **Per-Link Click Analytics** - Detailed tracking for each link
+- **Geographic Data** - Track country, city, and region of visitors
+- **Device/Browser Stats** - Monitor device types (mobile/desktop/tablet), browsers, and OS
+- **Click Heatmap** - Visualize clicks by hour (0-23) across days
+- **Analytics Tab** - New tab in Link Advanced Settings modal with:
+  - Total clicks and period stats
+  - Device breakdown visualization
+  - Browser distribution
+  - Hourly click heatmap
+
+**New Database Schema:**
+- `linkClickAnalytics` table for detailed per-click tracking
+- Extended `LinkSchedule` interface with countdown options
+- Added `schedule` field to `updateLinkSchema`
+
+**UI Improvements:**
+- **Footer Full Width** - Footer now uses full viewport width instead of max-w-7xl
+- **Highlights Bar** - Changed from centered to space-between distribution
+- **Grid Layout** - Optimized column distribution (3-6-3 instead of 4-5-3)
+- **Responsive Padding** - Better spacing on all screen sizes
+
+**Pages & Routes:**
+- Deleted standalone `/links` route (was not linked anywhere)
+- Links management now exclusively in `/profile` → Links Tab
+- Added Analytics tab as default in LinkAdvancedSettings
+
+### Fixed
+
+**Cloudflare Turnstile Bug:**
+- Fixed infinite verification loop in sign-in/sign-up forms
+- Problem: `useCallback` dependencies caused re-renders and widget re-initialization
+- Solution: Use refs for callbacks, empty dependency array for useEffect
+- Widget now renders once on mount and stays stable
+
+**SEO & Metadata:**
+- Enhanced Open Graph tags for better social sharing
+- Added Twitter card support with large image
+- Discord embed optimization
+- Canonical URL and sitemap links
+- Updated PWA manifest with Eziox branding
+- Improved robots.txt with social crawler rules
+
+### Changed
+
+- **Server Functions:**
+  - `trackLinkClickFn` now captures userAgent and referrer
+  - New `getLinkAnalyticsFn` for per-link analytics
+  - New `getAllLinksAnalyticsFn` for overview
+  - Added `linkScheduleSchema` for validation
+
+- **Components:**
+  - `LinkAdvancedSettings` - Added Analytics tab with full stats
+  - `LinksTab` - Already shows scheduling indicator badge
+  - `TurnstileWidget` - Refactored for stability
+  - `Footer` - Full width layout
+
+### Removed
+- `/links` route page (functionality moved to profile tabs)
+- Unused `useCallback` hooks in TurnstileWidget
+- `renderedRef` in TurnstileWidget (widgetIdRef is sufficient)
+
+---
+
 ## [2.1.0] - 2026-01-19
 
 ### Added - Security & Privacy Features 🔒

@@ -21,7 +21,7 @@ import {
   Gift,
 } from 'lucide-react'
 
-export const CURRENT_VERSION = '2.1.0'
+export const CURRENT_VERSION = '2.2.0'
 
 interface ChangelogChange {
   type: 'feature' | 'improvement' | 'fix' | 'security' | 'breaking'
@@ -29,14 +29,14 @@ interface ChangelogChange {
 }
 
 const latestChanges: ChangelogChange[] = [
-  { type: 'security', text: 'Cloudflare Turnstile bot protection on auth forms' },
-  { type: 'security', text: 'OAuth tokens encrypted at rest (AES-256-GCM)' },
-  { type: 'security', text: 'CSRF protection with token validation' },
-  { type: 'feature', text: 'Self-service data export (GDPR compliance)' },
-  { type: 'feature', text: 'Account deletion with complete data purge' },
-  { type: 'feature', text: 'Admin audit log for tracking admin actions' },
-  { type: 'improvement', text: 'Enhanced security headers (HSTS, CSP)' },
-  { type: 'improvement', text: 'Magic bytes validation for file uploads' },
+  { type: 'feature', text: 'Per-link click analytics with device, browser & geographic data' },
+  { type: 'feature', text: 'Link scheduling with start/end dates and countdown timers' },
+  { type: 'feature', text: 'Click heatmap visualization by hour (0-23)' },
+  { type: 'feature', text: 'Analytics tab in Link Advanced Settings' },
+  { type: 'fix', text: 'Fixed Cloudflare Turnstile infinite verification loop' },
+  { type: 'improvement', text: 'Enhanced OG, SEO, and social sharing metadata' },
+  { type: 'improvement', text: 'Footer now uses full viewport width' },
+  { type: 'improvement', text: 'Links management moved to profile tabs' },
 ]
 
 const typeConfig: Record<ChangelogChange['type'], { icon: React.ElementType; color: string }> = {

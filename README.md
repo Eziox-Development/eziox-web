@@ -32,12 +32,13 @@
 |---------|-------------|
 | 🔗 **Bio Links** | Linktree-style customizable link pages |
 | 💎 **Premium Tiers** | Free, Pro, Creator & Lifetime subscriptions |
-| 📊 **Analytics Dashboard** | Track views, clicks, top links, referrers with charts |
+| 📊 **Link Analytics** | Per-link click tracking with device, browser, geographic data & heatmaps |
+| 📅 **Link Scheduling** | Schedule links with start/end dates and countdown timers |
 | 🔔 **Notifications** | Real-time notification center with bell icon |
 | 🎵 **Spotify Integration** | Display currently playing music on bio page |
 | 🏆 **Leaderboard** | User ranking system with podium display |
 | 👤 **Profiles** | Custom avatars, banners, bios, social links |
-| 🔐 **Auth** | Secure session-based authentication |
+| 🔐 **Security** | Cloudflare Turnstile, 2FA, OAuth encryption, CSRF protection |
 | 🎨 **Themes** | 31 modern themes across 8 categories with Tailwind colors |
 | 🎮 **Playground** | Create & test presets with live preview |
 | 📋 **Templates** | Browse & apply community templates |

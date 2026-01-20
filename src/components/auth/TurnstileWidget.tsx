@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from 'react'
+import { useEffect, useRef } from 'react'
 
 interface TurnstileWidgetProps {
   onVerify: (token: string) => void
@@ -27,38 +27,31 @@ declare global {
 export function TurnstileWidget({ onVerify, onError, onExpire }: TurnstileWidgetProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const widgetIdRef = useRef<string | null>(null)
-  const renderedRef = useRef(false)
+  const callbacksRef = useRef({ onVerify, onError, onExpire })
 
-  const handleVerify = useCallback((token: string) => {
-    onVerify(token)
-  }, [onVerify])
-
-  const handleError = useCallback(() => {
-    onError?.()
-  }, [onError])
-
-  const handleExpire = useCallback(() => {
-    onExpire?.()
-  }, [onExpire])
+  // Keep callbacks ref updated without triggering re-render
+  callbacksRef.current = { onVerify, onError, onExpire }
 
   useEffect(() => {
     const siteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY || '0x4AAAAAACNdGGhEBeVq7GQb'
     
-    if (!containerRef.current || renderedRef.current) return
+    if (!containerRef.current) return
+    
+    // If already rendered, don't re-render
+    if (widgetIdRef.current) return
 
     const renderWidget = () => {
-      if (!window.turnstile || !containerRef.current || renderedRef.current) return
+      if (!window.turnstile || !containerRef.current) return
       if (widgetIdRef.current) return
 
       // Clear container before rendering
       containerRef.current.innerHTML = ''
       
-      renderedRef.current = true
       widgetIdRef.current = window.turnstile.render(containerRef.current, {
         sitekey: siteKey,
-        callback: handleVerify,
-        'error-callback': handleError,
-        'expired-callback': handleExpire,
+        callback: (token: string) => callbacksRef.current.onVerify(token),
+        'error-callback': () => callbacksRef.current.onError?.(),
+        'expired-callback': () => callbacksRef.current.onExpire?.(),
         theme: 'auto',
         size: 'normal',
       })
@@ -93,10 +86,9 @@ export function TurnstileWidget({ onVerify, onError, onExpire }: TurnstileWidget
           // Widget may already be removed
         }
         widgetIdRef.current = null
-        renderedRef.current = false
       }
     }
-  }, [handleVerify, handleError, handleExpire])
+  }, []) // Empty deps - only run once on mount
 
   return <div ref={containerRef} className="turnstile-container" />
 }
