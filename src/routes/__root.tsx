@@ -6,6 +6,7 @@ import {
 import appCss from '../styles.css?url'
 
 import type { QueryClient } from '@tanstack/react-query'
+import { Analytics } from '@vercel/analytics/react'
 import { Toaster } from '@/components/ui/sonner'
 import { CookieConsent } from '@/components/CookieConsent'
 import { ThemeProvider as PortfolioThemeProvider } from '@/components/portfolio/ThemeProvider'
@@ -143,6 +144,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           <Toaster position="bottom-right" richColors closeButton />
           <CookieConsent />
           <ChangelogModal />
+          <Analytics />
         </PortfolioThemeProvider>
         <Scripts />
       </body>
