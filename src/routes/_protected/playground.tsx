@@ -159,12 +159,13 @@ function PlaygroundPage() {
 
   // Background style for preview
   const getBackgroundStyle = (): React.CSSProperties => {
-    if (!currentBackground) return { background: theme.colors.background }
+    const baseStyle: React.CSSProperties = { minHeight: '100%' }
+    if (!currentBackground) return { ...baseStyle, background: theme.colors.background }
     switch (currentBackground.type) {
-      case 'solid': return { background: currentBackground.value || theme.colors.background }
-      case 'gradient': return { background: currentBackground.value || theme.colors.background }
-      case 'image': return { background: `url(${currentBackground.imageUrl}) center/cover` }
-      default: return { background: theme.colors.background }
+      case 'solid': return { ...baseStyle, background: currentBackground.value || theme.colors.background }
+      case 'gradient': return { ...baseStyle, background: currentBackground.value || theme.colors.background }
+      case 'image': return { ...baseStyle, background: `url(${currentBackground.imageUrl}) center/cover` }
+      default: return { ...baseStyle, background: theme.colors.background }
     }
   }
 
@@ -381,7 +382,7 @@ function PlaygroundPage() {
 
             {/* Preview Content */}
             <div
-              className={`transition-all duration-300 overflow-hidden ${viewMode === 'mobile' ? 'max-w-[400px] mx-auto' : ''}`}
+              className={`transition-all duration-300 overflow-hidden flex flex-col ${viewMode === 'mobile' ? 'max-w-[400px] mx-auto' : ''}`}
               style={{
                 borderRadius: viewMode === 'mobile' ? '2.5rem' : '1.5rem',
                 boxShadow: '0 25px 50px -12px rgba(0,0,0,0.4)',
@@ -836,10 +837,10 @@ function BioPreview({
   }
 
   return (
-    <div className="min-h-[600px] relative" style={getBackgroundStyle()}>
+    <div className="flex-1 h-full min-h-full relative overflow-auto" style={getBackgroundStyle()}>
       {renderBackground()}
 
-      <div className="relative z-10 p-6">
+      <div className="relative z-10 p-6 pb-12">
         {/* Banner */}
         <div
           className="h-32 rounded-2xl mb-4 overflow-hidden"
