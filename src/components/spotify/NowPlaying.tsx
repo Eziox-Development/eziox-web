@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
 import { getNowPlayingFn, getUserNowPlayingFn, type NowPlayingData } from '@/server/functions/spotify'
 import { SiSpotify } from 'react-icons/si'
-import { Music, Pause, ExternalLink, Volume2 } from 'lucide-react'
+import { Pause, ExternalLink, Volume2 } from 'lucide-react'
 
 interface NowPlayingProps {
   userId?: string
@@ -91,26 +91,34 @@ export function NowPlaying({ userId, theme, compact = false, showRecentIfNotPlay
 
     return (
       <motion.div
-        className={`rounded-2xl overflow-hidden ${compact ? 'p-3' : 'p-4'}`}
+        className={`rounded-2xl overflow-hidden relative ${compact ? 'p-4' : 'p-5'}`}
         style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}` }}
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
       >
-        <div className="flex items-center gap-3">
+        <div className="absolute top-0 right-0 w-24 h-24 opacity-5 pointer-events-none" style={{ background: `radial-gradient(circle, #1DB954 0%, transparent 70%)` }} />
+        
+        <div className="relative flex items-center gap-4">
           <motion.div 
-            className="w-12 h-12 rounded-xl flex items-center justify-center" 
-            style={{ background: `${theme.colors.foregroundMuted}15` }}
-            animate={{ opacity: [0.5, 1, 0.5] }}
-            transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+            className="w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg" 
+            style={{ background: 'linear-gradient(135deg, #1DB95420, #1DB95410)' }}
+            animate={{ 
+              scale: [1, 1.05, 1],
+              rotate: [0, 2, -2, 0]
+            }}
+            transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
           >
-            <Music size={20} style={{ color: theme.colors.foregroundMuted }} />
+            <SiSpotify size={28} style={{ color: '#1DB954' }} />
           </motion.div>
           <div className="flex-1">
-            <p className="text-sm font-medium" style={{ color: theme.colors.foreground }}>Offline</p>
-            <div className="flex items-center gap-1.5">
-              <SiSpotify size={12} style={{ color: theme.colors.foregroundMuted }} />
-              <span className="text-xs" style={{ color: theme.colors.foregroundMuted }}>Not listening right now</span>
+            <p className="text-base font-bold mb-1" style={{ color: theme.colors.foreground }}>Currently not playing</p>
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-2 h-2 rounded-full" style={{ background: theme.colors.foregroundMuted, opacity: 0.5 }} />
+              <span className="text-sm font-medium" style={{ color: theme.colors.foregroundMuted }}>Offline</span>
             </div>
+            <p className="text-xs" style={{ color: theme.colors.foregroundMuted }}>
+              Not listening on Spotify right now
+            </p>
           </div>
         </div>
       </motion.div>
