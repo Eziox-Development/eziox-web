@@ -66,8 +66,9 @@ export const uploadAvatarFn = createServerFn({ method: 'POST' })
       }
     } catch (error) {
       console.error('Avatar upload error:', error)
+      const errorMessage = error instanceof Error ? error.message : 'Failed to upload avatar'
       setResponseStatus(500)
-      throw { message: 'Failed to upload avatar', status: 500 }
+      throw { message: errorMessage, status: 500 }
     }
   })
 
@@ -115,8 +116,9 @@ export const uploadBannerFn = createServerFn({ method: 'POST' })
       }
     } catch (error) {
       console.error('Banner upload error:', error)
+      const errorMessage = error instanceof Error ? error.message : 'Failed to upload banner'
       setResponseStatus(500)
-      throw { message: 'Failed to upload banner', status: 500 }
+      throw { message: errorMessage, status: 500 }
     }
   })
 

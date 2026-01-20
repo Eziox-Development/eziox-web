@@ -1,11 +1,14 @@
-/**
- * Database Connection
- * Neon PostgreSQL with Drizzle ORM
- */
-
-import { neon } from '@neondatabase/serverless'
+import { neon, neonConfig } from '@neondatabase/serverless'
 import { drizzle, type NeonHttpDatabase } from 'drizzle-orm/neon-http'
 import * as schema from './schema'
+
+// Configure Neon for optimal serverless performance
+neonConfig.fetchConnectionCache = true
+neonConfig.fetchEndpoint = (host) => {
+  // Use pooler endpoint if available
+  const poolerHost = host.replace(/\.neon\.tech$/, '-pooler.neon.tech')
+  return `https://${poolerHost}`
+}
 
 let _db: NeonHttpDatabase<typeof schema> | null = null
 
@@ -22,7 +25,13 @@ function getDb(): NeonHttpDatabase<typeof schema> {
     throw new Error('DATABASE_URL environment variable is not set')
   }
   
-  const sql = neon(databaseUrl)
+  // Create connection with pooling support
+  const sql = neon(databaseUrl, {
+    fetchOptions: {
+      cache: 'no-store',
+    },
+  })
+  
   _db = drizzle(sql, { schema })
   return _db
 }

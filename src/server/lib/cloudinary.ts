@@ -118,7 +118,7 @@ export async function deleteImage(publicId: string): Promise<void> {
 }
 
 /**
- * Upload avatar with optimizations
+ * Upload avatar with optimizations and retry logic
  */
 export async function uploadAvatar(
   file: string,
@@ -129,22 +129,45 @@ export async function uploadAvatar(
     throw new Error(validation.error || 'Invalid image')
   }
 
-  const result = await cloudinary.uploader.upload(file, {
-    folder: 'eziox/avatars',
-    public_id: `avatar_${userId}`,
-    overwrite: true,
-    transformation: [
-      { width: 400, height: 400, crop: 'fill', gravity: 'face' },
-      { quality: 'auto:good' },
-      { fetch_format: 'auto' },
-    ],
-  })
+  let lastError: Error | null = null
+  const maxRetries = 3
+  
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const result = await cloudinary.uploader.upload(file, {
+        folder: 'eziox/avatars',
+        public_id: `avatar_${userId}`,
+        overwrite: true,
+        transformation: [
+          { width: 400, height: 400, crop: 'fill', gravity: 'face' },
+          { quality: 'auto:good' },
+          { fetch_format: 'auto' },
+        ],
+        timeout: 30000, // 30s timeout
+      })
 
-  return result.secure_url
+      return result.secure_url
+    } catch (error) {
+      lastError = error as Error
+      console.error(`Cloudinary avatar upload attempt ${attempt}/${maxRetries} failed:`, error)
+      
+      // Don't retry on validation errors
+      if (error instanceof Error && error.message.includes('Invalid image')) {
+        throw error
+      }
+      
+      // Wait before retry (exponential backoff)
+      if (attempt < maxRetries) {
+        await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000))
+      }
+    }
+  }
+
+  throw new Error(`Failed to upload avatar after ${maxRetries} attempts: ${lastError?.message || 'Unknown error'}`)
 }
 
 /**
- * Upload banner with optimizations
+ * Upload banner with optimizations and retry logic
  */
 export async function uploadBanner(
   file: string,
@@ -155,16 +178,39 @@ export async function uploadBanner(
     throw new Error(validation.error || 'Invalid image')
   }
 
-  const result = await cloudinary.uploader.upload(file, {
-    folder: 'eziox/banners',
-    public_id: `banner_${userId}`,
-    overwrite: true,
-    transformation: [
-      { width: 1200, height: 400, crop: 'fill' },
-      { quality: 'auto:good' },
-      { fetch_format: 'auto' },
-    ],
-  })
+  let lastError: Error | null = null
+  const maxRetries = 3
+  
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const result = await cloudinary.uploader.upload(file, {
+        folder: 'eziox/banners',
+        public_id: `banner_${userId}`,
+        overwrite: true,
+        transformation: [
+          { width: 1200, height: 400, crop: 'fill' },
+          { quality: 'auto:good' },
+          { fetch_format: 'auto' },
+        ],
+        timeout: 30000, // 30s timeout
+      })
 
-  return result.secure_url
+      return result.secure_url
+    } catch (error) {
+      lastError = error as Error
+      console.error(`Cloudinary banner upload attempt ${attempt}/${maxRetries} failed:`, error)
+      
+      // Don't retry on validation errors
+      if (error instanceof Error && error.message.includes('Invalid image')) {
+        throw error
+      }
+      
+      // Wait before retry (exponential backoff)
+      if (attempt < maxRetries) {
+        await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000))
+      }
+    }
+  }
+
+  throw new Error(`Failed to upload banner after ${maxRetries} attempts: ${lastError?.message || 'Unknown error'}`)
 }

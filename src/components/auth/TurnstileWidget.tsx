@@ -76,6 +76,7 @@ export function TurnstileWidget({ onVerify, onError, onExpire }: TurnstileWidget
   useEffect(() => {
     mountedRef.current = true
     const siteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY || '0x4AAAAAACNdGGhEBeVq7GQb'
+    let retryTimeout: NodeJS.Timeout | null = null
 
     const initWidget = async () => {
       await loadTurnstileScript()
@@ -110,6 +111,12 @@ export function TurnstileWidget({ onVerify, onError, onExpire }: TurnstileWidget
           'error-callback': () => {
             if (mountedRef.current) {
               callbacksRef.current.onError?.()
+              // Retry after 3 seconds on error
+              retryTimeout = setTimeout(() => {
+                if (mountedRef.current) {
+                  void initWidget()
+                }
+              }, 3000)
             }
           },
           'expired-callback': () => {
@@ -120,6 +127,12 @@ export function TurnstileWidget({ onVerify, onError, onExpire }: TurnstileWidget
           'timeout-callback': () => {
             if (mountedRef.current) {
               callbacksRef.current.onError?.()
+              // Retry after 3 seconds on timeout
+              retryTimeout = setTimeout(() => {
+                if (mountedRef.current) {
+                  void initWidget()
+                }
+              }, 3000)
             }
           },
           theme: 'auto',
@@ -128,6 +141,12 @@ export function TurnstileWidget({ onVerify, onError, onExpire }: TurnstileWidget
         })
       } catch (e) {
         console.error('Turnstile render error:', e)
+        // Retry after 3 seconds on render error
+        retryTimeout = setTimeout(() => {
+          if (mountedRef.current) {
+            void initWidget()
+          }
+        }, 3000)
       }
     }
 
@@ -135,6 +154,11 @@ export function TurnstileWidget({ onVerify, onError, onExpire }: TurnstileWidget
 
     return () => {
       mountedRef.current = false
+      
+      // Clear retry timeout
+      if (retryTimeout) {
+        clearTimeout(retryTimeout)
+      }
       
       // Clean up widget on unmount
       if (widgetIdRef.current && window.turnstile) {
