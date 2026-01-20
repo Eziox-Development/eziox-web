@@ -175,13 +175,6 @@ export function Nav() {
                 {siteConfig.metadata.title}
               </motion.span>
               <div className="flex items-center gap-2">
-                <motion.span
-                  className="text-[9px] font-bold px-2 py-0.5 rounded-md text-white"
-                  style={{ background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})` }}
-                  whileHover={{ scale: 1.05 }}
-                >
-                  v2.0
-                </motion.span>
                 <span className="text-[11px] font-medium" style={{ color: theme.colors.foregroundMuted }}>Bio Links</span>
               </div>
             </div>
