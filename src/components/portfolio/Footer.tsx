@@ -127,11 +127,11 @@ export function Footer() {
       </div>
 
       <div className="relative" style={{ background: theme.colors.background }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="w-full px-6 sm:px-10 lg:px-16 xl:px-24">
           
           {/* Highlights Bar */}
           <div className="py-8 overflow-hidden" style={{ borderBottom: `1px solid ${theme.colors.border}` }}>
-            <div className="flex flex-wrap justify-center gap-4 md:gap-8">
+            <div className="flex flex-wrap justify-between gap-4">
               {highlights.map((item, i) => (
                 <motion.div
                   key={item.label}
@@ -154,10 +154,10 @@ export function Footer() {
           </div>
 
           {/* Main Content */}
-          <div className="py-16 grid grid-cols-1 lg:grid-cols-12 gap-12">
+          <div className="py-16 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
             
             {/* Brand Section */}
-            <div className="lg:col-span-4 space-y-6">
+            <div className="lg:col-span-3 space-y-6">
               <Link to="/" className="inline-flex items-center gap-4 group">
                 <motion.div
                   className="relative w-16 h-16 rounded-2xl overflow-hidden"
@@ -228,7 +228,7 @@ export function Footer() {
             </div>
 
             {/* Links Grid */}
-            <div className="lg:col-span-5 grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div className="lg:col-span-6 grid grid-cols-2 md:grid-cols-4 gap-6 lg:gap-8">
               {Object.entries(footerSections).map(([key, section]) => (
                 <div key={key} className="space-y-4">
                   <h4 className="text-sm font-bold flex items-center gap-2" style={{ color: theme.colors.foreground }}>
