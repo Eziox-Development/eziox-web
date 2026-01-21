@@ -473,11 +473,20 @@ async function handleOneTimePayment(
     .limit(1)
 
   if (existingSubscription) {
-    // Already processed, skip to avoid duplicate
+    // Already processed, just update user tier to be safe
+    await db
+      .update(users)
+      .set({
+        tier,
+        stripeCustomerId: customerId,
+        tierExpiresAt,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, userId))
     return
   }
   
-  // Update user with new tier
+  // Update user with new tier - this is the critical operation
   await db
     .update(users)
     .set({
@@ -490,17 +499,21 @@ async function handleOneTimePayment(
     .where(eq(users.id, userId))
 
   // Create a record in subscriptions table for tracking
-  await db.insert(subscriptions).values({
-    userId,
-    stripeSubscriptionId: trackingId,
-    stripePriceId: process.env.STRIPE_LIFETIME_PRICE_ID || '',
-    stripeCustomerId: customerId,
-    tier,
-    status: 'active',
-    currentPeriodStart: new Date(),
-    currentPeriodEnd: tierExpiresAt || new Date(Date.now() + 100 * 365 * 24 * 60 * 60 * 1000), // 100 years for lifetime
-    cancelAtPeriodEnd: false,
-  })
+  try {
+    await db.insert(subscriptions).values({
+      userId,
+      stripeSubscriptionId: trackingId,
+      stripePriceId: process.env.STRIPE_LIFETIME_PRICE_ID || '',
+      stripeCustomerId: customerId,
+      tier,
+      status: 'active',
+      currentPeriodStart: new Date(),
+      currentPeriodEnd: tierExpiresAt || new Date(Date.now() + 100 * 365 * 24 * 60 * 60 * 1000), // 100 years for lifetime
+      cancelAtPeriodEnd: false,
+    })
+  } catch {
+    // Insert failed (maybe duplicate), but user tier is already updated
+  }
 
   // Update badges - wrap in try-catch to not fail the whole webhook
   try {
