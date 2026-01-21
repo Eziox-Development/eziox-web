@@ -163,17 +163,29 @@ export const createCheckoutSessionFn = createServerFn({ method: 'POST' })
       ? await stripe.checkout.sessions.create({
           customer: customerId,
           mode: 'payment',
-          payment_method_types: ['card'],
+          payment_method_types: ['card', 'paypal'],
           allow_promotion_codes: true,
           line_items: [{ price: tierConfig.priceId, quantity: 1 }],
           success_url: `${baseUrl}/profile?tab=subscription&success=true`,
           cancel_url: `${baseUrl}/profile?tab=subscription&canceled=true`,
           metadata: { userId: user.id, tier: data.tier },
+          // Customer balance is automatically applied by Stripe
+          customer_update: {
+            address: 'auto',
+            name: 'auto',
+          },
+          billing_address_collection: 'auto',
+          invoice_creation: {
+            enabled: true,
+            invoice_data: {
+              metadata: { userId: user.id, tier: data.tier },
+            },
+          },
         })
       : await stripe.checkout.sessions.create({
           customer: customerId,
           mode: 'subscription',
-          payment_method_types: ['card'],
+          payment_method_types: ['card', 'paypal'],
           allow_promotion_codes: true,
           line_items: [{ price: tierConfig.priceId, quantity: 1 }],
           success_url: `${baseUrl}/profile?tab=subscription&success=true`,
@@ -182,6 +194,11 @@ export const createCheckoutSessionFn = createServerFn({ method: 'POST' })
           subscription_data: {
             metadata: { userId: user.id, tier: data.tier },
           },
+          customer_update: {
+            address: 'auto',
+            name: 'auto',
+          },
+          billing_address_collection: 'auto',
         })
 
     return { url: session.url }
@@ -279,17 +296,37 @@ export async function handleStripeWebhook(event: {
   switch (event.type) {
     case 'checkout.session.completed': {
       const session = event.data.object as {
-        subscription: string
+        id: string
+        mode: 'payment' | 'subscription' | 'setup'
+        subscription: string | null
+        payment_intent: string | null
         customer: string
         metadata: { userId: string; tier: string }
+        amount_total: number | null
+        currency: string | null
       }
 
-      if (session.subscription && session.metadata?.userId) {
+      if (!session.metadata?.userId || !session.metadata?.tier) {
+        console.error('[Stripe Webhook] Missing userId or tier in session metadata')
+        break
+      }
+
+      // Handle subscription-based payments (Pro, Creator monthly)
+      if (session.mode === 'subscription' && session.subscription) {
         await handleSubscriptionCreated(
           session.subscription,
           session.customer,
           session.metadata.userId,
           session.metadata.tier as TierType
+        )
+      }
+      // Handle one-time payments (Lifetime)
+      else if (session.mode === 'payment') {
+        await handleOneTimePayment(
+          session.customer,
+          session.metadata.userId,
+          session.metadata.tier as TierType,
+          session.payment_intent
         )
       }
       break
@@ -396,6 +433,63 @@ async function handleSubscriptionCreated(
   
   if (user?.email) {
     const tierName = TIER_CONFIG[actualTier]?.name || actualTier
+    void sendSubscriptionEmail(user.email, user.username || 'User', tierName, 'upgraded')
+  }
+}
+
+// Handle one-time payments (Lifetime tier)
+async function handleOneTimePayment(
+  customerId: string,
+  userId: string,
+  tier: TierType,
+  paymentIntentId: string | null
+) {
+  // For lifetime, there's no expiration
+  const tierExpiresAt = tier === 'lifetime' ? null : new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)
+  
+  // Update user with new tier
+  await db
+    .update(users)
+    .set({
+      tier,
+      stripeCustomerId: customerId,
+      stripeSubscriptionId: null, // No subscription for one-time payments
+      tierExpiresAt,
+      updatedAt: new Date(),
+    })
+    .where(eq(users.id, userId))
+
+  // Create a record in subscriptions table for tracking
+  await db.insert(subscriptions).values({
+    userId,
+    stripeSubscriptionId: paymentIntentId || `lifetime_${userId}_${Date.now()}`,
+    stripePriceId: process.env.STRIPE_LIFETIME_PRICE_ID || '',
+    stripeCustomerId: customerId,
+    tier,
+    status: 'active',
+    currentPeriodStart: new Date(),
+    currentPeriodEnd: tierExpiresAt || new Date(Date.now() + 100 * 365 * 24 * 60 * 60 * 1000), // 100 years for lifetime
+    cancelAtPeriodEnd: false,
+  })
+
+  // Update badges
+  await updateUserBadgesForTier(userId, tier)
+
+  // Create notification
+  await createSubscriptionNotification(userId, 'upgraded', {
+    tier,
+    expiresAt: tierExpiresAt,
+  })
+
+  // Send confirmation email
+  const [user] = await db
+    .select({ email: users.email, username: users.username })
+    .from(users)
+    .where(eq(users.id, userId))
+    .limit(1)
+
+  if (user?.email) {
+    const tierName = TIER_CONFIG[tier]?.name || tier
     void sendSubscriptionEmail(user.email, user.username || 'User', tierName, 'upgraded')
   }
 }
@@ -624,5 +718,101 @@ export const adminGetAllUsersTiersFn = createServerFn({ method: 'GET' })
       total: filteredResults.length,
       limit,
       offset,
+    }
+  })
+
+// Get customer credit balance
+export const getCustomerBalanceFn = createServerFn({ method: 'GET' }).handler(async () => {
+  if (!stripe) {
+    return { balance: 0, formattedBalance: '€0.00' }
+  }
+
+  const user = await getAuthenticatedUser()
+
+  const [userData] = await db
+    .select({ stripeCustomerId: users.stripeCustomerId })
+    .from(users)
+    .where(eq(users.id, user.id))
+    .limit(1)
+
+  if (!userData?.stripeCustomerId) {
+    return { balance: 0, formattedBalance: '€0.00' }
+  }
+
+  try {
+    const customer = await stripe.customers.retrieve(userData.stripeCustomerId)
+    if (customer && !customer.deleted && 'balance' in customer) {
+      // Stripe stores balance in cents, negative = credit
+      const balanceCents = customer.balance || 0
+      const creditCents = balanceCents < 0 ? Math.abs(balanceCents) : 0
+      return {
+        balance: creditCents,
+        formattedBalance: `€${(creditCents / 100).toFixed(2)}`,
+        hasCredit: creditCents > 0,
+      }
+    }
+  } catch (e) {
+    console.error('[Stripe] Error retrieving customer balance:', e)
+  }
+
+  return { balance: 0, formattedBalance: '€0.00', hasCredit: false }
+})
+
+// Admin: Add credit to customer balance
+export const adminAddCustomerCreditFn = createServerFn({ method: 'POST' })
+  .inputValidator(
+    z.object({
+      userId: z.string().uuid(),
+      amountCents: z.number().int().min(1).max(100000), // Max €1000
+      description: z.string().max(500).optional(),
+    })
+  )
+  .handler(async ({ data }) => {
+    await requireAdmin()
+
+    if (!stripe) {
+      throw { message: 'Stripe is not configured', status: 500 }
+    }
+
+    const [targetUser] = await db
+      .select({ 
+        stripeCustomerId: users.stripeCustomerId,
+        email: users.email,
+        username: users.username,
+      })
+      .from(users)
+      .where(eq(users.id, data.userId))
+      .limit(1)
+
+    if (!targetUser) {
+      throw { message: 'User not found', status: 404 }
+    }
+
+    let customerId = targetUser.stripeCustomerId
+
+    // Create Stripe customer if not exists
+    if (!customerId) {
+      const customer = await stripe.customers.create({
+        email: targetUser.email,
+        metadata: { userId: data.userId },
+      })
+      customerId = customer.id
+
+      await db
+        .update(users)
+        .set({ stripeCustomerId: customerId, updatedAt: new Date() })
+        .where(eq(users.id, data.userId))
+    }
+
+    // Add credit using balance transaction (negative = credit in Stripe)
+    await stripe.customers.createBalanceTransaction(customerId, {
+      amount: -data.amountCents, // Negative = credit
+      currency: 'eur',
+      description: data.description || `Credit added by admin`,
+    })
+
+    return {
+      success: true,
+      message: `Added €${(data.amountCents / 100).toFixed(2)} credit to ${targetUser.username || targetUser.email}`,
     }
   })
