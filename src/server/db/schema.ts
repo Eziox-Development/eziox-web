@@ -30,6 +30,8 @@ export const users = pgTable('users', {
   twoFactorRecoveryCodes: text('two_factor_recovery_codes'),
   passwordResetToken: text('password_reset_token'),
   passwordResetExpires: timestamp('password_reset_expires'),
+  emailVerificationToken: text('email_verification_token'),
+  emailVerificationExpires: timestamp('email_verification_expires'),
   lastLoginAt: timestamp('last_login_at'),
   lastLoginIp: varchar('last_login_ip', { length: 45 }),
   createdAt: timestamp('created_at').defaultNow().notNull(),
@@ -195,20 +197,23 @@ export interface LinkSchedule {
   hideWhenExpired?: boolean
 }
 
-export interface ABTestVariant {
-  id: string
-  title: string
-  url: string
-  clicks: number
+export interface QRCodeStyle {
+  foregroundColor?: string
+  backgroundColor?: string
+  logoUrl?: string
+  cornerStyle?: 'square' | 'rounded' | 'dots'
+  size?: number
 }
 
-export interface EmbedSettings {
-  type: 'default' | 'spotify' | 'youtube' | 'soundcloud'
+export interface MediaEmbed {
+  type: 'spotify' | 'soundcloud' | 'youtube' | 'twitch' | 'tiktok' | 'apple-music'
+  embedId?: string
+  embedUrl?: string
   autoplay?: boolean
-  loop?: boolean
-  showControls?: boolean
-  width?: number
+  showArtwork?: boolean
+  theme?: 'light' | 'dark' | 'auto'
   height?: number
+  compact?: boolean
 }
 
 export const userLinks = pgTable('user_links', {
@@ -229,12 +234,11 @@ export const userLinks = pgTable('user_links', {
   isFeatured: boolean('is_featured').default(false),
   featuredStyle: varchar('featured_style', { length: 20 }),
   schedule: jsonb('schedule').$type<LinkSchedule>(),
-  abTestEnabled: boolean('ab_test_enabled').default(false),
-  abTestVariants: jsonb('ab_test_variants').$type<ABTestVariant[]>().default([]),
-  utmSource: varchar('utm_source', { length: 100 }),
-  utmMedium: varchar('utm_medium', { length: 100 }),
-  utmCampaign: varchar('utm_campaign', { length: 100 }),
-  embedSettings: jsonb('embed_settings').$type<EmbedSettings>(),
+  password: text('password'),
+  qrCodeStyle: jsonb('qr_code_style').$type<QRCodeStyle>(),
+  mediaEmbed: jsonb('media_embed').$type<MediaEmbed>(),
+  linkType: varchar('link_type', { length: 20 }).default('link'),
+  groupId: uuid('group_id'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 })
@@ -243,6 +247,169 @@ export const userLinksRelations = relations(userLinks, ({ one }) => ({
   user: one(users, {
     fields: [userLinks.userId],
     references: [users.id],
+  }),
+  group: one(linkGroups, {
+    fields: [userLinks.groupId],
+    references: [linkGroups.id],
+  }),
+}))
+
+// LINK GROUPS TABLE (for organizing links into sections)
+export const linkGroups = pgTable('link_groups', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  name: varchar('name', { length: 100 }).notNull(),
+  icon: varchar('icon', { length: 50 }),
+  color: varchar('color', { length: 7 }),
+  isCollapsible: boolean('is_collapsible').default(false),
+  isCollapsed: boolean('is_collapsed').default(false),
+  order: integer('order').default(0),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+})
+
+export const linkGroupsRelations = relations(linkGroups, ({ one, many }) => ({
+  user: one(users, {
+    fields: [linkGroups.userId],
+    references: [users.id],
+  }),
+  links: many(userLinks),
+}))
+
+// PROFILE WIDGETS TABLE (customizable widgets for bio page)
+export interface WidgetSettings {
+  size?: 'small' | 'medium' | 'large' | 'full'
+  style?: 'minimal' | 'card' | 'glass' | 'neon'
+  showTitle?: boolean
+  customCSS?: string
+}
+
+export interface SpotifyWidgetConfig {
+  showRecentlyPlayed?: boolean
+  showCurrentlyPlaying?: boolean
+  theme?: 'light' | 'dark' | 'auto'
+}
+
+export interface WeatherWidgetConfig {
+  location?: string
+  units?: 'celsius' | 'fahrenheit'
+  showForecast?: boolean
+}
+
+export interface CountdownWidgetConfig {
+  targetDate: string
+  title?: string
+  showDays?: boolean
+  showHours?: boolean
+  showMinutes?: boolean
+  showSeconds?: boolean
+}
+
+export interface SocialFeedWidgetConfig {
+  platform: 'twitter' | 'instagram' | 'tiktok' | 'youtube'
+  username?: string
+  postCount?: number
+}
+
+export const profileWidgets = pgTable('profile_widgets', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  type: varchar('type', { length: 50 }).notNull(),
+  title: varchar('title', { length: 100 }),
+  isActive: boolean('is_active').default(true),
+  order: integer('order').default(0),
+  settings: jsonb('settings').$type<WidgetSettings>(),
+  config: jsonb('config').$type<Record<string, unknown>>(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+})
+
+export const profileWidgetsRelations = relations(profileWidgets, ({ one }) => ({
+  user: one(users, {
+    fields: [profileWidgets.userId],
+    references: [users.id],
+  }),
+}))
+
+// SOCIAL INTEGRATIONS TABLE (connected social accounts beyond Spotify)
+export const socialIntegrations = pgTable('social_integrations', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  platform: varchar('platform', { length: 50 }).notNull(),
+  platformUserId: varchar('platform_user_id', { length: 255 }),
+  platformUsername: varchar('platform_username', { length: 255 }),
+  accessToken: text('access_token'),
+  refreshToken: text('refresh_token'),
+  expiresAt: timestamp('expires_at'),
+  scope: text('scope'),
+  showOnProfile: boolean('show_on_profile').default(true),
+  metadata: jsonb('metadata').$type<Record<string, unknown>>(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+})
+
+export const socialIntegrationsRelations = relations(socialIntegrations, ({ one }) => ({
+  user: one(users, {
+    fields: [socialIntegrations.userId],
+    references: [users.id],
+  }),
+}))
+
+// MEDIA LIBRARY TABLE (for storing uploaded media)
+export const mediaLibrary = pgTable('media_library', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  filename: varchar('filename', { length: 255 }).notNull(),
+  originalName: varchar('original_name', { length: 255 }),
+  mimeType: varchar('mime_type', { length: 100 }),
+  size: integer('size'),
+  url: text('url').notNull(),
+  thumbnailUrl: text('thumbnail_url'),
+  width: integer('width'),
+  height: integer('height'),
+  folder: varchar('folder', { length: 100 }),
+  alt: varchar('alt', { length: 255 }),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+})
+
+export const mediaLibraryRelations = relations(mediaLibrary, ({ one }) => ({
+  user: one(users, {
+    fields: [mediaLibrary.userId],
+    references: [users.id],
+  }),
+}))
+
+// SCHEDULED POSTS TABLE (for scheduling link visibility)
+export const scheduledPosts = pgTable('scheduled_posts', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  linkId: uuid('link_id')
+    .references(() => userLinks.id, { onDelete: 'cascade' }),
+  action: varchar('action', { length: 20 }).notNull(),
+  scheduledFor: timestamp('scheduled_for').notNull(),
+  executedAt: timestamp('executed_at'),
+  status: varchar('status', { length: 20 }).default('pending').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+})
+
+export const scheduledPostsRelations = relations(scheduledPosts, ({ one }) => ({
+  user: one(users, {
+    fields: [scheduledPosts.userId],
+    references: [users.id],
+  }),
+  link: one(userLinks, {
+    fields: [scheduledPosts.linkId],
+    references: [userLinks.id],
   }),
 }))
 
@@ -364,68 +531,6 @@ export const activityLogRelations = relations(activityLog, ({ one }) => ({
   }),
 }))
 
-// BLOG POSTS TABLE
-export const blogPosts = pgTable('blog_posts', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  authorId: uuid('author_id')
-    .notNull()
-    .references(() => users.id, { onDelete: 'cascade' }),
-  slug: varchar('slug', { length: 255 }).notNull().unique(),
-  title: varchar('title', { length: 255 }).notNull(),
-  excerpt: text('excerpt'),
-  content: text('content').notNull(),
-  coverImage: text('cover_image'),
-  category: varchar('category', { length: 50 }),
-  tags: jsonb('tags').$type<string[]>().default([]),
-  isPublished: boolean('is_published').default(false),
-  isFeatured: boolean('is_featured').default(false),
-  views: integer('views').default(0),
-  likes: integer('likes').default(0),
-  publishedAt: timestamp('published_at'),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-  updatedAt: timestamp('updated_at').defaultNow().notNull(),
-})
-
-export const blogPostsRelations = relations(blogPosts, ({ one }) => ({
-  author: one(users, {
-    fields: [blogPosts.authorId],
-    references: [users.id],
-  }),
-}))
-
-// PROJECTS TABLE
-export const projects = pgTable('projects', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  authorId: uuid('author_id')
-    .notNull()
-    .references(() => users.id, { onDelete: 'cascade' }),
-  slug: varchar('slug', { length: 255 }).notNull().unique(),
-  title: varchar('title', { length: 255 }).notNull(),
-  description: text('description'),
-  content: text('content'),
-  coverImage: text('cover_image'),
-  liveUrl: text('live_url'),
-  sourceUrl: text('source_url'),
-  technologies: jsonb('technologies').$type<string[]>().default([]),
-  category: varchar('category', { length: 50 }),
-  status: varchar('status', { length: 20 }).default('completed'), // in_progress, completed, archived
-  isPublished: boolean('is_published').default(false),
-  isFeatured: boolean('is_featured').default(false),
-  views: integer('views').default(0),
-  likes: integer('likes').default(0),
-  order: integer('order').default(0),
-  startDate: timestamp('start_date'),
-  endDate: timestamp('end_date'),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-  updatedAt: timestamp('updated_at').defaultNow().notNull(),
-})
-
-export const projectsRelations = relations(projects, ({ one }) => ({
-  author: one(users, {
-    fields: [projects.authorId],
-    references: [users.id],
-  }),
-}))
 
 // SHORT LINKS TABLE (URL Shortener)
 export const shortLinks = pgTable('short_links', {
@@ -558,6 +663,72 @@ export const linkClickAnalyticsRelations = relations(linkClickAnalytics, ({ one 
   }),
   user: one(users, {
     fields: [linkClickAnalytics.userId],
+    references: [users.id],
+  }),
+}))
+
+// CUSTOM DOMAINS TABLE (Creator Tier Feature)
+export const customDomains = pgTable('custom_domains', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' })
+    .unique(),
+  domain: varchar('domain', { length: 255 }).notNull().unique(),
+  status: varchar('status', { length: 20 }).default('pending').notNull(),
+  verificationToken: text('verification_token'),
+  verifiedAt: timestamp('verified_at'),
+  sslStatus: varchar('ssl_status', { length: 20 }).default('pending'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+})
+
+export const customDomainsRelations = relations(customDomains, ({ one }) => ({
+  user: one(users, {
+    fields: [customDomains.userId],
+    references: [users.id],
+  }),
+}))
+
+// PROFILE VIEW ANALYTICS TABLE (detailed per-view tracking)
+export const profileViewAnalytics = pgTable('profile_view_analytics', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  profileUserId: uuid('profile_user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  country: varchar('country', { length: 2 }),
+  city: varchar('city', { length: 100 }),
+  device: varchar('device', { length: 20 }),
+  browser: varchar('browser', { length: 50 }),
+  os: varchar('os', { length: 50 }),
+  referrer: text('referrer'),
+  ipHash: varchar('ip_hash', { length: 64 }),
+  viewedAt: timestamp('viewed_at').defaultNow().notNull(),
+})
+
+export const profileViewAnalyticsRelations = relations(profileViewAnalytics, ({ one }) => ({
+  profileUser: one(users, {
+    fields: [profileViewAnalytics.profileUserId],
+    references: [users.id],
+  }),
+}))
+
+// EMAIL SUBSCRIBERS TABLE (Creator Tier Feature)
+export const emailSubscribers = pgTable('email_subscribers', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  email: varchar('email', { length: 255 }).notNull(),
+  name: varchar('name', { length: 100 }),
+  subscribedAt: timestamp('subscribed_at').defaultNow().notNull(),
+  unsubscribedAt: timestamp('unsubscribed_at'),
+  source: varchar('source', { length: 50 }),
+})
+
+export const emailSubscribersRelations = relations(emailSubscribers, ({ one }) => ({
+  user: one(users, {
+    fields: [emailSubscribers.userId],
     references: [users.id],
   }),
 }))
@@ -711,6 +882,13 @@ export const contactMessages = pgTable('contact_messages', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
 })
 
+export const contactMessagesRelations = relations(contactMessages, ({ one }) => ({
+  responder: one(users, {
+    fields: [contactMessages.respondedBy],
+    references: [users.id],
+  }),
+}))
+
 // TYPE EXPORTS
 export type User = typeof users.$inferSelect
 export type NewUser = typeof users.$inferInsert
@@ -724,10 +902,6 @@ export type Follow = typeof follows.$inferSelect
 export type Referral = typeof referrals.$inferSelect
 export type NewReferral = typeof referrals.$inferInsert
 export type ActivityLog = typeof activityLog.$inferSelect
-export type BlogPost = typeof blogPosts.$inferSelect
-export type NewBlogPost = typeof blogPosts.$inferInsert
-export type Project = typeof projects.$inferSelect
-export type NewProject = typeof projects.$inferInsert
 export type ShortLink = typeof shortLinks.$inferSelect
 export type NewShortLink = typeof shortLinks.$inferInsert
 export type PartnerApplication = typeof partnerApplications.$inferSelect
@@ -745,3 +919,23 @@ export type NewCommunityTemplate = typeof communityTemplates.$inferInsert
 export type TemplateLike = typeof templateLikes.$inferSelect
 export type AdminAuditLog = typeof adminAuditLog.$inferSelect
 export type NewAdminAuditLog = typeof adminAuditLog.$inferInsert
+export type ContactMessage = typeof contactMessages.$inferSelect
+export type NewContactMessage = typeof contactMessages.$inferInsert
+export type CustomDomain = typeof customDomains.$inferSelect
+export type NewCustomDomain = typeof customDomains.$inferInsert
+export type ProfileViewAnalytics = typeof profileViewAnalytics.$inferSelect
+export type NewProfileViewAnalytics = typeof profileViewAnalytics.$inferInsert
+export type EmailSubscriber = typeof emailSubscribers.$inferSelect
+export type NewEmailSubscriber = typeof emailSubscribers.$inferInsert
+export type LinkClickAnalytics = typeof linkClickAnalytics.$inferSelect
+export type NewLinkClickAnalytics = typeof linkClickAnalytics.$inferInsert
+export type LinkGroup = typeof linkGroups.$inferSelect
+export type NewLinkGroup = typeof linkGroups.$inferInsert
+export type ProfileWidget = typeof profileWidgets.$inferSelect
+export type NewProfileWidget = typeof profileWidgets.$inferInsert
+export type SocialIntegration = typeof socialIntegrations.$inferSelect
+export type NewSocialIntegration = typeof socialIntegrations.$inferInsert
+export type MediaLibraryItem = typeof mediaLibrary.$inferSelect
+export type NewMediaLibraryItem = typeof mediaLibrary.$inferInsert
+export type ScheduledPost = typeof scheduledPosts.$inferSelect
+export type NewScheduledPost = typeof scheduledPosts.$inferInsert

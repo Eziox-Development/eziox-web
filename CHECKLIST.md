@@ -189,52 +189,37 @@
 - [x] Tier system:
 
   - [x] **Free (Eziox Core)** — The complete Eziox experience
-    - Unlimited links (no artificial limits)
-    - Profile picture, banner & bio
-    - All standard layouts
-    - Custom username (`eziox.link/username`)
-    - Mobile-optimized responsive design
-    - Public & private link visibility
+    - Unlimited links and short links
+    - All 30+ themes, colors, backgrounds, and animations
     - Spotify, SoundCloud & YouTube embeds
-    - Basic analytics: total views, total clicks (24h delay)
-    - Standard themes & accent colors
-    - Social links integration
-    - **Limitations:** Small "Powered by Eziox" branding, delayed analytics, no custom CSS/domain
+    - Social icons, profile picture, banner & bio customization
+    - Full analytics dashboard (30-day retention) with no paywalls
+    - Mobile-optimized responsive design + public/private link visibility
+    - **Limitations:** Subtle "Powered by Eziox" branding, no custom CSS/domain, analytics exports disabled
 
-  - [x] **Pro** (€4,99/month) — Enhanced control & insights
+  - [x] **Pro** (€2,99/month) — Essential power features
     - Everything in Free, plus:
+    - Custom CSS styling (sandboxed)
+    - Upload custom fonts
     - Remove Eziox branding
-    - Realtime analytics (no delay)
-    - Per-link click tracking & top links overview
-    - Referrer tracking & date range filters
+    - Profile backups & restore history
     - Export analytics data (CSV/JSON)
-    - Extended premium themes
-    - Custom backgrounds (solid, gradient, image)
-    - Layout fine-tuning (spacing, border-radius, shadows)
-    - Profile backups & version history
-    - Priority CDN for faster loading
     - Pro badge on profile
 
-  - [x] **Creator** (€9,99/month) — Full creative freedom
+  - [x] **Creator** (€5,99/month) — Professional toolkit
     - Everything in Pro, plus:
-    - Custom CSS (sandboxed for safety)
-    - Custom font uploads
-    - Animated profiles & micro-interactions
-    - Advanced embed controls (size, autoplay, loop)
-    - Featured/highlighted links with special styling
-    - Link scheduling (show/hide at specific times)
-    - A/B testing for links (compare click rates)
-    - UTM parameter support for marketing
-    - Custom Open Graph previews (social sharing)
-    - Priority support (faster response times)
+    - Custom domain support (`yourname.com`)
+    - Password-protected & expiring links
+    - Email collection forms
+    - Custom Open Graph previews
+    - Priority email support + early access to new features
+    - Creator badge on profile
 
-  - [x] **Lifetime** (€30 once) — Forever supporter
+  - [x] **Lifetime** (€29 einmalig) — Forever supporter
     - Everything in Creator, permanently
     - All future Creator features included
-    - Exclusive Lifetime badge (legendary rarity)
-    - Internal supporter recognition
+    - Exclusive Lifetime badge & priority support forever
     - One-time payment, no renewals ever
-    - Priority in feature requests
 
 - [x] Stripe integration for payments
 - [x] Subscription management
@@ -288,6 +273,17 @@
 - [x] 2FA recovery codes (10 codes, one-time use, regeneratable)
 - [x] Password reset with rate limiting (3/hour)
 - [x] Login notification emails (Resend integration)
+- [x] **User-Agent tracking** with comprehensive browser detection (`user-agent.ts`)
+  - Supports: Chrome, Firefox, Safari, Edge, Opera, Brave, Vivaldi, Arc, Tor, OperaGX, Samsung Internet, UC Browser, Yandex, DuckDuckGo, Whale
+  - OS detection: Windows 7-11, macOS, Linux, iOS, Android, Chrome OS
+  - Device type: Desktop, Mobile, Tablet, Bot
+  - Bot detection for crawlers (Google, Bing, Discord, Twitter, etc.)
+- [x] **GDPR-compliant IP handling** (`ip-utils.ts`)
+  - IP anonymization: Last octet zeroed (IPv4) / Last 80 bits zeroed (IPv6)
+  - Secure IP hashing for session security (SHA-256 with salt)
+  - IP masking for user display (e.g., "192.168.x.x")
+  - Private IP detection (localhost, LAN ranges)
+  - Cloudflare/Vercel proxy header support
 
 ### Rate Limiting & DDoS Protection
 - [x] Global API rate limiting (requests per minute per IP)

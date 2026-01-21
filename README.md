@@ -50,10 +50,10 @@
 
 | Tier | Price | Highlights |
 |------|-------|------------|
-| **Eziox Core** | Free | Unlimited links, embeds, basic analytics |
-| **Pro** | €4.99/mo | Remove branding, realtime analytics, custom backgrounds |
-| **Creator** | €9.99/mo | Custom CSS, fonts, animations, A/B testing, UTM tracking |
-| **Lifetime** | €30 once | All Creator features forever, exclusive badge |
+| **Eziox Core** | Free | Unlimited links, all themes, full analytics, media embeds |
+| **Pro** | $2.99/mo | Custom CSS, fonts, remove branding, profile backups |
+| **Creator** | $5.99/mo | Custom domain, password links, email collection, priority support |
+| **Lifetime** | $29 once | All Creator features forever, exclusive badge |
 
 ## 🛠️ Tech Stack
 

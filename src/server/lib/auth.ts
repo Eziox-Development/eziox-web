@@ -265,6 +265,50 @@ export async function generatePasswordResetToken(userId: string): Promise<string
   return token
 }
 
+export async function generateEmailVerificationToken(userId: string): Promise<string> {
+  const token = generateToken(32)
+  const expires = new Date()
+  expires.setHours(expires.getHours() + 24)
+
+  await db
+    .update(users)
+    .set({
+      emailVerificationToken: token,
+      emailVerificationExpires: expires,
+      updatedAt: new Date(),
+    })
+    .where(eq(users.id, userId))
+
+  return token
+}
+
+export async function validateEmailVerificationToken(token: string) {
+  const [user] = await db
+    .select()
+    .from(users)
+    .where(
+      and(
+        eq(users.emailVerificationToken, token),
+        gt(users.emailVerificationExpires, new Date())
+      )
+    )
+    .limit(1)
+
+  return user || null
+}
+
+export async function verifyUserEmail(userId: string) {
+  await db
+    .update(users)
+    .set({
+      emailVerified: true,
+      emailVerificationToken: null,
+      emailVerificationExpires: null,
+      updatedAt: new Date(),
+    })
+    .where(eq(users.id, userId))
+}
+
 export async function validatePasswordResetToken(token: string) {
   const [user] = await db
     .select()

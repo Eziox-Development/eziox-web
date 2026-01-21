@@ -33,10 +33,15 @@ import {
   getRecoveryCodesCount,
   regenerateRecoveryCodes,
   verifyRecoveryCode,
+  generateEmailVerificationToken,
+  validateEmailVerificationToken,
+  verifyUserEmail,
 } from '../lib/auth'
 import { checkRateLimit, RATE_LIMITS, sanitizeText, sanitizeURL, isValidReferralCode, generateCSRFToken, validateCSRFToken } from '@/lib/security'
-import { getRequestIP } from '@tanstack/react-start/server'
-import { sendPasswordResetEmail, sendLoginNotificationEmail, sendWelcomeEmail, sendAccountDeletedEmail, send2FAEnabledEmail, send2FADisabledEmail, sendPasswordChangedEmail } from '../lib/email'
+import { getRequestIP, getRequestHeader } from '@tanstack/react-start/server'
+import { sendPasswordResetEmail, sendLoginNotificationEmail, sendWelcomeEmail, sendAccountDeletedEmail, send2FAEnabledEmail, send2FADisabledEmail, sendPasswordChangedEmail, sendEmailVerificationEmail } from '../lib/email'
+import { parseUserAgent, formatUserAgent } from '../lib/user-agent'
+import { anonymizeIP } from '../lib/ip-utils'
 import { verifyTurnstileToken } from '../lib/turnstile'
 import { logSecurityEvent } from '../lib/security-logger'
 
@@ -104,9 +109,13 @@ export const signUpFn = createServerFn({ method: 'POST' })
   .handler(async ({ data }) => {
     const { email, password, username, name, referralCode, turnstileToken } = data
 
-    const ip = getRequestIP() || 'unknown'
+    const rawIP = getRequestIP() || 'unknown'
+    const ip = anonymizeIP(rawIP)
+    const userAgentRaw = getRequestHeader('User-Agent') || null
+    const parsedUA = parseUserAgent(userAgentRaw)
+    const userAgentFormatted = formatUserAgent(parsedUA)
     
-    const isTurnstileValid = await verifyTurnstileToken(turnstileToken, ip)
+    const isTurnstileValid = await verifyTurnstileToken(turnstileToken, rawIP)
     if (!isTurnstileValid) {
       setResponseStatus(403)
       throw {
@@ -116,7 +125,7 @@ export const signUpFn = createServerFn({ method: 'POST' })
     }
 
     const rateLimit = checkRateLimit(
-      `signup:${ip}`,
+      `signup:${rawIP}`,
       RATE_LIMITS.AUTH_SIGNUP.maxRequests,
       RATE_LIMITS.AUTH_SIGNUP.windowMs,
     )
@@ -164,18 +173,23 @@ export const signUpFn = createServerFn({ method: 'POST' })
         console.error('Failed to check badges')
       }
 
-      const session = await createSession(user.id)
+      const session = await createSession(user.id, userAgentFormatted, ip)
 
       if (!session) {
         throw { message: 'Failed to create session', status: 500 }
       }
       setCookie('session-token', session.token, COOKIE_OPTIONS)
 
+      // Send verification email
+      const verificationToken = await generateEmailVerificationToken(user.id)
+      void sendEmailVerificationEmail(user.email, user.username, verificationToken)
+
+      // Also send welcome email
       void sendWelcomeEmail(user.email, user.username)
 
-      logSecurityEvent('auth.signup', { userId: user.id, ip })
+      logSecurityEvent('auth.signup', { userId: user.id, ip, userAgent: parsedUA.browser })
 
-      return { success: true, message: 'Account created successfully' }
+      return { success: true, message: 'Account created successfully. Please check your email to verify your account.' }
     } catch (error) {
       const err = error as { message?: string; status?: number }
       if (err.status) {
@@ -195,9 +209,13 @@ export const signInFn = createServerFn({ method: 'POST' })
   .handler(async ({ data }) => {
     const { email, password, rememberMe, turnstileToken } = data
 
-    const ip = getRequestIP() || 'unknown'
+    const rawIP = getRequestIP() || 'unknown'
+    const ip = anonymizeIP(rawIP)
+    const userAgentRaw = getRequestHeader('User-Agent') || null
+    const parsedUA = parseUserAgent(userAgentRaw)
+    const userAgentFormatted = formatUserAgent(parsedUA)
     
-    const isTurnstileValid = await verifyTurnstileToken(turnstileToken, ip)
+    const isTurnstileValid = await verifyTurnstileToken(turnstileToken, rawIP)
     if (!isTurnstileValid) {
       setResponseStatus(403)
       throw {
@@ -207,7 +225,7 @@ export const signInFn = createServerFn({ method: 'POST' })
     }
 
     const rateLimit = checkRateLimit(
-      `login:${ip}`,
+      `login:${rawIP}`,
       RATE_LIMITS.AUTH_LOGIN.maxRequests,
       RATE_LIMITS.AUTH_LOGIN.windowMs,
     )
@@ -251,7 +269,7 @@ export const signInFn = createServerFn({ method: 'POST' })
         }
       }
 
-      const session = await createSession(user.id, undefined, ip, rememberMe)
+      const session = await createSession(user.id, userAgentFormatted, ip, rememberMe)
 
       if (!session) {
         throw { message: 'Failed to create session', status: 500 }
@@ -267,11 +285,11 @@ export const signInFn = createServerFn({ method: 'POST' })
         user.email,
         user.username,
         ip,
-        '', // userAgent not available in this context
+        userAgentFormatted,
         new Date()
       )
 
-      logSecurityEvent('auth.login_success', { userId: user.id, ip })
+      logSecurityEvent('auth.login_success', { userId: user.id, ip, userAgent: parsedUA.browser })
 
       return { success: true, message: 'Signed in successfully' }
     } catch (error) {
@@ -900,6 +918,56 @@ export const exportUserDataFn = createServerFn({ method: 'GET' }).handler(
     return exportData
   },
 )
+
+// Email Verification
+export const verifyEmailFn = createServerFn({ method: 'POST' })
+  .inputValidator(z.object({ token: z.string().min(1) }))
+  .handler(async ({ data }) => {
+    const { token } = data
+
+    const user = await validateEmailVerificationToken(token)
+    if (!user) {
+      setResponseStatus(400)
+      throw { message: 'Invalid or expired verification link', status: 400 }
+    }
+
+    if (user.emailVerified) {
+      return { success: true, message: 'Email already verified' }
+    }
+
+    await verifyUserEmail(user.id)
+    logSecurityEvent('auth.email_verified', { userId: user.id })
+
+    return { success: true, message: 'Email verified successfully' }
+  })
+
+export const resendVerificationEmailFn = createServerFn({ method: 'POST' })
+  .handler(async () => {
+    const { currentUser } = await authMiddleware()
+    if (!currentUser) {
+      setResponseStatus(401)
+      throw { message: 'Not authenticated', status: 401 }
+    }
+
+    if (currentUser.emailVerified) {
+      return { success: true, message: 'Email already verified' }
+    }
+
+    const rateLimit = checkRateLimit(
+      `resend-verification:${currentUser.id}`,
+      3,
+      60 * 60 * 1000
+    )
+    if (!rateLimit.allowed) {
+      setResponseStatus(429)
+      throw { message: 'Too many requests. Please try again later.', status: 429 }
+    }
+
+    const token = await generateEmailVerificationToken(currentUser.id)
+    await sendEmailVerificationEmail(currentUser.email, currentUser.username, token)
+
+    return { success: true, message: 'Verification email sent' }
+  })
 
 export type SignUpInput = z.infer<typeof signUpSchema>
 export type SignInInput = z.infer<typeof signInSchema>

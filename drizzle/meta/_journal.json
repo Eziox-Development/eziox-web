@@ -5,71 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1768565199866,
-      "tag": "0000_heavy_miss_america",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1768567223606,
-      "tag": "0001_boring_ricochet",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1768602086989,
-      "tag": "0002_tidy_inhumans",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1768619444583,
-      "tag": "0003_wide_black_tom",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1768727788183,
-      "tag": "0004_late_landau",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1768788815197,
-      "tag": "0005_mean_wildside",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "7",
-      "when": 1768830980848,
-      "tag": "0006_add_custom_themes",
-      "breakpoints": true
-    },
-    {
-      "idx": 7,
-      "version": "7",
-      "when": 1768833852300,
-      "tag": "0007_sudden_post",
-      "breakpoints": true
-    },
-    {
-      "idx": 8,
-      "version": "7",
-      "when": 1768843211556,
-      "tag": "0008_hesitant_patch",
-      "breakpoints": true
-    },
-    {
-      "idx": 9,
-      "version": "7",
-      "when": 1768916516443,
-      "tag": "0009_creator_types_array",
+      "when": 1769000288291,
+      "tag": "0000_complex_robin_chapel",
       "breakpoints": true
     }
   ]

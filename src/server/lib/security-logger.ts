@@ -16,6 +16,8 @@ export type SecurityEventType =
   | 'auth.account_deleted'
   | 'auth.recovery_codes_regenerated'
   | 'auth.recovery_code_used'
+  | 'auth.email_verified'
+  | 'auth.email_verification_sent'
   | 'rate_limit.exceeded'
   | 'csrf.invalid_token'
   | 'csrf.invalid_origin'

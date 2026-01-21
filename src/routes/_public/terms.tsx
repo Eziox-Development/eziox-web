@@ -84,7 +84,7 @@ export const Route = createFileRoute('/_public/terms')({
   component: TermsPage,
 })
 
-const LAST_UPDATED = 'January 19, 2026'
+const LAST_UPDATED = 'January 21, 2026'
 
 const SECTIONS = [
   {

@@ -9,6 +9,61 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.5.0] - 2026-01-21
+
+### Added - Email Verification System 📧
+
+**Complete Email Verification:**
+- New `/verify-email` route with token validation
+- Verification email sent automatically on signup
+- Resend verification email functionality (rate limited: 3/hour)
+- `emailVerificationToken` and `emailVerificationExpires` fields in users table
+- Security event logging for email verification
+
+### Added - Modern Bio Page Schema 🚀
+
+**New Database Tables:**
+- `linkGroups` - Organize links into collapsible sections
+- `profileWidgets` - Customizable widgets (Spotify, Weather, Countdown, Social Feed)
+- `socialIntegrations` - Connect YouTube, Twitch, TikTok, etc.
+- `mediaLibrary` - Manage uploaded media files
+- `scheduledPosts` - Schedule link visibility changes
+- `customDomains` - Custom domain support for Creator tier
+- `profileViewAnalytics` - Detailed profile view tracking
+- `emailSubscribers` - Email collection for creators
+
+**New Link Features:**
+- `mediaEmbed` - Spotify, SoundCloud, YouTube, Twitch, TikTok, Apple Music embeds
+- `linkType` - Different link types (link, embed, header, divider)
+- `groupId` - Assign links to groups
+- `password` - Password-protected links
+- `qrCodeStyle` - Custom QR code styling
+
+### Changed - Schema Cleanup 🧹
+
+**Removed Deprecated Features:**
+- Removed `blogPosts` table (not needed for bio page)
+- Removed `projects` table (not needed for bio page)
+- Removed A/B testing fields (`abTestEnabled`, `abTestVariants`)
+- Removed UTM tracking fields (`utmSource`, `utmMedium`, `utmCampaign`)
+- Removed `embedSettings` (replaced by `mediaEmbed`)
+- Deleted `/blog` route and `blog.ts` server functions
+
+### Improved - Legal Pages 📜
+
+- Updated Privacy Policy with IP anonymization details
+- Updated Cookie Policy date
+- Updated Terms of Service date
+- Added 2FA/MFA and Cloudflare Turnstile to security section
+
+### Fixed
+
+- Added missing `contactMessagesRelations` to schema
+- Added missing type exports for new tables
+- Fixed security event types for email verification
+
+---
+
 ## [2.4.0] - 2026-01-20
 
 ### Changed - Tier System Simplification 💎

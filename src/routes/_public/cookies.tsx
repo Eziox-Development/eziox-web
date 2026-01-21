@@ -84,7 +84,7 @@ export const Route = createFileRoute('/_public/cookies')({
   component: CookiesPage,
 })
 
-const LAST_UPDATED = 'January 19, 2026'
+const LAST_UPDATED = 'January 21, 2026'
 
 const COOKIE_TYPES = [
   {

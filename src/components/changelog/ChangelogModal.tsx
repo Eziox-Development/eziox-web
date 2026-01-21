@@ -30,13 +30,13 @@ interface ChangelogChange {
 }
 
 const latestChanges: ChangelogChange[] = [
-  { type: 'feature', text: 'Completely redesigned Playground with live data preview' },
-  { type: 'feature', text: 'Desktop/Mobile preview toggle in Playground' },
-  { type: 'feature', text: '30+ animated background presets in 5 categories' },
-  { type: 'improvement', text: 'Unified theme system - ThemeSwitcher now controls all colors' },
-  { type: 'improvement', text: 'Removed redundant Appearance section from Settings' },
-  { type: 'fix', text: 'Fixed animated backgrounds not showing on Bio Page' },
-  { type: 'fix', text: 'Fixed Vite HMR warning for ANIMATED_PRESETS' },
+  { type: 'feature', text: 'Email verification system - verify your email on signup' },
+  { type: 'feature', text: 'Media embeds - Spotify, YouTube, SoundCloud, Twitch, TikTok' },
+  { type: 'feature', text: 'Link groups - organize links into collapsible sections' },
+  { type: 'feature', text: 'Profile widgets - Spotify, Weather, Countdown, Social Feed' },
+  { type: 'improvement', text: 'Updated Privacy Policy with GDPR-compliant IP handling' },
+  { type: 'fix', text: 'Schema cleanup - removed deprecated blog & project tables' },
+  { type: 'fix', text: 'Added missing relations and type exports' },
 ]
 
 const typeConfig: Record<ChangelogChange['type'], { icon: React.ElementType; color: string }> = {

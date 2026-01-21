@@ -84,7 +84,7 @@ export const Route = createFileRoute('/_public/privacy')({
   component: PrivacyPage,
 })
 
-const LAST_UPDATED = 'January 19, 2026'
+const LAST_UPDATED = 'January 21, 2026'
 
 const SECTIONS = [
   {
@@ -110,10 +110,11 @@ By using our Service, you agree to the collection and use of information in acco
 
 **Usage Data:**
 • Profile views and link click statistics
-• IP address and browser information
-• Device type and operating system
-• Pages visited and time spent on the Service
-• Referral sources
+• **Anonymized IP address** (last octet zeroed for GDPR compliance, e.g., 192.168.1.x)
+• Browser name and version (e.g., "Chrome 120", "Firefox 121", "Brave", "Arc")
+• Operating system (e.g., "Windows 11", "macOS", "iOS", "Android")
+• Device type (Desktop, Mobile, Tablet)
+• Referral sources (where visitors came from)
 
 **Cookies and Tracking:**
 • Session cookies for authentication
@@ -121,7 +122,8 @@ By using our Service, you agree to the collection and use of information in acco
 • Analytics data (anonymized)
 
 We do NOT collect:
-• Payment information (we don't process payments)
+• Full IP addresses (always anonymized before storage)
+• Payment card details (handled securely by Stripe)
 • Sensitive personal data (race, religion, political views)
 • Data from minors under 13 years of age`,
   },
@@ -187,6 +189,9 @@ We do NOT collect:
 • Session tokens are cryptographically secure (64 characters)
 • HTTP-only cookies prevent XSS attacks
 • SQL injection prevention through parameterized queries (Drizzle ORM)
+• IP addresses anonymized before storage (GDPR-compliant)
+• 2FA/MFA support with encrypted secrets (AES-256-GCM)
+• Cloudflare Turnstile for bot protection (no CAPTCHAs)
 
 **Access Controls:**
 • Role-based access control (user, admin, owner)

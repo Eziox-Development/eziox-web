@@ -16,6 +16,7 @@ import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
 import { Route as ApiSpotifyCallbackRouteImport } from './routes/api/spotify-callback'
 import { Route as ApiHealthRouteImport } from './routes/api/health'
+import { Route as PublicVerifyEmailRouteImport } from './routes/_public/verify-email'
 import { Route as PublicTermsRouteImport } from './routes/_public/terms'
 import { Route as PublicTemplatesRouteImport } from './routes/_public/templates'
 import { Route as PublicStatusRouteImport } from './routes/_public/status'
@@ -27,7 +28,6 @@ import { Route as PublicCreatorsRouteImport } from './routes/_public/creators'
 import { Route as PublicCookiesRouteImport } from './routes/_public/cookies'
 import { Route as PublicContactRouteImport } from './routes/_public/contact'
 import { Route as PublicChangelogRouteImport } from './routes/_public/changelog'
-import { Route as PublicBlogRouteImport } from './routes/_public/blog'
 import { Route as PublicAboutRouteImport } from './routes/_public/about'
 import { Route as ProtectedThemeBuilderRouteImport } from './routes/_protected/theme-builder'
 import { Route as ProtectedReferralsRouteImport } from './routes/_protected/referrals'
@@ -79,6 +79,11 @@ const ApiHealthRoute = ApiHealthRouteImport.update({
   id: '/api/health',
   path: '/api/health',
   getParentRoute: () => rootRouteImport,
+} as any)
+const PublicVerifyEmailRoute = PublicVerifyEmailRouteImport.update({
+  id: '/verify-email',
+  path: '/verify-email',
+  getParentRoute: () => PublicRoute,
 } as any)
 const PublicTermsRoute = PublicTermsRouteImport.update({
   id: '/terms',
@@ -133,11 +138,6 @@ const PublicContactRoute = PublicContactRouteImport.update({
 const PublicChangelogRoute = PublicChangelogRouteImport.update({
   id: '/changelog',
   path: '/changelog',
-  getParentRoute: () => PublicRoute,
-} as any)
-const PublicBlogRoute = PublicBlogRouteImport.update({
-  id: '/blog',
-  path: '/blog',
   getParentRoute: () => PublicRoute,
 } as any)
 const PublicAboutRoute = PublicAboutRouteImport.update({
@@ -258,7 +258,6 @@ export interface FileRoutesByFullPath {
   '/referrals': typeof ProtectedReferralsRoute
   '/theme-builder': typeof ProtectedThemeBuilderRoute
   '/about': typeof PublicAboutRoute
-  '/blog': typeof PublicBlogRoute
   '/changelog': typeof PublicChangelogRoute
   '/contact': typeof PublicContactRoute
   '/cookies': typeof PublicCookiesRoute
@@ -270,6 +269,7 @@ export interface FileRoutesByFullPath {
   '/status': typeof PublicStatusRoute
   '/templates': typeof PublicTemplatesRoute
   '/terms': typeof PublicTermsRoute
+  '/verify-email': typeof PublicVerifyEmailRoute
   '/api/health': typeof ApiHealthRoute
   '/api/spotify-callback': typeof ApiSpotifyCallbackRoute
   '/': typeof PublicIndexRoute
@@ -295,7 +295,6 @@ export interface FileRoutesByTo {
   '/referrals': typeof ProtectedReferralsRoute
   '/theme-builder': typeof ProtectedThemeBuilderRoute
   '/about': typeof PublicAboutRoute
-  '/blog': typeof PublicBlogRoute
   '/changelog': typeof PublicChangelogRoute
   '/contact': typeof PublicContactRoute
   '/cookies': typeof PublicCookiesRoute
@@ -307,6 +306,7 @@ export interface FileRoutesByTo {
   '/status': typeof PublicStatusRoute
   '/templates': typeof PublicTemplatesRoute
   '/terms': typeof PublicTermsRoute
+  '/verify-email': typeof PublicVerifyEmailRoute
   '/api/health': typeof ApiHealthRoute
   '/api/spotify-callback': typeof ApiSpotifyCallbackRoute
   '/': typeof PublicIndexRoute
@@ -337,7 +337,6 @@ export interface FileRoutesById {
   '/_protected/referrals': typeof ProtectedReferralsRoute
   '/_protected/theme-builder': typeof ProtectedThemeBuilderRoute
   '/_public/about': typeof PublicAboutRoute
-  '/_public/blog': typeof PublicBlogRoute
   '/_public/changelog': typeof PublicChangelogRoute
   '/_public/contact': typeof PublicContactRoute
   '/_public/cookies': typeof PublicCookiesRoute
@@ -349,6 +348,7 @@ export interface FileRoutesById {
   '/_public/status': typeof PublicStatusRoute
   '/_public/templates': typeof PublicTemplatesRoute
   '/_public/terms': typeof PublicTermsRoute
+  '/_public/verify-email': typeof PublicVerifyEmailRoute
   '/api/health': typeof ApiHealthRoute
   '/api/spotify-callback': typeof ApiSpotifyCallbackRoute
   '/_public/': typeof PublicIndexRoute
@@ -376,7 +376,6 @@ export interface FileRouteTypes {
     | '/referrals'
     | '/theme-builder'
     | '/about'
-    | '/blog'
     | '/changelog'
     | '/contact'
     | '/cookies'
@@ -388,6 +387,7 @@ export interface FileRouteTypes {
     | '/status'
     | '/templates'
     | '/terms'
+    | '/verify-email'
     | '/api/health'
     | '/api/spotify-callback'
     | '/'
@@ -413,7 +413,6 @@ export interface FileRouteTypes {
     | '/referrals'
     | '/theme-builder'
     | '/about'
-    | '/blog'
     | '/changelog'
     | '/contact'
     | '/cookies'
@@ -425,6 +424,7 @@ export interface FileRouteTypes {
     | '/status'
     | '/templates'
     | '/terms'
+    | '/verify-email'
     | '/api/health'
     | '/api/spotify-callback'
     | '/'
@@ -454,7 +454,6 @@ export interface FileRouteTypes {
     | '/_protected/referrals'
     | '/_protected/theme-builder'
     | '/_public/about'
-    | '/_public/blog'
     | '/_public/changelog'
     | '/_public/contact'
     | '/_public/cookies'
@@ -466,6 +465,7 @@ export interface FileRouteTypes {
     | '/_public/status'
     | '/_public/templates'
     | '/_public/terms'
+    | '/_public/verify-email'
     | '/api/health'
     | '/api/spotify-callback'
     | '/_public/'
@@ -539,6 +539,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/health'
       preLoaderRoute: typeof ApiHealthRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_public/verify-email': {
+      id: '/_public/verify-email'
+      path: '/verify-email'
+      fullPath: '/verify-email'
+      preLoaderRoute: typeof PublicVerifyEmailRouteImport
+      parentRoute: typeof PublicRoute
     }
     '/_public/terms': {
       id: '/_public/terms'
@@ -615,13 +622,6 @@ declare module '@tanstack/react-router' {
       path: '/changelog'
       fullPath: '/changelog'
       preLoaderRoute: typeof PublicChangelogRouteImport
-      parentRoute: typeof PublicRoute
-    }
-    '/_public/blog': {
-      id: '/_public/blog'
-      path: '/blog'
-      fullPath: '/blog'
-      preLoaderRoute: typeof PublicBlogRouteImport
       parentRoute: typeof PublicRoute
     }
     '/_public/about': {
@@ -822,7 +822,6 @@ const ProtectedRouteWithChildren = ProtectedRoute._addFileChildren(
 
 interface PublicRouteChildren {
   PublicAboutRoute: typeof PublicAboutRoute
-  PublicBlogRoute: typeof PublicBlogRoute
   PublicChangelogRoute: typeof PublicChangelogRoute
   PublicContactRoute: typeof PublicContactRoute
   PublicCookiesRoute: typeof PublicCookiesRoute
@@ -834,6 +833,7 @@ interface PublicRouteChildren {
   PublicStatusRoute: typeof PublicStatusRoute
   PublicTemplatesRoute: typeof PublicTemplatesRoute
   PublicTermsRoute: typeof PublicTermsRoute
+  PublicVerifyEmailRoute: typeof PublicVerifyEmailRoute
   PublicIndexRoute: typeof PublicIndexRoute
   PublicJoinCodeRoute: typeof PublicJoinCodeRoute
   PublicSCodeRoute: typeof PublicSCodeRoute
@@ -841,7 +841,6 @@ interface PublicRouteChildren {
 
 const PublicRouteChildren: PublicRouteChildren = {
   PublicAboutRoute: PublicAboutRoute,
-  PublicBlogRoute: PublicBlogRoute,
   PublicChangelogRoute: PublicChangelogRoute,
   PublicContactRoute: PublicContactRoute,
   PublicCookiesRoute: PublicCookiesRoute,
@@ -853,6 +852,7 @@ const PublicRouteChildren: PublicRouteChildren = {
   PublicStatusRoute: PublicStatusRoute,
   PublicTemplatesRoute: PublicTemplatesRoute,
   PublicTermsRoute: PublicTermsRoute,
+  PublicVerifyEmailRoute: PublicVerifyEmailRoute,
   PublicIndexRoute: PublicIndexRoute,
   PublicJoinCodeRoute: PublicJoinCodeRoute,
   PublicSCodeRoute: PublicSCodeRoute,
