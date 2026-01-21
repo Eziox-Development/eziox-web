@@ -143,12 +143,23 @@ export const createCheckoutSessionFn = createServerFn({ method: 'POST' })
 
     let customerId = userData.stripeCustomerId
 
+    // Only create new customer if none exists
     if (!customerId) {
-      const customer = await stripe.customers.create({
+      // First check if customer already exists in Stripe by email
+      const existingCustomers = await stripe.customers.list({
         email: userData.email,
-        metadata: { userId: user.id },
+        limit: 1,
       })
-      customerId = customer.id
+
+      if (existingCustomers.data.length > 0 && existingCustomers.data[0]) {
+        customerId = existingCustomers.data[0].id
+      } else {
+        const customer = await stripe.customers.create({
+          email: userData.email,
+          metadata: { userId: user.id },
+        })
+        customerId = customer.id
+      }
 
       await db
         .update(users)
@@ -200,6 +211,10 @@ export const createCheckoutSessionFn = createServerFn({ method: 'POST' })
           },
           billing_address_collection: 'auto',
         })
+
+    if (!session.url) {
+      throw { message: 'Failed to create checkout session', status: 500 }
+    }
 
     return { url: session.url }
   })
@@ -307,7 +322,6 @@ export async function handleStripeWebhook(event: {
       }
 
       if (!session.metadata?.userId || !session.metadata?.tier) {
-        console.error('[Stripe Webhook] Missing userId or tier in session metadata')
         break
       }
 
@@ -751,8 +765,8 @@ export const getCustomerBalanceFn = createServerFn({ method: 'GET' }).handler(as
         hasCredit: creditCents > 0,
       }
     }
-  } catch (e) {
-    console.error('[Stripe] Error retrieving customer balance:', e)
+  } catch {
+    // Silently handle balance retrieval errors
   }
 
   return { balance: 0, formattedBalance: '€0.00', hasCredit: false }
