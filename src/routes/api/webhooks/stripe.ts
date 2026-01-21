@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { stripe } from '@/server/lib/stripe'
 import { handleStripeWebhook } from '@/server/functions/subscriptions'
 
-export const Route = createFileRoute('/_api/webhooks/stripe')({
+export const Route = createFileRoute('/api/webhooks/stripe')({
   server: {
     handlers: {
       POST: async ({ request }) => {
@@ -47,13 +47,8 @@ export const Route = createFileRoute('/_api/webhooks/stripe')({
           await handleStripeWebhook(event as unknown as { type: string; data: { object: Record<string, unknown> } })
         } catch (err) {
           console.error('Webhook handler error:', err)
-          const errorMessage = err instanceof Error ? err.message : 'Unknown error'
-          return new Response(JSON.stringify({ 
-            received: true, 
-            warning: 'Handler had non-critical error',
-            error: errorMessage,
-          }), {
-            status: 200,
+          return new Response(JSON.stringify({ error: 'Webhook handler failed' }), {
+            status: 500,
             headers: { 'Content-Type': 'application/json' },
           })
         }

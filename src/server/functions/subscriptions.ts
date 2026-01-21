@@ -465,87 +465,50 @@ async function handleOneTimePayment(
   // Generate a unique ID for tracking - use payment_intent if available, otherwise session ID
   const trackingId = paymentIntentId || `lifetime_${sessionId}`
   
-  // Check if this payment was already processed (idempotency)
-  const [existingSubscription] = await db
-    .select({ id: subscriptions.id })
-    .from(subscriptions)
-    .where(eq(subscriptions.stripeSubscriptionId, trackingId))
-    .limit(1)
-
-  if (existingSubscription) {
-    // Already processed, just update user tier to be safe
-    await db
-      .update(users)
-      .set({
-        tier,
-        stripeCustomerId: customerId,
-        tierExpiresAt,
-        updatedAt: new Date(),
-      })
-      .where(eq(users.id, userId))
-    return
-  }
-  
-  // Update user with new tier - this is the critical operation
+  // Update user with new tier
   await db
     .update(users)
     .set({
       tier,
       stripeCustomerId: customerId,
-      stripeSubscriptionId: null, // No subscription for one-time payments
+      stripeSubscriptionId: null,
       tierExpiresAt,
       updatedAt: new Date(),
     })
     .where(eq(users.id, userId))
 
   // Create a record in subscriptions table for tracking
-  try {
-    await db.insert(subscriptions).values({
-      userId,
-      stripeSubscriptionId: trackingId,
-      stripePriceId: process.env.STRIPE_LIFETIME_PRICE_ID || '',
-      stripeCustomerId: customerId,
-      tier,
-      status: 'active',
-      currentPeriodStart: new Date(),
-      currentPeriodEnd: tierExpiresAt || new Date(Date.now() + 100 * 365 * 24 * 60 * 60 * 1000), // 100 years for lifetime
-      cancelAtPeriodEnd: false,
-    })
-  } catch {
-    // Insert failed (maybe duplicate), but user tier is already updated
-  }
+  await db.insert(subscriptions).values({
+    userId,
+    stripeSubscriptionId: trackingId,
+    stripePriceId: process.env.STRIPE_LIFETIME_PRICE_ID || '',
+    stripeCustomerId: customerId,
+    tier,
+    status: 'active',
+    currentPeriodStart: new Date(),
+    currentPeriodEnd: tierExpiresAt || new Date(Date.now() + 100 * 365 * 24 * 60 * 60 * 1000),
+    cancelAtPeriodEnd: false,
+  })
 
-  // Update badges - wrap in try-catch to not fail the whole webhook
-  try {
-    await updateUserBadgesForTier(userId, tier)
-  } catch {
-    // Badge update failed, but continue with the rest
-  }
+  // Update badges
+  await updateUserBadgesForTier(userId, tier)
 
-  // Create notification - wrap in try-catch
-  try {
-    await createSubscriptionNotification(userId, 'upgraded', {
-      tier,
-      expiresAt: tierExpiresAt,
-    })
-  } catch {
-    // Notification failed, but continue
-  }
+  // Create notification
+  await createSubscriptionNotification(userId, 'upgraded', {
+    tier,
+    expiresAt: tierExpiresAt,
+  })
 
   // Send confirmation email
-  try {
-    const [user] = await db
-      .select({ email: users.email, username: users.username })
-      .from(users)
-      .where(eq(users.id, userId))
-      .limit(1)
+  const [user] = await db
+    .select({ email: users.email, username: users.username })
+    .from(users)
+    .where(eq(users.id, userId))
+    .limit(1)
 
-    if (user?.email) {
-      const tierName = TIER_CONFIG[tier]?.name || tier
-      void sendSubscriptionEmail(user.email, user.username || 'User', tierName, 'upgraded')
-    }
-  } catch {
-    // Email failed, but the main operation succeeded
+  if (user?.email) {
+    const tierName = TIER_CONFIG[tier]?.name || tier
+    void sendSubscriptionEmail(user.email, user.username || 'User', tierName, 'upgraded')
   }
 }
 
