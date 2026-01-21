@@ -339,7 +339,8 @@ export async function handleStripeWebhook(event: {
           session.customer,
           session.metadata.userId,
           session.metadata.tier as TierType,
-          session.payment_intent
+          session.payment_intent,
+          session.id
         )
       }
       break
@@ -455,10 +456,14 @@ async function handleOneTimePayment(
   customerId: string,
   userId: string,
   tier: TierType,
-  paymentIntentId: string | null
+  paymentIntentId: string | null,
+  sessionId: string
 ) {
   // For lifetime, there's no expiration
   const tierExpiresAt = tier === 'lifetime' ? null : new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)
+  
+  // Generate a unique ID for tracking - use payment_intent if available, otherwise session ID
+  const trackingId = paymentIntentId || `lifetime_${sessionId}`
   
   // Update user with new tier
   await db
@@ -475,7 +480,7 @@ async function handleOneTimePayment(
   // Create a record in subscriptions table for tracking
   await db.insert(subscriptions).values({
     userId,
-    stripeSubscriptionId: paymentIntentId || `lifetime_${userId}_${Date.now()}`,
+    stripeSubscriptionId: trackingId,
     stripePriceId: process.env.STRIPE_LIFETIME_PRICE_ID || '',
     stripeCustomerId: customerId,
     tier,
