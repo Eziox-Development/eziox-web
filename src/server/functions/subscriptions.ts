@@ -465,6 +465,18 @@ async function handleOneTimePayment(
   // Generate a unique ID for tracking - use payment_intent if available, otherwise session ID
   const trackingId = paymentIntentId || `lifetime_${sessionId}`
   
+  // Check if this payment was already processed (idempotency)
+  const [existingSubscription] = await db
+    .select({ id: subscriptions.id })
+    .from(subscriptions)
+    .where(eq(subscriptions.stripeSubscriptionId, trackingId))
+    .limit(1)
+
+  if (existingSubscription) {
+    // Already processed, skip to avoid duplicate
+    return
+  }
+  
   // Update user with new tier
   await db
     .update(users)
@@ -490,25 +502,37 @@ async function handleOneTimePayment(
     cancelAtPeriodEnd: false,
   })
 
-  // Update badges
-  await updateUserBadgesForTier(userId, tier)
+  // Update badges - wrap in try-catch to not fail the whole webhook
+  try {
+    await updateUserBadgesForTier(userId, tier)
+  } catch {
+    // Badge update failed, but continue with the rest
+  }
 
-  // Create notification
-  await createSubscriptionNotification(userId, 'upgraded', {
-    tier,
-    expiresAt: tierExpiresAt,
-  })
+  // Create notification - wrap in try-catch
+  try {
+    await createSubscriptionNotification(userId, 'upgraded', {
+      tier,
+      expiresAt: tierExpiresAt,
+    })
+  } catch {
+    // Notification failed, but continue
+  }
 
   // Send confirmation email
-  const [user] = await db
-    .select({ email: users.email, username: users.username })
-    .from(users)
-    .where(eq(users.id, userId))
-    .limit(1)
+  try {
+    const [user] = await db
+      .select({ email: users.email, username: users.username })
+      .from(users)
+      .where(eq(users.id, userId))
+      .limit(1)
 
-  if (user?.email) {
-    const tierName = TIER_CONFIG[tier]?.name || tier
-    void sendSubscriptionEmail(user.email, user.username || 'User', tierName, 'upgraded')
+    if (user?.email) {
+      const tierName = TIER_CONFIG[tier]?.name || tier
+      void sendSubscriptionEmail(user.email, user.username || 'User', tierName, 'upgraded')
+    }
+  } catch {
+    // Email failed, but the main operation succeeded
   }
 }
 
