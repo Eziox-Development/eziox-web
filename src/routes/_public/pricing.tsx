@@ -102,6 +102,7 @@ function PricingPage() {
   const { currentUser } = useAuth()
   const [selectedTier, setSelectedTier] = useState<TierType | null>(null)
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null)
+  const [checkoutError, setCheckoutError] = useState<string | null>(null)
 
   const getTierConfig = useServerFn(getTierConfigFn)
   const getCurrentSubscription = useServerFn(getCurrentSubscriptionFn)
@@ -123,7 +124,15 @@ function PricingPage() {
     onSuccess: (data) => {
       if (data.url) {
         window.location.href = data.url
+      } else {
+        setCheckoutError('No checkout URL received from server')
       }
+    },
+    onError: (error: unknown) => {
+      const errorMessage = error && typeof error === 'object' && 'message' in error 
+        ? String(error.message) 
+        : 'Failed to create checkout session'
+      setCheckoutError(errorMessage)
     },
   })
 
@@ -136,6 +145,7 @@ function PricingPage() {
       return
     }
     if (tier === 'free') return
+    setCheckoutError(null)
     setSelectedTier(tier)
     checkoutMutation.mutate(tier as 'pro' | 'creator' | 'lifetime')
   }
@@ -177,6 +187,20 @@ function PricingPage() {
               Start free, upgrade when you need more. No hidden fees, cancel anytime.
             </p>
           </motion.div>
+
+          {checkoutError && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="max-w-2xl mx-auto mb-8 p-4 rounded-lg border border-red-500"
+              style={{ 
+                background: '#ef444415',
+                color: '#ef4444',
+              }}
+            >
+              <p className="font-medium">Checkout Error: {checkoutError}</p>
+            </motion.div>
+          )}
 
           {tiersLoading ? (
             <div className="flex justify-center py-20">
