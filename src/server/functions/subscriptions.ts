@@ -174,13 +174,12 @@ export const createCheckoutSessionFn = createServerFn({ method: 'POST' })
       ? await stripe.checkout.sessions.create({
           customer: customerId,
           mode: 'payment',
-          payment_method_types: ['card', 'paypal'],
+          payment_method_types: ['card'],
           allow_promotion_codes: true,
           line_items: [{ price: tierConfig.priceId, quantity: 1 }],
           success_url: `${baseUrl}/profile?tab=subscription&success=true`,
           cancel_url: `${baseUrl}/profile?tab=subscription&canceled=true`,
           metadata: { userId: user.id, tier: data.tier },
-          // Customer balance is automatically applied by Stripe
           customer_update: {
             address: 'auto',
             name: 'auto',
@@ -196,7 +195,7 @@ export const createCheckoutSessionFn = createServerFn({ method: 'POST' })
       : await stripe.checkout.sessions.create({
           customer: customerId,
           mode: 'subscription',
-          payment_method_types: ['card', 'paypal'],
+          payment_method_types: ['card'],
           allow_promotion_codes: true,
           line_items: [{ price: tierConfig.priceId, quantity: 1 }],
           success_url: `${baseUrl}/profile?tab=subscription&success=true`,
