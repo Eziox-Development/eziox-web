@@ -18,7 +18,12 @@ import { validateSession } from '../lib/auth'
 const createShortLinkSchema = z.object({
   targetUrl: z.url({ error: 'Invalid URL' }),
   title: z.string().max(100).optional(),
-  customCode: z.string().min(3).max(20).regex(/^[a-zA-Z0-9_-]+$/).optional(),
+  customCode: z
+    .string()
+    .min(3)
+    .max(20)
+    .regex(/^[a-zA-Z0-9_-]+$/)
+    .optional(),
   expiresAt: z.string().datetime().optional(),
 })
 
@@ -223,12 +228,7 @@ export const resolveShortLinkFn = createServerFn({ method: 'GET' })
     const [link] = await db
       .select()
       .from(shortLinks)
-      .where(
-        and(
-          eq(shortLinks.code, data.code),
-          eq(shortLinks.isActive, true)
-        )
-      )
+      .where(and(eq(shortLinks.code, data.code), eq(shortLinks.isActive, true)))
       .limit(1)
 
     if (!link) {

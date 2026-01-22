@@ -11,14 +11,24 @@ interface ProfileStatsProps {
 
 const STATS_CONFIG = [
   { key: 'views', label: 'Profile Views', icon: Eye, color: '#8b5cf6' },
-  { key: 'clicks', label: 'Link Clicks', icon: MousePointerClick, color: '#f97316' },
+  {
+    key: 'clicks',
+    label: 'Link Clicks',
+    icon: MousePointerClick,
+    color: '#f97316',
+  },
   { key: 'followers', label: 'Followers', icon: Heart, color: '#ec4899' },
   { key: 'referrals', label: 'Referrals', icon: Users, color: '#10b981' },
 ] as const
 
-export function ProfileStats({ profileViews, linkClicks, followers, referrals }: ProfileStatsProps) {
+export function ProfileStats({
+  profileViews,
+  linkClicks,
+  followers,
+  referrals,
+}: ProfileStatsProps) {
   const { theme } = useTheme()
-  
+
   const values = {
     views: profileViews,
     clicks: linkClicks,
@@ -38,7 +48,11 @@ export function ProfileStats({ profileViews, linkClicks, followers, referrals }:
           key={stat.key}
           initial={{ opacity: 0, y: 20, scale: 0.95 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ delay: 0.15 + index * 0.05, type: 'spring', stiffness: 300 }}
+          transition={{
+            delay: 0.15 + index * 0.05,
+            type: 'spring',
+            stiffness: 300,
+          }}
           whileHover={{ scale: 1.03, y: -2 }}
           className="relative p-5 rounded-2xl text-center overflow-hidden group cursor-default"
           style={{
@@ -49,11 +63,15 @@ export function ProfileStats({ profileViews, linkClicks, followers, referrals }:
         >
           <motion.div
             className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-            style={{ background: `radial-gradient(circle at 50% 0%, ${stat.color}15, transparent 70%)` }}
+            style={{
+              background: `radial-gradient(circle at 50% 0%, ${stat.color}15, transparent 70%)`,
+            }}
           />
           <div
             className="absolute top-0 left-0 right-0 h-px"
-            style={{ background: `linear-gradient(90deg, transparent, ${stat.color}40, transparent)` }}
+            style={{
+              background: `linear-gradient(90deg, transparent, ${stat.color}40, transparent)`,
+            }}
           />
           <motion.div
             className="w-12 h-12 mx-auto mb-3 rounded-xl flex items-center justify-center relative"
@@ -71,7 +89,10 @@ export function ProfileStats({ profileViews, linkClicks, followers, referrals }:
           >
             {(values[stat.key] || 0).toLocaleString()}
           </motion.p>
-          <p className="text-xs font-medium" style={{ color: theme.colors.foregroundMuted }}>
+          <p
+            className="text-xs font-medium"
+            style={{ color: theme.colors.foregroundMuted }}
+          >
             {stat.label}
           </p>
         </motion.div>

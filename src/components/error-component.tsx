@@ -91,7 +91,8 @@ export function ErrorComponent({
             className="text-lg mb-8"
             style={{ color: currentTheme.colors.foregroundMuted }}
           >
-            We encountered an unexpected error. Don't worry, our team has been notified.
+            We encountered an unexpected error. Don't worry, our team has been
+            notified.
           </motion.p>
         </motion.div>
 

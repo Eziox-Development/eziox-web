@@ -22,12 +22,16 @@ export const getPlatformStatsFn = createServerFn({ method: 'GET' }).handler(
 
       // Get total link clicks
       const [totalClicksResult] = await db
-        .select({ total: sql<number>`COALESCE(sum(${userStats.totalLinkClicks}), 0)::int` })
+        .select({
+          total: sql<number>`COALESCE(sum(${userStats.totalLinkClicks}), 0)::int`,
+        })
         .from(userStats)
 
       // Get total profile views
       const [totalViewsResult] = await db
-        .select({ total: sql<number>`COALESCE(sum(${userStats.profileViews}), 0)::int` })
+        .select({
+          total: sql<number>`COALESCE(sum(${userStats.profileViews}), 0)::int`,
+        })
         .from(userStats)
 
       // Get total links created
@@ -47,7 +51,9 @@ export const getPlatformStatsFn = createServerFn({ method: 'GET' }).handler(
 
       // Get total score across all users
       const [totalScoreResult] = await db
-        .select({ total: sql<number>`COALESCE(sum(${userStats.score}), 0)::int` })
+        .select({
+          total: sql<number>`COALESCE(sum(${userStats.score}), 0)::int`,
+        })
         .from(userStats)
 
       // Get users active in last 24 hours (based on stats update)
@@ -74,7 +80,10 @@ export const getPlatformStatsFn = createServerFn({ method: 'GET' }).handler(
       const activeUsers24h = activeUsersResult?.count || 0
       const newUsersThisWeek = newUsersResult?.count || 0
       // Estimate countries based on user count (rough approximation)
-      const estimatedCountries = Math.min(Math.max(Math.floor(totalUsers / 5), 1), 195)
+      const estimatedCountries = Math.min(
+        Math.max(Math.floor(totalUsers / 5), 1),
+        195,
+      )
 
       return {
         totalUsers,

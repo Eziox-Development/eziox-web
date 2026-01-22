@@ -1,7 +1,9 @@
 import Stripe from 'stripe'
 
 if (!process.env.STRIPE_SECRET_KEY) {
-  console.warn('STRIPE_SECRET_KEY is not set - Stripe features will be disabled')
+  console.warn(
+    'STRIPE_SECRET_KEY is not set - Stripe features will be disabled',
+  )
 }
 
 export const stripe = process.env.STRIPE_SECRET_KEY
@@ -209,10 +211,13 @@ export function getTierFromPriceId(priceId: string): TierType {
   return 'free'
 }
 
-export function canAccessFeature(tier: TierType, feature: keyof TierLimits): boolean {
+export function canAccessFeature(
+  tier: TierType,
+  feature: keyof TierLimits,
+): boolean {
   const config = TIER_CONFIG[tier]
   if (!config) return false
-  
+
   const value = config.limits[feature]
   if (typeof value === 'boolean') return value
   if (typeof value === 'number') return value !== 0

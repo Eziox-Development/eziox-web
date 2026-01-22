@@ -21,12 +21,15 @@ import { validateSession } from '../lib/auth'
  */
 function generateReferralCode(username: string): string {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789' // Exclude confusing chars (0, O, 1, I)
-  const randomPart = Array.from({ length: 4 }, () => 
-    chars.charAt(Math.floor(Math.random() * chars.length))
+  const randomPart = Array.from({ length: 4 }, () =>
+    chars.charAt(Math.floor(Math.random() * chars.length)),
   ).join('')
-  
+
   // Use first 2-3 chars of username + random
-  const prefix = username.slice(0, 3).toUpperCase().replace(/[^A-Z]/g, 'X')
+  const prefix = username
+    .slice(0, 3)
+    .toUpperCase()
+    .replace(/[^A-Z]/g, 'X')
   return `${prefix}${randomPart}`
 }
 
@@ -44,8 +47,8 @@ function generateOwnerCode(): string {
 /**
  * Get or create referral code for current user
  */
-export const getReferralCodeFn = createServerFn({ method: 'GET' })
-  .handler(async () => {
+export const getReferralCodeFn = createServerFn({ method: 'GET' }).handler(
+  async () => {
     const token = getCookie('session-token')
     if (!token) {
       throw new Error('Not authenticated')
@@ -84,7 +87,9 @@ export const getReferralCodeFn = createServerFn({ method: 'GET' })
 
     // Generate new code
     const isOwner = profile.role === 'owner'
-    let newCode = isOwner ? generateOwnerCode() : generateReferralCode(profile.username)
+    let newCode = isOwner
+      ? generateOwnerCode()
+      : generateReferralCode(profile.username)
 
     // Ensure code is unique (retry if needed)
     let attempts = 0
@@ -95,7 +100,7 @@ export const getReferralCodeFn = createServerFn({ method: 'GET' })
         .where(eq(profiles.referralCode, newCode))
 
       if (!existing) break
-      
+
       // Generate new code if collision
       newCode = generateReferralCode(profile.username + attempts)
       attempts++
@@ -112,7 +117,8 @@ export const getReferralCodeFn = createServerFn({ method: 'GET' })
       link: `https://eziox.link/join/${newCode}`,
       isOwner,
     }
-  })
+  },
+)
 
 /**
  * Validate a referral code and get referrer info
@@ -156,10 +162,12 @@ export const validateReferralCodeFn = createServerFn({ method: 'GET' })
  * Called internally after successful signup
  */
 export const processReferralFn = createServerFn({ method: 'POST' })
-  .inputValidator(z.object({ 
-    newUserId: z.uuid(),
-    referralCode: z.string().min(1).max(20)
-  }))
+  .inputValidator(
+    z.object({
+      newUserId: z.uuid(),
+      referralCode: z.string().min(1).max(20),
+    }),
+  )
   .handler(async ({ data }) => {
     const { newUserId, referralCode } = data
 
@@ -215,8 +223,8 @@ export const processReferralFn = createServerFn({ method: 'POST' })
 /**
  * Get referral stats for current user
  */
-export const getReferralStatsFn = createServerFn({ method: 'GET' })
-  .handler(async () => {
+export const getReferralStatsFn = createServerFn({ method: 'GET' }).handler(
+  async () => {
     const token = getCookie('session-token')
     if (!token) {
       throw new Error('Not authenticated')
@@ -267,21 +275,24 @@ export const getReferralStatsFn = createServerFn({ method: 'GET' })
 
     return {
       referralCount: stats?.referralCount || 0,
-      referredUsers: referredUsers.map(u => ({
+      referredUsers: referredUsers.map((u) => ({
         id: u.id,
         username: u.username,
         name: u.name,
         avatar: u.avatar,
         joinedAt: u.createdAt,
       })),
-      referredBy: referredBy ? {
-        id: referredBy.id,
-        username: referredBy.username,
-        name: referredBy.name,
-        avatar: referredBy.avatar,
-      } : null,
+      referredBy: referredBy
+        ? {
+            id: referredBy.id,
+            username: referredBy.username,
+            name: referredBy.name,
+            avatar: referredBy.avatar,
+          }
+        : null,
     }
-  })
+  },
+)
 
 /**
  * Get referral leaderboard
@@ -321,69 +332,74 @@ export const getReferralLeaderboardFn = createServerFn({ method: 'GET' })
 /**
  * Regenerate referral code (premium feature or admin)
  */
-export const regenerateReferralCodeFn = createServerFn({ method: 'POST' })
-  .handler(async () => {
-    const token = getCookie('session-token')
-    if (!token) {
-      throw new Error('Not authenticated')
-    }
+export const regenerateReferralCodeFn = createServerFn({
+  method: 'POST',
+}).handler(async () => {
+  const token = getCookie('session-token')
+  if (!token) {
+    throw new Error('Not authenticated')
+  }
 
-    const currentUser = await validateSession(token)
-    if (!currentUser) {
-      throw new Error('Invalid session')
-    }
+  const currentUser = await validateSession(token)
+  if (!currentUser) {
+    throw new Error('Invalid session')
+  }
 
-    const userId = currentUser.id
+  const userId = currentUser.id
 
-    // Get user info
-    const [user] = await db
-      .select({
-        username: users.username,
-        role: users.role,
-        tier: users.tier,
-      })
-      .from(users)
-      .where(eq(users.id, userId))
+  // Get user info
+  const [user] = await db
+    .select({
+      username: users.username,
+      role: users.role,
+      tier: users.tier,
+    })
+    .from(users)
+    .where(eq(users.id, userId))
 
-    if (!user) {
-      throw new Error('User not found')
-    }
+  if (!user) {
+    throw new Error('User not found')
+  }
 
-    // Only premium users or admins can regenerate
-    if (user.tier !== 'premium' && user.role !== 'admin' && user.role !== 'owner') {
-      throw new Error('Premium feature only')
-    }
+  // Only premium users or admins can regenerate
+  if (
+    user.tier !== 'premium' &&
+    user.role !== 'admin' &&
+    user.role !== 'owner'
+  ) {
+    throw new Error('Premium feature only')
+  }
 
-    // Owner keeps their special code
-    if (user.role === 'owner') {
-      return {
-        code: generateOwnerCode(),
-        link: `https://eziox.link/join/${generateOwnerCode()}`,
-      }
-    }
-
-    // Generate new unique code
-    let newCode = generateReferralCode(user.username)
-    let attempts = 0
-    while (attempts < 5) {
-      const [existing] = await db
-        .select({ id: profiles.id })
-        .from(profiles)
-        .where(eq(profiles.referralCode, newCode))
-
-      if (!existing) break
-      newCode = generateReferralCode(user.username + attempts)
-      attempts++
-    }
-
-    // Update profile
-    await db
-      .update(profiles)
-      .set({ referralCode: newCode, updatedAt: new Date() })
-      .where(eq(profiles.userId, userId))
-
+  // Owner keeps their special code
+  if (user.role === 'owner') {
     return {
-      code: newCode,
-      link: `https://eziox.link/join/${newCode}`,
+      code: generateOwnerCode(),
+      link: `https://eziox.link/join/${generateOwnerCode()}`,
     }
-  })
+  }
+
+  // Generate new unique code
+  let newCode = generateReferralCode(user.username)
+  let attempts = 0
+  while (attempts < 5) {
+    const [existing] = await db
+      .select({ id: profiles.id })
+      .from(profiles)
+      .where(eq(profiles.referralCode, newCode))
+
+    if (!existing) break
+    newCode = generateReferralCode(user.username + attempts)
+    attempts++
+  }
+
+  // Update profile
+  await db
+    .update(profiles)
+    .set({ referralCode: newCode, updatedAt: new Date() })
+    .where(eq(profiles.userId, userId))
+
+  return {
+    code: newCode,
+    link: `https://eziox.link/join/${newCode}`,
+  }
+})

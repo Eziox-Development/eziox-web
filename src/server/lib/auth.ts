@@ -3,7 +3,11 @@ import { db } from '../db'
 import { users, profiles, userStats, sessions } from '../db/schema'
 import { eq, and, gt, lt } from 'drizzle-orm'
 import crypto from 'crypto'
-import { generateSecret as otpGenerateSecret, verify as otpVerify, generateURI } from 'otplib'
+import {
+  generateSecret as otpGenerateSecret,
+  verify as otpVerify,
+  generateURI,
+} from 'otplib'
 import QRCode from 'qrcode'
 import { encrypt, decrypt } from './encryption'
 
@@ -19,7 +23,7 @@ export async function hashPassword(password: string): Promise<string> {
 
 export async function verifyPassword(
   password: string,
-  hash: string
+  hash: string,
 ): Promise<boolean> {
   return bcrypt.compare(password, hash)
 }
@@ -43,7 +47,10 @@ export async function createUser(data: {
       username: data.username.toLowerCase(),
       passwordHash,
       name: data.name || data.username,
-      role: data.email.toLowerCase() === process.env.OWNER_EMAIL?.toLowerCase() ? 'owner' : 'user',
+      role:
+        data.email.toLowerCase() === process.env.OWNER_EMAIL?.toLowerCase()
+          ? 'owner'
+          : 'user',
     })
     .returning()
 
@@ -85,11 +92,7 @@ export async function findUserByUsername(username: string) {
 }
 
 export async function findUserById(id: string) {
-  const [user] = await db
-    .select()
-    .from(users)
-    .where(eq(users.id, id))
-    .limit(1)
+  const [user] = await db.select().from(users).where(eq(users.id, id)).limit(1)
 
   return user || null
 }
@@ -98,11 +101,14 @@ export async function createSession(
   userId: string,
   userAgent?: string,
   ipAddress?: string,
-  rememberMe = false
+  rememberMe = false,
 ) {
   const token = generateToken()
   const expiresAt = new Date()
-  expiresAt.setDate(expiresAt.getDate() + (rememberMe ? SESSION_EXPIRY_DAYS_REMEMBER : SESSION_EXPIRY_DAYS))
+  expiresAt.setDate(
+    expiresAt.getDate() +
+      (rememberMe ? SESSION_EXPIRY_DAYS_REMEMBER : SESSION_EXPIRY_DAYS),
+  )
 
   const [session] = await db
     .insert(sessions)
@@ -123,12 +129,7 @@ export async function validateSession(token: string) {
   const [session] = await db
     .select()
     .from(sessions)
-    .where(
-      and(
-        eq(sessions.token, token),
-        gt(sessions.expiresAt, new Date())
-      )
-    )
+    .where(and(eq(sessions.token, token), gt(sessions.expiresAt, new Date())))
     .limit(1)
 
   if (!session) {
@@ -158,7 +159,10 @@ export async function refreshSession(token: string) {
 
   const newToken = generateToken()
   const expiresAt = new Date()
-  expiresAt.setDate(expiresAt.getDate() + (session.rememberMe ? SESSION_EXPIRY_DAYS_REMEMBER : SESSION_EXPIRY_DAYS))
+  expiresAt.setDate(
+    expiresAt.getDate() +
+      (session.rememberMe ? SESSION_EXPIRY_DAYS_REMEMBER : SESSION_EXPIRY_DAYS),
+  )
 
   await db.delete(sessions).where(eq(sessions.id, session.id))
 
@@ -191,7 +195,9 @@ export async function isAccountLocked(userId: string): Promise<boolean> {
   return user.lockedUntil > new Date()
 }
 
-export async function recordFailedLogin(userId: string): Promise<{ locked: boolean; attemptsRemaining: number }> {
+export async function recordFailedLogin(
+  userId: string,
+): Promise<{ locked: boolean; attemptsRemaining: number }> {
   const user = await findUserById(userId)
   if (!user) return { locked: false, attemptsRemaining: MAX_FAILED_ATTEMPTS }
 
@@ -235,7 +241,10 @@ export async function resetFailedLoginAttempts(userId: string) {
     .where(eq(users.id, userId))
 }
 
-export async function recordSuccessfulLogin(userId: string, ipAddress?: string) {
+export async function recordSuccessfulLogin(
+  userId: string,
+  ipAddress?: string,
+) {
   await db
     .update(users)
     .set({
@@ -248,7 +257,9 @@ export async function recordSuccessfulLogin(userId: string, ipAddress?: string) 
     .where(eq(users.id, userId))
 }
 
-export async function generatePasswordResetToken(userId: string): Promise<string> {
+export async function generatePasswordResetToken(
+  userId: string,
+): Promise<string> {
   const token = generateToken(32)
   const expires = new Date()
   expires.setHours(expires.getHours() + 1)
@@ -265,7 +276,9 @@ export async function generatePasswordResetToken(userId: string): Promise<string
   return token
 }
 
-export async function generateEmailVerificationToken(userId: string): Promise<string> {
+export async function generateEmailVerificationToken(
+  userId: string,
+): Promise<string> {
   const token = generateToken(32)
   const expires = new Date()
   expires.setHours(expires.getHours() + 24)
@@ -289,8 +302,8 @@ export async function validateEmailVerificationToken(token: string) {
     .where(
       and(
         eq(users.emailVerificationToken, token),
-        gt(users.emailVerificationExpires, new Date())
-      )
+        gt(users.emailVerificationExpires, new Date()),
+      ),
     )
     .limit(1)
 
@@ -316,8 +329,8 @@ export async function validatePasswordResetToken(token: string) {
     .where(
       and(
         eq(users.passwordResetToken, token),
-        gt(users.passwordResetExpires, new Date())
-      )
+        gt(users.passwordResetExpires, new Date()),
+      ),
     )
     .limit(1)
 
@@ -344,7 +357,9 @@ export async function cleanupExpiredSessions() {
   await db.delete(sessions).where(lt(sessions.expiresAt, new Date()))
 }
 
-export async function generateTwoFactorSecret(userId: string): Promise<{ secret: string; qrCodeUrl: string }> {
+export async function generateTwoFactorSecret(
+  userId: string,
+): Promise<{ secret: string; qrCodeUrl: string }> {
   const user = await findUserById(userId)
   if (!user) throw new Error('User not found')
 
@@ -369,7 +384,10 @@ export async function generateTwoFactorSecret(userId: string): Promise<{ secret:
   return { secret, qrCodeUrl }
 }
 
-export async function verifyTwoFactorToken(userId: string, token: string): Promise<boolean> {
+export async function verifyTwoFactorToken(
+  userId: string,
+  token: string,
+): Promise<boolean> {
   const user = await findUserById(userId)
   if (!user || !user.twoFactorSecret) return false
 
@@ -378,7 +396,10 @@ export async function verifyTwoFactorToken(userId: string, token: string): Promi
   return result.valid
 }
 
-export async function enableTwoFactor(userId: string, token: string): Promise<{ success: boolean; recoveryCodes?: string[] }> {
+export async function enableTwoFactor(
+  userId: string,
+  token: string,
+): Promise<{ success: boolean; recoveryCodes?: string[] }> {
   const isValid = await verifyTwoFactorToken(userId, token)
   if (!isValid) return { success: false }
 
@@ -422,17 +443,20 @@ export function generateRecoveryCodes(): string[] {
 }
 
 // Save recovery codes (encrypted) - called when 2FA is enabled
-export async function saveRecoveryCodes(userId: string, codes: string[]): Promise<void> {
+export async function saveRecoveryCodes(
+  userId: string,
+  codes: string[],
+): Promise<void> {
   // Hash each code before storing (so we can verify without exposing them)
   const hashedCodes = await Promise.all(
     codes.map(async (code) => {
       const hash = crypto.createHash('sha256').update(code).digest('hex')
       return hash
-    })
+    }),
   )
-  
+
   const encryptedCodes = encrypt(JSON.stringify(hashedCodes))
-  
+
   await db
     .update(users)
     .set({
@@ -443,24 +467,30 @@ export async function saveRecoveryCodes(userId: string, codes: string[]): Promis
 }
 
 // Verify and use a recovery code (one-time use)
-export async function verifyRecoveryCode(userId: string, code: string): Promise<boolean> {
+export async function verifyRecoveryCode(
+  userId: string,
+  code: string,
+): Promise<boolean> {
   const user = await findUserById(userId)
   if (!user || !user.twoFactorRecoveryCodes) return false
 
   try {
     const decryptedCodes = decrypt(user.twoFactorRecoveryCodes)
     const hashedCodes: string[] = JSON.parse(decryptedCodes)
-    
+
     // Hash the provided code
-    const providedHash = crypto.createHash('sha256').update(code.toUpperCase()).digest('hex')
-    
+    const providedHash = crypto
+      .createHash('sha256')
+      .update(code.toUpperCase())
+      .digest('hex')
+
     // Find and remove the used code
-    const codeIndex = hashedCodes.findIndex(hash => hash === providedHash)
+    const codeIndex = hashedCodes.findIndex((hash) => hash === providedHash)
     if (codeIndex === -1) return false
-    
+
     // Remove the used code
     hashedCodes.splice(codeIndex, 1)
-    
+
     // Save remaining codes
     const encryptedCodes = encrypt(JSON.stringify(hashedCodes))
     await db
@@ -470,7 +500,7 @@ export async function verifyRecoveryCode(userId: string, code: string): Promise<
         updatedAt: new Date(),
       })
       .where(eq(users.id, userId))
-    
+
     return true
   } catch {
     return false
@@ -492,7 +522,9 @@ export async function getRecoveryCodesCount(userId: string): Promise<number> {
 }
 
 // Regenerate recovery codes (user can request new ones)
-export async function regenerateRecoveryCodes(userId: string): Promise<string[]> {
+export async function regenerateRecoveryCodes(
+  userId: string,
+): Promise<string[]> {
   const codes = generateRecoveryCodes()
   await saveRecoveryCodes(userId, codes)
   return codes
@@ -550,7 +582,7 @@ export async function updateProfile(
     birthday: Date
     creatorTypes: string[]
     socials: Record<string, string>
-  }>
+  }>,
 ) {
   const [updated] = await db
     .update(profiles)
@@ -569,7 +601,7 @@ export async function updateUser(
   data: Partial<{
     name: string
     username: string
-  }>
+  }>,
 ) {
   const [updated] = await db
     .update(users)

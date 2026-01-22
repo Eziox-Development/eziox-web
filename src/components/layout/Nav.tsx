@@ -4,7 +4,11 @@ import { siteConfig } from '@/lib/site-config'
 import { ThemeSwitcher } from './ThemeSwitcher'
 import { useTheme } from './ThemeProvider'
 
-const NotificationBell = lazy(() => import('@/components/notifications/NotificationBell').then(m => ({ default: m.NotificationBell })))
+const NotificationBell = lazy(() =>
+  import('@/components/notifications/NotificationBell').then((m) => ({
+    default: m.NotificationBell,
+  })),
+)
 import {
   Menu,
   X,
@@ -34,16 +38,50 @@ import {
   ArrowRight,
   Command,
   Paintbrush,
+  Link2,
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'motion/react'
 import { useAuth } from '@/hooks/use-auth'
 import type { TierType } from '@/server/lib/stripe'
 
-const TIER_CONFIG: Record<TierType, { icon: React.ElementType; color: string; gradient: string; name: string; glow: string }> = {
-  free: { icon: Zap, color: '#6b7280', gradient: 'linear-gradient(135deg, #6b7280, #9ca3af)', name: 'Core', glow: '0 0 20px rgba(107, 114, 128, 0.3)' },
-  pro: { icon: Star, color: '#3b82f6', gradient: 'linear-gradient(135deg, #3b82f6, #8b5cf6)', name: 'Pro', glow: '0 0 20px rgba(59, 130, 246, 0.4)' },
-  creator: { icon: Crown, color: '#f59e0b', gradient: 'linear-gradient(135deg, #f59e0b, #ef4444)', name: 'Creator', glow: '0 0 20px rgba(245, 158, 11, 0.4)' },
-  lifetime: { icon: Gem, color: '#ec4899', gradient: 'linear-gradient(135deg, #ec4899, #8b5cf6)', name: 'Lifetime', glow: '0 0 20px rgba(236, 72, 153, 0.4)' },
+const TIER_CONFIG: Record<
+  TierType,
+  {
+    icon: React.ElementType
+    color: string
+    gradient: string
+    name: string
+    glow: string
+  }
+> = {
+  free: {
+    icon: Zap,
+    color: '#6b7280',
+    gradient: 'linear-gradient(135deg, #6b7280, #9ca3af)',
+    name: 'Core',
+    glow: '0 0 20px rgba(107, 114, 128, 0.3)',
+  },
+  pro: {
+    icon: Star,
+    color: '#3b82f6',
+    gradient: 'linear-gradient(135deg, #3b82f6, #8b5cf6)',
+    name: 'Pro',
+    glow: '0 0 20px rgba(59, 130, 246, 0.4)',
+  },
+  creator: {
+    icon: Crown,
+    color: '#f59e0b',
+    gradient: 'linear-gradient(135deg, #f59e0b, #ef4444)',
+    name: 'Creator',
+    glow: '0 0 20px rgba(245, 158, 11, 0.4)',
+  },
+  lifetime: {
+    icon: Gem,
+    color: '#ec4899',
+    gradient: 'linear-gradient(135deg, #ec4899, #8b5cf6)',
+    name: 'Lifetime',
+    glow: '0 0 20px rgba(236, 72, 153, 0.4)',
+  },
 }
 
 const NAV_ITEMS = [
@@ -54,16 +92,46 @@ const NAV_ITEMS = [
 ] as const
 
 const COMMUNITY_ITEMS = [
-  { href: '/creators', label: 'Creators', icon: Sparkles, description: 'Discover amazing creators', color: '#8b5cf6' },
-  { href: '/templates', label: 'Templates', icon: Gift, description: 'Community style presets', color: '#ec4899' },
-  { href: '/partners', label: 'Partners', icon: Handshake, description: 'Official platform partners', color: '#14b8a6' },
-  { href: '/leaderboard', label: 'Leaderboard', icon: Trophy, description: 'Top performing users', color: '#f59e0b' },
+  {
+    href: '/creators',
+    label: 'Creators',
+    icon: Sparkles,
+    description: 'Discover amazing creators',
+    color: '#8b5cf6',
+  },
+  {
+    href: '/templates',
+    label: 'Templates',
+    icon: Gift,
+    description: 'Community style presets',
+    color: '#ec4899',
+  },
+  {
+    href: '/partners',
+    label: 'Partners',
+    icon: Handshake,
+    description: 'Official platform partners',
+    color: '#14b8a6',
+  },
+  {
+    href: '/leaderboard',
+    label: 'Leaderboard',
+    icon: Trophy,
+    description: 'Top performing users',
+    color: '#f59e0b',
+  },
 ] as const
 
 const QUICK_ACTIONS = [
   { to: '/profile', icon: LayoutDashboard, label: 'Dashboard', shortcut: 'D' },
   { to: '/playground', icon: Palette, label: 'Playground', shortcut: 'P' },
-  { to: '/theme-builder', icon: Paintbrush, label: 'Theme Builder', shortcut: 'T' },
+  {
+    to: '/theme-builder',
+    icon: Paintbrush,
+    label: 'Theme Builder',
+    shortcut: 'T',
+  },
+  { to: '/shortener', icon: Link2, label: 'URL Shortener', shortcut: 'S' },
   { to: '/analytics', icon: BarChart3, label: 'Analytics', shortcut: 'A' },
 ]
 
@@ -106,11 +174,17 @@ export function Nav() {
     setIsUserMenuOpen(false)
   }
 
-  const userInitial = currentUser?.name?.charAt(0).toUpperCase() || currentUser?.email?.charAt(0).toUpperCase() || 'U'
-  const displayName = currentUser?.name || currentUser?.email?.split('@')[0] || 'User'
+  const userInitial =
+    currentUser?.name?.charAt(0).toUpperCase() ||
+    currentUser?.email?.charAt(0).toUpperCase() ||
+    'U'
+  const displayName =
+    currentUser?.name || currentUser?.email?.split('@')[0] || 'User'
   const bioLink = `eziox.link/${currentUser?.username || 'you'}`
-  const isCommunityActive = COMMUNITY_ITEMS.some(i => location.pathname === i.href)
-  
+  const isCommunityActive = COMMUNITY_ITEMS.some(
+    (i) => location.pathname === i.href,
+  )
+
   const userTier = (currentUser?.tier || 'free') as TierType
   const tierConfig = TIER_CONFIG[userTier] || TIER_CONFIG.free
   const TierIcon = tierConfig.icon
@@ -128,11 +202,17 @@ export function Nav() {
         initial={false}
         animate={{
           opacity: isScrolled ? 1 : 0,
-          backdropFilter: isScrolled ? 'blur(20px) saturate(180%)' : 'blur(0px)',
+          backdropFilter: isScrolled
+            ? 'blur(20px) saturate(180%)'
+            : 'blur(0px)',
         }}
         style={{
-          background: isScrolled ? `${theme.colors.background}cc` : 'transparent',
-          borderBottom: isScrolled ? `1px solid ${theme.colors.border}40` : 'none',
+          background: isScrolled
+            ? `${theme.colors.background}cc`
+            : 'transparent',
+          borderBottom: isScrolled
+            ? `1px solid ${theme.colors.border}40`
+            : 'none',
         }}
       />
 
@@ -158,10 +238,18 @@ export function Nav() {
               whileTap={{ scale: 0.95 }}
               style={{ boxShadow: `0 0 30px ${theme.colors.primary}50` }}
             >
-              <img src="/icon.png" alt={siteConfig.metadata.title} className="w-full h-full object-cover" loading="eager" />
+              <img
+                src="/icon.png"
+                alt={siteConfig.metadata.title}
+                className="w-full h-full object-cover"
+                loading="eager"
+              />
               <motion.div
                 className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                style={{ background: 'linear-gradient(135deg, transparent 30%, rgba(255,255,255,0.4) 50%, transparent 70%)' }}
+                style={{
+                  background:
+                    'linear-gradient(135deg, transparent 30%, rgba(255,255,255,0.4) 50%, transparent 70%)',
+                }}
                 animate={{ x: ['-100%', '200%'] }}
                 transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 3 }}
               />
@@ -175,7 +263,12 @@ export function Nav() {
                 {siteConfig.metadata.title}
               </motion.span>
               <div className="flex items-center gap-2">
-                <span className="text-[11px] font-medium" style={{ color: theme.colors.foregroundMuted }}>Bio Links</span>
+                <span
+                  className="text-[11px] font-medium"
+                  style={{ color: theme.colors.foregroundMuted }}
+                >
+                  Bio Links
+                </span>
               </div>
             </div>
           </Link>
@@ -199,7 +292,9 @@ export function Nav() {
                     key={item.href}
                     to={item.href}
                     className="relative flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200"
-                    style={{ color: isActive ? 'white' : theme.colors.foregroundMuted }}
+                    style={{
+                      color: isActive ? 'white' : theme.colors.foregroundMuted,
+                    }}
                   >
                     <item.icon size={16} />
                     <span>{item.label}</span>
@@ -211,7 +306,11 @@ export function Nav() {
                           background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
                           boxShadow: `0 4px 20px ${theme.colors.primary}60`,
                         }}
-                        transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                        transition={{
+                          type: 'spring',
+                          stiffness: 400,
+                          damping: 30,
+                        }}
                       />
                     )}
                   </Link>
@@ -223,7 +322,12 @@ export function Nav() {
                 <motion.button
                   onClick={() => setIsCommunityMenuOpen(!isCommunityMenuOpen)}
                   className="relative flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200"
-                  style={{ color: isCommunityMenuOpen || isCommunityActive ? 'white' : theme.colors.foregroundMuted }}
+                  style={{
+                    color:
+                      isCommunityMenuOpen || isCommunityActive
+                        ? 'white'
+                        : theme.colors.foregroundMuted,
+                  }}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
@@ -243,7 +347,11 @@ export function Nav() {
                         background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
                         boxShadow: `0 4px 20px ${theme.colors.primary}60`,
                       }}
-                      transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                      transition={{
+                        type: 'spring',
+                        stiffness: 400,
+                        damping: 30,
+                      }}
                     />
                   )}
                 </motion.button>
@@ -264,7 +372,10 @@ export function Nav() {
                     >
                       <div className="p-2">
                         <div className="px-3 py-2 mb-1">
-                          <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: theme.colors.foregroundMuted }}>
+                          <p
+                            className="text-[10px] font-bold uppercase tracking-wider"
+                            style={{ color: theme.colors.foregroundMuted }}
+                          >
                             Explore Community
                           </p>
                         </div>
@@ -280,20 +391,44 @@ export function Nav() {
                               <Link
                                 to={item.href}
                                 className="flex items-center gap-3 px-3 py-3 rounded-xl transition-all group"
-                                style={{ background: isActive ? `${item.color}15` : 'transparent' }}
+                                style={{
+                                  background: isActive
+                                    ? `${item.color}15`
+                                    : 'transparent',
+                                }}
                               >
                                 <motion.div
                                   className="w-11 h-11 rounded-xl flex items-center justify-center"
-                                  style={{ background: `${item.color}20`, boxShadow: isActive ? `0 0 20px ${item.color}30` : 'none' }}
+                                  style={{
+                                    background: `${item.color}20`,
+                                    boxShadow: isActive
+                                      ? `0 0 20px ${item.color}30`
+                                      : 'none',
+                                  }}
                                   whileHover={{ scale: 1.1, rotate: 5 }}
                                 >
-                                  <item.icon size={20} style={{ color: item.color }} />
+                                  <item.icon
+                                    size={20}
+                                    style={{ color: item.color }}
+                                  />
                                 </motion.div>
                                 <div className="flex-1">
-                                  <p className="text-sm font-semibold" style={{ color: isActive ? item.color : theme.colors.foreground }}>
+                                  <p
+                                    className="text-sm font-semibold"
+                                    style={{
+                                      color: isActive
+                                        ? item.color
+                                        : theme.colors.foreground,
+                                    }}
+                                  >
                                     {item.label}
                                   </p>
-                                  <p className="text-xs" style={{ color: theme.colors.foregroundMuted }}>
+                                  <p
+                                    className="text-xs"
+                                    style={{
+                                      color: theme.colors.foregroundMuted,
+                                    }}
+                                  >
                                     {item.description}
                                   </p>
                                 </div>
@@ -302,7 +437,10 @@ export function Nav() {
                                   animate={{ x: [0, 4, 0] }}
                                   transition={{ duration: 1, repeat: Infinity }}
                                 >
-                                  <ArrowRight size={14} style={{ color: item.color }} />
+                                  <ArrowRight
+                                    size={14}
+                                    style={{ color: item.color }}
+                                  />
                                 </motion.div>
                               </Link>
                             </motion.div>
@@ -322,7 +460,9 @@ export function Nav() {
                     key={item.href}
                     to={item.href}
                     className="relative flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200"
-                    style={{ color: isActive ? 'white' : theme.colors.foregroundMuted }}
+                    style={{
+                      color: isActive ? 'white' : theme.colors.foregroundMuted,
+                    }}
                   >
                     <item.icon size={16} />
                     <span>{item.label}</span>
@@ -334,7 +474,11 @@ export function Nav() {
                           background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
                           boxShadow: `0 4px 20px ${theme.colors.primary}60`,
                         }}
-                        transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                        transition={{
+                          type: 'spring',
+                          stiffness: 400,
+                          damping: 30,
+                        }}
                       />
                     )}
                   </Link>
@@ -352,7 +496,9 @@ export function Nav() {
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                     className="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all"
                     style={{
-                      background: isUserMenuOpen ? tierConfig.gradient : theme.colors.card,
+                      background: isUserMenuOpen
+                        ? tierConfig.gradient
+                        : theme.colors.card,
                       border: `1px solid ${isUserMenuOpen ? 'transparent' : theme.colors.border}`,
                       color: isUserMenuOpen ? 'white' : theme.colors.foreground,
                       boxShadow: isUserMenuOpen ? tierConfig.glow : 'none',
@@ -362,7 +508,11 @@ export function Nav() {
                   >
                     <div className="relative w-8 h-8 rounded-lg overflow-hidden">
                       {currentUser.profile?.avatar ? (
-                        <img src={currentUser.profile.avatar} alt={displayName} className="w-full h-full object-cover" />
+                        <img
+                          src={currentUser.profile.avatar}
+                          alt={displayName}
+                          className="w-full h-full object-cover"
+                        />
                       ) : (
                         <div
                           className="w-full h-full flex items-center justify-center text-xs font-bold text-white"
@@ -373,18 +523,33 @@ export function Nav() {
                       )}
                       <motion.div
                         className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2"
-                        style={{ background: '#22c55e', borderColor: theme.colors.card }}
+                        style={{
+                          background: '#22c55e',
+                          borderColor: theme.colors.card,
+                        }}
                         animate={{ scale: [1, 1.2, 1] }}
                         transition={{ duration: 2, repeat: Infinity }}
                       />
                     </div>
                     <div className="hidden xl:block text-left">
-                      <p className="text-sm font-semibold leading-tight max-w-[80px] truncate">{displayName}</p>
-                      <p className="text-[10px] leading-tight" style={{ color: isUserMenuOpen ? 'rgba(255,255,255,0.7)' : theme.colors.foregroundMuted }}>
+                      <p className="text-sm font-semibold leading-tight max-w-[80px] truncate">
+                        {displayName}
+                      </p>
+                      <p
+                        className="text-[10px] leading-tight"
+                        style={{
+                          color: isUserMenuOpen
+                            ? 'rgba(255,255,255,0.7)'
+                            : theme.colors.foregroundMuted,
+                        }}
+                      >
                         {tierConfig.name}
                       </p>
                     </div>
-                    <motion.div animate={{ rotate: isUserMenuOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
+                    <motion.div
+                      animate={{ rotate: isUserMenuOpen ? 180 : 0 }}
+                      transition={{ duration: 0.2 }}
+                    >
                       <ChevronDown size={14} />
                     </motion.div>
                   </motion.button>
@@ -404,7 +569,12 @@ export function Nav() {
                         }}
                       >
                         {/* User Header */}
-                        <div className="p-4" style={{ background: `linear-gradient(135deg, ${tierConfig.color}10, transparent)` }}>
+                        <div
+                          className="p-4"
+                          style={{
+                            background: `linear-gradient(135deg, ${tierConfig.color}10, transparent)`,
+                          }}
+                        >
                           <div className="flex items-center gap-4">
                             <motion.div
                               className="relative w-16 h-16 rounded-xl overflow-hidden"
@@ -412,7 +582,11 @@ export function Nav() {
                               whileHover={{ scale: 1.05 }}
                             >
                               {currentUser.profile?.avatar ? (
-                                <img src={currentUser.profile.avatar} alt={displayName} className="w-full h-full object-cover" />
+                                <img
+                                  src={currentUser.profile.avatar}
+                                  alt={displayName}
+                                  className="w-full h-full object-cover"
+                                />
                               ) : (
                                 <div
                                   className="w-full h-full flex items-center justify-center text-2xl font-bold text-white"
@@ -423,15 +597,36 @@ export function Nav() {
                               )}
                             </motion.div>
                             <div className="flex-1 min-w-0">
-                              <p className="font-bold text-lg truncate" style={{ color: theme.colors.foreground }}>{displayName}</p>
-                              <p className="text-sm truncate" style={{ color: theme.colors.foregroundMuted }}>@{currentUser.username}</p>
+                              <p
+                                className="font-bold text-lg truncate"
+                                style={{ color: theme.colors.foreground }}
+                              >
+                                {displayName}
+                              </p>
+                              <p
+                                className="text-sm truncate"
+                                style={{ color: theme.colors.foregroundMuted }}
+                              >
+                                @{currentUser.username}
+                              </p>
                               <motion.div
                                 className="inline-flex items-center gap-1.5 mt-2 px-2.5 py-1 rounded-full"
-                                style={{ background: `${tierConfig.color}20`, boxShadow: `0 0 15px ${tierConfig.color}20` }}
+                                style={{
+                                  background: `${tierConfig.color}20`,
+                                  boxShadow: `0 0 15px ${tierConfig.color}20`,
+                                }}
                                 whileHover={{ scale: 1.05 }}
                               >
-                                <TierIcon size={12} style={{ color: tierConfig.color }} />
-                                <span className="text-[11px] font-bold" style={{ color: tierConfig.color }}>{tierConfig.name}</span>
+                                <TierIcon
+                                  size={12}
+                                  style={{ color: tierConfig.color }}
+                                />
+                                <span
+                                  className="text-[11px] font-bold"
+                                  style={{ color: tierConfig.color }}
+                                >
+                                  {tierConfig.name}
+                                </span>
                               </motion.div>
                             </div>
                           </div>
@@ -442,41 +637,97 @@ export function Nav() {
                             target="_blank"
                             rel="noopener noreferrer"
                             className="mt-4 p-3 rounded-xl flex items-center justify-between group"
-                            style={{ background: theme.colors.backgroundSecondary, border: `1px solid ${theme.colors.border}` }}
-                            whileHover={{ scale: 1.02, borderColor: theme.colors.primary }}
+                            style={{
+                              background: theme.colors.backgroundSecondary,
+                              border: `1px solid ${theme.colors.border}`,
+                            }}
+                            whileHover={{
+                              scale: 1.02,
+                              borderColor: theme.colors.primary,
+                            }}
                           >
                             <div className="flex items-center gap-2">
-                              <Globe size={14} style={{ color: theme.colors.primary }} />
-                              <span className="text-sm font-mono" style={{ color: theme.colors.foreground }}>{bioLink}</span>
+                              <Globe
+                                size={14}
+                                style={{ color: theme.colors.primary }}
+                              />
+                              <span
+                                className="text-sm font-mono"
+                                style={{ color: theme.colors.foreground }}
+                              >
+                                {bioLink}
+                              </span>
                             </div>
-                            <ExternalLink size={12} className="opacity-50 group-hover:opacity-100 transition-opacity" style={{ color: theme.colors.foregroundMuted }} />
+                            <ExternalLink
+                              size={12}
+                              className="opacity-50 group-hover:opacity-100 transition-opacity"
+                              style={{ color: theme.colors.foregroundMuted }}
+                            />
                           </motion.a>
                         </div>
 
                         {/* Quick Actions */}
-                        <div className="p-2" style={{ borderTop: `1px solid ${theme.colors.border}` }}>
+                        <div
+                          className="p-2"
+                          style={{
+                            borderTop: `1px solid ${theme.colors.border}`,
+                          }}
+                        >
                           <div className="px-3 py-2">
-                            <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: theme.colors.foregroundMuted }}>Quick Actions</p>
+                            <p
+                              className="text-[10px] font-bold uppercase tracking-wider"
+                              style={{ color: theme.colors.foregroundMuted }}
+                            >
+                              Quick Actions
+                            </p>
                           </div>
                           <div className="grid grid-cols-3 gap-2 px-2">
                             {QUICK_ACTIONS.map((action, i) => (
-                              <motion.div key={action.to} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
+                              <motion.div
+                                key={action.to}
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: i * 0.05 }}
+                              >
                                 <Link
                                   to={action.to}
                                   onClick={() => setIsUserMenuOpen(false)}
                                   className="flex flex-col items-center gap-2 p-3 rounded-xl text-center group"
-                                  style={{ background: theme.colors.backgroundSecondary }}
+                                  style={{
+                                    background:
+                                      theme.colors.backgroundSecondary,
+                                  }}
                                 >
                                   <motion.div
                                     className="w-10 h-10 rounded-lg flex items-center justify-center"
-                                    style={{ background: `${theme.colors.primary}20` }}
+                                    style={{
+                                      background: `${theme.colors.primary}20`,
+                                    }}
                                     whileHover={{ scale: 1.1, rotate: 5 }}
                                   >
-                                    <action.icon size={18} style={{ color: theme.colors.primary }} />
+                                    <action.icon
+                                      size={18}
+                                      style={{ color: theme.colors.primary }}
+                                    />
                                   </motion.div>
-                                  <span className="text-xs font-medium" style={{ color: theme.colors.foreground }}>{action.label}</span>
-                                  <span className="text-[9px] px-1.5 py-0.5 rounded" style={{ background: theme.colors.card, color: theme.colors.foregroundMuted }}>
-                                    <Command size={8} className="inline mr-0.5" />{action.shortcut}
+                                  <span
+                                    className="text-xs font-medium"
+                                    style={{ color: theme.colors.foreground }}
+                                  >
+                                    {action.label}
+                                  </span>
+                                  <span
+                                    className="text-[9px] px-1.5 py-0.5 rounded"
+                                    style={{
+                                      background: theme.colors.card,
+                                      color: theme.colors.foregroundMuted,
+                                    }}
+                                  >
+                                    <Command
+                                      size={8}
+                                      className="inline mr-0.5"
+                                    />
+                                    {action.shortcut}
                                   </span>
                                 </Link>
                               </motion.div>
@@ -485,20 +736,55 @@ export function Nav() {
                         </div>
 
                         {/* Additional Links */}
-                        <div className="p-2" style={{ borderTop: `1px solid ${theme.colors.border}` }}>
+                        <div
+                          className="p-2"
+                          style={{
+                            borderTop: `1px solid ${theme.colors.border}`,
+                          }}
+                        >
                           {[
-                            { href: `https://${bioLink}`, icon: Globe, label: 'View Bio Page', external: true },
-                            ...(currentUser.role === 'owner' || currentUser.role === 'admin' ? [{ to: '/admin', icon: Shield, label: 'Admin Panel', color: '#ef4444' }] : []),
+                            {
+                              href: `https://${bioLink}`,
+                              icon: Globe,
+                              label: 'View Bio Page',
+                              external: true,
+                            },
+                            ...(currentUser.role === 'owner' ||
+                            currentUser.role === 'admin'
+                              ? [
+                                  {
+                                    to: '/admin',
+                                    icon: Shield,
+                                    label: 'Admin Panel',
+                                    color: '#ef4444',
+                                  },
+                                ]
+                              : []),
                           ].map((item, i) => (
-                            <motion.div key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.03 }}>
+                            <motion.div
+                              key={i}
+                              initial={{ opacity: 0, x: -10 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: i * 0.03 }}
+                            >
                               {'to' in item ? (
                                 <Link
                                   to={item.to}
                                   onClick={() => setIsUserMenuOpen(false)}
                                   className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all hover:bg-white/5"
-                                  style={{ color: item.color || theme.colors.foreground }}
+                                  style={{
+                                    color:
+                                      item.color || theme.colors.foreground,
+                                  }}
                                 >
-                                  <item.icon size={18} style={{ color: item.color || theme.colors.foregroundMuted }} />
+                                  <item.icon
+                                    size={18}
+                                    style={{
+                                      color:
+                                        item.color ||
+                                        theme.colors.foregroundMuted,
+                                    }}
+                                  />
                                   <span>{item.label}</span>
                                 </Link>
                               ) : (
@@ -510,9 +796,20 @@ export function Nav() {
                                   className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all hover:bg-white/5"
                                   style={{ color: theme.colors.foreground }}
                                 >
-                                  <item.icon size={18} style={{ color: theme.colors.foregroundMuted }} />
+                                  <item.icon
+                                    size={18}
+                                    style={{
+                                      color: theme.colors.foregroundMuted,
+                                    }}
+                                  />
                                   <span>{item.label}</span>
-                                  <ExternalLink size={12} className="ml-auto" style={{ color: theme.colors.foregroundMuted }} />
+                                  <ExternalLink
+                                    size={12}
+                                    className="ml-auto"
+                                    style={{
+                                      color: theme.colors.foregroundMuted,
+                                    }}
+                                  />
                                 </a>
                               )}
                             </motion.div>
@@ -521,41 +818,76 @@ export function Nav() {
 
                         {/* Upgrade CTA */}
                         {userTier !== 'lifetime' && userTier !== 'creator' && (
-                          <div className="p-3" style={{ borderTop: `1px solid ${theme.colors.border}` }}>
-                            <Link to="/pricing" onClick={() => setIsUserMenuOpen(false)}>
+                          <div
+                            className="p-3"
+                            style={{
+                              borderTop: `1px solid ${theme.colors.border}`,
+                            }}
+                          >
+                            <Link
+                              to="/pricing"
+                              onClick={() => setIsUserMenuOpen(false)}
+                            >
                               <motion.div
                                 className="p-4 rounded-xl flex items-center gap-4"
                                 style={{
                                   background: `linear-gradient(135deg, ${theme.colors.primary}15, ${theme.colors.accent}15)`,
                                   border: `1px solid ${theme.colors.primary}30`,
                                 }}
-                                whileHover={{ scale: 1.02, background: `linear-gradient(135deg, ${theme.colors.primary}25, ${theme.colors.accent}25)` }}
+                                whileHover={{
+                                  scale: 1.02,
+                                  background: `linear-gradient(135deg, ${theme.colors.primary}25, ${theme.colors.accent}25)`,
+                                }}
                                 whileTap={{ scale: 0.98 }}
                               >
                                 <motion.div
                                   className="w-12 h-12 rounded-xl flex items-center justify-center"
-                                  style={{ background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})` }}
+                                  style={{
+                                    background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
+                                  }}
                                   whileHover={{ rotate: 10 }}
                                 >
                                   <Rocket size={20} className="text-white" />
                                 </motion.div>
                                 <div className="flex-1">
-                                  <p className="font-bold" style={{ color: theme.colors.foreground }}>Upgrade to Pro</p>
-                                  <p className="text-xs" style={{ color: theme.colors.foregroundMuted }}>Unlock all premium features</p>
+                                  <p
+                                    className="font-bold"
+                                    style={{ color: theme.colors.foreground }}
+                                  >
+                                    Upgrade to Pro
+                                  </p>
+                                  <p
+                                    className="text-xs"
+                                    style={{
+                                      color: theme.colors.foregroundMuted,
+                                    }}
+                                  >
+                                    Unlock all premium features
+                                  </p>
                                 </div>
-                                <ArrowRight size={16} style={{ color: theme.colors.primary }} />
+                                <ArrowRight
+                                  size={16}
+                                  style={{ color: theme.colors.primary }}
+                                />
                               </motion.div>
                             </Link>
                           </div>
                         )}
 
                         {/* Sign Out */}
-                        <div className="p-2" style={{ borderTop: `1px solid ${theme.colors.border}` }}>
+                        <div
+                          className="p-2"
+                          style={{
+                            borderTop: `1px solid ${theme.colors.border}`,
+                          }}
+                        >
                           <motion.button
                             onClick={handleSignOut}
                             className="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium transition-all"
                             style={{ color: '#ef4444' }}
-                            whileHover={{ background: 'rgba(239, 68, 68, 0.1)' }}
+                            whileHover={{
+                              background: 'rgba(239, 68, 68, 0.1)',
+                            }}
                           >
                             <LogOut size={18} />
                             <span>Sign Out</span>
@@ -575,7 +907,10 @@ export function Nav() {
                     <LogIn size={16} />
                     Sign In
                   </Link>
-                  <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+                  <motion.div
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.97 }}
+                  >
                     <Link
                       to="/sign-up"
                       className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white"
@@ -607,7 +942,9 @@ export function Nav() {
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="lg:hidden p-2.5 rounded-xl"
               style={{
-                background: isMobileMenuOpen ? `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})` : theme.colors.card,
+                background: isMobileMenuOpen
+                  ? `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`
+                  : theme.colors.card,
                 border: `1px solid ${isMobileMenuOpen ? 'transparent' : theme.colors.border}`,
                 color: isMobileMenuOpen ? 'white' : theme.colors.foreground,
               }}
@@ -659,9 +996,13 @@ export function Nav() {
                       to={item.href}
                       className="flex items-center gap-3 px-4 py-4 rounded-xl font-medium"
                       style={{
-                        background: isActive ? `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})` : theme.colors.card,
+                        background: isActive
+                          ? `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`
+                          : theme.colors.card,
                         color: isActive ? 'white' : theme.colors.foreground,
-                        boxShadow: isActive ? `0 4px 20px ${theme.colors.primary}40` : 'none',
+                        boxShadow: isActive
+                          ? `0 4px 20px ${theme.colors.primary}40`
+                          : 'none',
                       }}
                     >
                       <item.icon size={20} />
@@ -678,7 +1019,10 @@ export function Nav() {
                 transition={{ delay: 0.1 }}
                 className="pt-4"
               >
-                <p className="px-4 py-2 text-xs font-bold uppercase tracking-wider" style={{ color: theme.colors.foregroundMuted }}>
+                <p
+                  className="px-4 py-2 text-xs font-bold uppercase tracking-wider"
+                  style={{ color: theme.colors.foregroundMuted }}
+                >
                   Community
                 </p>
                 <div className="space-y-1">
@@ -690,8 +1034,12 @@ export function Nav() {
                         to={item.href}
                         className="flex items-center gap-3 px-4 py-3 rounded-xl"
                         style={{
-                          background: isActive ? `${item.color}15` : theme.colors.card,
-                          color: isActive ? item.color : theme.colors.foreground,
+                          background: isActive
+                            ? `${item.color}15`
+                            : theme.colors.card,
+                          color: isActive
+                            ? item.color
+                            : theme.colors.foreground,
                         }}
                       >
                         <div
@@ -701,8 +1049,15 @@ export function Nav() {
                           <item.icon size={18} style={{ color: item.color }} />
                         </div>
                         <div>
-                          <span className="block text-sm font-medium">{item.label}</span>
-                          <span className="text-xs" style={{ color: theme.colors.foregroundMuted }}>{item.description}</span>
+                          <span className="block text-sm font-medium">
+                            {item.label}
+                          </span>
+                          <span
+                            className="text-xs"
+                            style={{ color: theme.colors.foregroundMuted }}
+                          >
+                            {item.description}
+                          </span>
                         </div>
                       </Link>
                     )
@@ -718,15 +1073,21 @@ export function Nav() {
                     key={item.href}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: (i + COMMUNITY_ITEMS.length + 2) * 0.05 }}
+                    transition={{
+                      delay: (i + COMMUNITY_ITEMS.length + 2) * 0.05,
+                    }}
                   >
                     <Link
                       to={item.href}
                       className="flex items-center gap-3 px-4 py-4 rounded-xl font-medium"
                       style={{
-                        background: isActive ? `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})` : theme.colors.card,
+                        background: isActive
+                          ? `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`
+                          : theme.colors.card,
                         color: isActive ? 'white' : theme.colors.foreground,
-                        boxShadow: isActive ? `0 4px 20px ${theme.colors.primary}40` : 'none',
+                        boxShadow: isActive
+                          ? `0 4px 20px ${theme.colors.primary}40`
+                          : 'none',
                       }}
                     >
                       <item.icon size={20} />
@@ -750,9 +1111,16 @@ export function Nav() {
                       className="flex items-center gap-4 p-4 rounded-xl"
                       style={{ background: theme.colors.card }}
                     >
-                      <div className="w-14 h-14 rounded-xl overflow-hidden" style={{ boxShadow: tierConfig.glow }}>
+                      <div
+                        className="w-14 h-14 rounded-xl overflow-hidden"
+                        style={{ boxShadow: tierConfig.glow }}
+                      >
                         {currentUser.profile?.avatar ? (
-                          <img src={currentUser.profile.avatar} alt={displayName} className="w-full h-full object-cover" />
+                          <img
+                            src={currentUser.profile.avatar}
+                            alt={displayName}
+                            className="w-full h-full object-cover"
+                          />
                         ) : (
                           <div
                             className="w-full h-full flex items-center justify-center text-xl font-bold text-white"
@@ -763,14 +1131,32 @@ export function Nav() {
                         )}
                       </div>
                       <div>
-                        <p className="font-bold" style={{ color: theme.colors.foreground }}>{displayName}</p>
-                        <p className="text-sm" style={{ color: theme.colors.foregroundMuted }}>@{currentUser.username}</p>
+                        <p
+                          className="font-bold"
+                          style={{ color: theme.colors.foreground }}
+                        >
+                          {displayName}
+                        </p>
+                        <p
+                          className="text-sm"
+                          style={{ color: theme.colors.foregroundMuted }}
+                        >
+                          @{currentUser.username}
+                        </p>
                         <div
                           className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-full"
                           style={{ background: `${tierConfig.color}20` }}
                         >
-                          <TierIcon size={10} style={{ color: tierConfig.color }} />
-                          <span className="text-[10px] font-bold" style={{ color: tierConfig.color }}>{tierConfig.name}</span>
+                          <TierIcon
+                            size={10}
+                            style={{ color: tierConfig.color }}
+                          />
+                          <span
+                            className="text-[10px] font-bold"
+                            style={{ color: tierConfig.color }}
+                          >
+                            {tierConfig.name}
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -778,7 +1164,10 @@ export function Nav() {
                     <Link
                       to="/profile"
                       className="flex items-center gap-3 px-4 py-4 rounded-xl font-medium"
-                      style={{ background: theme.colors.card, color: theme.colors.foreground }}
+                      style={{
+                        background: theme.colors.card,
+                        color: theme.colors.foreground,
+                      }}
                     >
                       <LayoutDashboard size={20} />
                       Dashboard
@@ -787,7 +1176,10 @@ export function Nav() {
                     <button
                       onClick={handleSignOut}
                       className="w-full flex items-center gap-3 px-4 py-4 rounded-xl font-medium"
-                      style={{ background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444' }}
+                      style={{
+                        background: 'rgba(239, 68, 68, 0.1)',
+                        color: '#ef4444',
+                      }}
                     >
                       <LogOut size={20} />
                       Sign Out
@@ -798,7 +1190,10 @@ export function Nav() {
                     <Link
                       to="/sign-in"
                       className="flex items-center justify-center gap-2 px-4 py-4 rounded-xl font-medium"
-                      style={{ background: theme.colors.card, color: theme.colors.foreground }}
+                      style={{
+                        background: theme.colors.card,
+                        color: theme.colors.foreground,
+                      }}
                     >
                       <LogIn size={18} />
                       Sign In

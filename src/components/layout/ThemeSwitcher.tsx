@@ -1,11 +1,29 @@
 import { useState, useMemo } from 'react'
 import { useTheme } from './ThemeProvider'
-import { Paintbrush, Check, Gamepad2, Tv, Code2, Radio, Palette, Minus, Sparkles, X, Star, Crown, Lock } from 'lucide-react'
+import {
+  Paintbrush,
+  Check,
+  Gamepad2,
+  Tv,
+  Code2,
+  Radio,
+  Palette,
+  Minus,
+  Sparkles,
+  X,
+  Star,
+  Crown,
+  Lock,
+} from 'lucide-react'
 import { motion, AnimatePresence } from 'motion/react'
 import type { ThemeCategory } from '@/lib/site-config'
 import { useAuth } from '@/hooks/use-auth'
 
-const CATEGORIES: { id: ThemeCategory; label: string; icon: typeof Gamepad2 }[] = [
+const CATEGORIES: {
+  id: ThemeCategory
+  label: string
+  icon: typeof Gamepad2
+}[] = [
   { id: 'general', label: 'General', icon: Sparkles },
   { id: 'gamer', label: 'Gamer', icon: Gamepad2 },
   { id: 'vtuber', label: 'VTuber', icon: Tv },
@@ -20,17 +38,19 @@ export function ThemeSwitcher() {
   const { theme, setTheme, themes, isTransitioning } = useTheme()
   const { currentUser } = useAuth()
   const [isOpen, setIsOpen] = useState(false)
-  const [activeCategory, setActiveCategory] = useState<ThemeCategory>(theme.category)
+  const [activeCategory, setActiveCategory] = useState<ThemeCategory>(
+    theme.category,
+  )
 
   const userTier = (currentUser?.tier || 'free') as string
   const hasPremiumThemes = ['pro', 'creator', 'lifetime'].includes(userTier)
 
-  const filteredThemes = useMemo(() => 
-    themes.filter(t => t.category === activeCategory),
-    [themes, activeCategory]
+  const filteredThemes = useMemo(
+    () => themes.filter((t) => t.category === activeCategory),
+    [themes, activeCategory],
   )
 
-  const currentCategoryInfo = CATEGORIES.find(c => c.id === activeCategory)
+  const currentCategoryInfo = CATEGORIES.find((c) => c.id === activeCategory)
 
   return (
     <div className="relative">
@@ -38,7 +58,9 @@ export function ThemeSwitcher() {
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center justify-center w-10 h-10 rounded-xl transition-all"
         style={{
-          background: isOpen ? 'linear-gradient(135deg, var(--primary), var(--accent))' : 'var(--background-secondary)',
+          background: isOpen
+            ? 'linear-gradient(135deg, var(--primary), var(--accent))'
+            : 'var(--background-secondary)',
           border: '1px solid var(--border)',
           color: isOpen ? 'white' : 'var(--foreground)',
         }}
@@ -66,28 +88,60 @@ export function ThemeSwitcher() {
               exit={{ opacity: 0, y: 8, scale: 0.95 }}
               transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }}
               className="absolute right-0 top-full mt-2 z-50 w-[520px] rounded-2xl overflow-hidden"
-              style={{ background: 'var(--card)', border: '1px solid var(--border)', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)' }}
+              style={{
+                background: 'var(--card)',
+                border: '1px solid var(--border)',
+                boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)',
+              }}
             >
-              <div className="p-4 flex items-center justify-between" style={{ borderBottom: '1px solid var(--border)' }}>
+              <div
+                className="p-4 flex items-center justify-between"
+                style={{ borderBottom: '1px solid var(--border)' }}
+              >
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, var(--primary), var(--accent))' }}>
+                  <div
+                    className="w-10 h-10 rounded-xl flex items-center justify-center"
+                    style={{
+                      background:
+                        'linear-gradient(135deg, var(--primary), var(--accent))',
+                    }}
+                  >
                     <Paintbrush size={18} className="text-white" />
                   </div>
                   <div>
-                    <p className="font-bold" style={{ color: 'var(--foreground)' }}>Themes</p>
-                    <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>{themes.length} styles available</p>
+                    <p
+                      className="font-bold"
+                      style={{ color: 'var(--foreground)' }}
+                    >
+                      Themes
+                    </p>
+                    <p
+                      className="text-xs"
+                      style={{ color: 'var(--foreground-muted)' }}
+                    >
+                      {themes.length} styles available
+                    </p>
                   </div>
                 </div>
-                <button onClick={() => setIsOpen(false)} className="p-2 rounded-lg transition-colors hover:bg-white/5" style={{ color: 'var(--foreground-muted)' }}>
+                <button
+                  onClick={() => setIsOpen(false)}
+                  className="p-2 rounded-lg transition-colors hover:bg-white/5"
+                  style={{ color: 'var(--foreground-muted)' }}
+                >
                   <X size={18} />
                 </button>
               </div>
 
-              <div className="p-3" style={{ borderBottom: '1px solid var(--border)' }}>
+              <div
+                className="p-3"
+                style={{ borderBottom: '1px solid var(--border)' }}
+              >
                 <div className="grid grid-cols-4 gap-1.5">
                   {CATEGORIES.map((cat) => {
                     const isActive = activeCategory === cat.id
-                    const count = themes.filter(t => t.category === cat.id).length
+                    const count = themes.filter(
+                      (t) => t.category === cat.id,
+                    ).length
                     if (count === 0) return null
                     return (
                       <motion.button
@@ -95,7 +149,9 @@ export function ThemeSwitcher() {
                         onClick={() => setActiveCategory(cat.id)}
                         className="flex flex-col items-center gap-1 px-2 py-2.5 rounded-xl text-xs font-medium transition-all"
                         style={{
-                          background: isActive ? 'linear-gradient(135deg, var(--primary), var(--accent))' : 'var(--background-secondary)',
+                          background: isActive
+                            ? 'linear-gradient(135deg, var(--primary), var(--accent))'
+                            : 'var(--background-secondary)',
                           color: isActive ? 'white' : 'var(--foreground-muted)',
                         }}
                         whileHover={{ scale: 1.03 }}
@@ -112,12 +168,26 @@ export function ThemeSwitcher() {
               <div className="p-3">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
-                    {currentCategoryInfo && <currentCategoryInfo.icon size={16} style={{ color: 'var(--primary)' }} />}
-                    <span className="text-sm font-semibold" style={{ color: 'var(--foreground)' }}>
+                    {currentCategoryInfo && (
+                      <currentCategoryInfo.icon
+                        size={16}
+                        style={{ color: 'var(--primary)' }}
+                      />
+                    )}
+                    <span
+                      className="text-sm font-semibold"
+                      style={{ color: 'var(--foreground)' }}
+                    >
                       {currentCategoryInfo?.label} Themes
                     </span>
                   </div>
-                  <span className="text-xs px-2 py-1 rounded-full" style={{ background: 'var(--background-secondary)', color: 'var(--foreground-muted)' }}>
+                  <span
+                    className="text-xs px-2 py-1 rounded-full"
+                    style={{
+                      background: 'var(--background-secondary)',
+                      color: 'var(--foreground-muted)',
+                    }}
+                  >
                     {filteredThemes.length} available
                   </span>
                 </div>
@@ -130,7 +200,7 @@ export function ThemeSwitcher() {
                     return (
                       <motion.button
                         key={t.id}
-                        onClick={() => { 
+                        onClick={() => {
                           if (!isLocked) {
                             setTheme(t.id)
                             setIsOpen(false)
@@ -138,8 +208,10 @@ export function ThemeSwitcher() {
                         }}
                         disabled={isTransitioning || isLocked}
                         className="relative flex flex-col p-3 rounded-xl transition-all"
-                        style={{ 
-                          background: isActive ? 'linear-gradient(135deg, var(--primary), var(--accent))' : 'var(--background-secondary)',
+                        style={{
+                          background: isActive
+                            ? 'linear-gradient(135deg, var(--primary), var(--accent))'
+                            : 'var(--background-secondary)',
                           border: isActive ? 'none' : '1px solid var(--border)',
                           opacity: isLocked ? 0.6 : 1,
                         }}
@@ -157,30 +229,52 @@ export function ThemeSwitcher() {
                           </motion.div>
                         )}
                         {isPremium && !isActive && (
-                          <div 
+                          <div
                             className="absolute top-2 right-2 flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[9px] font-bold"
-                            style={{ background: isLocked ? 'rgba(139, 92, 246, 0.3)' : 'linear-gradient(135deg, #8b5cf6, #ec4899)', color: '#fff' }}
+                            style={{
+                              background: isLocked
+                                ? 'rgba(139, 92, 246, 0.3)'
+                                : 'linear-gradient(135deg, #8b5cf6, #ec4899)',
+                              color: '#fff',
+                            }}
                           >
                             {isLocked ? <Lock size={8} /> : <Crown size={8} />}
                             PRO
                           </div>
                         )}
                         <div className="flex gap-1 mb-2">
-                          {[t.colors.primary, t.colors.accent, t.colors.background].map((color, i) => (
+                          {[
+                            t.colors.primary,
+                            t.colors.accent,
+                            t.colors.background,
+                          ].map((color, i) => (
                             <div
                               key={i}
                               className="w-6 h-6 rounded-lg"
-                              style={{ 
-                                backgroundColor: color, 
-                                boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.1)',
+                              style={{
+                                backgroundColor: color,
+                                boxShadow:
+                                  'inset 0 0 0 1px rgba(255,255,255,0.1)',
                               }}
                             />
                           ))}
                         </div>
-                        <p className="text-sm font-semibold text-left" style={{ color: isActive ? 'white' : 'var(--foreground)' }}>
+                        <p
+                          className="text-sm font-semibold text-left"
+                          style={{
+                            color: isActive ? 'white' : 'var(--foreground)',
+                          }}
+                        >
                           {t.name}
                         </p>
-                        <p className="text-[10px] text-left truncate w-full" style={{ color: isActive ? 'rgba(255,255,255,0.7)' : 'var(--foreground-muted)' }}>
+                        <p
+                          className="text-[10px] text-left truncate w-full"
+                          style={{
+                            color: isActive
+                              ? 'rgba(255,255,255,0.7)'
+                              : 'var(--foreground-muted)',
+                          }}
+                        >
                           {t.description}
                         </p>
                       </motion.button>
@@ -189,16 +283,37 @@ export function ThemeSwitcher() {
                 </div>
               </div>
 
-              <div className="p-3 flex items-center justify-between" style={{ borderTop: '1px solid var(--border)', background: 'var(--background-secondary)' }}>
+              <div
+                className="p-3 flex items-center justify-between"
+                style={{
+                  borderTop: '1px solid var(--border)',
+                  background: 'var(--background-secondary)',
+                }}
+              >
                 <div className="flex items-center gap-2">
                   <div className="flex gap-0.5">
                     {[theme.colors.primary, theme.colors.accent].map((c, i) => (
-                      <div key={i} className="w-3 h-3 rounded-full" style={{ backgroundColor: c }} />
+                      <div
+                        key={i}
+                        className="w-3 h-3 rounded-full"
+                        style={{ backgroundColor: c }}
+                      />
                     ))}
                   </div>
-                  <span className="text-xs font-medium" style={{ color: 'var(--foreground-muted)' }}>Current: {theme.name}</span>
+                  <span
+                    className="text-xs font-medium"
+                    style={{ color: 'var(--foreground-muted)' }}
+                  >
+                    Current: {theme.name}
+                  </span>
                 </div>
-                <span className="text-[10px] px-2 py-1 rounded-full" style={{ background: 'var(--primary)', color: 'var(--primary-foreground)' }}>
+                <span
+                  className="text-[10px] px-2 py-1 rounded-full"
+                  style={{
+                    background: 'var(--primary)',
+                    color: 'var(--primary-foreground)',
+                  }}
+                >
                   {theme.category}
                 </span>
               </div>

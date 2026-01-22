@@ -2,7 +2,14 @@ import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
 import { getCookie, setResponseStatus } from '@tanstack/react-start/server'
 import { db } from '../db'
-import { users, profiles, type CustomBackground, type LayoutSettings, type ProfileBackup, type CustomTheme } from '../db/schema'
+import {
+  users,
+  profiles,
+  type CustomBackground,
+  type LayoutSettings,
+  type ProfileBackup,
+  type CustomTheme,
+} from '../db/schema'
 import { eq } from 'drizzle-orm'
 import { validateSession } from '../lib/auth'
 import type { TierType } from '../lib/stripe'
@@ -27,26 +34,48 @@ async function getUserTier(userId: string): Promise<TierType> {
     .from(users)
     .where(eq(users.id, userId))
     .limit(1)
-  
+
   const tier = userData?.tier || 'free'
   return (tier === 'standard' || !tier ? 'free' : tier) as TierType
 }
 
-type FeatureKey = 'customCSS' | 'customFonts' | 'profileBackups' | 'analyticsExport' | 'removeBranding' | 'customDomain' | 'passwordProtectedLinks' | 'linkExpiration' | 'emailCollection' | 'customOpenGraph'
+type FeatureKey =
+  | 'customCSS'
+  | 'customFonts'
+  | 'profileBackups'
+  | 'analyticsExport'
+  | 'removeBranding'
+  | 'customDomain'
+  | 'passwordProtectedLinks'
+  | 'linkExpiration'
+  | 'emailCollection'
+  | 'customOpenGraph'
 
 function canAccessFeature(tier: TierType, feature: FeatureKey): boolean {
   // Pro+ features
-  const proFeatures: FeatureKey[] = ['customCSS', 'customFonts', 'profileBackups', 'analyticsExport', 'removeBranding']
+  const proFeatures: FeatureKey[] = [
+    'customCSS',
+    'customFonts',
+    'profileBackups',
+    'analyticsExport',
+    'removeBranding',
+  ]
   if (proFeatures.includes(feature)) {
     return ['pro', 'creator', 'lifetime'].includes(tier)
   }
-  
+
   // Creator+ features
-  const creatorFeatures: FeatureKey[] = ['customDomain', 'passwordProtectedLinks', 'linkExpiration', 'emailCollection', 'customOpenGraph']
+  const creatorFeatures: FeatureKey[] = [
+    'customDomain',
+    'passwordProtectedLinks',
+    'linkExpiration',
+    'emailCollection',
+    'customOpenGraph',
+  ]
   if (creatorFeatures.includes(feature)) {
     return ['creator', 'lifetime'].includes(tier)
   }
-  
+
   return false
 }
 
@@ -76,44 +105,49 @@ const layoutSettingsSchema = z.object({
   linkStyle: z.enum(['default', 'minimal', 'bold', 'glass']),
 })
 
-export const getProfileSettingsFn = createServerFn({ method: 'GET' }).handler(async () => {
-  const user = await getAuthenticatedUser()
-  const tier = await getUserTier(user.id)
+export const getProfileSettingsFn = createServerFn({ method: 'GET' }).handler(
+  async () => {
+    const user = await getAuthenticatedUser()
+    const tier = await getUserTier(user.id)
 
-  const [profile] = await db
-    .select({
-      customBackground: profiles.customBackground,
-      layoutSettings: profiles.layoutSettings,
-      profileBackups: profiles.profileBackups,
-      themeId: profiles.themeId,
-      accentColor: profiles.accentColor,
-    })
-    .from(profiles)
-    .where(eq(profiles.userId, user.id))
-    .limit(1)
+    const [profile] = await db
+      .select({
+        customBackground: profiles.customBackground,
+        layoutSettings: profiles.layoutSettings,
+        profileBackups: profiles.profileBackups,
+        themeId: profiles.themeId,
+        accentColor: profiles.accentColor,
+      })
+      .from(profiles)
+      .where(eq(profiles.userId, user.id))
+      .limit(1)
 
-  return {
-    tier,
-    // Pro+ features
-    canBackup: canAccessFeature(tier, 'profileBackups'),
-    canRemoveBranding: canAccessFeature(tier, 'removeBranding'),
-    canCustomCSS: canAccessFeature(tier, 'customCSS'),
-    canCustomFonts: canAccessFeature(tier, 'customFonts'),
-    canExportAnalytics: canAccessFeature(tier, 'analyticsExport'),
-    // Creator+ features
-    canCustomDomain: canAccessFeature(tier, 'customDomain'),
-    canPasswordProtectedLinks: canAccessFeature(tier, 'passwordProtectedLinks'),
-    canLinkExpiration: canAccessFeature(tier, 'linkExpiration'),
-    canEmailCollection: canAccessFeature(tier, 'emailCollection'),
-    canCustomOpenGraph: canAccessFeature(tier, 'customOpenGraph'),
-    // Profile data
-    customBackground: profile?.customBackground as CustomBackground | null,
-    layoutSettings: profile?.layoutSettings as LayoutSettings | null,
-    profileBackups: (profile?.profileBackups || []) as ProfileBackup[],
-    themeId: profile?.themeId,
-    accentColor: profile?.accentColor,
-  }
-})
+    return {
+      tier,
+      // Pro+ features
+      canBackup: canAccessFeature(tier, 'profileBackups'),
+      canRemoveBranding: canAccessFeature(tier, 'removeBranding'),
+      canCustomCSS: canAccessFeature(tier, 'customCSS'),
+      canCustomFonts: canAccessFeature(tier, 'customFonts'),
+      canExportAnalytics: canAccessFeature(tier, 'analyticsExport'),
+      // Creator+ features
+      canCustomDomain: canAccessFeature(tier, 'customDomain'),
+      canPasswordProtectedLinks: canAccessFeature(
+        tier,
+        'passwordProtectedLinks',
+      ),
+      canLinkExpiration: canAccessFeature(tier, 'linkExpiration'),
+      canEmailCollection: canAccessFeature(tier, 'emailCollection'),
+      canCustomOpenGraph: canAccessFeature(tier, 'customOpenGraph'),
+      // Profile data
+      customBackground: profile?.customBackground as CustomBackground | null,
+      layoutSettings: profile?.layoutSettings as LayoutSettings | null,
+      profileBackups: (profile?.profileBackups || []) as ProfileBackup[],
+      themeId: profile?.themeId,
+      accentColor: profile?.accentColor,
+    }
+  },
+)
 
 export const updateCustomBackgroundFn = createServerFn({ method: 'POST' })
   .inputValidator(customBackgroundSchema.nullable())
@@ -125,26 +159,28 @@ export const updateCustomBackgroundFn = createServerFn({ method: 'POST' })
     void tier
 
     // Ensure we pass the complete data object to the database
-    const backgroundData = data ? {
-      type: data.type,
-      value: data.value || '',
-      gradientAngle: data.gradientAngle,
-      gradientColors: data.gradientColors,
-      imageUrl: data.imageUrl,
-      imageOpacity: data.imageOpacity,
-      imageBlur: data.imageBlur,
-      videoUrl: data.videoUrl,
-      videoLoop: data.videoLoop,
-      videoMuted: data.videoMuted,
-      animatedPreset: data.animatedPreset,
-      animatedSpeed: data.animatedSpeed,
-      animatedIntensity: data.animatedIntensity,
-      animatedColors: data.animatedColors,
-    } : null
+    const backgroundData = data
+      ? {
+          type: data.type,
+          value: data.value || '',
+          gradientAngle: data.gradientAngle,
+          gradientColors: data.gradientColors,
+          imageUrl: data.imageUrl,
+          imageOpacity: data.imageOpacity,
+          imageBlur: data.imageBlur,
+          videoUrl: data.videoUrl,
+          videoLoop: data.videoLoop,
+          videoMuted: data.videoMuted,
+          animatedPreset: data.animatedPreset,
+          animatedSpeed: data.animatedSpeed,
+          animatedIntensity: data.animatedIntensity,
+          animatedColors: data.animatedColors,
+        }
+      : null
 
     await db
       .update(profiles)
-      .set({ 
+      .set({
         customBackground: backgroundData,
         updatedAt: new Date(),
       })
@@ -177,12 +213,13 @@ export const updateLayoutSettingsFn = createServerFn({ method: 'POST' })
       linkStyle: 'default',
     }
 
-    const currentSettings = (currentProfile?.layoutSettings as LayoutSettings) || defaultSettings
+    const currentSettings =
+      (currentProfile?.layoutSettings as LayoutSettings) || defaultSettings
     const newSettings: LayoutSettings = { ...currentSettings, ...data }
 
     await db
       .update(profiles)
-      .set({ 
+      .set({
         layoutSettings: newSettings,
         updatedAt: new Date(),
       })
@@ -199,7 +236,11 @@ export const createProfileBackupFn = createServerFn({ method: 'POST' })
 
     if (!canAccessFeature(tier, 'profileBackups')) {
       setResponseStatus(403)
-      throw { message: 'Profile backups require Pro tier or higher', status: 403, code: 'TIER_REQUIRED' }
+      throw {
+        message: 'Profile backups require Pro tier or higher',
+        status: 403,
+        code: 'TIER_REQUIRED',
+      }
     }
 
     const [profile] = await db
@@ -214,10 +255,13 @@ export const createProfileBackupFn = createServerFn({ method: 'POST' })
     }
 
     const currentBackups = (profile.profileBackups || []) as ProfileBackup[]
-    
+
     if (currentBackups.length >= 10) {
       setResponseStatus(400)
-      throw { message: 'Maximum 10 backups allowed. Delete old backups first.', status: 400 }
+      throw {
+        message: 'Maximum 10 backups allowed. Delete old backups first.',
+        status: 400,
+      }
     }
 
     const newBackup: ProfileBackup = {
@@ -229,15 +273,16 @@ export const createProfileBackupFn = createServerFn({ method: 'POST' })
         avatar: profile.avatar || undefined,
         banner: profile.banner || undefined,
         accentColor: profile.accentColor || undefined,
-        socials: profile.socials as Record<string, string> || undefined,
-        customBackground: profile.customBackground as CustomBackground || undefined,
-        layoutSettings: profile.layoutSettings as LayoutSettings || undefined,
+        socials: (profile.socials as Record<string, string>) || undefined,
+        customBackground:
+          (profile.customBackground as CustomBackground) || undefined,
+        layoutSettings: (profile.layoutSettings as LayoutSettings) || undefined,
       },
     }
 
     await db
       .update(profiles)
-      .set({ 
+      .set({
         profileBackups: [...currentBackups, newBackup],
         updatedAt: new Date(),
       })
@@ -254,7 +299,11 @@ export const restoreProfileBackupFn = createServerFn({ method: 'POST' })
 
     if (!canAccessFeature(tier, 'profileBackups')) {
       setResponseStatus(403)
-      throw { message: 'Profile backups require Pro tier or higher', status: 403, code: 'TIER_REQUIRED' }
+      throw {
+        message: 'Profile backups require Pro tier or higher',
+        status: 403,
+        code: 'TIER_REQUIRED',
+      }
     }
 
     const [profile] = await db
@@ -264,7 +313,7 @@ export const restoreProfileBackupFn = createServerFn({ method: 'POST' })
       .limit(1)
 
     const backups = (profile?.profileBackups || []) as ProfileBackup[]
-    const backup = backups.find(b => b.id === data.backupId)
+    const backup = backups.find((b) => b.id === data.backupId)
 
     if (!backup) {
       setResponseStatus(404)
@@ -300,11 +349,11 @@ export const deleteProfileBackupFn = createServerFn({ method: 'POST' })
       .limit(1)
 
     const backups = (profile?.profileBackups || []) as ProfileBackup[]
-    const filteredBackups = backups.filter(b => b.id !== data.backupId)
+    const filteredBackups = backups.filter((b) => b.id !== data.backupId)
 
     await db
       .update(profiles)
-      .set({ 
+      .set({
         profileBackups: filteredBackups,
         updatedAt: new Date(),
       })
@@ -314,17 +363,23 @@ export const deleteProfileBackupFn = createServerFn({ method: 'POST' })
   })
 
 export const updateThemeFn = createServerFn({ method: 'POST' })
-  .inputValidator(z.object({ 
-    themeId: z.string().nullable(),
-    accentColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(),
-  }))
+  .inputValidator(
+    z.object({
+      themeId: z.string().nullable(),
+      accentColor: z
+        .string()
+        .regex(/^#[0-9A-Fa-f]{6}$/)
+        .optional(),
+    }),
+  )
   .handler(async ({ data }) => {
     const user = await getAuthenticatedUser()
 
     // All themes are now available to all users
     const updateData: Record<string, unknown> = { updatedAt: new Date() }
     if (data.themeId !== undefined) updateData.themeId = data.themeId
-    if (data.accentColor !== undefined) updateData.accentColor = data.accentColor
+    if (data.accentColor !== undefined)
+      updateData.accentColor = data.accentColor
 
     await db
       .update(profiles)
@@ -363,23 +418,24 @@ const customThemeSchema = z.object({
 })
 
 // Get Custom Themes
-export const getCustomThemesFn = createServerFn({ method: 'GET' })
-  .handler(async () => {
+export const getCustomThemesFn = createServerFn({ method: 'GET' }).handler(
+  async () => {
     const user = await getAuthenticatedUser()
-    
+
     const [profile] = await db
-      .select({ 
+      .select({
         customThemes: profiles.customThemes,
         activeCustomThemeId: profiles.activeCustomThemeId,
       })
       .from(profiles)
       .where(eq(profiles.userId, user.id))
       .limit(1)
-    
+
     const tier = await getUserTier(user.id)
     const canCreate = true // All users can create themes now
-    const maxThemes = tier === 'creator' || tier === 'lifetime' ? 10 : tier === 'pro' ? 5 : 1 // Free users get 1 theme
-    
+    const maxThemes =
+      tier === 'creator' || tier === 'lifetime' ? 10 : tier === 'pro' ? 5 : 1 // Free users get 1 theme
+
     return {
       themes: (profile?.customThemes || []) as CustomTheme[],
       activeThemeId: profile?.activeCustomThemeId || null,
@@ -387,7 +443,8 @@ export const getCustomThemesFn = createServerFn({ method: 'GET' })
       maxThemes,
       tier,
     }
-  })
+  },
+)
 
 // Create Custom Theme
 export const createCustomThemeFn = createServerFn({ method: 'POST' })
@@ -395,34 +452,38 @@ export const createCustomThemeFn = createServerFn({ method: 'POST' })
   .handler(async ({ data }) => {
     const user = await getAuthenticatedUser()
     const tier = await getUserTier(user.id)
-    
+
     const [profile] = await db
       .select({ customThemes: profiles.customThemes })
       .from(profiles)
       .where(eq(profiles.userId, user.id))
       .limit(1)
-    
+
     const existingThemes = (profile?.customThemes || []) as CustomTheme[]
-    const maxThemes = tier === 'creator' || tier === 'lifetime' ? 10 : tier === 'pro' ? 5 : 1
-    
+    const maxThemes =
+      tier === 'creator' || tier === 'lifetime' ? 10 : tier === 'pro' ? 5 : 1
+
     if (existingThemes.length >= maxThemes) {
       setResponseStatus(400)
-      throw { message: `Maximum ${maxThemes} custom themes allowed`, status: 400 }
+      throw {
+        message: `Maximum ${maxThemes} custom themes allowed`,
+        status: 400,
+      }
     }
-    
+
     const newTheme: CustomTheme = {
       ...data,
       createdAt: new Date().toISOString(),
     }
-    
+
     await db
       .update(profiles)
-      .set({ 
+      .set({
         customThemes: [...existingThemes, newTheme],
         updatedAt: new Date(),
       })
       .where(eq(profiles.userId, user.id))
-    
+
     return { success: true, theme: newTheme }
   })
 
@@ -432,37 +493,42 @@ export const updateCustomThemeFn = createServerFn({ method: 'POST' })
   .handler(async ({ data }) => {
     const user = await getAuthenticatedUser()
     const tier = await getUserTier(user.id)
-    
+
     if (!['pro', 'creator', 'lifetime'].includes(tier)) {
       setResponseStatus(403)
-      throw { message: 'Custom themes require Pro tier or higher', status: 403, code: 'TIER_REQUIRED' }
+      throw {
+        message: 'Custom themes require Pro tier or higher',
+        status: 403,
+        code: 'TIER_REQUIRED',
+      }
     }
-    
+
     const [profile] = await db
       .select({ customThemes: profiles.customThemes })
       .from(profiles)
       .where(eq(profiles.userId, user.id))
       .limit(1)
-    
+
     const existingThemes = (profile?.customThemes || []) as CustomTheme[]
-    const themeIndex = existingThemes.findIndex(t => t.id === data.id)
-    
+    const themeIndex = existingThemes.findIndex((t) => t.id === data.id)
+
     if (themeIndex === -1) {
       setResponseStatus(404)
       throw { message: 'Theme not found', status: 404 }
     }
-    
-    const originalCreatedAt = existingThemes[themeIndex]?.createdAt || new Date().toISOString()
+
+    const originalCreatedAt =
+      existingThemes[themeIndex]?.createdAt || new Date().toISOString()
     existingThemes[themeIndex] = { ...data, createdAt: originalCreatedAt }
-    
+
     await db
       .update(profiles)
-      .set({ 
+      .set({
         customThemes: existingThemes,
         updatedAt: new Date(),
       })
       .where(eq(profiles.userId, user.id))
-    
+
     return { success: true }
   })
 
@@ -471,33 +537,33 @@ export const deleteCustomThemeFn = createServerFn({ method: 'POST' })
   .inputValidator(z.object({ themeId: z.string().uuid() }))
   .handler(async ({ data }) => {
     const user = await getAuthenticatedUser()
-    
+
     const [profile] = await db
-      .select({ 
+      .select({
         customThemes: profiles.customThemes,
         activeCustomThemeId: profiles.activeCustomThemeId,
       })
       .from(profiles)
       .where(eq(profiles.userId, user.id))
       .limit(1)
-    
+
     const existingThemes = (profile?.customThemes || []) as CustomTheme[]
-    const filteredThemes = existingThemes.filter(t => t.id !== data.themeId)
-    
+    const filteredThemes = existingThemes.filter((t) => t.id !== data.themeId)
+
     const updateData: Record<string, unknown> = {
       customThemes: filteredThemes,
       updatedAt: new Date(),
     }
-    
+
     if (profile?.activeCustomThemeId === data.themeId) {
       updateData.activeCustomThemeId = null
     }
-    
+
     await db
       .update(profiles)
       .set(updateData)
       .where(eq(profiles.userId, user.id))
-    
+
     return { success: true }
   })
 
@@ -507,36 +573,40 @@ export const setActiveCustomThemeFn = createServerFn({ method: 'POST' })
   .handler(async ({ data }) => {
     const user = await getAuthenticatedUser()
     const tier = await getUserTier(user.id)
-    
+
     if (!['pro', 'creator', 'lifetime'].includes(tier)) {
       setResponseStatus(403)
-      throw { message: 'Custom themes require Pro tier or higher', status: 403, code: 'TIER_REQUIRED' }
+      throw {
+        message: 'Custom themes require Pro tier or higher',
+        status: 403,
+        code: 'TIER_REQUIRED',
+      }
     }
-    
+
     if (data.themeId) {
       const [profile] = await db
         .select({ customThemes: profiles.customThemes })
         .from(profiles)
         .where(eq(profiles.userId, user.id))
         .limit(1)
-      
+
       const existingThemes = (profile?.customThemes || []) as CustomTheme[]
-      const themeExists = existingThemes.some(t => t.id === data.themeId)
-      
+      const themeExists = existingThemes.some((t) => t.id === data.themeId)
+
       if (!themeExists) {
         setResponseStatus(404)
         throw { message: 'Theme not found', status: 404 }
       }
     }
-    
+
     await db
       .update(profiles)
-      .set({ 
+      .set({
         activeCustomThemeId: data.themeId,
         updatedAt: new Date(),
       })
       .where(eq(profiles.userId, user.id))
-    
+
     return { success: true }
   })
 
@@ -545,21 +615,21 @@ export const exportCustomThemeFn = createServerFn({ method: 'POST' })
   .inputValidator(z.object({ themeId: z.string().uuid() }))
   .handler(async ({ data }) => {
     const user = await getAuthenticatedUser()
-    
+
     const [profile] = await db
       .select({ customThemes: profiles.customThemes })
       .from(profiles)
       .where(eq(profiles.userId, user.id))
       .limit(1)
-    
+
     const existingThemes = (profile?.customThemes || []) as CustomTheme[]
-    const theme = existingThemes.find(t => t.id === data.themeId)
-    
+    const theme = existingThemes.find((t) => t.id === data.themeId)
+
     if (!theme) {
       setResponseStatus(404)
       throw { message: 'Theme not found', status: 404 }
     }
-    
+
     const exportData = {
       name: theme.name,
       colors: theme.colors,
@@ -568,59 +638,68 @@ export const exportCustomThemeFn = createServerFn({ method: 'POST' })
       exportedAt: new Date().toISOString(),
       version: '1.0',
     }
-    
+
     return { success: true, data: exportData }
   })
 
 // Import Theme
 export const importCustomThemeFn = createServerFn({ method: 'POST' })
-  .inputValidator(z.object({
-    name: z.string().min(1).max(50),
-    colors: z.object({
-      background: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
-      backgroundSecondary: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
-      foreground: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
-      foregroundMuted: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
-      primary: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
-      accent: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
-      border: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
-      card: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
+  .inputValidator(
+    z.object({
+      name: z.string().min(1).max(50),
+      colors: z.object({
+        background: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
+        backgroundSecondary: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
+        foreground: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
+        foregroundMuted: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
+        primary: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
+        accent: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
+        border: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
+        card: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
+      }),
+      typography: z.object({
+        displayFont: z.string(),
+        bodyFont: z.string(),
+        displayFontUrl: z.string().optional(),
+        bodyFontUrl: z.string().optional(),
+      }),
+      effects: z.object({
+        glowIntensity: z.enum(['none', 'subtle', 'medium', 'strong']),
+        borderRadius: z.enum(['sharp', 'rounded', 'pill']),
+        cardStyle: z.enum(['flat', 'glass', 'neon', 'gradient']),
+      }),
     }),
-    typography: z.object({
-      displayFont: z.string(),
-      bodyFont: z.string(),
-      displayFontUrl: z.string().optional(),
-      bodyFontUrl: z.string().optional(),
-    }),
-    effects: z.object({
-      glowIntensity: z.enum(['none', 'subtle', 'medium', 'strong']),
-      borderRadius: z.enum(['sharp', 'rounded', 'pill']),
-      cardStyle: z.enum(['flat', 'glass', 'neon', 'gradient']),
-    }),
-  }))
+  )
   .handler(async ({ data }) => {
     const user = await getAuthenticatedUser()
     const tier = await getUserTier(user.id)
-    
+
     if (!['pro', 'creator', 'lifetime'].includes(tier)) {
       setResponseStatus(403)
-      throw { message: 'Custom themes require Pro tier or higher', status: 403, code: 'TIER_REQUIRED' }
+      throw {
+        message: 'Custom themes require Pro tier or higher',
+        status: 403,
+        code: 'TIER_REQUIRED',
+      }
     }
-    
+
     const [profile] = await db
       .select({ customThemes: profiles.customThemes })
       .from(profiles)
       .where(eq(profiles.userId, user.id))
       .limit(1)
-    
+
     const existingThemes = (profile?.customThemes || []) as CustomTheme[]
     const maxThemes = tier === 'creator' || tier === 'lifetime' ? 10 : 5
-    
+
     if (existingThemes.length >= maxThemes) {
       setResponseStatus(400)
-      throw { message: `Maximum ${maxThemes} custom themes allowed`, status: 400 }
+      throw {
+        message: `Maximum ${maxThemes} custom themes allowed`,
+        status: 400,
+      }
     }
-    
+
     const newTheme: CustomTheme = {
       id: crypto.randomUUID(),
       name: data.name,
@@ -629,14 +708,14 @@ export const importCustomThemeFn = createServerFn({ method: 'POST' })
       typography: data.typography,
       effects: data.effects,
     }
-    
+
     await db
       .update(profiles)
-      .set({ 
+      .set({
         customThemes: [...existingThemes, newTheme],
         updatedAt: new Date(),
       })
       .where(eq(profiles.userId, user.id))
-    
+
     return { success: true, theme: newTheme }
   })

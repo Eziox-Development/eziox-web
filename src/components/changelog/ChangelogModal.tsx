@@ -30,16 +30,37 @@ interface ChangelogChange {
 }
 
 const latestChanges: ChangelogChange[] = [
-  { type: 'feature', text: 'Email verification system - verify your email on signup' },
-  { type: 'feature', text: 'Media embeds - Spotify, YouTube, SoundCloud, Twitch, TikTok' },
-  { type: 'feature', text: 'Link groups - organize links into collapsible sections' },
-  { type: 'feature', text: 'Profile widgets - Spotify, Weather, Countdown, Social Feed' },
-  { type: 'improvement', text: 'Updated Privacy Policy with GDPR-compliant IP handling' },
-  { type: 'fix', text: 'Schema cleanup - removed deprecated blog & project tables' },
+  {
+    type: 'feature',
+    text: 'Email verification system - verify your email on signup',
+  },
+  {
+    type: 'feature',
+    text: 'Media embeds - Spotify, YouTube, SoundCloud, Twitch, TikTok',
+  },
+  {
+    type: 'feature',
+    text: 'Link groups - organize links into collapsible sections',
+  },
+  {
+    type: 'feature',
+    text: 'Profile widgets - Spotify, Weather, Countdown, Social Feed',
+  },
+  {
+    type: 'improvement',
+    text: 'Updated Privacy Policy with GDPR-compliant IP handling',
+  },
+  {
+    type: 'fix',
+    text: 'Schema cleanup - removed deprecated blog & project tables',
+  },
   { type: 'fix', text: 'Added missing relations and type exports' },
 ]
 
-const typeConfig: Record<ChangelogChange['type'], { icon: React.ElementType; color: string }> = {
+const typeConfig: Record<
+  ChangelogChange['type'],
+  { icon: React.ElementType; color: string }
+> = {
   feature: { icon: Sparkles, color: '#22c55e' },
   improvement: { icon: TrendingUp, color: '#3b82f6' },
   fix: { icon: Bug, color: '#f59e0b' },
@@ -118,17 +139,25 @@ export function ChangelogModal() {
           >
             <div
               className="rounded-3xl overflow-hidden shadow-2xl"
-              style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}` }}
+              style={{
+                background: theme.colors.card,
+                border: `1px solid ${theme.colors.border}`,
+              }}
             >
               <div
                 className="relative p-6 pb-8"
-                style={{ background: `linear-gradient(135deg, ${theme.colors.primary}20, ${theme.colors.accent}20)` }}
+                style={{
+                  background: `linear-gradient(135deg, ${theme.colors.primary}20, ${theme.colors.accent}20)`,
+                }}
               >
                 <button
                   onClick={handleDismiss}
                   className="absolute top-4 right-4 p-2 rounded-xl hover:bg-white/10 transition-colors"
                 >
-                  <X size={20} style={{ color: theme.colors.foregroundMuted }} />
+                  <X
+                    size={20}
+                    style={{ color: theme.colors.foregroundMuted }}
+                  />
                 </button>
 
                 <motion.div
@@ -136,7 +165,9 @@ export function ChangelogModal() {
                   animate={{ scale: 1 }}
                   transition={{ delay: 0.1, type: 'spring', damping: 15 }}
                   className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4"
-                  style={{ background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})` }}
+                  style={{
+                    background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
+                  }}
                 >
                   <Gift size={32} className="text-white" />
                 </motion.div>
@@ -180,7 +211,10 @@ export function ChangelogModal() {
                       >
                         <Icon size={16} style={{ color: config.color }} />
                       </div>
-                      <p className="text-sm pt-1" style={{ color: theme.colors.foreground }}>
+                      <p
+                        className="text-sm pt-1"
+                        style={{ color: theme.colors.foreground }}
+                      >
                         {change.text}
                       </p>
                     </motion.div>
@@ -195,7 +229,10 @@ export function ChangelogModal() {
                   transition={{ delay: 0.5 }}
                   onClick={handleClose}
                   className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl font-medium transition-all hover:opacity-90"
-                  style={{ background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`, color: '#fff' }}
+                  style={{
+                    background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
+                    color: '#fff',
+                  }}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >

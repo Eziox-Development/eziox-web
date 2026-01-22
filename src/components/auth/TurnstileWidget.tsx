@@ -9,16 +9,19 @@ interface TurnstileWidgetProps {
 declare global {
   interface Window {
     turnstile?: {
-      render: (container: string | HTMLElement, options: {
-        sitekey: string
-        callback: (token: string) => void
-        'error-callback'?: () => void
-        'expired-callback'?: () => void
-        'timeout-callback'?: () => void
-        theme?: 'light' | 'dark' | 'auto'
-        size?: 'normal' | 'compact'
-        'refresh-expired'?: 'auto' | 'manual' | 'never'
-      }) => string
+      render: (
+        container: string | HTMLElement,
+        options: {
+          sitekey: string
+          callback: (token: string) => void
+          'error-callback'?: () => void
+          'expired-callback'?: () => void
+          'timeout-callback'?: () => void
+          theme?: 'light' | 'dark' | 'auto'
+          size?: 'normal' | 'compact'
+          'refresh-expired'?: 'auto' | 'manual' | 'never'
+        },
+      ) => string
       reset: (widgetId: string) => void
       remove: (widgetId: string) => void
       getResponse: (widgetId: string) => string | undefined
@@ -52,18 +55,24 @@ function loadTurnstileScript(): Promise<void> {
     // Create script - NO async/defer for explicit mode
     const script = document.createElement('script')
     script.id = TURNSTILE_SCRIPT_ID
-    script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=onTurnstileLoad'
-    
+    script.src =
+      'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=onTurnstileLoad'
+
     // Use onload callback
-    ;(window as Window & { onTurnstileLoad?: () => void }).onTurnstileLoad = () => {
-      resolve()
-    }
-    
+    ;(window as Window & { onTurnstileLoad?: () => void }).onTurnstileLoad =
+      () => {
+        resolve()
+      }
+
     document.head.appendChild(script)
   })
 }
 
-export function TurnstileWidget({ onVerify, onError, onExpire }: TurnstileWidgetProps) {
+export function TurnstileWidget({
+  onVerify,
+  onError,
+  onExpire,
+}: TurnstileWidgetProps) {
   const uniqueId = useId()
   const containerId = `turnstile-${uniqueId.replace(/:/g, '-')}`
   const widgetIdRef = useRef<string | null>(null)
@@ -75,12 +84,13 @@ export function TurnstileWidget({ onVerify, onError, onExpire }: TurnstileWidget
 
   useEffect(() => {
     mountedRef.current = true
-    const siteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY || '0x4AAAAAACNdGGhEBeVq7GQb'
+    const siteKey =
+      import.meta.env.VITE_TURNSTILE_SITE_KEY || '0x4AAAAAACNdGGhEBeVq7GQb'
     let retryTimeout: NodeJS.Timeout | null = null
 
     const initWidget = async () => {
       await loadTurnstileScript()
-      
+
       if (!mountedRef.current || !window.turnstile) return
 
       const container = document.getElementById(containerId)
@@ -154,12 +164,12 @@ export function TurnstileWidget({ onVerify, onError, onExpire }: TurnstileWidget
 
     return () => {
       mountedRef.current = false
-      
+
       // Clear retry timeout
       if (retryTimeout) {
         clearTimeout(retryTimeout)
       }
-      
+
       // Clean up widget on unmount
       if (widgetIdRef.current && window.turnstile) {
         try {

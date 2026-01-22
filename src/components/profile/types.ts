@@ -1,4 +1,13 @@
-export type TabType = 'profile' | 'links' | 'referrals' | 'badges' | 'subscription' | 'customization' | 'creator' | 'settings' | 'privacy'
+export type TabType =
+  | 'profile'
+  | 'links'
+  | 'referrals'
+  | 'badges'
+  | 'subscription'
+  | 'customization'
+  | 'creator'
+  | 'settings'
+  | 'privacy'
 
 export interface ProfileFormData {
   name: string

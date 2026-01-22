@@ -2,14 +2,26 @@ import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
 import { db } from '@/server/db'
 import { contactMessages } from '@/server/db/schema'
-import { sendContactNotificationEmail, sendContactConfirmationEmail } from '@/server/lib/email'
+import {
+  sendContactNotificationEmail,
+  sendContactConfirmationEmail,
+} from '@/server/lib/email'
 
 const contactFormSchema = z.object({
-  category: z.enum(['general', 'support', 'partnership', 'feature', 'security']),
+  category: z.enum([
+    'general',
+    'support',
+    'partnership',
+    'feature',
+    'security',
+  ]),
   name: z.string().min(2, 'Name must be at least 2 characters').max(100),
   email: z.string().email('Invalid email address'),
   subject: z.string().min(5, 'Subject must be at least 5 characters').max(200),
-  message: z.string().min(20, 'Message must be at least 20 characters').max(2000),
+  message: z
+    .string()
+    .min(20, 'Message must be at least 20 characters')
+    .max(2000),
 })
 
 export const submitContactFormFn = createServerFn({ method: 'POST' })

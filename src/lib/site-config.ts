@@ -1,7 +1,6 @@
 // Centralized Site Configuration
 // All content, metadata, themes, and settings are managed here
 
-
 export interface ThemeColors {
   background: string
   backgroundSecondary: string
@@ -30,7 +29,15 @@ export interface ThemeEffects {
   animationSpeed: 'slow' | 'normal' | 'fast'
 }
 
-export type ThemeCategory = 'general' | 'gamer' | 'vtuber' | 'anime' | 'developer' | 'streamer' | 'artist' | 'minimal'
+export type ThemeCategory =
+  | 'general'
+  | 'gamer'
+  | 'vtuber'
+  | 'anime'
+  | 'developer'
+  | 'streamer'
+  | 'artist'
+  | 'minimal'
 
 export interface Theme {
   id: string
@@ -66,7 +73,8 @@ export interface SiteConfig {
 export const siteConfig: SiteConfig = {
   metadata: {
     title: 'Eziox',
-    description: 'The modern bio link platform for creators, streamers, and professionals. Showcase your brand with stunning themes, analytics, and seamless integrations.',
+    description:
+      'The modern bio link platform for creators, streamers, and professionals. Showcase your brand with stunning themes, analytics, and seamless integrations.',
     url: 'https://eziox.link',
     language: 'en',
     icon: '/icon.png',
@@ -100,10 +108,17 @@ export const siteConfig: SiteConfig = {
       typography: {
         displayFont: "'Geist', 'Inter', sans-serif",
         bodyFont: "'Inter', sans-serif",
-        displayFontUrl: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap',
-        bodyFontUrl: 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap',
+        displayFontUrl:
+          'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap',
+        bodyFontUrl:
+          'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap',
       },
-      effects: { glowIntensity: 'subtle', borderRadius: 'rounded', cardStyle: 'glass', animationSpeed: 'normal' },
+      effects: {
+        glowIntensity: 'subtle',
+        borderRadius: 'rounded',
+        cardStyle: 'glass',
+        animationSpeed: 'normal',
+      },
     },
     {
       id: 'obsidian',
@@ -126,10 +141,17 @@ export const siteConfig: SiteConfig = {
       typography: {
         displayFont: "'Plus Jakarta Sans', sans-serif",
         bodyFont: "'Inter', sans-serif",
-        displayFontUrl: 'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap',
-        bodyFontUrl: 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap',
+        displayFontUrl:
+          'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap',
+        bodyFontUrl:
+          'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap',
       },
-      effects: { glowIntensity: 'subtle', borderRadius: 'rounded', cardStyle: 'glass', animationSpeed: 'normal' },
+      effects: {
+        glowIntensity: 'subtle',
+        borderRadius: 'rounded',
+        cardStyle: 'glass',
+        animationSpeed: 'normal',
+      },
     },
     {
       id: 'midnight',
@@ -152,10 +174,17 @@ export const siteConfig: SiteConfig = {
       typography: {
         displayFont: "'Space Grotesk', sans-serif",
         bodyFont: "'Inter', sans-serif",
-        displayFontUrl: 'https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap',
-        bodyFontUrl: 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap',
+        displayFontUrl:
+          'https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap',
+        bodyFontUrl:
+          'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap',
       },
-      effects: { glowIntensity: 'subtle', borderRadius: 'rounded', cardStyle: 'glass', animationSpeed: 'normal' },
+      effects: {
+        glowIntensity: 'subtle',
+        borderRadius: 'rounded',
+        cardStyle: 'glass',
+        animationSpeed: 'normal',
+      },
     },
     {
       id: 'ember',
@@ -178,10 +207,17 @@ export const siteConfig: SiteConfig = {
       typography: {
         displayFont: "'Outfit', sans-serif",
         bodyFont: "'DM Sans', sans-serif",
-        displayFontUrl: 'https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap',
-        bodyFontUrl: 'https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap',
+        displayFontUrl:
+          'https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap',
+        bodyFontUrl:
+          'https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap',
       },
-      effects: { glowIntensity: 'medium', borderRadius: 'rounded', cardStyle: 'gradient', animationSpeed: 'normal' },
+      effects: {
+        glowIntensity: 'medium',
+        borderRadius: 'rounded',
+        cardStyle: 'gradient',
+        animationSpeed: 'normal',
+      },
     },
 
     // === GAMER ===
@@ -206,10 +242,17 @@ export const siteConfig: SiteConfig = {
       typography: {
         displayFont: "'Orbitron', sans-serif",
         bodyFont: "'Exo 2', sans-serif",
-        displayFontUrl: 'https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800&display=swap',
-        bodyFontUrl: 'https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700&display=swap',
+        displayFontUrl:
+          'https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800&display=swap',
+        bodyFontUrl:
+          'https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700&display=swap',
       },
-      effects: { glowIntensity: 'strong', borderRadius: 'sharp', cardStyle: 'neon', animationSpeed: 'fast' },
+      effects: {
+        glowIntensity: 'strong',
+        borderRadius: 'sharp',
+        cardStyle: 'neon',
+        animationSpeed: 'fast',
+      },
     },
     {
       id: 'rgb-fusion',
@@ -232,10 +275,17 @@ export const siteConfig: SiteConfig = {
       typography: {
         displayFont: "'Chakra Petch', sans-serif",
         bodyFont: "'Inter', sans-serif",
-        displayFontUrl: 'https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&display=swap',
-        bodyFontUrl: 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap',
+        displayFontUrl:
+          'https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&display=swap',
+        bodyFontUrl:
+          'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap',
       },
-      effects: { glowIntensity: 'strong', borderRadius: 'sharp', cardStyle: 'neon', animationSpeed: 'fast' },
+      effects: {
+        glowIntensity: 'strong',
+        borderRadius: 'sharp',
+        cardStyle: 'neon',
+        animationSpeed: 'fast',
+      },
     },
     {
       id: 'cyberpunk',
@@ -258,10 +308,17 @@ export const siteConfig: SiteConfig = {
       typography: {
         displayFont: "'Audiowide', sans-serif",
         bodyFont: "'JetBrains Mono', monospace",
-        displayFontUrl: 'https://fonts.googleapis.com/css2?family=Audiowide&display=swap',
-        bodyFontUrl: 'https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap',
+        displayFontUrl:
+          'https://fonts.googleapis.com/css2?family=Audiowide&display=swap',
+        bodyFontUrl:
+          'https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap',
       },
-      effects: { glowIntensity: 'strong', borderRadius: 'sharp', cardStyle: 'neon', animationSpeed: 'fast' },
+      effects: {
+        glowIntensity: 'strong',
+        borderRadius: 'sharp',
+        cardStyle: 'neon',
+        animationSpeed: 'fast',
+      },
     },
 
     // === VTUBER ===
@@ -286,10 +343,17 @@ export const siteConfig: SiteConfig = {
       typography: {
         displayFont: "'Quicksand', sans-serif",
         bodyFont: "'Nunito', sans-serif",
-        displayFontUrl: 'https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap',
-        bodyFontUrl: 'https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700&display=swap',
+        displayFontUrl:
+          'https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap',
+        bodyFontUrl:
+          'https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700&display=swap',
       },
-      effects: { glowIntensity: 'medium', borderRadius: 'pill', cardStyle: 'glass', animationSpeed: 'normal' },
+      effects: {
+        glowIntensity: 'medium',
+        borderRadius: 'pill',
+        cardStyle: 'glass',
+        animationSpeed: 'normal',
+      },
     },
     {
       id: 'pastel-dream',
@@ -312,10 +376,17 @@ export const siteConfig: SiteConfig = {
       typography: {
         displayFont: "'Fredoka', sans-serif",
         bodyFont: "'DM Sans', sans-serif",
-        displayFontUrl: 'https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap',
-        bodyFontUrl: 'https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap',
+        displayFontUrl:
+          'https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap',
+        bodyFontUrl:
+          'https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap',
       },
-      effects: { glowIntensity: 'subtle', borderRadius: 'pill', cardStyle: 'glass', animationSpeed: 'slow' },
+      effects: {
+        glowIntensity: 'subtle',
+        borderRadius: 'pill',
+        cardStyle: 'glass',
+        animationSpeed: 'slow',
+      },
     },
     {
       id: 'anime-night',
@@ -338,10 +409,17 @@ export const siteConfig: SiteConfig = {
       typography: {
         displayFont: "'M PLUS Rounded 1c', sans-serif",
         bodyFont: "'Inter', sans-serif",
-        displayFontUrl: 'https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&display=swap',
-        bodyFontUrl: 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap',
+        displayFontUrl:
+          'https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&display=swap',
+        bodyFontUrl:
+          'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap',
       },
-      effects: { glowIntensity: 'medium', borderRadius: 'rounded', cardStyle: 'glass', animationSpeed: 'normal' },
+      effects: {
+        glowIntensity: 'medium',
+        borderRadius: 'rounded',
+        cardStyle: 'glass',
+        animationSpeed: 'normal',
+      },
     },
 
     // === ANIME ===
@@ -366,10 +444,17 @@ export const siteConfig: SiteConfig = {
       typography: {
         displayFont: "'Black Ops One', sans-serif",
         bodyFont: "'Inter', sans-serif",
-        displayFontUrl: 'https://fonts.googleapis.com/css2?family=Black+Ops+One&display=swap',
-        bodyFontUrl: 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap',
+        displayFontUrl:
+          'https://fonts.googleapis.com/css2?family=Black+Ops+One&display=swap',
+        bodyFontUrl:
+          'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap',
       },
-      effects: { glowIntensity: 'strong', borderRadius: 'sharp', cardStyle: 'neon', animationSpeed: 'fast' },
+      effects: {
+        glowIntensity: 'strong',
+        borderRadius: 'sharp',
+        cardStyle: 'neon',
+        animationSpeed: 'fast',
+      },
     },
     {
       id: 'slice-of-life',
@@ -392,10 +477,17 @@ export const siteConfig: SiteConfig = {
       typography: {
         displayFont: "'Nunito', sans-serif",
         bodyFont: "'DM Sans', sans-serif",
-        displayFontUrl: 'https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap',
-        bodyFontUrl: 'https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;700&display=swap',
+        displayFontUrl:
+          'https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap',
+        bodyFontUrl:
+          'https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;700&display=swap',
       },
-      effects: { glowIntensity: 'none', borderRadius: 'pill', cardStyle: 'flat', animationSpeed: 'slow' },
+      effects: {
+        glowIntensity: 'none',
+        borderRadius: 'pill',
+        cardStyle: 'flat',
+        animationSpeed: 'slow',
+      },
     },
     {
       id: 'mecha-chrome',
@@ -418,10 +510,17 @@ export const siteConfig: SiteConfig = {
       typography: {
         displayFont: "'Orbitron', sans-serif",
         bodyFont: "'Space Grotesk', sans-serif",
-        displayFontUrl: 'https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800&display=swap',
-        bodyFontUrl: 'https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap',
+        displayFontUrl:
+          'https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800&display=swap',
+        bodyFontUrl:
+          'https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap',
       },
-      effects: { glowIntensity: 'strong', borderRadius: 'sharp', cardStyle: 'neon', animationSpeed: 'fast' },
+      effects: {
+        glowIntensity: 'strong',
+        borderRadius: 'sharp',
+        cardStyle: 'neon',
+        animationSpeed: 'fast',
+      },
     },
 
     // === DEVELOPER ===
@@ -446,10 +545,17 @@ export const siteConfig: SiteConfig = {
       typography: {
         displayFont: "'JetBrains Mono', monospace",
         bodyFont: "'Fira Code', monospace",
-        displayFontUrl: 'https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap',
-        bodyFontUrl: 'https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap',
+        displayFontUrl:
+          'https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap',
+        bodyFontUrl:
+          'https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap',
       },
-      effects: { glowIntensity: 'medium', borderRadius: 'sharp', cardStyle: 'flat', animationSpeed: 'fast' },
+      effects: {
+        glowIntensity: 'medium',
+        borderRadius: 'sharp',
+        cardStyle: 'flat',
+        animationSpeed: 'fast',
+      },
     },
     {
       id: 'github-dark',
@@ -472,10 +578,17 @@ export const siteConfig: SiteConfig = {
       typography: {
         displayFont: "'Inter', sans-serif",
         bodyFont: "'Inter', sans-serif",
-        displayFontUrl: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap',
-        bodyFontUrl: 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap',
+        displayFontUrl:
+          'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap',
+        bodyFontUrl:
+          'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap',
       },
-      effects: { glowIntensity: 'none', borderRadius: 'rounded', cardStyle: 'flat', animationSpeed: 'normal' },
+      effects: {
+        glowIntensity: 'none',
+        borderRadius: 'rounded',
+        cardStyle: 'flat',
+        animationSpeed: 'normal',
+      },
     },
     {
       id: 'vscode',
@@ -498,10 +611,17 @@ export const siteConfig: SiteConfig = {
       typography: {
         displayFont: "'JetBrains Mono', monospace",
         bodyFont: "'Fira Code', monospace",
-        displayFontUrl: 'https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap',
-        bodyFontUrl: 'https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap',
+        displayFontUrl:
+          'https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap',
+        bodyFontUrl:
+          'https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap',
       },
-      effects: { glowIntensity: 'none', borderRadius: 'sharp', cardStyle: 'flat', animationSpeed: 'normal' },
+      effects: {
+        glowIntensity: 'none',
+        borderRadius: 'sharp',
+        cardStyle: 'flat',
+        animationSpeed: 'normal',
+      },
     },
 
     // === STREAMER ===
@@ -526,10 +646,17 @@ export const siteConfig: SiteConfig = {
       typography: {
         displayFont: "'Inter', sans-serif",
         bodyFont: "'Inter', sans-serif",
-        displayFontUrl: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap',
-        bodyFontUrl: 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap',
+        displayFontUrl:
+          'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap',
+        bodyFontUrl:
+          'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap',
       },
-      effects: { glowIntensity: 'medium', borderRadius: 'rounded', cardStyle: 'glass', animationSpeed: 'normal' },
+      effects: {
+        glowIntensity: 'medium',
+        borderRadius: 'rounded',
+        cardStyle: 'glass',
+        animationSpeed: 'normal',
+      },
     },
     {
       id: 'youtube',
@@ -552,10 +679,17 @@ export const siteConfig: SiteConfig = {
       typography: {
         displayFont: "'Roboto', sans-serif",
         bodyFont: "'Roboto', sans-serif",
-        displayFontUrl: 'https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap',
-        bodyFontUrl: 'https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap',
+        displayFontUrl:
+          'https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap',
+        bodyFontUrl:
+          'https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap',
       },
-      effects: { glowIntensity: 'subtle', borderRadius: 'rounded', cardStyle: 'flat', animationSpeed: 'normal' },
+      effects: {
+        glowIntensity: 'subtle',
+        borderRadius: 'rounded',
+        cardStyle: 'flat',
+        animationSpeed: 'normal',
+      },
     },
     {
       id: 'kick',
@@ -578,10 +712,17 @@ export const siteConfig: SiteConfig = {
       typography: {
         displayFont: "'Inter', sans-serif",
         bodyFont: "'Inter', sans-serif",
-        displayFontUrl: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap',
-        bodyFontUrl: 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap',
+        displayFontUrl:
+          'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap',
+        bodyFontUrl:
+          'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap',
       },
-      effects: { glowIntensity: 'strong', borderRadius: 'rounded', cardStyle: 'neon', animationSpeed: 'fast' },
+      effects: {
+        glowIntensity: 'strong',
+        borderRadius: 'rounded',
+        cardStyle: 'neon',
+        animationSpeed: 'fast',
+      },
     },
 
     // === ARTIST ===
@@ -606,10 +747,17 @@ export const siteConfig: SiteConfig = {
       typography: {
         displayFont: "'Playfair Display', serif",
         bodyFont: "'Lora', serif",
-        displayFontUrl: 'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&display=swap',
-        bodyFontUrl: 'https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&display=swap',
+        displayFontUrl:
+          'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&display=swap',
+        bodyFontUrl:
+          'https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&display=swap',
       },
-      effects: { glowIntensity: 'none', borderRadius: 'rounded', cardStyle: 'flat', animationSpeed: 'slow' },
+      effects: {
+        glowIntensity: 'none',
+        borderRadius: 'rounded',
+        cardStyle: 'flat',
+        animationSpeed: 'slow',
+      },
     },
     {
       id: 'watercolor',
@@ -632,10 +780,17 @@ export const siteConfig: SiteConfig = {
       typography: {
         displayFont: "'Caveat', cursive",
         bodyFont: "'DM Sans', sans-serif",
-        displayFontUrl: 'https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&display=swap',
-        bodyFontUrl: 'https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap',
+        displayFontUrl:
+          'https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&display=swap',
+        bodyFontUrl:
+          'https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap',
       },
-      effects: { glowIntensity: 'subtle', borderRadius: 'pill', cardStyle: 'glass', animationSpeed: 'slow' },
+      effects: {
+        glowIntensity: 'subtle',
+        borderRadius: 'pill',
+        cardStyle: 'glass',
+        animationSpeed: 'slow',
+      },
     },
     {
       id: 'gallery',
@@ -658,10 +813,17 @@ export const siteConfig: SiteConfig = {
       typography: {
         displayFont: "'Cormorant Garamond', serif",
         bodyFont: "'Inter', sans-serif",
-        displayFontUrl: 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&display=swap',
-        bodyFontUrl: 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap',
+        displayFontUrl:
+          'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&display=swap',
+        bodyFontUrl:
+          'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap',
       },
-      effects: { glowIntensity: 'none', borderRadius: 'sharp', cardStyle: 'flat', animationSpeed: 'slow' },
+      effects: {
+        glowIntensity: 'none',
+        borderRadius: 'sharp',
+        cardStyle: 'flat',
+        animationSpeed: 'slow',
+      },
     },
 
     // === MINIMAL ===
@@ -686,10 +848,17 @@ export const siteConfig: SiteConfig = {
       typography: {
         displayFont: "'Inter', sans-serif",
         bodyFont: "'Inter', sans-serif",
-        displayFontUrl: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap',
-        bodyFontUrl: 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap',
+        displayFontUrl:
+          'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap',
+        bodyFontUrl:
+          'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap',
       },
-      effects: { glowIntensity: 'none', borderRadius: 'rounded', cardStyle: 'flat', animationSpeed: 'normal' },
+      effects: {
+        glowIntensity: 'none',
+        borderRadius: 'rounded',
+        cardStyle: 'flat',
+        animationSpeed: 'normal',
+      },
     },
     {
       id: 'minimal-light',
@@ -712,10 +881,17 @@ export const siteConfig: SiteConfig = {
       typography: {
         displayFont: "'Inter', sans-serif",
         bodyFont: "'Inter', sans-serif",
-        displayFontUrl: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap',
-        bodyFontUrl: 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap',
+        displayFontUrl:
+          'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap',
+        bodyFontUrl:
+          'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap',
       },
-      effects: { glowIntensity: 'none', borderRadius: 'rounded', cardStyle: 'flat', animationSpeed: 'normal' },
+      effects: {
+        glowIntensity: 'none',
+        borderRadius: 'rounded',
+        cardStyle: 'flat',
+        animationSpeed: 'normal',
+      },
     },
     {
       id: 'aurora',
@@ -739,10 +915,17 @@ export const siteConfig: SiteConfig = {
       typography: {
         displayFont: "'Sora', sans-serif",
         bodyFont: "'Inter', sans-serif",
-        displayFontUrl: 'https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap',
-        bodyFontUrl: 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap',
+        displayFontUrl:
+          'https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap',
+        bodyFontUrl:
+          'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap',
       },
-      effects: { glowIntensity: 'subtle', borderRadius: 'rounded', cardStyle: 'glass', animationSpeed: 'normal' },
+      effects: {
+        glowIntensity: 'subtle',
+        borderRadius: 'rounded',
+        cardStyle: 'glass',
+        animationSpeed: 'normal',
+      },
     },
 
     // === PREMIUM THEMES ===
@@ -768,10 +951,17 @@ export const siteConfig: SiteConfig = {
       typography: {
         displayFont: "'Outfit', sans-serif",
         bodyFont: "'Inter', sans-serif",
-        displayFontUrl: 'https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap',
-        bodyFontUrl: 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap',
+        displayFontUrl:
+          'https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap',
+        bodyFontUrl:
+          'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap',
       },
-      effects: { glowIntensity: 'medium', borderRadius: 'rounded', cardStyle: 'glass', animationSpeed: 'normal' },
+      effects: {
+        glowIntensity: 'medium',
+        borderRadius: 'rounded',
+        cardStyle: 'glass',
+        animationSpeed: 'normal',
+      },
     },
     {
       id: 'forest-night',
@@ -795,10 +985,17 @@ export const siteConfig: SiteConfig = {
       typography: {
         displayFont: "'Sora', sans-serif",
         bodyFont: "'DM Sans', sans-serif",
-        displayFontUrl: 'https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap',
-        bodyFontUrl: 'https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap',
+        displayFontUrl:
+          'https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap',
+        bodyFontUrl:
+          'https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap',
       },
-      effects: { glowIntensity: 'subtle', borderRadius: 'rounded', cardStyle: 'glass', animationSpeed: 'slow' },
+      effects: {
+        glowIntensity: 'subtle',
+        borderRadius: 'rounded',
+        cardStyle: 'glass',
+        animationSpeed: 'slow',
+      },
     },
     {
       id: 'neon-tokyo',
@@ -822,10 +1019,17 @@ export const siteConfig: SiteConfig = {
       typography: {
         displayFont: "'Chakra Petch', sans-serif",
         bodyFont: "'Space Grotesk', sans-serif",
-        displayFontUrl: 'https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&display=swap',
-        bodyFontUrl: 'https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap',
+        displayFontUrl:
+          'https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&display=swap',
+        bodyFontUrl:
+          'https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap',
       },
-      effects: { glowIntensity: 'strong', borderRadius: 'sharp', cardStyle: 'neon', animationSpeed: 'fast' },
+      effects: {
+        glowIntensity: 'strong',
+        borderRadius: 'sharp',
+        cardStyle: 'neon',
+        animationSpeed: 'fast',
+      },
     },
     {
       id: 'sakura-bloom',
@@ -849,10 +1053,17 @@ export const siteConfig: SiteConfig = {
       typography: {
         displayFont: "'Quicksand', sans-serif",
         bodyFont: "'Nunito', sans-serif",
-        displayFontUrl: 'https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap',
-        bodyFontUrl: 'https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700&display=swap',
+        displayFontUrl:
+          'https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap',
+        bodyFontUrl:
+          'https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700&display=swap',
       },
-      effects: { glowIntensity: 'medium', borderRadius: 'pill', cardStyle: 'glass', animationSpeed: 'slow' },
+      effects: {
+        glowIntensity: 'medium',
+        borderRadius: 'pill',
+        cardStyle: 'glass',
+        animationSpeed: 'slow',
+      },
     },
     {
       id: 'monochrome-pro',
@@ -876,10 +1087,17 @@ export const siteConfig: SiteConfig = {
       typography: {
         displayFont: "'Manrope', sans-serif",
         bodyFont: "'Inter', sans-serif",
-        displayFontUrl: 'https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap',
-        bodyFontUrl: 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap',
+        displayFontUrl:
+          'https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap',
+        bodyFontUrl:
+          'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap',
       },
-      effects: { glowIntensity: 'none', borderRadius: 'rounded', cardStyle: 'flat', animationSpeed: 'normal' },
+      effects: {
+        glowIntensity: 'none',
+        borderRadius: 'rounded',
+        cardStyle: 'flat',
+        animationSpeed: 'normal',
+      },
     },
   ],
 

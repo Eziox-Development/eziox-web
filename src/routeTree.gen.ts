@@ -30,6 +30,7 @@ import { Route as PublicContactRouteImport } from './routes/_public/contact'
 import { Route as PublicChangelogRouteImport } from './routes/_public/changelog'
 import { Route as PublicAboutRouteImport } from './routes/_public/about'
 import { Route as ProtectedThemeBuilderRouteImport } from './routes/_protected/theme-builder'
+import { Route as ProtectedShortenerRouteImport } from './routes/_protected/shortener'
 import { Route as ProtectedReferralsRouteImport } from './routes/_protected/referrals'
 import { Route as ProtectedProfileRouteImport } from './routes/_protected/profile'
 import { Route as ProtectedPlaygroundRouteImport } from './routes/_protected/playground'
@@ -150,6 +151,11 @@ const ProtectedThemeBuilderRoute = ProtectedThemeBuilderRouteImport.update({
   path: '/theme-builder',
   getParentRoute: () => ProtectedRoute,
 } as any)
+const ProtectedShortenerRoute = ProtectedShortenerRouteImport.update({
+  id: '/shortener',
+  path: '/shortener',
+  getParentRoute: () => ProtectedRoute,
+} as any)
 const ProtectedReferralsRoute = ProtectedReferralsRouteImport.update({
   id: '/referrals',
   path: '/referrals',
@@ -256,6 +262,7 @@ export interface FileRoutesByFullPath {
   '/playground': typeof ProtectedPlaygroundRoute
   '/profile': typeof ProtectedProfileRoute
   '/referrals': typeof ProtectedReferralsRoute
+  '/shortener': typeof ProtectedShortenerRoute
   '/theme-builder': typeof ProtectedThemeBuilderRoute
   '/about': typeof PublicAboutRoute
   '/changelog': typeof PublicChangelogRoute
@@ -293,6 +300,7 @@ export interface FileRoutesByTo {
   '/playground': typeof ProtectedPlaygroundRoute
   '/profile': typeof ProtectedProfileRoute
   '/referrals': typeof ProtectedReferralsRoute
+  '/shortener': typeof ProtectedShortenerRoute
   '/theme-builder': typeof ProtectedThemeBuilderRoute
   '/about': typeof PublicAboutRoute
   '/changelog': typeof PublicChangelogRoute
@@ -335,6 +343,7 @@ export interface FileRoutesById {
   '/_protected/playground': typeof ProtectedPlaygroundRoute
   '/_protected/profile': typeof ProtectedProfileRoute
   '/_protected/referrals': typeof ProtectedReferralsRoute
+  '/_protected/shortener': typeof ProtectedShortenerRoute
   '/_protected/theme-builder': typeof ProtectedThemeBuilderRoute
   '/_public/about': typeof PublicAboutRoute
   '/_public/changelog': typeof PublicChangelogRoute
@@ -374,6 +383,7 @@ export interface FileRouteTypes {
     | '/playground'
     | '/profile'
     | '/referrals'
+    | '/shortener'
     | '/theme-builder'
     | '/about'
     | '/changelog'
@@ -411,6 +421,7 @@ export interface FileRouteTypes {
     | '/playground'
     | '/profile'
     | '/referrals'
+    | '/shortener'
     | '/theme-builder'
     | '/about'
     | '/changelog'
@@ -452,6 +463,7 @@ export interface FileRouteTypes {
     | '/_protected/playground'
     | '/_protected/profile'
     | '/_protected/referrals'
+    | '/_protected/shortener'
     | '/_protected/theme-builder'
     | '/_public/about'
     | '/_public/changelog'
@@ -638,6 +650,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedThemeBuilderRouteImport
       parentRoute: typeof ProtectedRoute
     }
+    '/_protected/shortener': {
+      id: '/_protected/shortener'
+      path: '/shortener'
+      fullPath: '/shortener'
+      preLoaderRoute: typeof ProtectedShortenerRouteImport
+      parentRoute: typeof ProtectedRoute
+    }
     '/_protected/referrals': {
       id: '/_protected/referrals'
       path: '/referrals'
@@ -800,6 +819,7 @@ interface ProtectedRouteChildren {
   ProtectedPlaygroundRoute: typeof ProtectedPlaygroundRoute
   ProtectedProfileRoute: typeof ProtectedProfileRoute
   ProtectedReferralsRoute: typeof ProtectedReferralsRoute
+  ProtectedShortenerRoute: typeof ProtectedShortenerRoute
   ProtectedThemeBuilderRoute: typeof ProtectedThemeBuilderRoute
   ProtectedAdminPartnerApplicationsRoute: typeof ProtectedAdminPartnerApplicationsRoute
   ProtectedAdminIndexRoute: typeof ProtectedAdminIndexRoute
@@ -810,6 +830,7 @@ const ProtectedRouteChildren: ProtectedRouteChildren = {
   ProtectedPlaygroundRoute: ProtectedPlaygroundRoute,
   ProtectedProfileRoute: ProtectedProfileRoute,
   ProtectedReferralsRoute: ProtectedReferralsRoute,
+  ProtectedShortenerRoute: ProtectedShortenerRoute,
   ProtectedThemeBuilderRoute: ProtectedThemeBuilderRoute,
   ProtectedAdminPartnerApplicationsRoute:
     ProtectedAdminPartnerApplicationsRoute,
@@ -876,3 +897,12 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}

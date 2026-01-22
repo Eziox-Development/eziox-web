@@ -1,90 +1,41 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 import { motion } from 'motion/react'
-import { Fragment } from 'react'
 import {
-  Cookie, Shield, Settings, Eye, Clock, Globe,
-  Mail, ChevronRight, CheckCircle, Info,
+  Cookie,
+  Shield,
+  Settings,
+  Eye,
+  Clock,
+  Globe,
+  Mail,
+  CheckCircle,
+  Info,
+  FileText,
 } from 'lucide-react'
-
-function renderContent(text: string) {
-  const parts: React.ReactNode[] = []
-  const lines = text.split('\n')
-  
-  lines.forEach((line, lineIndex) => {
-    if (lineIndex > 0) parts.push(<br key={`br-${lineIndex}`} />)
-    
-    let remaining = line
-    let partIndex = 0
-    
-    while (remaining.length > 0) {
-      const boldMatch = remaining.match(/\*\*([^*]+)\*\*/)
-      const linkMatch = remaining.match(/\[([^\]]+)\]\(([^)]+)\)/)
-      const bulletMatch = remaining.match(/^• /)
-      
-      if (bulletMatch && remaining.startsWith('• ')) {
-        parts.push(<span key={`bullet-${lineIndex}-${partIndex}`} className="text-amber-400">• </span>)
-        remaining = remaining.slice(2)
-        partIndex++
-        continue
-      }
-      
-      let nextMatch: { index: number; type: 'bold' | 'link'; length: number } | null = null
-      
-      if (boldMatch?.index !== undefined) {
-        nextMatch = { index: boldMatch.index, type: 'bold', length: boldMatch[0].length }
-      }
-      if (linkMatch?.index !== undefined && (!nextMatch || linkMatch.index < nextMatch.index)) {
-        nextMatch = { index: linkMatch.index, type: 'link', length: linkMatch[0].length }
-      }
-      
-      if (!nextMatch) {
-        parts.push(<Fragment key={`text-${lineIndex}-${partIndex}`}>{remaining}</Fragment>)
-        break
-      }
-      
-      if (nextMatch.index > 0) {
-        parts.push(<Fragment key={`pre-${lineIndex}-${partIndex}`}>{remaining.slice(0, nextMatch.index)}</Fragment>)
-        partIndex++
-      }
-      
-      if (nextMatch.type === 'bold' && boldMatch) {
-        parts.push(
-          <strong key={`bold-${lineIndex}-${partIndex}`} style={{ color: 'var(--foreground)' }}>
-            {boldMatch[1]}
-          </strong>
-        )
-      } else if (nextMatch.type === 'link' && linkMatch) {
-        parts.push(
-          <Link
-            key={`link-${lineIndex}-${partIndex}`}
-            to={linkMatch[2] as '/'}
-            className="underline hover:no-underline"
-            style={{ color: '#f59e0b' }}
-          >
-            {linkMatch[1]}
-          </Link>
-        )
-      }
-      
-      remaining = remaining.slice(nextMatch.index + nextMatch.length)
-      partIndex++
-    }
-  })
-  
-  return parts
-}
+import {
+  LegalPageLayout,
+  CookieTable,
+  type LegalSection,
+  type RelatedLink,
+} from '@/components/legal/LegalPageLayout'
+import { useTheme } from '@/components/layout/ThemeProvider'
 
 export const Route = createFileRoute('/_public/cookies')({
   head: () => ({
     meta: [
       { title: 'Cookie Policy | Eziox' },
-      { name: 'description', content: 'Cookie Policy for Eziox - Learn about how we use cookies and similar technologies.' },
+      {
+        name: 'description',
+        content:
+          'Cookie Policy for Eziox - Learn about how we use cookies and similar technologies.',
+      },
     ],
   }),
   component: CookiesPage,
 })
 
 const LAST_UPDATED = 'January 21, 2026'
+const ACCENT_COLOR = '#f59e0b'
 
 const COOKIE_TYPES = [
   {
@@ -92,7 +43,8 @@ const COOKIE_TYPES = [
     icon: Shield,
     color: '#10b981',
     required: true,
-    description: 'These cookies are necessary for the website to function and cannot be disabled.',
+    description:
+      'These cookies are necessary for the website to function and cannot be disabled.',
     cookies: [
       {
         name: 'session-token',
@@ -113,7 +65,8 @@ const COOKIE_TYPES = [
     icon: Settings,
     color: '#3b82f6',
     required: false,
-    description: 'These cookies enable personalized features and remember your preferences.',
+    description:
+      'These cookies enable personalized features and remember your preferences.',
     cookies: [
       {
         name: 'theme',
@@ -134,7 +87,8 @@ const COOKIE_TYPES = [
     icon: Eye,
     color: '#8b5cf6',
     required: false,
-    description: 'These cookies help us understand how visitors interact with our website.',
+    description:
+      'These cookies help us understand how visitors interact with our website.',
     cookies: [
       {
         name: 'Internal Analytics',
@@ -146,7 +100,7 @@ const COOKIE_TYPES = [
   },
 ]
 
-const SECTIONS = [
+const SECTIONS: LegalSection[] = [
   {
     id: 'what-are-cookies',
     title: 'What Are Cookies?',
@@ -282,167 +236,133 @@ We encourage you to review this policy periodically.`,
 **Email:** privacy@eziox.link
 **Website:** https://eziox.link/about
 
-For general privacy inquiries, please see our Privacy Policy.`,
+For general privacy inquiries, please see our [Privacy Policy](/privacy).`,
   },
 ]
 
+const RELATED_LINKS: RelatedLink[] = [
+  { title: 'Privacy Policy', href: '/privacy', icon: Shield },
+  { title: 'Terms of Service', href: '/terms', icon: FileText },
+  { title: 'About Us', href: '/about', icon: Globe },
+]
+
 function CookiesPage() {
+  const { theme } = useTheme()
+  const cardRadius =
+    theme.effects.borderRadius === 'pill'
+      ? '24px'
+      : theme.effects.borderRadius === 'sharp'
+        ? '8px'
+        : '16px'
+
   return (
-    <div className="min-h-screen pt-24 pb-12 px-4" style={{ background: 'var(--background)' }}>
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-12"
+    <LegalPageLayout
+      title="Cookie Policy"
+      subtitle="Learn how we use cookies and similar technologies on our platform."
+      badge="Cookie Policy"
+      badgeIcon={Cookie}
+      accentColor={ACCENT_COLOR}
+      lastUpdated={LAST_UPDATED}
+      sections={SECTIONS}
+      relatedLinks={RELATED_LINKS}
+    >
+      {/* Cookie Overview - Custom Section */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        className="mb-8"
+      >
+        <h2
+          className="text-2xl font-bold mb-6"
+          style={{
+            color: theme.colors.foreground,
+            fontFamily: theme.typography.displayFont,
+          }}
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6" style={{ background: 'rgba(245, 158, 11, 0.1)', border: '1px solid rgba(245, 158, 11, 0.2)' }}>
-            <Cookie size={16} style={{ color: '#f59e0b' }} />
-            <span className="text-sm font-medium" style={{ color: '#f59e0b' }}>Cookie Policy</span>
-          </div>
-          
-          <h1 className="text-4xl md:text-5xl font-bold mb-4" style={{ color: 'var(--foreground)' }}>
-            Cookie Policy
-          </h1>
-          <p className="text-lg mb-4" style={{ color: 'var(--foreground-muted)' }}>
-            Learn how we use cookies and similar technologies on our platform.
-          </p>
-          <p className="text-sm" style={{ color: 'var(--foreground-muted)' }}>
-            Last Updated: {LAST_UPDATED}
-          </p>
-        </motion.div>
-
-        {/* Cookie Overview */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="mb-12"
-        >
-          <h2 className="text-2xl font-bold mb-6" style={{ color: 'var(--foreground)' }}>Cookies We Use</h2>
-          <div className="space-y-6">
-            {COOKIE_TYPES.map((type, index) => (
-              <motion.div
-                key={type.name}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.15 + index * 0.05 }}
-                className="p-6 rounded-3xl"
-                style={{ background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.08)' }}
-              >
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: `${type.color}20` }}>
-                      <type.icon size={20} style={{ color: type.color }} />
-                    </div>
-                    <div>
-                      <h3 className="font-bold" style={{ color: 'var(--foreground)' }}>{type.name}</h3>
-                      <p className="text-sm" style={{ color: 'var(--foreground-muted)' }}>{type.description}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {type.required ? (
-                      <span className="flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium" style={{ background: 'rgba(16, 185, 129, 0.1)', color: '#10b981' }}>
-                        <CheckCircle size={12} />
-                        Required
-                      </span>
-                    ) : (
-                      <span className="flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium" style={{ background: 'rgba(107, 114, 128, 0.1)', color: '#6b7280' }}>
-                        <Info size={12} />
-                        Optional
-                      </span>
-                    )}
-                  </div>
-                </div>
-                
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.06)' }}>
-                        <th className="text-left py-2 px-3 font-medium" style={{ color: 'var(--foreground-muted)' }}>Cookie Name</th>
-                        <th className="text-left py-2 px-3 font-medium" style={{ color: 'var(--foreground-muted)' }}>Purpose</th>
-                        <th className="text-left py-2 px-3 font-medium" style={{ color: 'var(--foreground-muted)' }}>Duration</th>
-                        <th className="text-left py-2 px-3 font-medium" style={{ color: 'var(--foreground-muted)' }}>Type</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {type.cookies.map((cookie) => (
-                        <tr key={cookie.name} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.03)' }}>
-                          <td className="py-2 px-3 font-mono text-xs" style={{ color: type.color }}>{cookie.name}</td>
-                          <td className="py-2 px-3" style={{ color: 'var(--foreground)' }}>{cookie.purpose}</td>
-                          <td className="py-2 px-3" style={{ color: 'var(--foreground-muted)' }}>{cookie.duration}</td>
-                          <td className="py-2 px-3" style={{ color: 'var(--foreground-muted)' }}>{cookie.type}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Detailed Sections */}
-        <div className="space-y-8">
-          {SECTIONS.map((section, index) => (
-            <motion.section
-              key={section.id}
-              id={section.id}
+          Cookies We Use
+        </h2>
+        <div className="space-y-5">
+          {COOKIE_TYPES.map((type, index) => (
+            <motion.div
+              key={type.name}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 + index * 0.05 }}
-              className="p-6 rounded-3xl scroll-mt-24"
-              style={{ background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.08)' }}
+              transition={{ delay: 0.15 + index * 0.05 }}
+              className="p-5"
+              style={{
+                background:
+                  theme.effects.cardStyle === 'glass'
+                    ? `${theme.colors.card}80`
+                    : theme.colors.card,
+                border: `1px solid ${theme.colors.border}`,
+                borderRadius: cardRadius,
+                backdropFilter:
+                  theme.effects.cardStyle === 'glass'
+                    ? 'blur(10px)'
+                    : undefined,
+              }}
             >
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'rgba(245, 158, 11, 0.15)' }}>
-                  <section.icon size={20} style={{ color: '#f59e0b' }} />
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div
+                    className="w-11 h-11 flex items-center justify-center"
+                    style={{
+                      background: `${type.color}20`,
+                      borderRadius: '12px',
+                    }}
+                  >
+                    <type.icon size={22} style={{ color: type.color }} />
+                  </div>
+                  <div>
+                    <h3
+                      className="font-bold"
+                      style={{ color: theme.colors.foreground }}
+                    >
+                      {type.name}
+                    </h3>
+                    <p
+                      className="text-sm"
+                      style={{ color: theme.colors.foregroundMuted }}
+                    >
+                      {type.description}
+                    </p>
+                  </div>
                 </div>
-                <h2 className="text-xl font-bold" style={{ color: 'var(--foreground)' }}>{section.title}</h2>
+                <div className="flex items-center gap-2">
+                  {type.required ? (
+                    <span
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium"
+                      style={{
+                        background: 'rgba(16, 185, 129, 0.15)',
+                        color: '#10b981',
+                        borderRadius: '8px',
+                      }}
+                    >
+                      <CheckCircle size={12} />
+                      Required
+                    </span>
+                  ) : (
+                    <span
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium"
+                      style={{
+                        background: theme.colors.backgroundSecondary,
+                        color: theme.colors.foregroundMuted,
+                        borderRadius: '8px',
+                      }}
+                    >
+                      <Info size={12} />
+                      Optional
+                    </span>
+                  )}
+                </div>
               </div>
-              <div 
-                className="prose prose-invert max-w-none text-sm leading-relaxed space-y-3"
-                style={{ color: 'var(--foreground-muted)' }}
-              >
-                {section.content.split('\n\n').map((paragraph, i) => (
-                  <p key={i}>{renderContent(paragraph)}</p>
-                ))}
-              </div>
-            </motion.section>
+
+              <CookieTable cookies={type.cookies} accentColor={type.color} />
+            </motion.div>
           ))}
         </div>
-
-        {/* Related Links */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="mt-12 p-6 rounded-3xl"
-          style={{ background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.08)' }}
-        >
-          <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--foreground)' }}>Related Policies</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {[
-              { title: 'Privacy Policy', href: '/privacy', icon: Shield },
-              { title: 'Terms of Service', href: '/terms', icon: CheckCircle },
-              { title: 'About Us', href: '/about', icon: Globe },
-            ].map((link) => (
-              <Link
-                key={link.href}
-                to={link.href}
-                className="flex items-center justify-between p-4 rounded-xl transition-all hover:scale-[1.02]"
-                style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.06)' }}
-              >
-                <div className="flex items-center gap-3">
-                  <link.icon size={18} style={{ color: '#f59e0b' }} />
-                  <span style={{ color: 'var(--foreground)' }}>{link.title}</span>
-                </div>
-                <ChevronRight size={16} style={{ color: 'var(--foreground-muted)' }} />
-              </Link>
-            ))}
-          </div>
-        </motion.div>
-      </div>
-    </div>
+      </motion.div>
+    </LegalPageLayout>
   )
 }

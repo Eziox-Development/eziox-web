@@ -252,7 +252,9 @@ export function getBadgeConfigs(badgeIds: string[]): BadgeConfig[] {
 
 export function sortBadgesByRarity(badges: BadgeConfig[]): BadgeConfig[] {
   const rarityOrder = { legendary: 0, epic: 1, rare: 2, common: 3 }
-  return [...badges].sort((a, b) => rarityOrder[a.rarity] - rarityOrder[b.rarity])
+  return [...badges].sort(
+    (a, b) => rarityOrder[a.rarity] - rarityOrder[b.rarity],
+  )
 }
 
 export function getAutoAwardableBadges(): BadgeConfig[] {

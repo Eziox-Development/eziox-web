@@ -6,7 +6,12 @@
 import { useState, useRef } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
-import { uploadAvatarFn, uploadBannerFn, removeAvatarFn, removeBannerFn } from '@/server/functions/upload'
+import {
+  uploadAvatarFn,
+  uploadBannerFn,
+  removeAvatarFn,
+  removeBannerFn,
+} from '@/server/functions/upload'
 import { Camera, X, Loader2, Upload } from 'lucide-react'
 import { motion, AnimatePresence } from 'motion/react'
 
@@ -16,7 +21,11 @@ interface ImageUploadProps {
   onUploadSuccess?: (url: string) => void
 }
 
-export function ImageUpload({ type, currentImage, onUploadSuccess }: ImageUploadProps) {
+export function ImageUpload({
+  type,
+  currentImage,
+  onUploadSuccess,
+}: ImageUploadProps) {
   const [preview, setPreview] = useState<string | null>(null)
   const [isHovering, setIsHovering] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -163,7 +172,11 @@ export function ImageUpload({ type, currentImage, onUploadSuccess }: ImageUpload
                 handleCancel()
               }}
               className="px-3 py-1 rounded-full text-xs font-medium transition-colors"
-              style={{ background: 'var(--card)', border: '1px solid var(--border)', color: 'var(--foreground)' }}
+              style={{
+                background: 'var(--card)',
+                border: '1px solid var(--border)',
+                color: 'var(--foreground)',
+              }}
             >
               Cancel
             </button>
@@ -211,7 +224,10 @@ export function ImageUpload({ type, currentImage, onUploadSuccess }: ImageUpload
       >
         {!displayImage && (
           <div className="w-full h-full flex items-center justify-center">
-            <Upload className="w-12 h-12" style={{ color: 'white', opacity: 0.5 }} />
+            <Upload
+              className="w-12 h-12"
+              style={{ color: 'white', opacity: 0.5 }}
+            />
           </div>
         )}
 
@@ -256,7 +272,11 @@ export function ImageUpload({ type, currentImage, onUploadSuccess }: ImageUpload
               handleCancel()
             }}
             className="px-4 py-2 rounded-lg font-medium transition-colors"
-            style={{ background: 'var(--card)', border: '1px solid var(--border)', color: 'var(--foreground)' }}
+            style={{
+              background: 'var(--card)',
+              border: '1px solid var(--border)',
+              color: 'var(--foreground)',
+            }}
           >
             Cancel
           </button>

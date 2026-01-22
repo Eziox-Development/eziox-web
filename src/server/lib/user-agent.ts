@@ -26,29 +26,77 @@ const BROWSER_PATTERNS: BrowserPattern[] = [
   { name: 'Tor Browser', pattern: /\bTor\b/i },
   { name: 'Brave', pattern: /\bBrave\b/i },
   { name: 'Arc', pattern: /\bArc\b/i },
-  { name: 'Vivaldi', pattern: /\bVivaldi\b/i, versionPattern: /Vivaldi\/([\d.]+)/i },
+  {
+    name: 'Vivaldi',
+    pattern: /\bVivaldi\b/i,
+    versionPattern: /Vivaldi\/([\d.]+)/i,
+  },
   { name: 'Opera GX', pattern: /\bOPRGX\b/i },
-  { name: 'Opera', pattern: /\b(OPR|Opera)\b/i, versionPattern: /(?:OPR|Opera)[\/\s]([\d.]+)/i },
-  { name: 'Samsung Internet', pattern: /\bSamsungBrowser\b/i, versionPattern: /SamsungBrowser\/([\d.]+)/i },
-  { name: 'UC Browser', pattern: /\bUCBrowser\b/i, versionPattern: /UCBrowser\/([\d.]+)/i },
-  { name: 'Yandex', pattern: /\bYaBrowser\b/i, versionPattern: /YaBrowser\/([\d.]+)/i },
+  {
+    name: 'Opera',
+    pattern: /\b(OPR|Opera)\b/i,
+    versionPattern: /(?:OPR|Opera)[\/\s]([\d.]+)/i,
+  },
+  {
+    name: 'Samsung Internet',
+    pattern: /\bSamsungBrowser\b/i,
+    versionPattern: /SamsungBrowser\/([\d.]+)/i,
+  },
+  {
+    name: 'UC Browser',
+    pattern: /\bUCBrowser\b/i,
+    versionPattern: /UCBrowser\/([\d.]+)/i,
+  },
+  {
+    name: 'Yandex',
+    pattern: /\bYaBrowser\b/i,
+    versionPattern: /YaBrowser\/([\d.]+)/i,
+  },
   { name: 'DuckDuckGo', pattern: /\bDuckDuckGo\b/i },
   { name: 'Whale', pattern: /\bWhale\b/i, versionPattern: /Whale\/([\d.]+)/i },
-  
+
   // Major browsers
-  { name: 'Edge', pattern: /\bEdg(?:e|A|iOS)?\b/i, versionPattern: /Edg(?:e|A|iOS)?\/([\d.]+)/i },
-  { name: 'Firefox', pattern: /\bFirefox\b/i, versionPattern: /Firefox\/([\d.]+)/i },
-  { name: 'Safari', pattern: /\bSafari\b/i, versionPattern: /Version\/([\d.]+)/i },
-  { name: 'Chrome', pattern: /\bChrome\b/i, versionPattern: /Chrome\/([\d.]+)/i },
-  
+  {
+    name: 'Edge',
+    pattern: /\bEdg(?:e|A|iOS)?\b/i,
+    versionPattern: /Edg(?:e|A|iOS)?\/([\d.]+)/i,
+  },
+  {
+    name: 'Firefox',
+    pattern: /\bFirefox\b/i,
+    versionPattern: /Firefox\/([\d.]+)/i,
+  },
+  {
+    name: 'Safari',
+    pattern: /\bSafari\b/i,
+    versionPattern: /Version\/([\d.]+)/i,
+  },
+  {
+    name: 'Chrome',
+    pattern: /\bChrome\b/i,
+    versionPattern: /Chrome\/([\d.]+)/i,
+  },
+
   // Mobile browsers
-  { name: 'Mobile Safari', pattern: /\bMobile.*Safari\b/i, versionPattern: /Version\/([\d.]+)/i },
-  { name: 'Chrome Mobile', pattern: /\bCriOS\b/i, versionPattern: /CriOS\/([\d.]+)/i },
-  { name: 'Firefox Mobile', pattern: /\bFxiOS\b/i, versionPattern: /FxiOS\/([\d.]+)/i },
-  
+  {
+    name: 'Mobile Safari',
+    pattern: /\bMobile.*Safari\b/i,
+    versionPattern: /Version\/([\d.]+)/i,
+  },
+  {
+    name: 'Chrome Mobile',
+    pattern: /\bCriOS\b/i,
+    versionPattern: /CriOS\/([\d.]+)/i,
+  },
+  {
+    name: 'Firefox Mobile',
+    pattern: /\bFxiOS\b/i,
+    versionPattern: /FxiOS\/([\d.]+)/i,
+  },
+
   // WebView
   { name: 'WebView', pattern: /\bwv\b/i },
-  
+
   // Bots and crawlers
   { name: 'Googlebot', pattern: /\bGooglebot\b/i },
   { name: 'Bingbot', pattern: /\bBingbot\b/i },
@@ -78,10 +126,22 @@ interface OSPattern {
 
 const OS_PATTERNS: OSPattern[] = [
   // Mobile OS (check first)
-  { name: 'iOS', pattern: /\b(iPhone|iPad|iPod)\b/i, versionPattern: /OS ([\d_]+)/i },
-  { name: 'Android', pattern: /\bAndroid\b/i, versionPattern: /Android ([\d.]+)/i },
-  { name: 'Windows Phone', pattern: /\bWindows Phone\b/i, versionPattern: /Windows Phone ([\d.]+)/i },
-  
+  {
+    name: 'iOS',
+    pattern: /\b(iPhone|iPad|iPod)\b/i,
+    versionPattern: /OS ([\d_]+)/i,
+  },
+  {
+    name: 'Android',
+    pattern: /\bAndroid\b/i,
+    versionPattern: /Android ([\d.]+)/i,
+  },
+  {
+    name: 'Windows Phone',
+    pattern: /\bWindows Phone\b/i,
+    versionPattern: /Windows Phone ([\d.]+)/i,
+  },
+
   // Desktop OS
   { name: 'Windows 11', pattern: /\bWindows NT 10\.0.*Win64\b/i },
   { name: 'Windows 10', pattern: /\bWindows NT 10\.0\b/i },
@@ -89,7 +149,11 @@ const OS_PATTERNS: OSPattern[] = [
   { name: 'Windows 8', pattern: /\bWindows NT 6\.2\b/i },
   { name: 'Windows 7', pattern: /\bWindows NT 6\.1\b/i },
   { name: 'Windows', pattern: /\bWindows\b/i },
-  { name: 'macOS', pattern: /\bMac OS X\b/i, versionPattern: /Mac OS X ([\d_]+)/i },
+  {
+    name: 'macOS',
+    pattern: /\bMac OS X\b/i,
+    versionPattern: /Mac OS X ([\d_]+)/i,
+  },
   { name: 'Linux', pattern: /\bLinux\b/i },
   { name: 'Ubuntu', pattern: /\bUbuntu\b/i },
   { name: 'Fedora', pattern: /\bFedora\b/i },
@@ -138,7 +202,9 @@ const TABLET_PATTERNS = [
   /PlayBook/i,
 ]
 
-export function parseUserAgent(userAgent: string | null | undefined): ParsedUserAgent {
+export function parseUserAgent(
+  userAgent: string | null | undefined,
+): ParsedUserAgent {
   if (!userAgent) {
     return {
       browser: 'Unknown',
@@ -154,7 +220,7 @@ export function parseUserAgent(userAgent: string | null | undefined): ParsedUser
   // Detect browser
   let browser = 'Unknown'
   let browserVersion = ''
-  
+
   for (const { name, pattern, versionPattern } of BROWSER_PATTERNS) {
     if (pattern.test(userAgent)) {
       browser = name
@@ -170,7 +236,11 @@ export function parseUserAgent(userAgent: string | null | undefined): ParsedUser
 
   // Special case: Brave doesn't always identify itself, but we can detect it
   // by checking for specific headers or behaviors (this is a UA-only check)
-  if (browser === 'Chrome' && userAgent.includes('Chrome') && !userAgent.includes('Chromium')) {
+  if (
+    browser === 'Chrome' &&
+    userAgent.includes('Chrome') &&
+    !userAgent.includes('Chromium')
+  ) {
     // Brave often has a specific Chrome version pattern
     // This is a heuristic - Brave users who want privacy may not be detected
   }
@@ -178,7 +248,7 @@ export function parseUserAgent(userAgent: string | null | undefined): ParsedUser
   // Detect OS
   let os = 'Unknown'
   let osVersion = ''
-  
+
   for (const { name, pattern, versionPattern } of OS_PATTERNS) {
     if (pattern.test(userAgent)) {
       os = name
@@ -193,16 +263,16 @@ export function parseUserAgent(userAgent: string | null | undefined): ParsedUser
   }
 
   // Detect if bot
-  const isBot = BOT_PATTERNS.some(pattern => pattern.test(userAgent))
+  const isBot = BOT_PATTERNS.some((pattern) => pattern.test(userAgent))
 
   // Detect device type
   let device: ParsedUserAgent['device'] = 'desktop'
-  
+
   if (isBot) {
     device = 'bot'
-  } else if (TABLET_PATTERNS.some(pattern => pattern.test(userAgent))) {
+  } else if (TABLET_PATTERNS.some((pattern) => pattern.test(userAgent))) {
     device = 'tablet'
-  } else if (MOBILE_PATTERNS.some(pattern => pattern.test(userAgent))) {
+  } else if (MOBILE_PATTERNS.some((pattern) => pattern.test(userAgent))) {
     device = 'mobile'
   }
 
@@ -226,7 +296,7 @@ export function formatUserAgent(parsed: ParsedUserAgent): string {
     return 'Unknown'
   }
 
-  const browserStr = parsed.browserVersion 
+  const browserStr = parsed.browserVersion
     ? `${parsed.browser} ${parsed.browserVersion.split('.')[0]}`
     : parsed.browser
 
@@ -251,10 +321,15 @@ export function formatUserAgent(parsed: ParsedUserAgent): string {
  */
 export function getDeviceType(parsed: ParsedUserAgent): string {
   switch (parsed.device) {
-    case 'mobile': return 'Mobile'
-    case 'tablet': return 'Tablet'
-    case 'bot': return 'Bot'
-    case 'desktop': return 'Desktop'
-    default: return 'Unknown'
+    case 'mobile':
+      return 'Mobile'
+    case 'tablet':
+      return 'Tablet'
+    case 'bot':
+      return 'Bot'
+    case 'desktop':
+      return 'Desktop'
+    default:
+      return 'Unknown'
   }
 }

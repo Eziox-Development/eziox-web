@@ -28,32 +28,32 @@
 
 ## ✨ Features
 
-| Feature | Description |
-|---------|-------------|
-| 🔗 **Bio Links** | Linktree-style customizable link pages |
-| 💎 **Premium Tiers** | Free, Pro, Creator & Lifetime subscriptions |
-| 📊 **Link Analytics** | Per-link click tracking with device, browser, geographic data & heatmaps |
-| 📅 **Link Scheduling** | Schedule links with start/end dates and countdown timers |
-| 🔔 **Notifications** | Real-time notification center with bell icon |
-| 🎵 **Spotify Integration** | Display currently playing music on bio page |
-| 🏆 **Leaderboard** | User ranking system with podium display |
-| 👤 **Profiles** | Custom avatars, banners, bios, social links |
-| 🔐 **Security** | Cloudflare Turnstile, 2FA, OAuth encryption, CSRF protection |
-| 🎨 **Themes** | 31 modern themes across 8 categories with Tailwind colors |
-| 🎮 **Playground** | Create & test presets with live preview |
-| 📋 **Templates** | Browse & apply community templates |
-| 💳 **Stripe Payments** | Secure subscription & one-time payments |
-| 📱 **Responsive** | Mobile-first design |
-| ⚡ **Fast** | Bun runtime + Vercel Edge |
+| Feature                    | Description                                                              |
+| -------------------------- | ------------------------------------------------------------------------ |
+| 🔗 **Bio Links**           | Linktree-style customizable link pages                                   |
+| 💎 **Premium Tiers**       | Free, Pro, Creator & Lifetime subscriptions                              |
+| 📊 **Link Analytics**      | Per-link click tracking with device, browser, geographic data & heatmaps |
+| 📅 **Link Scheduling**     | Schedule links with start/end dates and countdown timers                 |
+| 🔔 **Notifications**       | Real-time notification center with bell icon                             |
+| 🎵 **Spotify Integration** | Display currently playing music on bio page                              |
+| 🏆 **Leaderboard**         | User ranking system with podium display                                  |
+| 👤 **Profiles**            | Custom avatars, banners, bios, social links                              |
+| 🔐 **Security**            | Cloudflare Turnstile, 2FA, OAuth encryption, CSRF protection             |
+| 🎨 **Themes**              | 31 modern themes across 8 categories with Tailwind colors                |
+| 🎮 **Playground**          | Create & test presets with live preview                                  |
+| 📋 **Templates**           | Browse & apply community templates                                       |
+| 💳 **Stripe Payments**     | Secure subscription & one-time payments                                  |
+| 📱 **Responsive**          | Mobile-first design                                                      |
+| ⚡ **Fast**                | Bun runtime + Vercel Edge                                                |
 
 ## 💎 Premium Tiers
 
-| Tier | Price | Highlights |
-|------|-------|------------|
-| **Eziox Core** | Free | Unlimited links, all themes, full analytics, media embeds |
-| **Pro** | $2.99/mo | Custom CSS, fonts, remove branding, profile backups |
-| **Creator** | $5.99/mo | Custom domain, password links, email collection, priority support |
-| **Lifetime** | $29 once | All Creator features forever, exclusive badge |
+| Tier           | Price    | Highlights                                                        |
+| -------------- | -------- | ----------------------------------------------------------------- |
+| **Eziox Core** | Free     | Unlimited links, all themes, full analytics, media embeds         |
+| **Pro**        | $2.99/mo | Custom CSS, fonts, remove branding, profile backups               |
+| **Creator**    | $5.99/mo | Custom domain, password links, email collection, priority support |
+| **Lifetime**   | $29 once | All Creator features forever, exclusive badge                     |
 
 ## 🛠️ Tech Stack
 

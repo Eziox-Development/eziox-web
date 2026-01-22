@@ -40,13 +40,13 @@ export const isFollowingFn = createServerFn({ method: 'GET' })
       .where(
         and(
           eq(follows.followerId, user.id),
-          eq(follows.followingId, data.targetUserId)
-        )
+          eq(follows.followingId, data.targetUserId),
+        ),
       )
       .limit(1)
 
-    return { 
-      isFollowing: !!existing, 
+    return {
+      isFollowing: !!existing,
       isAuthenticated: true,
       isSelf: false,
       currentUserId: user.id,
@@ -82,8 +82,8 @@ export const followUserFn = createServerFn({ method: 'POST' })
       .where(
         and(
           eq(follows.followerId, user.id),
-          eq(follows.followingId, data.targetUserId)
-        )
+          eq(follows.followingId, data.targetUserId),
+        ),
       )
       .limit(1)
 
@@ -126,8 +126,8 @@ export const followUserFn = createServerFn({ method: 'POST' })
     // Create notification for the followed user
     await createFollowerNotification(user.id, data.targetUserId)
 
-    return { 
-      success: true, 
+    return {
+      success: true,
       isFollowing: true,
       newFollowerCount: targetStats?.followers || 0,
     }
@@ -156,8 +156,8 @@ export const unfollowUserFn = createServerFn({ method: 'POST' })
       .where(
         and(
           eq(follows.followerId, user.id),
-          eq(follows.followingId, data.targetUserId)
-        )
+          eq(follows.followingId, data.targetUserId),
+        ),
       )
       .returning()
 
@@ -191,8 +191,8 @@ export const unfollowUserFn = createServerFn({ method: 'POST' })
       .where(eq(userStats.userId, data.targetUserId))
       .limit(1)
 
-    return { 
-      success: true, 
+    return {
+      success: true,
       isFollowing: false,
       newFollowerCount: targetStats?.followers || 0,
     }
@@ -203,11 +203,13 @@ export const unfollowUserFn = createServerFn({ method: 'POST' })
 // ============================================================================
 
 export const getFollowersFn = createServerFn({ method: 'GET' })
-  .inputValidator(z.object({ 
-    userId: z.uuid(),
-    limit: z.number().int().min(1).max(100).default(50),
-    offset: z.number().int().min(0).default(0),
-  }))
+  .inputValidator(
+    z.object({
+      userId: z.uuid(),
+      limit: z.number().int().min(1).max(100).default(50),
+      offset: z.number().int().min(0).default(0),
+    }),
+  )
   .handler(async ({ data }) => {
     const token = getCookie('session-token')
     const currentUser = token ? await validateSession(token) : null
@@ -245,8 +247,8 @@ export const getFollowersFn = createServerFn({ method: 'GET' })
             .where(
               and(
                 eq(follows.followerId, currentUser.id),
-                eq(follows.followingId, result.user.id)
-              )
+                eq(follows.followingId, result.user.id),
+              ),
             )
             .limit(1)
           isFollowing = !!existing
@@ -256,7 +258,7 @@ export const getFollowersFn = createServerFn({ method: 'GET' })
           isFollowing,
           isSelf: currentUser?.id === result.user.id,
         }
-      })
+      }),
     )
 
     // Get total count
@@ -268,7 +270,7 @@ export const getFollowersFn = createServerFn({ method: 'GET' })
     return {
       followers: followersWithStatus,
       total: countResult?.count || 0,
-      hasMore: (data.offset + data.limit) < (countResult?.count || 0),
+      hasMore: data.offset + data.limit < (countResult?.count || 0),
     }
   })
 
@@ -277,11 +279,13 @@ export const getFollowersFn = createServerFn({ method: 'GET' })
 // ============================================================================
 
 export const getFollowingFn = createServerFn({ method: 'GET' })
-  .inputValidator(z.object({ 
-    userId: z.uuid(),
-    limit: z.number().int().min(1).max(100).default(50),
-    offset: z.number().int().min(0).default(0),
-  }))
+  .inputValidator(
+    z.object({
+      userId: z.uuid(),
+      limit: z.number().int().min(1).max(100).default(50),
+      offset: z.number().int().min(0).default(0),
+    }),
+  )
   .handler(async ({ data }) => {
     const token = getCookie('session-token')
     const currentUser = token ? await validateSession(token) : null
@@ -319,8 +323,8 @@ export const getFollowingFn = createServerFn({ method: 'GET' })
             .where(
               and(
                 eq(follows.followerId, currentUser.id),
-                eq(follows.followingId, result.user.id)
-              )
+                eq(follows.followingId, result.user.id),
+              ),
             )
             .limit(1)
           isFollowing = !!existing
@@ -330,7 +334,7 @@ export const getFollowingFn = createServerFn({ method: 'GET' })
           isFollowing: currentUser?.id === result.user.id ? false : isFollowing,
           isSelf: currentUser?.id === result.user.id,
         }
-      })
+      }),
     )
 
     // Get total count
@@ -342,7 +346,7 @@ export const getFollowingFn = createServerFn({ method: 'GET' })
     return {
       following: followingWithStatus,
       total: countResult?.count || 0,
-      hasMore: (data.offset + data.limit) < (countResult?.count || 0),
+      hasMore: data.offset + data.limit < (countResult?.count || 0),
     }
   })
 

@@ -1,6 +1,10 @@
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
-import { getCookie, setResponseStatus, getRequestIP } from '@tanstack/react-start/server'
+import {
+  getCookie,
+  setResponseStatus,
+  getRequestIP,
+} from '@tanstack/react-start/server'
 import { db } from '@/server/db'
 import { profiles, users, userStats } from '@/server/db/schema'
 import { eq, sql } from 'drizzle-orm'
@@ -36,7 +40,7 @@ export const assignBadgeFn = createServerFn({ method: 'POST' })
     z.object({
       userId: z.uuid(),
       badgeId: z.enum(BADGE_IDS as [BadgeId, ...BadgeId[]]),
-    })
+    }),
   )
   .handler(async ({ data }) => {
     await requireAdmin()
@@ -60,7 +64,11 @@ export const assignBadgeFn = createServerFn({ method: 'POST' })
 
     const currentBadges = (profile.badges || []) as string[]
     if (currentBadges.includes(data.badgeId)) {
-      return { success: true, message: 'User already has this badge', badges: currentBadges }
+      return {
+        success: true,
+        message: 'User already has this badge',
+        badges: currentBadges,
+      }
     }
 
     const newBadges = [...currentBadges, data.badgeId]
@@ -80,7 +88,11 @@ export const assignBadgeFn = createServerFn({ method: 'POST' })
       ipAddress: getRequestIP() || undefined,
     })
 
-    return { success: true, message: `Badge "${badge.name}" assigned`, badges: newBadges }
+    return {
+      success: true,
+      message: `Badge "${badge.name}" assigned`,
+      badges: newBadges,
+    }
   })
 
 export const removeBadgeFn = createServerFn({ method: 'POST' })
@@ -88,7 +100,7 @@ export const removeBadgeFn = createServerFn({ method: 'POST' })
     z.object({
       userId: z.uuid(),
       badgeId: z.enum(BADGE_IDS as [BadgeId, ...BadgeId[]]),
-    })
+    }),
   )
   .handler(async ({ data }) => {
     await requireAdmin()
@@ -108,7 +120,11 @@ export const removeBadgeFn = createServerFn({ method: 'POST' })
     const newBadges = currentBadges.filter((b) => b !== data.badgeId)
 
     if (newBadges.length === currentBadges.length) {
-      return { success: true, message: 'User does not have this badge', badges: currentBadges }
+      return {
+        success: true,
+        message: 'User does not have this badge',
+        badges: currentBadges,
+      }
     }
 
     await db
@@ -156,7 +172,12 @@ export const checkAndAwardBadgesFn = createServerFn({ method: 'POST' })
 
     const [userData] = await db
       .select({
-        user: { id: users.id, role: users.role, tier: users.tier, createdAt: users.createdAt },
+        user: {
+          id: users.id,
+          role: users.role,
+          tier: users.tier,
+          createdAt: users.createdAt,
+        },
         profile: { badges: profiles.badges },
         stats: { referralCount: userStats.referralCount },
       })
@@ -186,19 +207,25 @@ export const checkAndAwardBadgesFn = createServerFn({ method: 'POST' })
     }
 
     const userTier = userData.user.tier || 'free'
-    
+
     if (userTier === 'lifetime' && !newBadges.includes('lifetime_subscriber')) {
       newBadges.push('lifetime_subscriber')
       awarded.push('lifetime_subscriber')
-    } else if (userTier === 'creator' && !newBadges.includes('creator_subscriber')) {
+    } else if (
+      userTier === 'creator' &&
+      !newBadges.includes('creator_subscriber')
+    ) {
       newBadges.push('creator_subscriber')
       awarded.push('creator_subscriber')
     } else if (userTier === 'pro' && !newBadges.includes('pro_subscriber')) {
       newBadges.push('pro_subscriber')
       awarded.push('pro_subscriber')
     }
-    
-    if ((userTier === 'premium' || userData.user.role === 'owner') && !newBadges.includes('premium')) {
+
+    if (
+      (userTier === 'premium' || userData.user.role === 'owner') &&
+      !newBadges.includes('premium')
+    ) {
       newBadges.push('premium')
       awarded.push('premium')
     }
@@ -208,7 +235,11 @@ export const checkAndAwardBadgesFn = createServerFn({ method: 'POST' })
       .from(users)
       .where(sql`${users.createdAt} <= ${userData.user.createdAt}`)
 
-    if (userCount && userCount.count <= 100 && !newBadges.includes('early_adopter')) {
+    if (
+      userCount &&
+      userCount.count <= 100 &&
+      !newBadges.includes('early_adopter')
+    ) {
       newBadges.push('early_adopter')
       awarded.push('early_adopter')
     }
@@ -230,16 +261,21 @@ export const checkAndAwardBadgesFn = createServerFn({ method: 'POST' })
       success: true,
       badges: newBadges,
       awarded,
-      message: awarded.length > 0 ? `Awarded ${awarded.length} badge(s)` : 'No new badges to award',
+      message:
+        awarded.length > 0
+          ? `Awarded ${awarded.length} badge(s)`
+          : 'No new badges to award',
     }
   })
 
 export const getAllUsersWithBadgesFn = createServerFn({ method: 'GET' })
   .inputValidator(
-    z.object({
-      limit: z.number().int().min(1).max(100).default(50),
-      offset: z.number().int().min(0).default(0),
-    }).optional()
+    z
+      .object({
+        limit: z.number().int().min(1).max(100).default(50),
+        offset: z.number().int().min(0).default(0),
+      })
+      .optional(),
   )
   .handler(async ({ data }) => {
     await requireAdmin()
@@ -249,7 +285,12 @@ export const getAllUsersWithBadgesFn = createServerFn({ method: 'GET' })
 
     const results = await db
       .select({
-        user: { id: users.id, username: users.username, name: users.name, role: users.role },
+        user: {
+          id: users.id,
+          username: users.username,
+          name: users.name,
+          role: users.role,
+        },
         profile: { avatar: profiles.avatar, badges: profiles.badges },
       })
       .from(users)
@@ -258,7 +299,9 @@ export const getAllUsersWithBadgesFn = createServerFn({ method: 'GET' })
       .limit(limit)
       .offset(offset)
 
-    const [countResult] = await db.select({ count: sql<number>`COUNT(*)` }).from(users)
+    const [countResult] = await db
+      .select({ count: sql<number>`COUNT(*)` })
+      .from(users)
 
     return {
       users: results.map((r) => ({
@@ -277,7 +320,7 @@ export const bulkAwardBadgeFn = createServerFn({ method: 'POST' })
     z.object({
       userIds: z.array(z.uuid()).min(1).max(100),
       badgeId: z.enum(BADGE_IDS as [BadgeId, ...BadgeId[]]),
-    })
+    }),
   )
   .handler(async ({ data }) => {
     await requireAdmin()
@@ -301,12 +344,19 @@ export const bulkAwardBadgeFn = createServerFn({ method: 'POST' })
         if (!currentBadges.includes(data.badgeId)) {
           await db
             .update(profiles)
-            .set({ badges: [...currentBadges, data.badgeId], updatedAt: new Date() })
+            .set({
+              badges: [...currentBadges, data.badgeId],
+              updatedAt: new Date(),
+            })
             .where(eq(profiles.userId, userId))
           awarded++
         }
       }
     }
 
-    return { success: true, message: `Badge awarded to ${awarded} user(s)`, awarded }
+    return {
+      success: true,
+      message: `Badge awarded to ${awarded} user(s)`,
+      awarded,
+    }
   })

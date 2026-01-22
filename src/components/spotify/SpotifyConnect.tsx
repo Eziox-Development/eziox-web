@@ -69,7 +69,8 @@ export function SpotifyConnect({ theme }: SpotifyConnectProps) {
   })
 
   const toggleVisibilityMutation = useMutation({
-    mutationFn: (showOnProfile: boolean) => updateSettings({ data: { showOnProfile } }),
+    mutationFn: (showOnProfile: boolean) =>
+      updateSettings({ data: { showOnProfile } }),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['spotifyConnection'] })
     },
@@ -77,10 +78,22 @@ export function SpotifyConnect({ theme }: SpotifyConnectProps) {
 
   if (isLoading) {
     return (
-      <div className="p-6 rounded-2xl" style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}` }}>
+      <div
+        className="p-6 rounded-2xl"
+        style={{
+          background: theme.colors.card,
+          border: `1px solid ${theme.colors.border}`,
+        }}
+      >
         <div className="flex items-center gap-3">
-          <Loader2 size={20} className="animate-spin" style={{ color: theme.colors.foregroundMuted }} />
-          <span style={{ color: theme.colors.foregroundMuted }}>Loading Spotify connection...</span>
+          <Loader2
+            size={20}
+            className="animate-spin"
+            style={{ color: theme.colors.foregroundMuted }}
+          />
+          <span style={{ color: theme.colors.foregroundMuted }}>
+            Loading Spotify connection...
+          </span>
         </div>
       </div>
     )
@@ -89,21 +102,42 @@ export function SpotifyConnect({ theme }: SpotifyConnectProps) {
   return (
     <motion.div
       className="p-6 rounded-2xl overflow-hidden relative"
-      style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}` }}
+      style={{
+        background: theme.colors.card,
+        border: `1px solid ${theme.colors.border}`,
+      }}
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
     >
-      <div className="absolute top-0 right-0 w-32 h-32 opacity-5 pointer-events-none" style={{ background: `radial-gradient(circle, #1DB954 0%, transparent 70%)` }} />
+      <div
+        className="absolute top-0 right-0 w-32 h-32 opacity-5 pointer-events-none"
+        style={{
+          background: `radial-gradient(circle, #1DB954 0%, transparent 70%)`,
+        }}
+      />
 
       <div className="flex items-start justify-between gap-4 mb-4">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: '#1DB95420' }}>
+          <div
+            className="w-12 h-12 rounded-xl flex items-center justify-center"
+            style={{ background: '#1DB95420' }}
+          >
             <SiSpotify size={24} style={{ color: '#1DB954' }} />
           </div>
           <div>
-            <h3 className="font-bold" style={{ color: theme.colors.foreground }}>Spotify Integration</h3>
-            <p className="text-sm" style={{ color: theme.colors.foregroundMuted }}>
-              {connection?.connected ? 'Connected' : 'Show what you\'re listening to'}
+            <h3
+              className="font-bold"
+              style={{ color: theme.colors.foreground }}
+            >
+              Spotify Integration
+            </h3>
+            <p
+              className="text-sm"
+              style={{ color: theme.colors.foregroundMuted }}
+            >
+              {connection?.connected
+                ? 'Connected'
+                : "Show what you're listening to"}
             </p>
           </div>
         </div>
@@ -128,7 +162,10 @@ export function SpotifyConnect({ theme }: SpotifyConnectProps) {
               animate={{ scale: 1 }}
               exit={{ scale: 0 }}
               className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium"
-              style={{ background: `${theme.colors.foregroundMuted}20`, color: theme.colors.foregroundMuted }}
+              style={{
+                background: `${theme.colors.foregroundMuted}20`,
+                color: theme.colors.foregroundMuted,
+              }}
             >
               <AlertCircle size={12} />
               Not connected
@@ -139,25 +176,47 @@ export function SpotifyConnect({ theme }: SpotifyConnectProps) {
 
       {connection?.connected ? (
         <div className="space-y-4">
-          <div className="flex items-center justify-between p-3 rounded-xl" style={{ background: theme.colors.backgroundSecondary }}>
+          <div
+            className="flex items-center justify-between p-3 rounded-xl"
+            style={{ background: theme.colors.backgroundSecondary }}
+          >
             <div className="flex items-center gap-3">
               {connection.showOnProfile ? (
                 <Eye size={18} style={{ color: '#1DB954' }} />
               ) : (
-                <EyeOff size={18} style={{ color: theme.colors.foregroundMuted }} />
+                <EyeOff
+                  size={18}
+                  style={{ color: theme.colors.foregroundMuted }}
+                />
               )}
               <div>
-                <p className="text-sm font-medium" style={{ color: theme.colors.foreground }}>Show on profile</p>
-                <p className="text-xs" style={{ color: theme.colors.foregroundMuted }}>
-                  {connection.showOnProfile ? 'Visitors can see your activity' : 'Activity is hidden'}
+                <p
+                  className="text-sm font-medium"
+                  style={{ color: theme.colors.foreground }}
+                >
+                  Show on profile
+                </p>
+                <p
+                  className="text-xs"
+                  style={{ color: theme.colors.foregroundMuted }}
+                >
+                  {connection.showOnProfile
+                    ? 'Visitors can see your activity'
+                    : 'Activity is hidden'}
                 </p>
               </div>
             </div>
             <motion.button
-              onClick={() => toggleVisibilityMutation.mutate(!connection.showOnProfile)}
+              onClick={() =>
+                toggleVisibilityMutation.mutate(!connection.showOnProfile)
+              }
               disabled={toggleVisibilityMutation.isPending}
               className="relative w-12 h-6 rounded-full transition-colors"
-              style={{ background: connection.showOnProfile ? '#1DB954' : theme.colors.border }}
+              style={{
+                background: connection.showOnProfile
+                  ? '#1DB954'
+                  : theme.colors.border,
+              }}
               whileTap={{ scale: 0.95 }}
             >
               <motion.div
@@ -174,7 +233,10 @@ export function SpotifyConnect({ theme }: SpotifyConnectProps) {
               target="_blank"
               rel="noopener noreferrer"
               className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all"
-              style={{ background: theme.colors.backgroundSecondary, color: theme.colors.foreground }}
+              style={{
+                background: theme.colors.backgroundSecondary,
+                color: theme.colors.foreground,
+              }}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
@@ -189,27 +251,42 @@ export function SpotifyConnect({ theme }: SpotifyConnectProps) {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              {disconnectMutation.isPending ? <Loader2 size={16} className="animate-spin" /> : <Unlink size={16} />}
+              {disconnectMutation.isPending ? (
+                <Loader2 size={16} className="animate-spin" />
+              ) : (
+                <Unlink size={16} />
+              )}
               Disconnect
             </motion.button>
           </div>
 
-          <p className="text-xs text-center" style={{ color: theme.colors.foregroundMuted }}>
-            Connected since {new Date(connection.connectedAt!).toLocaleDateString()}
+          <p
+            className="text-xs text-center"
+            style={{ color: theme.colors.foregroundMuted }}
+          >
+            Connected since{' '}
+            {new Date(connection.connectedAt!).toLocaleDateString()}
           </p>
         </div>
       ) : (
         <div className="space-y-4">
-          <p className="text-sm" style={{ color: theme.colors.foregroundMuted }}>
-            Connect your Spotify account to display what you're currently listening to on your bio page.
-            Your visitors will see real-time updates of your music activity.
+          <p
+            className="text-sm"
+            style={{ color: theme.colors.foregroundMuted }}
+          >
+            Connect your Spotify account to display what you're currently
+            listening to on your bio page. Your visitors will see real-time
+            updates of your music activity.
           </p>
 
           <motion.button
             onClick={() => connectMutation.mutate()}
             disabled={isConnecting || connectMutation.isPending}
             className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold text-white transition-all"
-            style={{ background: '#1DB954', boxShadow: '0 4px 20px rgba(29, 185, 84, 0.3)' }}
+            style={{
+              background: '#1DB954',
+              boxShadow: '0 4px 20px rgba(29, 185, 84, 0.3)',
+            }}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
@@ -223,7 +300,10 @@ export function SpotifyConnect({ theme }: SpotifyConnectProps) {
             )}
           </motion.button>
 
-          <div className="flex items-center gap-2 text-xs" style={{ color: theme.colors.foregroundMuted }}>
+          <div
+            className="flex items-center gap-2 text-xs"
+            style={{ color: theme.colors.foregroundMuted }}
+          >
             <SiSpotify size={12} style={{ color: '#1DB954' }} />
             <span>We only request read access to your playback</span>
           </div>

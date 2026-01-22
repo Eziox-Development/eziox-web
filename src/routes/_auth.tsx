@@ -19,7 +19,10 @@ export const Route = createFileRoute('/_auth')({
 
 function AuthLayout() {
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: 'var(--background)' }}>
+    <div
+      className="min-h-screen flex flex-col"
+      style={{ background: 'var(--background)' }}
+    >
       <Nav />
       <main className="flex-1">
         <Outlet />

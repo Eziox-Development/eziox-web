@@ -1,7 +1,11 @@
 import { useState } from 'react'
 import { createPortal } from 'react-dom'
 import { motion } from 'motion/react'
-import { getBadgeConfigs, sortBadgesByRarity, type BadgeConfig } from '@/lib/badges'
+import {
+  getBadgeConfigs,
+  sortBadgesByRarity,
+  type BadgeConfig,
+} from '@/lib/badges'
 import * as LucideIcons from 'lucide-react'
 
 interface BadgeDisplayProps {
@@ -49,7 +53,11 @@ export function BadgeDisplay({
         />
       ))}
       {remainingCount > 0 && (
-        <MoreBadgesButton badgeConfigs={badgeConfigs.slice(maxDisplay)} size={size} remainingCount={remainingCount} />
+        <MoreBadgesButton
+          badgeConfigs={badgeConfigs.slice(maxDisplay)}
+          size={size}
+          remainingCount={remainingCount}
+        />
       )}
     </div>
   )
@@ -63,7 +71,11 @@ interface BadgeIconProps {
 }
 
 function BadgeIcon({ badge, size, showTooltip, delay = 0 }: BadgeIconProps) {
-  const [tooltip, setTooltip] = useState<{ visible: boolean; x: number; y: number }>({ visible: false, x: 0, y: 0 })
+  const [tooltip, setTooltip] = useState<{
+    visible: boolean
+    x: number
+    y: number
+  }>({ visible: false, x: 0, y: 0 })
 
   const show = (event: React.MouseEvent<HTMLDivElement>) => {
     if (!showTooltip) return
@@ -76,7 +88,9 @@ function BadgeIcon({ badge, size, showTooltip, delay = 0 }: BadgeIconProps) {
     setTooltip((prev) => ({ ...prev, visible: false }))
   }
 
-  const IconComponent = LucideIcons[badge.icon as keyof typeof LucideIcons] as React.ComponentType<{ size?: number; style?: React.CSSProperties }>
+  const IconComponent = LucideIcons[
+    badge.icon as keyof typeof LucideIcons
+  ] as React.ComponentType<{ size?: number; style?: React.CSSProperties }>
   const iconSize = size === 'sm' ? 12 : size === 'md' ? 14 : 16
 
   return (
@@ -86,14 +100,21 @@ function BadgeIcon({ badge, size, showTooltip, delay = 0 }: BadgeIconProps) {
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay, type: 'spring', stiffness: 300 }}
         className={`${sizeClasses[size]} rounded-full flex items-center justify-center cursor-default`}
-        style={{ background: badge.bgColor, border: `1px solid ${badge.color}30` }}
+        style={{
+          background: badge.bgColor,
+          border: `1px solid ${badge.color}30`,
+        }}
         onMouseEnter={show}
         onMouseLeave={hide}
-        onFocus={(event) => show(event as unknown as React.MouseEvent<HTMLDivElement>)}
+        onFocus={(event) =>
+          show(event as unknown as React.MouseEvent<HTMLDivElement>)
+        }
         onBlur={hide}
         tabIndex={showTooltip ? 0 : -1}
       >
-        {IconComponent ? <IconComponent size={iconSize} style={{ color: badge.color }} /> : null}
+        {IconComponent ? (
+          <IconComponent size={iconSize} style={{ color: badge.color }} />
+        ) : null}
       </motion.div>
 
       {showTooltip && (
@@ -106,8 +127,12 @@ function BadgeIcon({ badge, size, showTooltip, delay = 0 }: BadgeIconProps) {
               boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
             }}
           >
-            <div className="font-semibold" style={{ color: badge.color }}>{badge.name}</div>
-            <div style={{ color: 'var(--foreground-muted)' }}>{badge.description}</div>
+            <div className="font-semibold" style={{ color: badge.color }}>
+              {badge.name}
+            </div>
+            <div style={{ color: 'var(--foreground-muted)' }}>
+              {badge.description}
+            </div>
           </div>
         </FloatingTooltip>
       )}
@@ -115,8 +140,20 @@ function BadgeIcon({ badge, size, showTooltip, delay = 0 }: BadgeIconProps) {
   )
 }
 
-function MoreBadgesButton({ badgeConfigs, size, remainingCount }: { badgeConfigs: BadgeConfig[]; size: 'sm' | 'md' | 'lg'; remainingCount: number }) {
-  const [tooltip, setTooltip] = useState<{ visible: boolean; x: number; y: number }>({ visible: false, x: 0, y: 0 })
+function MoreBadgesButton({
+  badgeConfigs,
+  size,
+  remainingCount,
+}: {
+  badgeConfigs: BadgeConfig[]
+  size: 'sm' | 'md' | 'lg'
+  remainingCount: number
+}) {
+  const [tooltip, setTooltip] = useState<{
+    visible: boolean
+    x: number
+    y: number
+  }>({ visible: false, x: 0, y: 0 })
 
   const show = (event: React.MouseEvent<HTMLDivElement>) => {
     const rect = event.currentTarget.getBoundingClientRect()
@@ -131,10 +168,15 @@ function MoreBadgesButton({ badgeConfigs, size, remainingCount }: { badgeConfigs
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         className={`${sizeClasses[size]} rounded-full flex items-center justify-center font-medium cursor-default`}
-        style={{ background: 'var(--background-secondary)', color: 'var(--foreground-muted)' }}
+        style={{
+          background: 'var(--background-secondary)',
+          color: 'var(--foreground-muted)',
+        }}
         onMouseEnter={show}
         onMouseLeave={hide}
-        onFocus={(event) => show(event as unknown as React.MouseEvent<HTMLDivElement>)}
+        onFocus={(event) =>
+          show(event as unknown as React.MouseEvent<HTMLDivElement>)
+        }
         onBlur={hide}
         tabIndex={0}
       >
@@ -150,14 +192,29 @@ function MoreBadgesButton({ badgeConfigs, size, remainingCount }: { badgeConfigs
             boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
           }}
         >
-          <div className="font-semibold mb-2" style={{ color: 'var(--foreground)' }}>More Badges</div>
+          <div
+            className="font-semibold mb-2"
+            style={{ color: 'var(--foreground)' }}
+          >
+            More Badges
+          </div>
           <div className="flex flex-col gap-1.5">
             {badgeConfigs.map((badge) => {
-              const IconComponent = LucideIcons[badge.icon as keyof typeof LucideIcons] as React.ComponentType<{ size?: number; style?: React.CSSProperties }>
+              const IconComponent = LucideIcons[
+                badge.icon as keyof typeof LucideIcons
+              ] as React.ComponentType<{
+                size?: number
+                style?: React.CSSProperties
+              }>
               return (
                 <div key={badge.id} className="flex items-center gap-2">
-                  <div className="w-4 h-4 rounded-full flex items-center justify-center" style={{ background: badge.bgColor }}>
-                    {IconComponent && <IconComponent size={10} style={{ color: badge.color }} />}
+                  <div
+                    className="w-4 h-4 rounded-full flex items-center justify-center"
+                    style={{ background: badge.bgColor }}
+                  >
+                    {IconComponent && (
+                      <IconComponent size={10} style={{ color: badge.color }} />
+                    )}
                   </div>
                   <span style={{ color: badge.color }}>{badge.name}</span>
                 </div>
@@ -170,7 +227,17 @@ function MoreBadgesButton({ badgeConfigs, size, remainingCount }: { badgeConfigs
   )
 }
 
-function FloatingTooltip({ visible, x, y, children }: { visible: boolean; x: number; y: number; children: React.ReactNode }) {
+function FloatingTooltip({
+  visible,
+  x,
+  y,
+  children,
+}: {
+  visible: boolean
+  x: number
+  y: number
+  children: React.ReactNode
+}) {
   if (!visible || typeof document === 'undefined') return null
 
   return createPortal(
@@ -180,7 +247,7 @@ function FloatingTooltip({ visible, x, y, children }: { visible: boolean; x: num
     >
       {children}
     </div>,
-    document.body
+    document.body,
   )
 }
 
@@ -203,13 +270,25 @@ export function BadgeList({ badges, className = '' }: BadgeListProps) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: index * 0.05 }}
           className="flex items-center gap-2 px-3 py-1.5 rounded-full"
-          style={{ background: badge.bgColor, border: `1px solid ${badge.color}30` }}
+          style={{
+            background: badge.bgColor,
+            border: `1px solid ${badge.color}30`,
+          }}
         >
           {(() => {
-            const IconComponent = LucideIcons[badge.icon as keyof typeof LucideIcons] as React.ComponentType<{ size?: number; style?: React.CSSProperties }>
-            return IconComponent ? <IconComponent size={16} style={{ color: badge.color }} /> : null
+            const IconComponent = LucideIcons[
+              badge.icon as keyof typeof LucideIcons
+            ] as React.ComponentType<{
+              size?: number
+              style?: React.CSSProperties
+            }>
+            return IconComponent ? (
+              <IconComponent size={16} style={{ color: badge.color }} />
+            ) : null
           })()}
-          <span className="text-sm font-medium" style={{ color: badge.color }}>{badge.name}</span>
+          <span className="text-sm font-medium" style={{ color: badge.color }}>
+            {badge.name}
+          </span>
         </motion.div>
       ))}
     </div>

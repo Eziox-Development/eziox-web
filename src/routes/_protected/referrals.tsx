@@ -8,7 +8,10 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { useQuery } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
-import { getReferralCodeFn, getReferralStatsFn } from '@/server/functions/referrals'
+import {
+  getReferralCodeFn,
+  getReferralStatsFn,
+} from '@/server/functions/referrals'
 import {
   Gift,
   Copy,
@@ -97,13 +100,19 @@ function ReferralsPage() {
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
         <motion.div
           className="absolute top-20 right-1/4 w-[500px] h-[500px] rounded-full blur-3xl"
-          style={{ background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(139, 92, 246, 0.1))' }}
+          style={{
+            background:
+              'linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(139, 92, 246, 0.1))',
+          }}
           animate={{ scale: [1, 1.2, 1], x: [0, 50, 0] }}
           transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
         />
         <motion.div
           className="absolute bottom-20 left-1/4 w-[400px] h-[400px] rounded-full blur-3xl"
-          style={{ background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.1), rgba(99, 102, 241, 0.1))' }}
+          style={{
+            background:
+              'linear-gradient(135deg, rgba(236, 72, 153, 0.1), rgba(99, 102, 241, 0.1))',
+          }}
           animate={{ scale: [1.2, 1, 1.2], y: [0, -30, 0] }}
           transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut' }}
         />
@@ -121,9 +130,10 @@ function ReferralsPage() {
             animate={{ scale: 1 }}
             transition={{ type: 'spring', stiffness: 200, damping: 15 }}
             className="w-20 h-20 mx-auto mb-6 rounded-2xl flex items-center justify-center relative"
-            style={{ 
-              background: 'linear-gradient(135deg, var(--primary), var(--accent))',
-              boxShadow: '0 20px 40px rgba(99, 102, 241, 0.4)'
+            style={{
+              background:
+                'linear-gradient(135deg, var(--primary), var(--accent))',
+              boxShadow: '0 20px 40px rgba(99, 102, 241, 0.4)',
             }}
           >
             <Gift className="w-10 h-10 text-white" />
@@ -136,10 +146,16 @@ function ReferralsPage() {
               <Zap size={14} className="text-white" />
             </motion.div>
           </motion.div>
-          <h1 className="text-4xl font-bold mb-3" style={{ color: 'var(--foreground)' }}>
+          <h1
+            className="text-4xl font-bold mb-3"
+            style={{ color: 'var(--foreground)' }}
+          >
             Referral Program
           </h1>
-          <p className="text-lg max-w-md mx-auto" style={{ color: 'var(--foreground-muted)' }}>
+          <p
+            className="text-lg max-w-md mx-auto"
+            style={{ color: 'var(--foreground-muted)' }}
+          >
             Invite friends to Eziox and earn rewards for every signup
           </p>
         </motion.div>
@@ -152,10 +168,39 @@ function ReferralsPage() {
           className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"
         >
           {[
-            { label: 'Total Referrals', value: referralCount, icon: Users, color: 'var(--primary)', gradient: 'from-indigo-500 to-purple-500' },
-            { label: 'Points Earned', value: pointsEarned, icon: Trophy, color: '#eab308', gradient: 'from-yellow-500 to-orange-500' },
-            { label: 'Conversion Rate', value: '100%', icon: TrendingUp, color: '#22c55e', gradient: 'from-green-500 to-emerald-500' },
-            { label: 'Rank', value: referralCount > 10 ? 'Gold' : referralCount > 5 ? 'Silver' : 'Bronze', icon: Star, color: '#f59e0b', gradient: 'from-amber-500 to-yellow-500' },
+            {
+              label: 'Total Referrals',
+              value: referralCount,
+              icon: Users,
+              color: 'var(--primary)',
+              gradient: 'from-indigo-500 to-purple-500',
+            },
+            {
+              label: 'Points Earned',
+              value: pointsEarned,
+              icon: Trophy,
+              color: '#eab308',
+              gradient: 'from-yellow-500 to-orange-500',
+            },
+            {
+              label: 'Conversion Rate',
+              value: '100%',
+              icon: TrendingUp,
+              color: '#22c55e',
+              gradient: 'from-green-500 to-emerald-500',
+            },
+            {
+              label: 'Rank',
+              value:
+                referralCount > 10
+                  ? 'Gold'
+                  : referralCount > 5
+                    ? 'Silver'
+                    : 'Bronze',
+              icon: Star,
+              color: '#f59e0b',
+              gradient: 'from-amber-500 to-yellow-500',
+            },
           ].map((stat, index) => (
             <motion.div
               key={stat.label}
@@ -166,24 +211,32 @@ function ReferralsPage() {
             >
               <div
                 className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity blur-xl"
-                style={{ background: `linear-gradient(135deg, ${stat.color}40, transparent)` }}
+                style={{
+                  background: `linear-gradient(135deg, ${stat.color}40, transparent)`,
+                }}
               />
               <div
                 className="relative p-5 rounded-2xl text-center backdrop-blur-sm"
-                style={{ 
+                style={{
                   background: 'rgba(var(--card-rgb, 30, 30, 30), 0.8)',
                   border: '1px solid var(--border)',
                 }}
               >
-                <div 
+                <div
                   className={`w-12 h-12 mx-auto mb-3 rounded-xl flex items-center justify-center bg-gradient-to-br ${stat.gradient}`}
                 >
                   <stat.icon size={24} className="text-white" />
                 </div>
-                <p className="text-3xl font-bold mb-1" style={{ color: 'var(--foreground)' }}>
+                <p
+                  className="text-3xl font-bold mb-1"
+                  style={{ color: 'var(--foreground)' }}
+                >
                   {statsLoading ? '-' : stat.value}
                 </p>
-                <p className="text-xs font-medium" style={{ color: 'var(--foreground-muted)' }}>
+                <p
+                  className="text-xs font-medium"
+                  style={{ color: 'var(--foreground-muted)' }}
+                >
                   {stat.label}
                 </p>
               </div>
@@ -200,11 +253,14 @@ function ReferralsPage() {
         >
           <div
             className="absolute inset-0 rounded-3xl blur-2xl opacity-50"
-            style={{ background: 'linear-gradient(135deg, var(--primary), var(--accent))' }}
+            style={{
+              background:
+                'linear-gradient(135deg, var(--primary), var(--accent))',
+            }}
           />
           <div
             className="relative p-8 rounded-3xl backdrop-blur-xl"
-            style={{ 
+            style={{
               background: 'rgba(var(--card-rgb, 30, 30, 30), 0.9)',
               border: '1px solid rgba(255, 255, 255, 0.1)',
             }}
@@ -213,15 +269,24 @@ function ReferralsPage() {
               <div className="flex items-center gap-3">
                 <div
                   className="w-12 h-12 rounded-xl flex items-center justify-center"
-                  style={{ background: 'linear-gradient(135deg, var(--primary), var(--accent))' }}
+                  style={{
+                    background:
+                      'linear-gradient(135deg, var(--primary), var(--accent))',
+                  }}
                 >
                   <QrCode className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold" style={{ color: 'var(--foreground)' }}>
+                  <h2
+                    className="text-xl font-bold"
+                    style={{ color: 'var(--foreground)' }}
+                  >
                     Your Referral Link
                   </h2>
-                  <p className="text-sm" style={{ color: 'var(--foreground-muted)' }}>
+                  <p
+                    className="text-sm"
+                    style={{ color: 'var(--foreground-muted)' }}
+                  >
                     Share this link to invite friends
                   </p>
                 </div>
@@ -229,18 +294,25 @@ function ReferralsPage() {
               {codeData?.isOwner && (
                 <motion.div
                   className="flex items-center gap-2 px-4 py-2 rounded-full"
-                  style={{ background: 'linear-gradient(135deg, #f59e0b, #d97706)' }}
+                  style={{
+                    background: 'linear-gradient(135deg, #f59e0b, #d97706)',
+                  }}
                   whileHover={{ scale: 1.05 }}
                 >
                   <Crown size={16} className="text-white" />
-                  <span className="text-sm font-semibold text-white">Owner</span>
+                  <span className="text-sm font-semibold text-white">
+                    Owner
+                  </span>
                 </motion.div>
               )}
             </div>
 
             {codeLoading ? (
               <div className="flex items-center justify-center py-12">
-                <Loader2 className="w-8 h-8 animate-spin" style={{ color: 'var(--primary)' }} />
+                <Loader2
+                  className="w-8 h-8 animate-spin"
+                  style={{ color: 'var(--primary)' }}
+                />
               </div>
             ) : (
               <>
@@ -254,22 +326,36 @@ function ReferralsPage() {
                     whileTap={{ scale: 0.98 }}
                   >
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs font-medium uppercase tracking-wider" style={{ color: 'var(--foreground-muted)' }}>
+                      <span
+                        className="text-xs font-medium uppercase tracking-wider"
+                        style={{ color: 'var(--foreground-muted)' }}
+                      >
                         Referral Code
                       </span>
                       <motion.div
                         animate={{ scale: copiedCode ? 1.2 : 1 }}
                         className="p-1.5 rounded-lg transition-colors"
-                        style={{ background: copiedCode ? 'rgba(34, 197, 94, 0.2)' : 'transparent' }}
+                        style={{
+                          background: copiedCode
+                            ? 'rgba(34, 197, 94, 0.2)'
+                            : 'transparent',
+                        }}
                       >
                         {copiedCode ? (
                           <Check size={16} className="text-green-500" />
                         ) : (
-                          <Copy size={16} className="opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: 'var(--foreground-muted)' }} />
+                          <Copy
+                            size={16}
+                            className="opacity-0 group-hover:opacity-100 transition-opacity"
+                            style={{ color: 'var(--foreground-muted)' }}
+                          />
                         )}
                       </motion.div>
                     </div>
-                    <p className="font-mono text-2xl font-bold tracking-wider" style={{ color: 'var(--primary)' }}>
+                    <p
+                      className="font-mono text-2xl font-bold tracking-wider"
+                      style={{ color: 'var(--primary)' }}
+                    >
                       {codeData?.code}
                     </p>
                   </motion.div>
@@ -282,22 +368,36 @@ function ReferralsPage() {
                     whileTap={{ scale: 0.98 }}
                   >
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs font-medium uppercase tracking-wider" style={{ color: 'var(--foreground-muted)' }}>
+                      <span
+                        className="text-xs font-medium uppercase tracking-wider"
+                        style={{ color: 'var(--foreground-muted)' }}
+                      >
                         Share Link
                       </span>
                       <motion.div
                         animate={{ scale: copied ? 1.2 : 1 }}
                         className="p-1.5 rounded-lg transition-colors"
-                        style={{ background: copied ? 'rgba(34, 197, 94, 0.2)' : 'transparent' }}
+                        style={{
+                          background: copied
+                            ? 'rgba(34, 197, 94, 0.2)'
+                            : 'transparent',
+                        }}
                       >
                         {copied ? (
                           <Check size={16} className="text-green-500" />
                         ) : (
-                          <Copy size={16} className="opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: 'var(--foreground-muted)' }} />
+                          <Copy
+                            size={16}
+                            className="opacity-0 group-hover:opacity-100 transition-opacity"
+                            style={{ color: 'var(--foreground-muted)' }}
+                          />
                         )}
                       </motion.div>
                     </div>
-                    <p className="text-sm font-medium truncate" style={{ color: 'var(--foreground)' }}>
+                    <p
+                      className="text-sm font-medium truncate"
+                      style={{ color: 'var(--foreground)' }}
+                    >
                       {codeData?.link}
                     </p>
                   </motion.div>
@@ -308,11 +408,15 @@ function ReferralsPage() {
                   <motion.button
                     onClick={handleCopyLink}
                     className="flex-1 flex items-center justify-center gap-3 py-4 rounded-xl font-semibold text-white"
-                    style={{ 
-                      background: 'linear-gradient(135deg, var(--primary), var(--accent))',
-                      boxShadow: '0 10px 30px rgba(99, 102, 241, 0.4)'
+                    style={{
+                      background:
+                        'linear-gradient(135deg, var(--primary), var(--accent))',
+                      boxShadow: '0 10px 30px rgba(99, 102, 241, 0.4)',
                     }}
-                    whileHover={{ scale: 1.02, boxShadow: '0 15px 40px rgba(99, 102, 241, 0.5)' }}
+                    whileHover={{
+                      scale: 1.02,
+                      boxShadow: '0 15px 40px rgba(99, 102, 241, 0.5)',
+                    }}
                     whileTap={{ scale: 0.98 }}
                   >
                     {copied ? <Check size={20} /> : <Copy size={20} />}
@@ -321,10 +425,10 @@ function ReferralsPage() {
                   <motion.button
                     onClick={handleShare}
                     className="flex-1 flex items-center justify-center gap-3 py-4 rounded-xl font-semibold"
-                    style={{ 
+                    style={{
                       background: 'var(--background-secondary)',
                       color: 'var(--foreground)',
-                      border: '1px solid var(--border)'
+                      border: '1px solid var(--border)',
                     }}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
@@ -337,10 +441,10 @@ function ReferralsPage() {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-semibold"
-                    style={{ 
+                    style={{
                       background: 'var(--background-secondary)',
                       color: 'var(--foreground)',
-                      border: '1px solid var(--border)'
+                      border: '1px solid var(--border)',
                     }}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
@@ -360,14 +464,32 @@ function ReferralsPage() {
           transition={{ delay: 0.3 }}
           className="mb-8"
         >
-          <h3 className="text-xl font-bold mb-6 text-center" style={{ color: 'var(--foreground)' }}>
+          <h3
+            className="text-xl font-bold mb-6 text-center"
+            style={{ color: 'var(--foreground)' }}
+          >
             How It Works
           </h3>
           <div className="grid md:grid-cols-3 gap-4">
             {[
-              { step: '1', title: 'Share Your Link', description: 'Send your unique referral link to friends', icon: Share2 },
-              { step: '2', title: 'Friends Sign Up', description: 'They create an account using your link', icon: Users },
-              { step: '3', title: 'Earn Rewards', description: 'Get +5 points for each successful referral', icon: Trophy },
+              {
+                step: '1',
+                title: 'Share Your Link',
+                description: 'Send your unique referral link to friends',
+                icon: Share2,
+              },
+              {
+                step: '2',
+                title: 'Friends Sign Up',
+                description: 'They create an account using your link',
+                icon: Users,
+              },
+              {
+                step: '3',
+                title: 'Earn Rewards',
+                description: 'Get +5 points for each successful referral',
+                icon: Trophy,
+              },
             ].map((item, index) => (
               <motion.div
                 key={item.step}
@@ -375,24 +497,37 @@ function ReferralsPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 + index * 0.1 }}
                 className="relative p-6 rounded-2xl text-center"
-                style={{ background: 'var(--card)', border: '1px solid var(--border)' }}
+                style={{
+                  background: 'var(--card)',
+                  border: '1px solid var(--border)',
+                }}
               >
                 <div
                   className="w-12 h-12 mx-auto mb-4 rounded-full flex items-center justify-center text-xl font-bold"
-                  style={{ background: 'linear-gradient(135deg, var(--primary), var(--accent))', color: 'white' }}
+                  style={{
+                    background:
+                      'linear-gradient(135deg, var(--primary), var(--accent))',
+                    color: 'white',
+                  }}
                 >
                   {item.step}
                 </div>
-                <h4 className="font-semibold mb-2" style={{ color: 'var(--foreground)' }}>
+                <h4
+                  className="font-semibold mb-2"
+                  style={{ color: 'var(--foreground)' }}
+                >
                   {item.title}
                 </h4>
-                <p className="text-sm" style={{ color: 'var(--foreground-muted)' }}>
+                <p
+                  className="text-sm"
+                  style={{ color: 'var(--foreground-muted)' }}
+                >
                   {item.description}
                 </p>
                 {index < 2 && (
-                  <ArrowRight 
-                    size={24} 
-                    className="hidden md:block absolute top-1/2 -right-6 transform -translate-y-1/2" 
+                  <ArrowRight
+                    size={24}
+                    className="hidden md:block absolute top-1/2 -right-6 transform -translate-y-1/2"
                     style={{ color: 'var(--foreground-muted)' }}
                   />
                 )}
@@ -408,12 +543,16 @@ function ReferralsPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.35 }}
             className="p-6 rounded-2xl mb-8"
-            style={{ 
-              background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1))',
-              border: '1px solid rgba(99, 102, 241, 0.2)'
+            style={{
+              background:
+                'linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1))',
+              border: '1px solid rgba(99, 102, 241, 0.2)',
             }}
           >
-            <p className="text-sm font-medium mb-4" style={{ color: 'var(--foreground-muted)' }}>
+            <p
+              className="text-sm font-medium mb-4"
+              style={{ color: 'var(--foreground-muted)' }}
+            >
               🎉 You were invited by
             </p>
             <Link
@@ -426,24 +565,39 @@ function ReferralsPage() {
                 {statsData.referredBy.avatar ? (
                   <img
                     src={statsData.referredBy.avatar}
-                    alt={statsData.referredBy.name || statsData.referredBy.username}
+                    alt={
+                      statsData.referredBy.name || statsData.referredBy.username
+                    }
                     className="w-full h-full object-cover"
                   />
                 ) : (
                   <span className="text-white font-bold text-xl">
-                    {(statsData.referredBy.name || statsData.referredBy.username).charAt(0).toUpperCase()}
+                    {(
+                      statsData.referredBy.name || statsData.referredBy.username
+                    )
+                      .charAt(0)
+                      .toUpperCase()}
                   </span>
                 )}
               </div>
               <div className="flex-1">
-                <p className="font-semibold text-lg" style={{ color: 'var(--foreground)' }}>
+                <p
+                  className="font-semibold text-lg"
+                  style={{ color: 'var(--foreground)' }}
+                >
                   {statsData.referredBy.name || statsData.referredBy.username}
                 </p>
-                <p className="text-sm" style={{ color: 'var(--foreground-muted)' }}>
+                <p
+                  className="text-sm"
+                  style={{ color: 'var(--foreground-muted)' }}
+                >
                   @{statsData.referredBy.username}
                 </p>
               </div>
-              <ArrowRight size={20} style={{ color: 'var(--foreground-muted)' }} />
+              <ArrowRight
+                size={20}
+                style={{ color: 'var(--foreground-muted)' }}
+              />
             </Link>
           </motion.div>
         )}
@@ -454,20 +608,35 @@ function ReferralsPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
           className="rounded-2xl overflow-hidden"
-          style={{ background: 'var(--card)', border: '1px solid var(--border)' }}
+          style={{
+            background: 'var(--card)',
+            border: '1px solid var(--border)',
+          }}
         >
-          <div className="p-6 border-b flex items-center justify-between" style={{ borderColor: 'var(--border)' }}>
+          <div
+            className="p-6 border-b flex items-center justify-between"
+            style={{ borderColor: 'var(--border)' }}
+          >
             <div>
-              <h2 className="text-xl font-bold" style={{ color: 'var(--foreground)' }}>
+              <h2
+                className="text-xl font-bold"
+                style={{ color: 'var(--foreground)' }}
+              >
                 Your Referrals
               </h2>
-              <p className="text-sm" style={{ color: 'var(--foreground-muted)' }}>
+              <p
+                className="text-sm"
+                style={{ color: 'var(--foreground-muted)' }}
+              >
                 People who joined using your link
               </p>
             </div>
             <div
               className="px-4 py-2 rounded-full text-sm font-semibold"
-              style={{ background: 'var(--background-secondary)', color: 'var(--foreground)' }}
+              style={{
+                background: 'var(--background-secondary)',
+                color: 'var(--foreground)',
+              }}
             >
               {statsLoading ? '-' : referralCount} users
             </div>
@@ -475,7 +644,10 @@ function ReferralsPage() {
 
           {statsLoading ? (
             <div className="flex items-center justify-center py-16">
-              <Loader2 className="w-8 h-8 animate-spin" style={{ color: 'var(--primary)' }} />
+              <Loader2
+                className="w-8 h-8 animate-spin"
+                style={{ color: 'var(--primary)' }}
+              />
             </div>
           ) : statsData?.referredUsers && statsData.referredUsers.length > 0 ? (
             <div className="divide-y" style={{ borderColor: 'var(--border)' }}>
@@ -501,23 +673,37 @@ function ReferralsPage() {
                           />
                         ) : (
                           <span className="text-white font-bold">
-                            {(user.name || user.username).charAt(0).toUpperCase()}
+                            {(user.name || user.username)
+                              .charAt(0)
+                              .toUpperCase()}
                           </span>
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-semibold truncate" style={{ color: 'var(--foreground)' }}>
+                        <p
+                          className="font-semibold truncate"
+                          style={{ color: 'var(--foreground)' }}
+                        >
                           {user.name || user.username}
                         </p>
-                        <p className="text-sm truncate" style={{ color: 'var(--foreground-muted)' }}>
+                        <p
+                          className="text-sm truncate"
+                          style={{ color: 'var(--foreground-muted)' }}
+                        >
                           @{user.username}
                         </p>
                       </div>
                       <div className="text-right">
-                        <p className="text-sm font-medium" style={{ color: 'var(--foreground)' }}>
+                        <p
+                          className="text-sm font-medium"
+                          style={{ color: 'var(--foreground)' }}
+                        >
                           +5 pts
                         </p>
-                        <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>
+                        <p
+                          className="text-xs"
+                          style={{ color: 'var(--foreground-muted)' }}
+                        >
                           {new Date(user.joinedAt).toLocaleDateString()}
                         </p>
                       </div>
@@ -535,20 +721,30 @@ function ReferralsPage() {
                 className="w-20 h-20 mx-auto mb-6 rounded-2xl flex items-center justify-center"
                 style={{ background: 'var(--background-secondary)' }}
               >
-                <Sparkles size={40} style={{ color: 'var(--foreground-muted)' }} />
+                <Sparkles
+                  size={40}
+                  style={{ color: 'var(--foreground-muted)' }}
+                />
               </motion.div>
-              <h3 className="text-xl font-semibold mb-2" style={{ color: 'var(--foreground)' }}>
+              <h3
+                className="text-xl font-semibold mb-2"
+                style={{ color: 'var(--foreground)' }}
+              >
                 No referrals yet
               </h3>
-              <p className="text-sm mb-6 max-w-sm mx-auto" style={{ color: 'var(--foreground-muted)' }}>
+              <p
+                className="text-sm mb-6 max-w-sm mx-auto"
+                style={{ color: 'var(--foreground-muted)' }}
+              >
                 Share your referral link with friends and start earning rewards!
               </p>
               <motion.button
                 onClick={handleCopyLink}
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-white"
-                style={{ 
-                  background: 'linear-gradient(135deg, var(--primary), var(--accent))',
-                  boxShadow: '0 10px 30px rgba(99, 102, 241, 0.3)'
+                style={{
+                  background:
+                    'linear-gradient(135deg, var(--primary), var(--accent))',
+                  boxShadow: '0 10px 30px rgba(99, 102, 241, 0.3)',
                 }}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}

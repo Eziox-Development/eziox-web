@@ -1,5 +1,6 @@
 const TURNSTILE_SECRET_KEY = process.env.TURNSTILE_SECRET_KEY || ''
-const TURNSTILE_VERIFY_URL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify'
+const TURNSTILE_VERIFY_URL =
+  'https://challenges.cloudflare.com/turnstile/v0/siteverify'
 
 interface TurnstileResponse {
   success: boolean
@@ -8,7 +9,10 @@ interface TurnstileResponse {
   hostname?: string
 }
 
-export async function verifyTurnstileToken(token: string, ip?: string): Promise<boolean> {
+export async function verifyTurnstileToken(
+  token: string,
+  ip?: string,
+): Promise<boolean> {
   if (!TURNSTILE_SECRET_KEY) {
     console.warn('[Turnstile] Secret key not configured, skipping verification')
     return true

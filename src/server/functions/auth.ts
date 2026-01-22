@@ -37,9 +37,26 @@ import {
   validateEmailVerificationToken,
   verifyUserEmail,
 } from '../lib/auth'
-import { checkRateLimit, RATE_LIMITS, sanitizeText, sanitizeURL, isValidReferralCode, generateCSRFToken, validateCSRFToken } from '@/lib/security'
+import {
+  checkRateLimit,
+  RATE_LIMITS,
+  sanitizeText,
+  sanitizeURL,
+  isValidReferralCode,
+  generateCSRFToken,
+  validateCSRFToken,
+} from '@/lib/security'
 import { getRequestIP, getRequestHeader } from '@tanstack/react-start/server'
-import { sendPasswordResetEmail, sendLoginNotificationEmail, sendWelcomeEmail, sendAccountDeletedEmail, send2FAEnabledEmail, send2FADisabledEmail, sendPasswordChangedEmail, sendEmailVerificationEmail } from '../lib/email'
+import {
+  sendPasswordResetEmail,
+  sendLoginNotificationEmail,
+  sendWelcomeEmail,
+  sendAccountDeletedEmail,
+  send2FAEnabledEmail,
+  send2FADisabledEmail,
+  sendPasswordChangedEmail,
+  sendEmailVerificationEmail,
+} from '../lib/email'
 import { parseUserAgent, formatUserAgent } from '../lib/user-agent'
 import { anonymizeIP } from '../lib/ip-utils'
 import { verifyTurnstileToken } from '../lib/turnstile'
@@ -107,14 +124,15 @@ export const getSessionTokenFn = createServerFn({ method: 'GET' }).handler(
 export const signUpFn = createServerFn({ method: 'POST' })
   .inputValidator(signUpSchema)
   .handler(async ({ data }) => {
-    const { email, password, username, name, referralCode, turnstileToken } = data
+    const { email, password, username, name, referralCode, turnstileToken } =
+      data
 
     const rawIP = getRequestIP() || 'unknown'
     const ip = anonymizeIP(rawIP)
     const userAgentRaw = getRequestHeader('User-Agent') || null
     const parsedUA = parseUserAgent(userAgentRaw)
     const userAgentFormatted = formatUserAgent(parsedUA)
-    
+
     const isTurnstileValid = await verifyTurnstileToken(turnstileToken, rawIP)
     if (!isTurnstileValid) {
       setResponseStatus(403)
@@ -182,14 +200,26 @@ export const signUpFn = createServerFn({ method: 'POST' })
 
       // Send verification email
       const verificationToken = await generateEmailVerificationToken(user.id)
-      void sendEmailVerificationEmail(user.email, user.username, verificationToken)
+      void sendEmailVerificationEmail(
+        user.email,
+        user.username,
+        verificationToken,
+      )
 
       // Also send welcome email
       void sendWelcomeEmail(user.email, user.username)
 
-      logSecurityEvent('auth.signup', { userId: user.id, ip, userAgent: parsedUA.browser })
+      logSecurityEvent('auth.signup', {
+        userId: user.id,
+        ip,
+        userAgent: parsedUA.browser,
+      })
 
-      return { success: true, message: 'Account created successfully. Please check your email to verify your account.' }
+      return {
+        success: true,
+        message:
+          'Account created successfully. Please check your email to verify your account.',
+      }
     } catch (error) {
       const err = error as { message?: string; status?: number }
       if (err.status) {
@@ -214,7 +244,7 @@ export const signInFn = createServerFn({ method: 'POST' })
     const userAgentRaw = getRequestHeader('User-Agent') || null
     const parsedUA = parseUserAgent(userAgentRaw)
     const userAgentFormatted = formatUserAgent(parsedUA)
-    
+
     const isTurnstileValid = await verifyTurnstileToken(turnstileToken, rawIP)
     if (!isTurnstileValid) {
       setResponseStatus(403)
@@ -248,7 +278,8 @@ export const signInFn = createServerFn({ method: 'POST' })
       if (locked) {
         setResponseStatus(423)
         throw {
-          message: 'Account temporarily locked due to too many failed attempts. Please try again later.',
+          message:
+            'Account temporarily locked due to too many failed attempts. Please try again later.',
           status: 423,
         }
       }
@@ -259,7 +290,8 @@ export const signInFn = createServerFn({ method: 'POST' })
         setResponseStatus(401)
         if (lockResult.locked) {
           throw {
-            message: 'Account locked due to too many failed attempts. Please try again in 30 minutes.',
+            message:
+              'Account locked due to too many failed attempts. Please try again in 30 minutes.',
             status: 401,
           }
         }
@@ -269,14 +301,22 @@ export const signInFn = createServerFn({ method: 'POST' })
         }
       }
 
-      const session = await createSession(user.id, userAgentFormatted, ip, rememberMe)
+      const session = await createSession(
+        user.id,
+        userAgentFormatted,
+        ip,
+        rememberMe,
+      )
 
       if (!session) {
         throw { message: 'Failed to create session', status: 500 }
       }
 
       const cookieMaxAge = rememberMe ? 60 * 60 * 24 * 30 : 60 * 60 * 24 * 7
-      setCookie('session-token', session.token, { ...COOKIE_OPTIONS, maxAge: cookieMaxAge })
+      setCookie('session-token', session.token, {
+        ...COOKIE_OPTIONS,
+        maxAge: cookieMaxAge,
+      })
 
       await recordSuccessfulLogin(user.id, ip)
       await updateLastActive(user.id)
@@ -286,10 +326,14 @@ export const signInFn = createServerFn({ method: 'POST' })
         user.username,
         ip,
         userAgentFormatted,
-        new Date()
+        new Date(),
       )
 
-      logSecurityEvent('auth.login_success', { userId: user.id, ip, userAgent: parsedUA.browser })
+      logSecurityEvent('auth.login_success', {
+        userId: user.id,
+        ip,
+        userAgent: parsedUA.browser,
+      })
 
       return { success: true, message: 'Signed in successfully' }
     } catch (error) {
@@ -455,21 +499,28 @@ export const updateProfileFn = createServerFn({ method: 'POST' })
       const sanitizedSocials = data.socials
         ? Object.fromEntries(
             Object.entries(data.socials)
-              .map(([key, value]) => [sanitizeText(key, 50), sanitizeText(value, 100)])
-              .filter(([, value]) => value)
+              .map(([key, value]) => [
+                sanitizeText(key, 50),
+                sanitizeText(value, 100),
+              ])
+              .filter(([, value]) => value),
           )
         : undefined
 
       await updateProfile(user.id, {
         bio: data.bio ? sanitizeText(data.bio, 500) : undefined,
         location: data.location ? sanitizeText(data.location, 100) : undefined,
-        website: data.website ? sanitizeURL(data.website) || undefined : undefined,
+        website: data.website
+          ? sanitizeURL(data.website) || undefined
+          : undefined,
         pronouns: data.pronouns ? sanitizeText(data.pronouns, 50) : undefined,
         accentColor: data.accentColor,
         isPublic: data.isPublic,
         showActivity: data.showActivity,
         birthday: data.birthday ? new Date(data.birthday) : undefined,
-        creatorTypes: data.creatorTypes ? data.creatorTypes.map(t => sanitizeText(t, 50)).filter(Boolean) : undefined,
+        creatorTypes: data.creatorTypes
+          ? data.creatorTypes.map((t) => sanitizeText(t, 50)).filter(Boolean)
+          : undefined,
         socials: sanitizedSocials,
       })
 
@@ -485,13 +536,15 @@ export const updateProfileFn = createServerFn({ method: 'POST' })
   })
 
 export const requestPasswordResetFn = createServerFn({ method: 'POST' })
-  .inputValidator(z.object({ 
-    email: emailSchema,
-    turnstileToken: z.string().min(1, 'Bot verification required'),
-  }))
+  .inputValidator(
+    z.object({
+      email: emailSchema,
+      turnstileToken: z.string().min(1, 'Bot verification required'),
+    }),
+  )
   .handler(async ({ data }) => {
     const ip = getRequestIP() || 'unknown'
-    
+
     const isTurnstileValid = await verifyTurnstileToken(data.turnstileToken, ip)
     if (!isTurnstileValid) {
       setResponseStatus(403)
@@ -516,17 +569,29 @@ export const requestPasswordResetFn = createServerFn({ method: 'POST' })
 
     const user = await findUserByEmail(data.email)
     if (!user) {
-      return { success: true, message: 'If an account exists, a reset link has been sent.' }
+      return {
+        success: true,
+        message: 'If an account exists, a reset link has been sent.',
+      }
     }
 
     const token = await generatePasswordResetToken(user.id)
 
-    const emailResult = await sendPasswordResetEmail(user.email, token, user.username)
+    const emailResult = await sendPasswordResetEmail(
+      user.email,
+      token,
+      user.username,
+    )
     if (!emailResult.success) {
-      console.error(`[Auth] Failed to send password reset email to ${user.email}`)
+      console.error(
+        `[Auth] Failed to send password reset email to ${user.email}`,
+      )
     }
 
-    return { success: true, message: 'If an account exists, a reset link has been sent.' }
+    return {
+      success: true,
+      message: 'If an account exists, a reset link has been sent.',
+    }
   })
 
 export const resetPasswordFn = createServerFn({ method: 'POST' })
@@ -552,7 +617,10 @@ export const resetPasswordFn = createServerFn({ method: 'POST' })
       void sendPasswordChangedEmail(user.email, username, ip, new Date())
     }
 
-    return { success: true, message: 'Password reset successfully. Please sign in.' }
+    return {
+      success: true,
+      message: 'Password reset successfully. Please sign in.',
+    }
   })
 
 export const refreshSessionFn = createServerFn({ method: 'POST' }).handler(
@@ -570,8 +638,13 @@ export const refreshSessionFn = createServerFn({ method: 'POST' }).handler(
       throw { message: 'Session expired', status: 401 }
     }
 
-    const cookieMaxAge = newSession.rememberMe ? 60 * 60 * 24 * 30 : 60 * 60 * 24 * 7
-    setCookie('session-token', newSession.token, { ...COOKIE_OPTIONS, maxAge: cookieMaxAge })
+    const cookieMaxAge = newSession.rememberMe
+      ? 60 * 60 * 24 * 30
+      : 60 * 60 * 24 * 7
+    setCookie('session-token', newSession.token, {
+      ...COOKIE_OPTIONS,
+      maxAge: cookieMaxAge,
+    })
 
     return { success: true, message: 'Session refreshed' }
   },
@@ -623,7 +696,11 @@ export const enableTwoFactorFn = createServerFn({ method: 'POST' })
       void send2FAEnabledEmail(user.email, username, new Date())
     }
 
-    return { success: true, message: '2FA enabled successfully', recoveryCodes: result.recoveryCodes }
+    return {
+      success: true,
+      message: '2FA enabled successfully',
+      recoveryCodes: result.recoveryCodes,
+    }
   })
 
 export const disableTwoFactorFn = createServerFn({ method: 'POST' })
@@ -660,7 +737,9 @@ export const disableTwoFactorFn = createServerFn({ method: 'POST' })
   })
 
 export const verifyTwoFactorFn = createServerFn({ method: 'POST' })
-  .inputValidator(z.object({ userId: z.string().uuid(), token: z.string().length(6) }))
+  .inputValidator(
+    z.object({ userId: z.string().uuid(), token: z.string().length(6) }),
+  )
   .handler(async ({ data }) => {
     const valid = await verifyTwoFactorToken(data.userId, data.token)
     if (!valid) {
@@ -683,7 +762,9 @@ export const getTwoFactorStatusFn = createServerFn({ method: 'GET' }).handler(
     }
 
     const enabled = await isTwoFactorEnabled(user.id)
-    const recoveryCodesCount = enabled ? await getRecoveryCodesCount(user.id) : 0
+    const recoveryCodesCount = enabled
+      ? await getRecoveryCodesCount(user.id)
+      : 0
     return { enabled, recoveryCodesCount }
   },
 )
@@ -717,14 +798,16 @@ export const regenerateRecoveryCodesFn = createServerFn({ method: 'POST' })
   })
 
 export const verifyRecoveryCodeFn = createServerFn({ method: 'POST' })
-  .inputValidator(z.object({ userId: z.string().uuid(), code: z.string().min(1) }))
+  .inputValidator(
+    z.object({ userId: z.string().uuid(), code: z.string().min(1) }),
+  )
   .handler(async ({ data }) => {
     const valid = await verifyRecoveryCode(data.userId, data.code)
     if (!valid) {
       setResponseStatus(400)
       throw { message: 'Invalid recovery code', status: 400 }
     }
-    
+
     logSecurityEvent('auth.recovery_code_used', { userId: data.userId })
     return { success: true }
   })
@@ -764,7 +847,9 @@ export const validateCsrfTokenFn = createServerFn({ method: 'POST' })
   })
 
 export const deleteAccountFn = createServerFn({ method: 'POST' })
-  .inputValidator(z.object({ password: z.string().min(1, 'Password required') }))
+  .inputValidator(
+    z.object({ password: z.string().min(1, 'Password required') }),
+  )
   .handler(async ({ data }) => {
     const token = getCookie('session-token')
     if (!token) {
@@ -784,7 +869,10 @@ export const deleteAccountFn = createServerFn({ method: 'POST' })
       throw { message: 'User not found', status: 404 }
     }
 
-    const validPassword = await verifyPassword(data.password, fullUser.passwordHash)
+    const validPassword = await verifyPassword(
+      data.password,
+      fullUser.passwordHash,
+    )
     if (!validPassword) {
       setResponseStatus(401)
       throw { message: 'Invalid password', status: 401 }
@@ -795,7 +883,9 @@ export const deleteAccountFn = createServerFn({ method: 'POST' })
     const { eq } = await import('drizzle-orm')
 
     // Revoke all OAuth tokens (Spotify)
-    await db.delete(spotifyConnections).where(eq(spotifyConnections.userId, user.id))
+    await db
+      .delete(spotifyConnections)
+      .where(eq(spotifyConnections.userId, user.id))
 
     // Delete all sessions
     await db.delete(sessions).where(eq(sessions.userId, user.id))
@@ -831,64 +921,101 @@ export const exportUserDataFn = createServerFn({ method: 'GET' }).handler(
     }
 
     const { db } = await import('../db')
-    const { users, profiles, userLinks, userStats, sessions, activityLog, referrals, spotifyConnections } = await import('../db/schema')
+    const {
+      users,
+      profiles,
+      userLinks,
+      userStats,
+      sessions,
+      activityLog,
+      referrals,
+      spotifyConnections,
+    } = await import('../db/schema')
     const { eq } = await import('drizzle-orm')
 
-    const [userData] = await db.select().from(users).where(eq(users.id, user.id))
-    const [profileData] = await db.select().from(profiles).where(eq(profiles.userId, user.id))
-    const linksData = await db.select().from(userLinks).where(eq(userLinks.userId, user.id))
-    const [statsData] = await db.select().from(userStats).where(eq(userStats.userId, user.id))
-    const sessionsData = await db.select({
-      id: sessions.id,
-      createdAt: sessions.createdAt,
-      expiresAt: sessions.expiresAt,
-      lastActivityAt: sessions.lastActivityAt,
-      ipAddress: sessions.ipAddress,
-    }).from(sessions).where(eq(sessions.userId, user.id))
-    const activityData = await db.select({
-      id: activityLog.id,
-      type: activityLog.type,
-      targetId: activityLog.targetId,
-      createdAt: activityLog.createdAt,
-    }).from(activityLog).where(eq(activityLog.userId, user.id))
-    const referralsData = await db.select().from(referrals).where(eq(referrals.referrerId, user.id))
-    const [spotifyData] = await db.select({
-      connected: spotifyConnections.showOnProfile,
-      createdAt: spotifyConnections.createdAt,
-    }).from(spotifyConnections).where(eq(spotifyConnections.userId, user.id))
+    const [userData] = await db
+      .select()
+      .from(users)
+      .where(eq(users.id, user.id))
+    const [profileData] = await db
+      .select()
+      .from(profiles)
+      .where(eq(profiles.userId, user.id))
+    const linksData = await db
+      .select()
+      .from(userLinks)
+      .where(eq(userLinks.userId, user.id))
+    const [statsData] = await db
+      .select()
+      .from(userStats)
+      .where(eq(userStats.userId, user.id))
+    const sessionsData = await db
+      .select({
+        id: sessions.id,
+        createdAt: sessions.createdAt,
+        expiresAt: sessions.expiresAt,
+        lastActivityAt: sessions.lastActivityAt,
+        ipAddress: sessions.ipAddress,
+      })
+      .from(sessions)
+      .where(eq(sessions.userId, user.id))
+    const activityData = await db
+      .select({
+        id: activityLog.id,
+        type: activityLog.type,
+        targetId: activityLog.targetId,
+        createdAt: activityLog.createdAt,
+      })
+      .from(activityLog)
+      .where(eq(activityLog.userId, user.id))
+    const referralsData = await db
+      .select()
+      .from(referrals)
+      .where(eq(referrals.referrerId, user.id))
+    const [spotifyData] = await db
+      .select({
+        connected: spotifyConnections.showOnProfile,
+        createdAt: spotifyConnections.createdAt,
+      })
+      .from(spotifyConnections)
+      .where(eq(spotifyConnections.userId, user.id))
 
     const exportData = {
       exportedAt: new Date().toISOString(),
-      user: userData ? {
-        id: userData.id,
-        email: userData.email,
-        username: userData.username,
-        name: userData.name,
-        role: userData.role,
-        tier: userData.tier,
-        emailVerified: userData.emailVerified,
-        twoFactorEnabled: userData.twoFactorEnabled,
-        createdAt: userData.createdAt,
-        updatedAt: userData.updatedAt,
-        lastLoginAt: userData.lastLoginAt,
-      } : null,
-      profile: profileData ? {
-        bio: profileData.bio,
-        location: profileData.location,
-        website: profileData.website,
-        pronouns: profileData.pronouns,
-        creatorTypes: profileData.creatorTypes,
-        avatar: profileData.avatar,
-        banner: profileData.banner,
-        accentColor: profileData.accentColor,
-        themeId: profileData.themeId,
-        socials: profileData.socials,
-        badges: profileData.badges,
-        isPublic: profileData.isPublic,
-        createdAt: profileData.createdAt,
-        updatedAt: profileData.updatedAt,
-      } : null,
-      links: linksData.map(link => ({
+      user: userData
+        ? {
+            id: userData.id,
+            email: userData.email,
+            username: userData.username,
+            name: userData.name,
+            role: userData.role,
+            tier: userData.tier,
+            emailVerified: userData.emailVerified,
+            twoFactorEnabled: userData.twoFactorEnabled,
+            createdAt: userData.createdAt,
+            updatedAt: userData.updatedAt,
+            lastLoginAt: userData.lastLoginAt,
+          }
+        : null,
+      profile: profileData
+        ? {
+            bio: profileData.bio,
+            location: profileData.location,
+            website: profileData.website,
+            pronouns: profileData.pronouns,
+            creatorTypes: profileData.creatorTypes,
+            avatar: profileData.avatar,
+            banner: profileData.banner,
+            accentColor: profileData.accentColor,
+            themeId: profileData.themeId,
+            socials: profileData.socials,
+            badges: profileData.badges,
+            isPublic: profileData.isPublic,
+            createdAt: profileData.createdAt,
+            updatedAt: profileData.updatedAt,
+          }
+        : null,
+      links: linksData.map((link) => ({
         id: link.id,
         title: link.title,
         url: link.url,
@@ -898,15 +1025,17 @@ export const exportUserDataFn = createServerFn({ method: 'GET' }).handler(
         clicks: link.clicks,
         createdAt: link.createdAt,
       })),
-      stats: statsData ? {
-        profileViews: statsData.profileViews,
-        totalLinkClicks: statsData.totalLinkClicks,
-        followers: statsData.followers,
-        following: statsData.following,
-      } : null,
+      stats: statsData
+        ? {
+            profileViews: statsData.profileViews,
+            totalLinkClicks: statsData.totalLinkClicks,
+            followers: statsData.followers,
+            following: statsData.following,
+          }
+        : null,
       sessions: sessionsData,
       activityLog: activityData,
-      referrals: referralsData.map(r => ({
+      referrals: referralsData.map((r) => ({
         id: r.id,
         referredId: r.referredId,
         code: r.code,
@@ -941,33 +1070,38 @@ export const verifyEmailFn = createServerFn({ method: 'POST' })
     return { success: true, message: 'Email verified successfully' }
   })
 
-export const resendVerificationEmailFn = createServerFn({ method: 'POST' })
-  .handler(async () => {
-    const { currentUser } = await authMiddleware()
-    if (!currentUser) {
-      setResponseStatus(401)
-      throw { message: 'Not authenticated', status: 401 }
-    }
+export const resendVerificationEmailFn = createServerFn({
+  method: 'POST',
+}).handler(async () => {
+  const { currentUser } = await authMiddleware()
+  if (!currentUser) {
+    setResponseStatus(401)
+    throw { message: 'Not authenticated', status: 401 }
+  }
 
-    if (currentUser.emailVerified) {
-      return { success: true, message: 'Email already verified' }
-    }
+  if (currentUser.emailVerified) {
+    return { success: true, message: 'Email already verified' }
+  }
 
-    const rateLimit = checkRateLimit(
-      `resend-verification:${currentUser.id}`,
-      3,
-      60 * 60 * 1000
-    )
-    if (!rateLimit.allowed) {
-      setResponseStatus(429)
-      throw { message: 'Too many requests. Please try again later.', status: 429 }
-    }
+  const rateLimit = checkRateLimit(
+    `resend-verification:${currentUser.id}`,
+    3,
+    60 * 60 * 1000,
+  )
+  if (!rateLimit.allowed) {
+    setResponseStatus(429)
+    throw { message: 'Too many requests. Please try again later.', status: 429 }
+  }
 
-    const token = await generateEmailVerificationToken(currentUser.id)
-    await sendEmailVerificationEmail(currentUser.email, currentUser.username, token)
+  const token = await generateEmailVerificationToken(currentUser.id)
+  await sendEmailVerificationEmail(
+    currentUser.email,
+    currentUser.username,
+    token,
+  )
 
-    return { success: true, message: 'Verification email sent' }
-  })
+  return { success: true, message: 'Verification email sent' }
+})
 
 export type SignUpInput = z.infer<typeof signUpSchema>
 export type SignInInput = z.infer<typeof signInSchema>

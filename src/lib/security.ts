@@ -34,51 +34,152 @@ const DANGEROUS_PATTERNS = [
 
 const ALLOWED_PROPERTIES = new Set([
   // Colors & Backgrounds
-  'color', 'background', 'background-color', 'background-image', 'background-size',
-  'background-position', 'background-repeat', 'background-attachment',
-  'opacity', 'filter',
-  
+  'color',
+  'background',
+  'background-color',
+  'background-image',
+  'background-size',
+  'background-position',
+  'background-repeat',
+  'background-attachment',
+  'opacity',
+  'filter',
+
   // Typography
-  'font', 'font-family', 'font-size', 'font-weight', 'font-style', 'font-variant',
-  'line-height', 'letter-spacing', 'word-spacing', 'text-align', 'text-decoration',
-  'text-transform', 'text-indent', 'text-shadow', 'white-space', 'word-wrap',
-  'word-break', 'overflow-wrap',
-  
+  'font',
+  'font-family',
+  'font-size',
+  'font-weight',
+  'font-style',
+  'font-variant',
+  'line-height',
+  'letter-spacing',
+  'word-spacing',
+  'text-align',
+  'text-decoration',
+  'text-transform',
+  'text-indent',
+  'text-shadow',
+  'white-space',
+  'word-wrap',
+  'word-break',
+  'overflow-wrap',
+
   // Box Model
-  'margin', 'margin-top', 'margin-right', 'margin-bottom', 'margin-left',
-  'padding', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left',
-  'border', 'border-width', 'border-style', 'border-color',
-  'border-top', 'border-right', 'border-bottom', 'border-left',
-  'border-radius', 'border-top-left-radius', 'border-top-right-radius',
-  'border-bottom-left-radius', 'border-bottom-right-radius',
-  'box-shadow', 'box-sizing',
-  
+  'margin',
+  'margin-top',
+  'margin-right',
+  'margin-bottom',
+  'margin-left',
+  'padding',
+  'padding-top',
+  'padding-right',
+  'padding-bottom',
+  'padding-left',
+  'border',
+  'border-width',
+  'border-style',
+  'border-color',
+  'border-top',
+  'border-right',
+  'border-bottom',
+  'border-left',
+  'border-radius',
+  'border-top-left-radius',
+  'border-top-right-radius',
+  'border-bottom-left-radius',
+  'border-bottom-right-radius',
+  'box-shadow',
+  'box-sizing',
+
   // Layout
-  'display', 'position', 'top', 'right', 'bottom', 'left',
-  'width', 'height', 'min-width', 'max-width', 'min-height', 'max-height',
-  'overflow', 'overflow-x', 'overflow-y', 'visibility', 'z-index',
-  'flex', 'flex-direction', 'flex-wrap', 'flex-flow', 'flex-grow', 'flex-shrink',
-  'flex-basis', 'justify-content', 'align-items', 'align-content', 'align-self',
-  'order', 'gap', 'row-gap', 'column-gap',
-  'grid', 'grid-template', 'grid-template-columns', 'grid-template-rows',
-  'grid-column', 'grid-row', 'grid-area', 'grid-gap',
-  
+  'display',
+  'position',
+  'top',
+  'right',
+  'bottom',
+  'left',
+  'width',
+  'height',
+  'min-width',
+  'max-width',
+  'min-height',
+  'max-height',
+  'overflow',
+  'overflow-x',
+  'overflow-y',
+  'visibility',
+  'z-index',
+  'flex',
+  'flex-direction',
+  'flex-wrap',
+  'flex-flow',
+  'flex-grow',
+  'flex-shrink',
+  'flex-basis',
+  'justify-content',
+  'align-items',
+  'align-content',
+  'align-self',
+  'order',
+  'gap',
+  'row-gap',
+  'column-gap',
+  'grid',
+  'grid-template',
+  'grid-template-columns',
+  'grid-template-rows',
+  'grid-column',
+  'grid-row',
+  'grid-area',
+  'grid-gap',
+
   // Transforms & Animations
-  'transform', 'transform-origin', 'transition', 'transition-property',
-  'transition-duration', 'transition-timing-function', 'transition-delay',
-  'animation', 'animation-name', 'animation-duration', 'animation-timing-function',
-  'animation-delay', 'animation-iteration-count', 'animation-direction',
-  'animation-fill-mode', 'animation-play-state',
-  
+  'transform',
+  'transform-origin',
+  'transition',
+  'transition-property',
+  'transition-duration',
+  'transition-timing-function',
+  'transition-delay',
+  'animation',
+  'animation-name',
+  'animation-duration',
+  'animation-timing-function',
+  'animation-delay',
+  'animation-iteration-count',
+  'animation-direction',
+  'animation-fill-mode',
+  'animation-play-state',
+
   // Other
-  'cursor', 'outline', 'outline-width', 'outline-style', 'outline-color',
-  'list-style', 'list-style-type', 'list-style-position', 'list-style-image',
-  'table-layout', 'border-collapse', 'border-spacing',
-  'vertical-align', 'clip-path', 'object-fit', 'object-position',
-  'backdrop-filter', 'mix-blend-mode', 'isolation',
-  
+  'cursor',
+  'outline',
+  'outline-width',
+  'outline-style',
+  'outline-color',
+  'list-style',
+  'list-style-type',
+  'list-style-position',
+  'list-style-image',
+  'table-layout',
+  'border-collapse',
+  'border-spacing',
+  'vertical-align',
+  'clip-path',
+  'object-fit',
+  'object-position',
+  'backdrop-filter',
+  'mix-blend-mode',
+  'isolation',
+
   // CSS Variables (custom properties)
-  '--background', '--foreground', '--primary', '--accent', '--border', '--card',
+  '--background',
+  '--foreground',
+  '--primary',
+  '--accent',
+  '--border',
+  '--card',
 ])
 
 /**
@@ -87,18 +188,21 @@ const ALLOWED_PROPERTIES = new Set([
  */
 export function sanitizeCSS(css: string): string {
   if (!css || typeof css !== 'string') return ''
-  
+
   // Remove null bytes and other control characters
   let sanitized = css.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '')
-  
+
   // Check for dangerous patterns
   for (const pattern of DANGEROUS_PATTERNS) {
     if (pattern.test(sanitized)) {
-      console.warn('[Security] Dangerous CSS pattern detected and removed:', pattern)
+      console.warn(
+        '[Security] Dangerous CSS pattern detected and removed:',
+        pattern,
+      )
       sanitized = sanitized.replace(pattern, '/* blocked */')
     }
   }
-  
+
   // Check for dangerous properties
   for (const prop of DANGEROUS_PROPERTIES) {
     const regex = new RegExp(prop.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi')
@@ -107,13 +211,13 @@ export function sanitizeCSS(css: string): string {
       sanitized = sanitized.replace(regex, '/* blocked */')
     }
   }
-  
+
   const MAX_CSS_LENGTH = 50000
   if (sanitized.length > MAX_CSS_LENGTH) {
     console.warn('[Security] CSS too long, truncating')
     sanitized = sanitized.substring(0, MAX_CSS_LENGTH)
   }
-  
+
   return sanitized
 }
 
@@ -123,31 +227,31 @@ export function sanitizeCSS(css: string): string {
  */
 export function sanitizeCSSStrict(css: string): string {
   if (!css || typeof css !== 'string') return ''
-  
+
   const sanitized = sanitizeCSS(css)
-  
+
   // Parse and rebuild CSS with only allowed properties
   const lines = sanitized.split(/[;\n]/)
   const safeParts: string[] = []
-  
+
   for (const line of lines) {
     const trimmed = line.trim()
     if (!trimmed || trimmed.startsWith('/*')) continue
-    
+
     const colonIndex = trimmed.indexOf(':')
     if (colonIndex === -1) continue
-    
+
     const property = trimmed.substring(0, colonIndex).trim().toLowerCase()
     const value = trimmed.substring(colonIndex + 1).trim()
-    
+
     // Check if property is allowed or is a CSS variable
     if (ALLOWED_PROPERTIES.has(property) || property.startsWith('--')) {
-      if (!DANGEROUS_PATTERNS.some(p => p.test(value))) {
+      if (!DANGEROUS_PATTERNS.some((p) => p.test(value))) {
         safeParts.push(`${property}: ${value}`)
       }
     }
   }
-  
+
   return safeParts.join(';\n')
 }
 
@@ -164,16 +268,16 @@ const ALLOWED_FONT_DOMAINS = [
  */
 export function sanitizeURL(url: string): string | null {
   if (!url || typeof url !== 'string') return null
-  
+
   try {
     const parsed = new URL(url)
-    
+
     // Only allow http/https
     if (!ALLOWED_URL_PROTOCOLS.includes(parsed.protocol)) {
       console.warn('[Security] Invalid URL protocol:', parsed.protocol)
       return null
     }
-    
+
     return parsed.href
   } catch {
     return null
@@ -186,11 +290,14 @@ export function sanitizeURL(url: string): string | null {
 export function sanitizeFontURL(url: string): string | null {
   const sanitized = sanitizeURL(url)
   if (!sanitized) return null
-  
+
   try {
     const parsed = new URL(sanitized)
     if (!ALLOWED_FONT_DOMAINS.includes(parsed.hostname)) {
-      console.warn('[Security] Font URL from untrusted domain:', parsed.hostname)
+      console.warn(
+        '[Security] Font URL from untrusted domain:',
+        parsed.hostname,
+      )
       return null
     }
     return sanitized
@@ -200,8 +307,10 @@ export function sanitizeFontURL(url: string): string | null {
 }
 
 const HEX_COLOR_REGEX = /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$/
-const RGB_COLOR_REGEX = /^rgba?\(\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}\s*(,\s*(0|1|0?\.\d+))?\s*\)$/
-const HSL_COLOR_REGEX = /^hsla?\(\s*\d{1,3}\s*,\s*\d{1,3}%\s*,\s*\d{1,3}%\s*(,\s*(0|1|0?\.\d+))?\s*\)$/
+const RGB_COLOR_REGEX =
+  /^rgba?\(\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}\s*(,\s*(0|1|0?\.\d+))?\s*\)$/
+const HSL_COLOR_REGEX =
+  /^hsla?\(\s*\d{1,3}\s*,\s*\d{1,3}%\s*,\s*\d{1,3}%\s*(,\s*(0|1|0?\.\d+))?\s*\)$/
 
 /**
  * Validate color values
@@ -209,7 +318,11 @@ const HSL_COLOR_REGEX = /^hsla?\(\s*\d{1,3}\s*,\s*\d{1,3}%\s*,\s*\d{1,3}%\s*(,\s
 export function isValidColor(color: string): boolean {
   if (!color || typeof color !== 'string') return false
   const trimmed = color.trim().toLowerCase()
-  return HEX_COLOR_REGEX.test(trimmed) || RGB_COLOR_REGEX.test(trimmed) || HSL_COLOR_REGEX.test(trimmed)
+  return (
+    HEX_COLOR_REGEX.test(trimmed) ||
+    RGB_COLOR_REGEX.test(trimmed) ||
+    HSL_COLOR_REGEX.test(trimmed)
+  )
 }
 
 /**
@@ -264,23 +377,27 @@ setInterval(() => {
 export function checkRateLimit(
   key: string,
   maxRequests: number,
-  windowMs: number
+  windowMs: number,
 ): { allowed: boolean; remaining: number; resetAt: number } {
   const now = Date.now()
   const entry = rateLimitStore.get(key)
-  
+
   if (!entry || entry.resetAt < now) {
     const resetAt = now + windowMs
     rateLimitStore.set(key, { count: 1, resetAt })
     return { allowed: true, remaining: maxRequests - 1, resetAt }
   }
-  
+
   if (entry.count >= maxRequests) {
     return { allowed: false, remaining: 0, resetAt: entry.resetAt }
   }
-  
+
   entry.count++
-  return { allowed: true, remaining: maxRequests - entry.count, resetAt: entry.resetAt }
+  return {
+    allowed: true,
+    remaining: maxRequests - entry.count,
+    resetAt: entry.resetAt,
+  }
 }
 
 export const RATE_LIMITS = {
@@ -309,9 +426,10 @@ setInterval(() => {
   }
 }, 60000)
 
-export function checkExponentialBackoff(
-  key: string
-): { allowed: boolean; retryAfterMs: number } {
+export function checkExponentialBackoff(key: string): {
+  allowed: boolean
+  retryAfterMs: number
+} {
   const now = Date.now()
   const entry = backoffStore.get(key)
 
@@ -326,10 +444,17 @@ export function checkExponentialBackoff(
   return { allowed: true, retryAfterMs: 0 }
 }
 
-export function recordFailure(key: string, baseDelayMs = 1000, maxDelayMs = 60 * 60 * 1000): void {
+export function recordFailure(
+  key: string,
+  baseDelayMs = 1000,
+  maxDelayMs = 60 * 60 * 1000,
+): void {
   const entry = backoffStore.get(key) || { failures: 0, nextRetryAt: 0 }
   entry.failures++
-  const delay = Math.min(baseDelayMs * Math.pow(2, entry.failures - 1), maxDelayMs)
+  const delay = Math.min(
+    baseDelayMs * Math.pow(2, entry.failures - 1),
+    maxDelayMs,
+  )
   entry.nextRetryAt = Date.now() + delay
   backoffStore.set(key, entry)
 }
@@ -352,10 +477,9 @@ export const SECURITY_HEADERS = {
     "font-src 'self' https://fonts.gstatic.com",
     "img-src 'self' data: https: blob:",
     "connect-src 'self' https://api.stripe.com https://*.neon.tech wss://*.neon.tech https://challenges.cloudflare.com",
-    "frame-src https://js.stripe.com https://challenges.cloudflare.com",
+    'frame-src https://js.stripe.com https://challenges.cloudflare.com',
   ].join('; '),
 }
-
 
 // Validate username format
 export function isValidUsername(username: string): boolean {
@@ -374,7 +498,7 @@ export function generateSecureToken(length = 32): string {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
   const array = new Uint8Array(length)
   crypto.getRandomValues(array)
-  return Array.from(array, byte => chars[byte % chars.length]).join('')
+  return Array.from(array, (byte) => chars[byte % chars.length]).join('')
 }
 
 // ============================================================================
@@ -390,17 +514,20 @@ const ALLOWED_ORIGINS = [
   'http://127.0.0.1:5173',
 ]
 
-export function verifyOrigin(origin: string | null, referer: string | null): boolean {
+export function verifyOrigin(
+  origin: string | null,
+  referer: string | null,
+): boolean {
   if (process.env.NODE_ENV === 'development') {
     return true
   }
 
   if (origin) {
-    return ALLOWED_ORIGINS.some(allowed => origin.startsWith(allowed))
+    return ALLOWED_ORIGINS.some((allowed) => origin.startsWith(allowed))
   }
 
   if (referer) {
-    return ALLOWED_ORIGINS.some(allowed => referer.startsWith(allowed))
+    return ALLOWED_ORIGINS.some((allowed) => referer.startsWith(allowed))
   }
 
   return false
@@ -440,18 +567,22 @@ export function validateCSRFToken(sessionId: string, token: string): boolean {
 
 export type UserRole = 'user' | 'admin' | 'owner'
 
-export function canPerformAdminAction(role: string | null | undefined): boolean {
+export function canPerformAdminAction(
+  role: string | null | undefined,
+): boolean {
   return role === 'admin' || role === 'owner'
 }
 
-export function canPerformOwnerAction(role: string | null | undefined): boolean {
+export function canPerformOwnerAction(
+  role: string | null | undefined,
+): boolean {
   return role === 'owner'
 }
 
 export function validateResourceOwnership(
   resourceOwnerId: string,
   requesterId: string,
-  requesterRole: string | null | undefined
+  requesterRole: string | null | undefined,
 ): boolean {
   if (resourceOwnerId === requesterId) return true
   if (requesterRole === 'admin' || requesterRole === 'owner') return true

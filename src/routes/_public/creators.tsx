@@ -1,46 +1,116 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { motion } from 'motion/react'
 import { useQuery } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
 import { getCreatorsFn, getCreatorStatsFn } from '@/server/functions/creators'
+import type { Creator } from '@/server/functions/creators'
 import { BadgeDisplay } from '@/components/ui/badge-display'
 import { useTheme } from '@/components/layout/ThemeProvider'
 import {
-  Sparkles, Search, Loader2, Users2, Star, TrendingUp, Activity,
-  Filter, Eye, Heart, ArrowRight, Video, Radio, Brush, Music,
-  Gamepad2, Code2, MoreHorizontal, Crown, ExternalLink, ArrowUpDown,
+  Sparkles,
+  Search,
+  Loader2,
+  Users2,
+  Star,
+  Eye,
+  Heart,
+  ArrowRight,
+  Video,
+  Radio,
+  Brush,
+  Music,
+  Gamepad2,
+  Code2,
+  MoreHorizontal,
+  Crown,
+  ExternalLink,
+  ArrowUpDown,
+  Zap,
+  Globe,
 } from 'lucide-react'
 
 type SortOption = 'name_asc' | 'name_desc' | 'views' | 'followers' | 'newest'
 
 const SORT_OPTIONS: { id: SortOption; label: string }[] = [
-  { id: 'name_asc', label: 'A → Z' },
-  { id: 'name_desc', label: 'Z → A' },
+  { id: 'name_asc', label: 'Name A → Z' },
+  { id: 'name_desc', label: 'Name Z → A' },
   { id: 'views', label: 'Most Views' },
   { id: 'followers', label: 'Most Followers' },
-  { id: 'newest', label: 'Newest' },
+  { id: 'newest', label: 'Newest First' },
 ]
 
 export const Route = createFileRoute('/_public/creators')({
   head: () => ({
     meta: [
       { title: 'Creators | Eziox' },
-      { name: 'description', content: 'Discover amazing creators on Eziox' },
+      {
+        name: 'description',
+        content:
+          'Discover amazing creators on Eziox - VTubers, Streamers, Artists, Musicians, Gamers, and Developers.',
+      },
     ],
   }),
   component: CreatorsPage,
 })
 
 const CATEGORIES = [
-  { id: 'all', label: 'All Creators', icon: Users2, color: '#8b5cf6' },
-  { id: 'vtuber', label: 'VTubers', icon: Video, color: '#ec4899' },
-  { id: 'streamer', label: 'Streamers', icon: Radio, color: '#8b5cf6' },
-  { id: 'artist', label: 'Artists', icon: Brush, color: '#14b8a6' },
-  { id: 'musician', label: 'Musicians', icon: Music, color: '#f59e0b' },
-  { id: 'gamer', label: 'Gamers', icon: Gamepad2, color: '#22c55e' },
-  { id: 'developer', label: 'Developers', icon: Code2, color: '#3b82f6' },
-  { id: 'other', label: 'Other', icon: MoreHorizontal, color: '#6b7280' },
+  {
+    id: 'all',
+    label: 'All',
+    icon: Users2,
+    color: '#8b5cf6',
+    description: 'Browse all creators',
+  },
+  {
+    id: 'vtuber',
+    label: 'VTubers',
+    icon: Video,
+    color: '#ec4899',
+    description: 'Virtual content creators',
+  },
+  {
+    id: 'streamer',
+    label: 'Streamers',
+    icon: Radio,
+    color: '#8b5cf6',
+    description: 'Live streamers',
+  },
+  {
+    id: 'artist',
+    label: 'Artists',
+    icon: Brush,
+    color: '#14b8a6',
+    description: 'Digital & traditional artists',
+  },
+  {
+    id: 'musician',
+    label: 'Musicians',
+    icon: Music,
+    color: '#f59e0b',
+    description: 'Music producers & artists',
+  },
+  {
+    id: 'gamer',
+    label: 'Gamers',
+    icon: Gamepad2,
+    color: '#22c55e',
+    description: 'Gaming content creators',
+  },
+  {
+    id: 'developer',
+    label: 'Developers',
+    icon: Code2,
+    color: '#3b82f6',
+    description: 'Coders & tech creators',
+  },
+  {
+    id: 'other',
+    label: 'Other',
+    icon: MoreHorizontal,
+    color: '#6b7280',
+    description: 'Other creators',
+  },
 ] as const
 
 function CreatorsPage() {
@@ -52,14 +122,34 @@ function CreatorsPage() {
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [sortBy, setSortBy] = useState<SortOption>('name_asc')
 
-  const { data: creatorsData, isLoading, dataUpdatedAt } = useQuery({
+  const cardRadius =
+    theme.effects.borderRadius === 'pill'
+      ? '24px'
+      : theme.effects.borderRadius === 'sharp'
+        ? '8px'
+        : '16px'
+  const glowOpacity =
+    theme.effects.glowIntensity === 'strong'
+      ? 0.5
+      : theme.effects.glowIntensity === 'medium'
+        ? 0.35
+        : theme.effects.glowIntensity === 'subtle'
+          ? 0.2
+          : 0
+
+  const {
+    data: creatorsData,
+    isLoading,
+    dataUpdatedAt,
+  } = useQuery({
     queryKey: ['creators', selectedCategory],
-    queryFn: () => getCreators({
-      data: {
-        category: selectedCategory === 'all' ? undefined : selectedCategory,
-        limit: 100,
-      },
-    }),
+    queryFn: () =>
+      getCreators({
+        data: {
+          category: selectedCategory === 'all' ? undefined : selectedCategory,
+          limit: 100,
+        },
+      }),
     refetchInterval: 30000,
   })
 
@@ -70,32 +160,56 @@ function CreatorsPage() {
   })
 
   const creators = creatorsData?.creators || []
-  const filteredCreators = creators.filter(c =>
-    c.user.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (c.user.name?.toLowerCase() || '').includes(searchQuery.toLowerCase())
-  )
 
-  const sortCreators = <T extends typeof filteredCreators[0]>(list: T[]): T[] => {
+  const filteredCreators = useMemo(() => {
+    return creators.filter(
+      (c) =>
+        c.user.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (c.user.name?.toLowerCase() || '').includes(
+          searchQuery.toLowerCase(),
+        ) ||
+        (c.profile.bio?.toLowerCase() || '').includes(
+          searchQuery.toLowerCase(),
+        ),
+    )
+  }, [creators, searchQuery])
+
+  const sortCreators = <T extends (typeof filteredCreators)[0]>(
+    list: T[],
+  ): T[] => {
     return [...list].sort((a, b) => {
       switch (sortBy) {
         case 'name_asc':
-          return (a.user.name || a.user.username).localeCompare(b.user.name || b.user.username)
+          return (a.user.name || a.user.username).localeCompare(
+            b.user.name || b.user.username,
+          )
         case 'name_desc':
-          return (b.user.name || b.user.username).localeCompare(a.user.name || a.user.username)
+          return (b.user.name || b.user.username).localeCompare(
+            a.user.name || a.user.username,
+          )
         case 'views':
           return (b.stats?.profileViews || 0) - (a.stats?.profileViews || 0)
         case 'followers':
           return (b.stats?.followers || 0) - (a.stats?.followers || 0)
         case 'newest':
-          return new Date(b.user.createdAt || 0).getTime() - new Date(a.user.createdAt || 0).getTime()
+          return (
+            new Date(b.user.createdAt || 0).getTime() -
+            new Date(a.user.createdAt || 0).getTime()
+          )
         default:
           return 0
       }
     })
   }
 
-  const featuredCreators = sortCreators(filteredCreators.filter(c => c.profile.isFeatured))
-  const regularCreators = sortCreators(filteredCreators.filter(c => !c.profile.isFeatured))
+  const featuredCreators = useMemo(
+    () => sortCreators(filteredCreators.filter((c) => c.profile.isFeatured)),
+    [filteredCreators, sortBy],
+  )
+  const regularCreators = useMemo(
+    () => sortCreators(filteredCreators.filter((c) => !c.profile.isFeatured)),
+    [filteredCreators, sortBy],
+  )
 
   const stats = {
     total: statsData?.totalCreators || 0,
@@ -105,422 +219,772 @@ function CreatorsPage() {
   }
 
   const getCategoryConfig = (type: string | null | undefined) => {
-    const cat = CATEGORIES.find(c => c.id === type)
+    const cat = CATEGORIES.find((c) => c.id === type)
     return cat || CATEGORIES[0]
   }
 
+  const selectedCategoryConfig = getCategoryConfig(selectedCategory)
+
   return (
-    <div className="min-h-screen pt-24 pb-12 px-4">
+    <div
+      className="min-h-screen"
+      style={{
+        background: theme.colors.background,
+        fontFamily: theme.typography.bodyFont,
+      }}
+    >
+      {/* Animated Background */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
+        {/* Primary glow */}
         <motion.div
-          className="absolute top-40 left-1/4 w-[500px] h-[500px] rounded-full blur-3xl opacity-20"
-          style={{ background: theme.colors.primary }}
-          animate={{ scale: [1, 1.2, 1], x: [0, 50, 0] }}
-          transition={{ duration: 20, repeat: Infinity }}
+          className="absolute -top-40 -left-40 w-[800px] h-[800px] rounded-full blur-[200px]"
+          style={{
+            background: theme.colors.primary,
+            opacity: glowOpacity * 0.4,
+          }}
+          animate={{
+            scale: [1, 1.2, 1],
+            x: [0, 100, 0],
+            y: [0, 50, 0],
+          }}
+          transition={{ duration: 25, repeat: Infinity, ease: 'easeInOut' }}
         />
+        {/* Accent glow */}
         <motion.div
-          className="absolute bottom-20 right-1/4 w-[400px] h-[400px] rounded-full blur-3xl opacity-15"
-          style={{ background: theme.colors.accent }}
-          animate={{ scale: [1.2, 1, 1.2], y: [0, -30, 0] }}
-          transition={{ duration: 15, repeat: Infinity }}
+          className="absolute -bottom-40 -right-40 w-[700px] h-[700px] rounded-full blur-[180px]"
+          style={{
+            background: theme.colors.accent,
+            opacity: glowOpacity * 0.35,
+          }}
+          animate={{
+            scale: [1.2, 1, 1.2],
+            x: [0, -80, 0],
+            y: [0, -60, 0],
+          }}
+          transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
         />
+        {/* Center glow */}
+        <motion.div
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full blur-[150px]"
+          style={{
+            background: `${theme.colors.primary}50`,
+            opacity: glowOpacity * 0.2,
+          }}
+          animate={{
+            scale: [1, 1.3, 1],
+            rotate: [0, 180, 360],
+          }}
+          transition={{ duration: 30, repeat: Infinity, ease: 'linear' }}
+        />
+        {/* Floating particles */}
+        {[...Array(6)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-2 h-2 rounded-full"
+            style={{
+              background:
+                i % 2 === 0 ? theme.colors.primary : theme.colors.accent,
+              left: `${15 + i * 15}%`,
+              top: `${20 + (i % 3) * 25}%`,
+              opacity: 0.4,
+            }}
+            animate={{
+              y: [0, -30, 0],
+              x: [0, i % 2 === 0 ? 20 : -20, 0],
+              scale: [1, 1.5, 1],
+              opacity: [0.4, 0.8, 0.4],
+            }}
+            transition={{
+              duration: 4 + i,
+              repeat: Infinity,
+              delay: i * 0.5,
+            }}
+          />
+        ))}
       </div>
 
-      <div className="max-w-7xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
-        >
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <motion.div
-                className="w-14 h-14 rounded-2xl flex items-center justify-center relative"
-                style={{ background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})` }}
-                whileHover={{ scale: 1.05, rotate: 5 }}
-              >
-                <Sparkles size={28} className="text-white" />
-                <motion.div
-                  className="absolute inset-0 rounded-2xl"
-                  style={{ background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})` }}
-                  animate={{ opacity: [0.5, 0, 0.5] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                />
-              </motion.div>
-              <div>
-                <h1 className="text-3xl font-bold" style={{ color: 'var(--foreground)' }}>Creators</h1>
-                <div className="flex items-center gap-2 mt-1">
-                  <Activity size={14} style={{ color: '#22c55e' }} />
-                  <span className="text-sm" style={{ color: 'var(--foreground-muted)' }}>
-                    Live · Updated {new Date(dataUpdatedAt).toLocaleTimeString()}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"
-        >
-          {[
-            { label: 'Total Creators', value: stats.total, icon: Users2, color: theme.colors.primary, bg: `${theme.colors.primary}20` },
-            { label: 'Featured', value: stats.featured, icon: Star, color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.15)' },
-            { label: 'Categories', value: stats.categories, icon: Sparkles, color: theme.colors.accent, bg: `${theme.colors.accent}20` },
-            { label: 'Referred', value: stats.referred, icon: TrendingUp, color: '#22c55e', bg: 'rgba(34, 197, 94, 0.15)' },
-          ].map((stat, i) => (
+      {/* Hero Section */}
+      <div className="relative overflow-hidden">
+        <div
+          className="absolute inset-0"
+          style={{
+            background: `linear-gradient(135deg, ${theme.colors.primary}15, ${theme.colors.accent}10, transparent)`,
+          }}
+        />
+        <div className="max-w-7xl mx-auto px-4 pt-28 pb-16 relative">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-12"
+          >
+            {/* Animated badge */}
             <motion.div
-              key={stat.label}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.15 + i * 0.05 }}
-              whileHover={{ scale: 1.02, y: -2 }}
-              className="relative p-5 rounded-2xl overflow-hidden group"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2 }}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6"
               style={{
-                background: `${theme.colors.card}80`,
-                backdropFilter: 'blur(20px)',
-                border: `1px solid ${theme.colors.border}`,
+                background: `linear-gradient(135deg, ${theme.colors.primary}20, ${theme.colors.accent}15)`,
+                border: `1px solid ${theme.colors.primary}30`,
               }}
             >
               <motion.div
-                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                style={{ background: `radial-gradient(circle at 50% 0%, ${stat.bg}, transparent 70%)` }}
-              />
-              <div className="absolute top-0 left-0 right-0 h-px" style={{ background: `linear-gradient(90deg, transparent, ${stat.color}40, transparent)` }} />
-              <div className="flex items-center gap-3">
-                <div className="w-11 h-11 rounded-xl flex items-center justify-center" style={{ background: stat.bg }}>
-                  <stat.icon size={22} style={{ color: stat.color }} />
-                </div>
-                <div>
-                  <motion.p
-                    className="text-2xl font-bold"
-                    style={{ color: 'var(--foreground)' }}
-                    key={stat.value}
-                    initial={{ scale: 1.2 }}
-                    animate={{ scale: 1 }}
-                  >
-                    {stat.value}
-                  </motion.p>
-                  <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>{stat.label}</p>
-                </div>
-              </div>
+                animate={{ rotate: 360 }}
+                transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
+              >
+                <Sparkles size={16} style={{ color: theme.colors.primary }} />
+              </motion.div>
+              <span
+                className="text-sm font-medium"
+                style={{ color: theme.colors.primary }}
+              >
+                Creator Community
+              </span>
+              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
             </motion.div>
-          ))}
-        </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="mb-8"
-        >
-          <div
-            className="rounded-3xl overflow-hidden"
-            style={{
-              background: theme.colors.card,
-              backdropFilter: 'blur(20px)',
-              border: `1px solid ${theme.colors.border}`,
-            }}
+            {/* Main title */}
+            <h1
+              className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6"
+              style={{ fontFamily: theme.typography.displayFont }}
+            >
+              <span style={{ color: theme.colors.foreground }}>Discover </span>
+              <span
+                className="bg-clip-text text-transparent relative"
+                style={{
+                  backgroundImage: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
+                }}
+              >
+                Amazing
+                <motion.span
+                  className="absolute -right-8 -top-4"
+                  animate={{ rotate: [0, 15, -15, 0], scale: [1, 1.2, 1] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  <Zap size={24} style={{ color: theme.colors.accent }} />
+                </motion.span>
+              </span>
+              <br />
+              <span style={{ color: theme.colors.foreground }}>Creators</span>
+            </h1>
+
+            <p
+              className="text-xl md:text-2xl max-w-2xl mx-auto mb-8"
+              style={{ color: theme.colors.foregroundMuted }}
+            >
+              Connect with talented VTubers, Streamers, Artists, Musicians, and
+              more from around the world
+            </p>
+
+            {/* Quick stats */}
+            <div className="flex flex-wrap justify-center gap-6 mb-8">
+              {[
+                {
+                  icon: Users2,
+                  value: stats.total,
+                  label: 'Creators',
+                  color: theme.colors.primary,
+                },
+                {
+                  icon: Star,
+                  value: stats.featured,
+                  label: 'Featured',
+                  color: '#f59e0b',
+                },
+                {
+                  icon: Globe,
+                  value: stats.categories,
+                  label: 'Categories',
+                  color: theme.colors.accent,
+                },
+              ].map((stat, i) => (
+                <motion.div
+                  key={stat.label}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 + i * 0.1 }}
+                  className="flex items-center gap-3 px-5 py-3 rounded-2xl"
+                  style={{
+                    background: `${theme.colors.card}80`,
+                    backdropFilter: 'blur(10px)',
+                    border: `1px solid ${theme.colors.border}`,
+                  }}
+                >
+                  <div
+                    className="w-10 h-10 rounded-xl flex items-center justify-center"
+                    style={{ background: `${stat.color}20` }}
+                  >
+                    <stat.icon size={20} style={{ color: stat.color }} />
+                  </div>
+                  <div className="text-left">
+                    <p
+                      className="text-2xl font-bold"
+                      style={{ color: theme.colors.foreground }}
+                    >
+                      {stat.value}
+                    </p>
+                    <p
+                      className="text-xs"
+                      style={{ color: theme.colors.foregroundMuted }}
+                    >
+                      {stat.label}
+                    </p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Live indicator */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.6 }}
+              className="flex items-center justify-center gap-2 text-sm"
+              style={{ color: theme.colors.foregroundMuted }}
+            >
+              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+              <span>
+                Live · Updated {new Date(dataUpdatedAt).toLocaleTimeString()}
+              </span>
+            </motion.div>
+          </motion.div>
+
+          {/* Category Cards */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.6 }}
+            className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 mb-8"
           >
-            <div className="p-5 flex flex-col lg:flex-row lg:items-center gap-4" style={{ borderBottom: `1px solid ${theme.colors.border}` }}>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: `${theme.colors.primary}20` }}>
-                  <Filter size={20} style={{ color: theme.colors.primary }} />
-                </div>
-                <div>
-                  <h2 className="font-semibold" style={{ color: 'var(--foreground)' }}>Browse Creators</h2>
-                  <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>{filteredCreators.length} creators found</p>
-                </div>
-              </div>
-              <div className="flex-1 flex gap-3">
-                <div className="relative flex-1">
-                  <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--foreground-muted)' }} />
-                  <input
-                    type="text"
-                    placeholder="Search creators..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl text-sm transition-all focus:ring-2 focus:ring-purple-500/30"
-                    style={{ background: theme.colors.backgroundSecondary, border: `1px solid ${theme.colors.border}`, color: theme.colors.foreground }}
-                  />
-                </div>
-                <div className="relative">
-                  <ArrowUpDown size={16} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--foreground-muted)' }} />
-                  <select
-                    value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value as SortOption)}
-                    className="pl-10 pr-8 py-2.5 rounded-xl text-sm appearance-none cursor-pointer"
-                    style={{ background: theme.colors.backgroundSecondary, border: `1px solid ${theme.colors.border}`, color: theme.colors.foreground }}
-                  >
-                    {SORT_OPTIONS.map((opt) => (
-                      <option key={opt.id} value={opt.id}>{opt.label}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-4 flex flex-wrap gap-2" style={{ borderBottom: `1px solid ${theme.colors.border}` }}>
-              {CATEGORIES.map((cat) => {
-                const isActive = selectedCategory === cat.id
-                return (
-                  <motion.button
-                    key={cat.id}
-                    onClick={() => setSelectedCategory(cat.id)}
-                    className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all"
+            {CATEGORIES.map((cat, i) => {
+              const isActive = selectedCategory === cat.id
+              return (
+                <motion.button
+                  key={cat.id}
+                  onClick={() => setSelectedCategory(cat.id)}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 + i * 0.05 }}
+                  whileHover={{ scale: 1.05, y: -4 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="relative p-4 rounded-2xl text-center transition-all overflow-hidden group"
+                  style={{
+                    background: isActive
+                      ? `linear-gradient(135deg, ${cat.color}30, ${cat.color}15)`
+                      : theme.effects.cardStyle === 'glass'
+                        ? `${theme.colors.card}60`
+                        : theme.colors.card,
+                    border: `2px solid ${isActive ? cat.color : theme.colors.border}`,
+                    backdropFilter: 'blur(10px)',
+                  }}
+                >
+                  {/* Hover glow */}
+                  <motion.div
+                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"
                     style={{
-                      background: isActive ? `${cat.color}20` : theme.colors.backgroundSecondary,
-                      border: `1px solid ${isActive ? `${cat.color}40` : theme.colors.border}`,
-                      color: isActive ? cat.color : theme.colors.foregroundMuted,
+                      background: `radial-gradient(circle at 50% 50%, ${cat.color}20, transparent 70%)`,
                     }}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <cat.icon size={16} />
-                    <span>{cat.label}</span>
-                  </motion.button>
-                )
-              })}
-            </div>
-          </div>
-        </motion.div>
+                  />
 
-        {featuredCreators.length > 0 && (
+                  <div
+                    className="w-12 h-12 mx-auto mb-2 rounded-xl flex items-center justify-center relative"
+                    style={{
+                      background: isActive ? cat.color : `${cat.color}20`,
+                      boxShadow: isActive
+                        ? `0 4px 20px ${cat.color}40`
+                        : undefined,
+                    }}
+                  >
+                    <cat.icon
+                      size={24}
+                      style={{ color: isActive ? '#fff' : cat.color }}
+                    />
+                  </div>
+                  <p
+                    className="text-sm font-semibold"
+                    style={{
+                      color: isActive ? cat.color : theme.colors.foreground,
+                    }}
+                  >
+                    {cat.label}
+                  </p>
+                </motion.button>
+              )
+            })}
+          </motion.div>
+
+          {/* Search and Sort Bar */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.25 }}
-            className="mb-8"
+            transition={{ delay: 0.5 }}
+            className="flex flex-col sm:flex-row gap-4 max-w-2xl mx-auto"
           >
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: `${theme.colors.primary}20` }}>
-                <Star size={16} style={{ color: theme.colors.primary }} />
-              </div>
-              <h2 className="text-xl font-bold" style={{ color: theme.colors.foreground }}>Featured Creators</h2>
+            <div className="relative flex-1">
+              <Search
+                size={20}
+                className="absolute left-4 top-1/2 -translate-y-1/2"
+                style={{ color: theme.colors.foregroundMuted }}
+              />
+              <input
+                type="text"
+                placeholder="Search creators by name, username, or bio..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-12 pr-4 py-4 rounded-2xl text-base transition-all focus:ring-2 outline-none"
+                style={{
+                  background:
+                    theme.effects.cardStyle === 'glass'
+                      ? `${theme.colors.card}80`
+                      : theme.colors.card,
+                  border: `1px solid ${theme.colors.border}`,
+                  color: theme.colors.foreground,
+                  backdropFilter: 'blur(10px)',
+                }}
+              />
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {featuredCreators.map((creator, index) => {
-                const creatorTypes = (creator.profile.creatorTypes as string[]) || []
-                const catConfig = getCategoryConfig(creatorTypes[0])
-                return (
-                  <motion.div
-                    key={creator.user.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3 + index * 0.05 }}
-                  >
-                    <Link
-                      to="/$username"
-                      params={{ username: creator.user.username }}
-                      className="block rounded-2xl overflow-hidden group"
-                      style={{
-                        background: `linear-gradient(135deg, ${theme.colors.primary}15, ${theme.colors.accent}10)`,
-                        border: `1px solid ${theme.colors.primary}30`,
-                      }}
-                    >
-                      <div className="relative h-28">
-                        {creator.profile.banner ? (
-                          <img src={creator.profile.banner} alt="" className="w-full h-full object-cover" />
-                        ) : (
-                          <div className="w-full h-full" style={{ background: `linear-gradient(135deg, ${creator.profile.accentColor || '#8b5cf6'}40, ${catConfig.color}20)` }} />
-                        )}
-                        <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.8), transparent)' }} />
-                        <div className="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1 rounded-lg" style={{ background: theme.colors.primary }}>
-                          <Star size={12} style={{ color: theme.colors.primaryForeground }} />
-                          <span className="text-xs font-semibold" style={{ color: theme.colors.primaryForeground }}>Featured</span>
-                        </div>
-                      </div>
-                      <div className="p-4 -mt-8 relative">
-                        <div className="flex items-end gap-3 mb-3">
-                          <div
-                            className="w-16 h-16 rounded-xl flex items-center justify-center text-white font-bold text-xl overflow-hidden"
-                            style={{
-                              background: creator.profile.avatar
-                                ? `url(${creator.profile.avatar}) center/cover`
-                                : `linear-gradient(135deg, ${creator.profile.accentColor || '#8b5cf6'}, #ec4899)`,
-                              boxShadow: '0 0 0 3px var(--background)',
-                            }}
-                          >
-                            {!creator.profile.avatar && (creator.user.name ?? creator.user.username).charAt(0).toUpperCase()}
-                          </div>
-                          <div className="flex-1 min-w-0 pb-1">
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <span className="font-bold truncate" style={{ color: 'var(--foreground)' }}>{creator.user.name || creator.user.username}</span>
-                              {creator.profile.badges && creator.profile.badges.length > 0 && (
-                                <BadgeDisplay badges={creator.profile.badges} size="sm" maxDisplay={4} />
-                              )}
-                            </div>
-                            <p className="text-sm" style={{ color: 'var(--foreground-muted)' }}>@{creator.user.username}</p>
-                          </div>
-                        </div>
-                        {creator.profile.bio && (
-                          <p className="text-sm line-clamp-2 mb-3" style={{ color: 'var(--foreground-muted)' }}>{creator.profile.bio}</p>
-                        )}
-                        <div className="flex items-center justify-between pt-3" style={{ borderTop: `1px solid ${theme.colors.border}` }}>
-                          <div className="flex items-center gap-3">
-                            <div className="flex items-center gap-1.5">
-                              <catConfig.icon size={14} style={{ color: catConfig.color }} />
-                              <span className="text-xs" style={{ color: catConfig.color }}>{catConfig.label}</span>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-1 text-sm font-medium group-hover:gap-2 transition-all" style={{ color: theme.colors.primary }}>
-                            <span>View</span>
-                            <ArrowRight size={14} />
-                          </div>
-                        </div>
-                      </div>
-                    </Link>
-                  </motion.div>
-                )
-              })}
+            <div className="relative">
+              <ArrowUpDown
+                size={18}
+                className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"
+                style={{ color: theme.colors.foregroundMuted }}
+              />
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as SortOption)}
+                className="pl-12 pr-6 py-4 rounded-2xl text-base appearance-none cursor-pointer min-w-[180px]"
+                style={{
+                  background:
+                    theme.effects.cardStyle === 'glass'
+                      ? `${theme.colors.card}80`
+                      : theme.colors.card,
+                  border: `1px solid ${theme.colors.border}`,
+                  color: theme.colors.foreground,
+                }}
+              >
+                {SORT_OPTIONS.map((opt) => (
+                  <option key={opt.id} value={opt.id}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
             </div>
           </motion.div>
-        )}
+        </div>
+      </div>
 
+      {/* Results Section */}
+      <div className="max-w-7xl mx-auto px-4 pt-8 pb-12">
+        {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
+          transition={{ delay: 0.6 }}
+          className="flex items-center justify-between mb-8"
         >
+          <div className="flex items-center gap-4">
+            <div
+              className="w-12 h-12 rounded-2xl flex items-center justify-center"
+              style={{
+                background: `linear-gradient(135deg, ${selectedCategoryConfig.color}30, ${selectedCategoryConfig.color}15)`,
+                border: `1px solid ${selectedCategoryConfig.color}40`,
+              }}
+            >
+              <selectedCategoryConfig.icon
+                size={24}
+                style={{ color: selectedCategoryConfig.color }}
+              />
+            </div>
+            <div>
+              <h2
+                className="text-2xl font-bold"
+                style={{
+                  color: theme.colors.foreground,
+                  fontFamily: theme.typography.displayFont,
+                }}
+              >
+                {selectedCategoryConfig.label === 'All'
+                  ? 'All Creators'
+                  : selectedCategoryConfig.label}
+              </h2>
+              <p
+                className="text-sm"
+                style={{ color: theme.colors.foregroundMuted }}
+              >
+                {filteredCreators.length} creator
+                {filteredCreators.length !== 1 ? 's' : ''} found
+              </p>
+            </div>
+          </div>
+
+          {featuredCreators.length > 0 && (
+            <div
+              className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl"
+              style={{
+                background: `${theme.colors.primary}15`,
+                border: `1px solid ${theme.colors.primary}30`,
+              }}
+            >
+              <Star size={16} style={{ color: theme.colors.primary }} />
+              <span
+                className="text-sm font-medium"
+                style={{ color: theme.colors.primary }}
+              >
+                {featuredCreators.length} Featured
+              </span>
+            </div>
+          )}
+        </motion.div>
+
+        {/* Loading State */}
+        {isLoading && (
+          <div className="py-20 text-center">
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+              className="inline-block"
+            >
+              <Loader2
+                className="w-12 h-12"
+                style={{ color: theme.colors.primary }}
+              />
+            </motion.div>
+            <p
+              className="mt-4 text-lg"
+              style={{ color: theme.colors.foregroundMuted }}
+            >
+              Discovering amazing creators...
+            </p>
+          </div>
+        )}
+
+        {/* Empty State */}
+        {!isLoading && filteredCreators.length === 0 && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="py-20 text-center"
+          >
+            <div
+              className="w-24 h-24 mx-auto mb-6 rounded-3xl flex items-center justify-center"
+              style={{
+                background: `linear-gradient(135deg, ${theme.colors.primary}20, ${theme.colors.accent}15)`,
+                border: `1px solid ${theme.colors.primary}30`,
+              }}
+            >
+              <Users2
+                size={48}
+                style={{ color: theme.colors.primary, opacity: 0.6 }}
+              />
+            </div>
+            <h3
+              className="text-2xl font-bold mb-3"
+              style={{
+                color: theme.colors.foreground,
+                fontFamily: theme.typography.displayFont,
+              }}
+            >
+              No creators found
+            </h3>
+            <p
+              className="text-lg mb-6"
+              style={{ color: theme.colors.foregroundMuted }}
+            >
+              Try adjusting your search or explore different categories
+            </p>
+            <button
+              onClick={() => {
+                setSearchQuery('')
+                setSelectedCategory('all')
+              }}
+              className="px-6 py-3 rounded-xl font-medium transition-all hover:scale-105"
+              style={{
+                background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
+                color: '#fff',
+              }}
+            >
+              Clear Filters
+            </button>
+          </motion.div>
+        )}
+
+        {/* Creator Cards Grid */}
+        {!isLoading && filteredCreators.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+            {/* Featured Creators First */}
+            {featuredCreators.map((creator, index) => (
+              <CreatorCard
+                key={creator.user.id}
+                creator={creator}
+                index={index}
+                isFeatured={true}
+                theme={theme}
+                cardRadius={cardRadius}
+                getCategoryConfig={getCategoryConfig}
+              />
+            ))}
+
+            {/* Regular Creators */}
+            {regularCreators.map((creator, index) => (
+              <CreatorCard
+                key={creator.user.id}
+                creator={creator}
+                index={featuredCreators.length + index}
+                isFeatured={false}
+                theme={theme}
+                cardRadius={cardRadius}
+                getCategoryConfig={getCategoryConfig}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// Creator Card Component
+interface CreatorCardProps {
+  creator: Creator
+  index: number
+  isFeatured: boolean
+  theme: ReturnType<typeof useTheme>['theme']
+  cardRadius: string
+  getCategoryConfig: (
+    type: string | null | undefined,
+  ) => (typeof CATEGORIES)[number]
+}
+
+function CreatorCard({
+  creator,
+  index,
+  isFeatured,
+  theme,
+  cardRadius,
+  getCategoryConfig,
+}: CreatorCardProps) {
+  const creatorTypes = (creator.profile.creatorTypes as string[]) || []
+  const catConfig = getCategoryConfig(creatorTypes[0])
+  const accentColor = creator.profile.accentColor || catConfig.color
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: Math.min(index * 0.03, 0.5) }}
+      whileHover={{ y: -8, scale: 1.02 }}
+      className="group"
+    >
+      <Link
+        to="/$username"
+        params={{ username: creator.user.username }}
+        className="block h-full relative overflow-hidden"
+        style={{
+          background:
+            theme.effects.cardStyle === 'glass'
+              ? `${theme.colors.card}90`
+              : theme.colors.card,
+          backdropFilter:
+            theme.effects.cardStyle === 'glass' ? 'blur(20px)' : undefined,
+          border: isFeatured
+            ? `2px solid ${theme.colors.primary}50`
+            : `1px solid ${theme.colors.border}`,
+          borderRadius: cardRadius,
+        }}
+      >
+        {/* Featured Badge */}
+        {isFeatured && (
           <div
-            className="rounded-3xl overflow-hidden"
+            className="absolute top-3 right-3 z-10 flex items-center gap-1.5 px-3 py-1.5 rounded-full"
             style={{
-              background: theme.colors.card,
-              backdropFilter: 'blur(20px)',
-              border: `1px solid ${theme.colors.border}`,
+              background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
+              boxShadow: `0 4px 15px ${theme.colors.primary}40`,
             }}
           >
-            <div className="p-5 flex items-center justify-between" style={{ borderBottom: `1px solid ${theme.colors.border}` }}>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: `${theme.colors.primary}20` }}>
-                  <Users2 size={20} style={{ color: theme.colors.primary }} />
-                </div>
-                <div>
-                  <h2 className="font-semibold" style={{ color: 'var(--foreground)' }}>All Creators</h2>
-                  <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>{regularCreators.length} creators</p>
-                </div>
+            <Star size={12} className="text-white" />
+            <span className="text-xs font-bold text-white">Featured</span>
+          </div>
+        )}
+
+        {/* Owner Badge */}
+        {creator.user.role === 'owner' && (
+          <div
+            className="absolute top-3 left-3 z-10 flex items-center gap-1.5 px-3 py-1.5 rounded-full"
+            style={{ background: '#fbbf24' }}
+          >
+            <Crown size={12} className="text-black" />
+            <span className="text-xs font-bold text-black">Owner</span>
+          </div>
+        )}
+
+        {/* Banner / Gradient Background */}
+        <div className="relative h-24 overflow-hidden">
+          {creator.profile.banner ? (
+            <img
+              src={creator.profile.banner}
+              alt=""
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+            />
+          ) : (
+            <div
+              className="w-full h-full"
+              style={{
+                background: `linear-gradient(135deg, ${accentColor}60, ${catConfig.color}30, ${theme.colors.primary}20)`,
+              }}
+            />
+          )}
+          {/* Gradient overlay */}
+          <div
+            className="absolute inset-0"
+            style={{
+              background: `linear-gradient(to top, ${theme.colors.card}, transparent 60%)`,
+            }}
+          />
+        </div>
+
+        {/* Content */}
+        <div className="p-5 -mt-10 relative">
+          {/* Avatar */}
+          <div className="flex items-end gap-4 mb-4">
+            <div className="relative">
+              <div
+                className="w-20 h-20 rounded-2xl flex items-center justify-center text-white font-bold text-2xl overflow-hidden transition-transform duration-300 group-hover:scale-105"
+                style={{
+                  background: creator.profile.avatar
+                    ? `url(${creator.profile.avatar}) center/cover`
+                    : `linear-gradient(135deg, ${accentColor}, ${catConfig.color})`,
+                  boxShadow: `0 4px 20px ${accentColor}40, 0 0 0 4px ${theme.colors.card}`,
+                }}
+              >
+                {!creator.profile.avatar &&
+                  (creator.user.name ?? creator.user.username)
+                    .charAt(0)
+                    .toUpperCase()}
+              </div>
+              {/* Category indicator */}
+              <div
+                className="absolute -bottom-1 -right-1 w-7 h-7 rounded-lg flex items-center justify-center"
+                style={{
+                  background: catConfig.color,
+                  boxShadow: `0 2px 8px ${catConfig.color}50`,
+                }}
+              >
+                <catConfig.icon size={14} className="text-white" />
               </div>
             </div>
 
-            {isLoading ? (
-              <div className="p-12 text-center">
-                <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}>
-                  <Loader2 className="w-8 h-8 mx-auto" style={{ color: 'var(--primary)' }} />
-                </motion.div>
-                <p className="mt-3 text-sm" style={{ color: 'var(--foreground-muted)' }}>Loading creators...</p>
+            <div className="flex-1 min-w-0 pb-1">
+              <div className="flex items-center gap-2 flex-wrap mb-1">
+                <span
+                  className="font-bold text-lg truncate"
+                  style={{ color: theme.colors.foreground }}
+                >
+                  {creator.user.name || creator.user.username}
+                </span>
+                {creator.profile.badges &&
+                  creator.profile.badges.length > 0 && (
+                    <BadgeDisplay
+                      badges={creator.profile.badges}
+                      size="sm"
+                      maxDisplay={3}
+                    />
+                  )}
               </div>
-            ) : regularCreators.length === 0 ? (
-              <div className="p-12 text-center">
-                <div className="w-20 h-20 mx-auto mb-4 rounded-2xl flex items-center justify-center" style={{ background: `${theme.colors.primary}15` }}>
-                  <Users2 size={40} style={{ color: theme.colors.primary, opacity: 0.5 }} />
-                </div>
-                <h3 className="text-xl font-bold mb-2" style={{ color: 'var(--foreground)' }}>No creators found</h3>
-                <p style={{ color: 'var(--foreground-muted)' }}>Try adjusting your search or filters</p>
-              </div>
-            ) : (
-              <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {regularCreators.map((creator, index) => {
-                  const creatorTypes = (creator.profile.creatorTypes as string[]) || []
-                const catConfig = getCategoryConfig(creatorTypes[0])
-                  return (
-                    <motion.div
-                      key={creator.user.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.03 }}
-                      whileHover={{ y: -4 }}
-                    >
-                      <Link
-                        to="/$username"
-                        params={{ username: creator.user.username }}
-                        className="block rounded-2xl group"
-                        style={{
-                          background: 'rgba(255, 255, 255, 0.02)',
-                          backdropFilter: 'blur(10px)',
-                          border: '1px solid rgba(255, 255, 255, 0.08)',
-                        }}
-                      >
-                        <div className="p-4">
-                          <div className="flex items-start gap-3 mb-3">
-                            <div className="relative">
-                              <div
-                                className="w-16 h-16 rounded-xl flex items-center justify-center text-white font-bold text-xl overflow-hidden"
-                                style={{
-                                  background: creator.profile.avatar
-                                    ? `url(${creator.profile.avatar}) center/cover`
-                                    : `linear-gradient(135deg, ${creator.profile.accentColor || '#8b5cf6'}, #ec4899)`,
-                                }}
-                              >
-                                {!creator.profile.avatar && (creator.user.name ?? creator.user.username).charAt(0).toUpperCase()}
-                              </div>
-                              {creator.user.role === 'owner' && (
-                                <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full flex items-center justify-center" style={{ background: '#fbbf24', border: '2px solid var(--background)' }}>
-                                  <Crown size={12} className="text-black" />
-                                </div>
-                              )}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2 flex-wrap mb-1">
-                                <span className="font-bold truncate" style={{ color: 'var(--foreground)' }}>
-                                  {creator.user.name || creator.user.username}
-                                </span>
-                                {creator.profile.badges && creator.profile.badges.length > 0 && (
-                                  <BadgeDisplay badges={creator.profile.badges} size="sm" maxDisplay={4} />
-                                )}
-                              </div>
-                              <p className="text-sm mb-2" style={{ color: 'var(--foreground-muted)' }}>@{creator.user.username}</p>
-                              <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg w-fit" style={{ background: `${catConfig.color}15` }}>
-                                <catConfig.icon size={12} style={{ color: catConfig.color }} />
-                                <span className="text-xs font-medium" style={{ color: catConfig.color }}>{catConfig.label}</span>
-                              </div>
-                            </div>
-                          </div>
-                          
-                          {creator.profile.bio && (
-                            <p className="text-sm line-clamp-2 mb-3" style={{ color: 'var(--foreground-muted)' }}>
-                              {creator.profile.bio}
-                            </p>
-                          )}
-
-                          <div className="flex items-center justify-between pt-3" style={{ borderTop: `1px solid ${theme.colors.border}` }}>
-                            <div className="flex items-center gap-3">
-                              <div className="flex items-center gap-1.5">
-                                <Eye size={14} style={{ color: 'var(--foreground-muted)' }} />
-                                <span className="text-sm" style={{ color: 'var(--foreground-muted)' }}>{creator.stats?.profileViews || 0}</span>
-                              </div>
-                              <div className="flex items-center gap-1.5">
-                                <Heart size={14} style={{ color: 'var(--foreground-muted)' }} />
-                                <span className="text-sm" style={{ color: 'var(--foreground-muted)' }}>{creator.stats?.followers || 0}</span>
-                              </div>
-                            </div>
-                            <motion.div
-                              className="flex items-center gap-1 text-sm font-medium group-hover:gap-2 transition-all"
-                              style={{ color: 'var(--primary)' }}
-                            >
-                              <span>View</span>
-                              <ArrowRight size={14} />
-                            </motion.div>
-                          </div>
-
-                          {creator.referrer && (
-                            <div className="flex items-center gap-1.5 mt-3 pt-3" style={{ borderTop: '1px solid rgba(255, 255, 255, 0.06)' }}>
-                              <ExternalLink size={12} style={{ color: 'var(--foreground-muted)' }} />
-                              <span className="text-xs" style={{ color: 'var(--foreground-muted)' }}>Joined via @{creator.referrer.username}</span>
-                            </div>
-                          )}
-                        </div>
-                      </Link>
-                    </motion.div>
-                  )
-                })}
-              </div>
-            )}
+              <p
+                className="text-sm"
+                style={{ color: theme.colors.foregroundMuted }}
+              >
+                @{creator.user.username}
+              </p>
+            </div>
           </div>
-        </motion.div>
-      </div>
-    </div>
+
+          {/* Bio */}
+          {creator.profile.bio ? (
+            <p
+              className="text-sm line-clamp-2 mb-4 min-h-10"
+              style={{ color: theme.colors.foregroundMuted }}
+            >
+              {creator.profile.bio}
+            </p>
+          ) : (
+            <div className="mb-4 min-h-10" />
+          )}
+
+          {/* Stats & Action */}
+          <div
+            className="flex items-center justify-between pt-4"
+            style={{ borderTop: `1px solid ${theme.colors.border}` }}
+          >
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-1.5">
+                <Eye
+                  size={14}
+                  style={{ color: theme.colors.foregroundMuted }}
+                />
+                <span
+                  className="text-sm font-medium"
+                  style={{ color: theme.colors.foregroundMuted }}
+                >
+                  {creator.stats?.profileViews || 0}
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Heart
+                  size={14}
+                  style={{ color: theme.colors.foregroundMuted }}
+                />
+                <span
+                  className="text-sm font-medium"
+                  style={{ color: theme.colors.foregroundMuted }}
+                >
+                  {creator.stats?.followers || 0}
+                </span>
+              </div>
+            </div>
+
+            <motion.div
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium text-sm transition-all"
+              style={{
+                background: `${theme.colors.primary}15`,
+                color: theme.colors.primary,
+              }}
+              whileHover={{ gap: '0.75rem' }}
+            >
+              <span>View</span>
+              <ArrowRight size={14} />
+            </motion.div>
+          </div>
+
+          {/* Referrer */}
+          {creator.referrer && (
+            <div
+              className="flex items-center gap-1.5 mt-3 pt-3"
+              style={{ borderTop: `1px solid ${theme.colors.border}` }}
+            >
+              <ExternalLink
+                size={12}
+                style={{ color: theme.colors.foregroundMuted }}
+              />
+              <span
+                className="text-xs"
+                style={{ color: theme.colors.foregroundMuted }}
+              >
+                Invited by @{creator.referrer.username}
+              </span>
+            </div>
+          )}
+        </div>
+
+        {/* Hover glow effect */}
+        <motion.div
+          className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+          style={{
+            background: `radial-gradient(circle at 50% 0%, ${accentColor}15, transparent 60%)`,
+          }}
+        />
+      </Link>
+    </motion.div>
   )
 }

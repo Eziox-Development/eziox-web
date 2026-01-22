@@ -1,5 +1,18 @@
-import { createContext, useContext, useState, useEffect, useCallback, useMemo, type ReactNode } from 'react'
-import { siteConfig, getThemeById, getDefaultTheme, type Theme } from '@/lib/site-config'
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  type ReactNode,
+} from 'react'
+import {
+  siteConfig,
+  getThemeById,
+  getDefaultTheme,
+  type Theme,
+} from '@/lib/site-config'
 
 interface ThemeContextType {
   theme: Theme
@@ -39,8 +52,17 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     const root = document.documentElement
     const { colors, typography, effects } = theme
 
-    const glowValues = { none: '0', subtle: '0.2', medium: '0.4', strong: '0.6' }
-    const radiusValues = { sharp: '0.25rem', rounded: '0.75rem', pill: '9999px' }
+    const glowValues = {
+      none: '0',
+      subtle: '0.2',
+      medium: '0.4',
+      strong: '0.6',
+    }
+    const radiusValues = {
+      sharp: '0.25rem',
+      rounded: '0.75rem',
+      pill: '9999px',
+    }
     const animationValues = { slow: '400ms', normal: '250ms', fast: '150ms' }
 
     const vars: Record<string, string> = {
@@ -70,7 +92,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
     Object.entries(vars).forEach(([k, v]) => root.style.setProperty(k, v))
 
-    document.querySelectorAll('link[data-theme-font]').forEach((l) => l.remove())
+    document
+      .querySelectorAll('link[data-theme-font]')
+      .forEach((l) => l.remove())
     ;[typography.displayFontUrl, typography.bodyFontUrl].forEach((url, i) => {
       const link = document.createElement('link')
       link.rel = 'stylesheet'
@@ -84,27 +108,39 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     document.body.style.color = colors.foreground
   }, [theme, mounted])
 
-  const setTheme = useCallback((id: string) => {
-    const t = getThemeById(id)
-    if (t && t.id !== theme.id) {
-      setIsTransitioning(true)
-      setThemeState(t)
-      localStorage.setItem(STORAGE_KEY, id)
-      setTimeout(() => setIsTransitioning(false), TRANSITION_MS)
-    }
-  }, [theme.id])
+  const setTheme = useCallback(
+    (id: string) => {
+      const t = getThemeById(id)
+      if (t && t.id !== theme.id) {
+        setIsTransitioning(true)
+        setThemeState(t)
+        localStorage.setItem(STORAGE_KEY, id)
+        setTimeout(() => setIsTransitioning(false), TRANSITION_MS)
+      }
+    },
+    [theme.id],
+  )
 
-  const value = useMemo(() => ({
-    theme,
-    setTheme,
-    themes: siteConfig.themes,
-    isTransitioning,
-    mounted,
-  }), [theme, setTheme, isTransitioning, mounted])
+  const value = useMemo(
+    () => ({
+      theme,
+      setTheme,
+      themes: siteConfig.themes,
+      isTransitioning,
+      mounted,
+    }),
+    [theme, setTheme, isTransitioning, mounted],
+  )
 
   return (
     <ThemeContext.Provider value={value}>
-      {mounted ? children : <div style={{ visibility: 'hidden' }} aria-hidden="true">{children}</div>}
+      {mounted ? (
+        children
+      ) : (
+        <div style={{ visibility: 'hidden' }} aria-hidden="true">
+          {children}
+        </div>
+      )}
     </ThemeContext.Provider>
   )
 }

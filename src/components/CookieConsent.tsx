@@ -64,12 +64,16 @@ export function CookieConsent() {
           style={{
             background: 'rgba(15, 15, 25, 0.95)',
             border: '1px solid rgba(139, 92, 246, 0.3)',
-            boxShadow: '0 -10px 50px rgba(0, 0, 0, 0.5), 0 0 100px rgba(139, 92, 246, 0.1)',
+            boxShadow:
+              '0 -10px 50px rgba(0, 0, 0, 0.5), 0 0 100px rgba(139, 92, 246, 0.1)',
           }}
         >
           <div
             className="h-1 w-full"
-            style={{ background: 'linear-gradient(90deg, #6366f1, #8b5cf6, #a855f7, #ec4899)' }}
+            style={{
+              background:
+                'linear-gradient(90deg, #6366f1, #8b5cf6, #a855f7, #ec4899)',
+            }}
           />
 
           <AnimatePresence mode="wait">
@@ -87,18 +91,34 @@ export function CookieConsent() {
                       className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
                       style={{ background: 'rgba(251, 146, 60, 0.15)' }}
                       animate={{ rotate: [0, 10, -10, 0] }}
-                      transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        repeatDelay: 3,
+                      }}
                     >
                       <Cookie size={24} style={{ color: '#fb923c' }} />
                     </motion.div>
                     <div>
-                      <h3 className="text-lg font-bold mb-1" style={{ color: 'var(--foreground)' }}>
+                      <h3
+                        className="text-lg font-bold mb-1"
+                        style={{ color: 'var(--foreground)' }}
+                      >
                         🍪 We use cookies
                       </h3>
-                      <p className="text-sm leading-relaxed" style={{ color: 'var(--foreground-muted)' }}>
-                        We use cookies to enhance your browsing experience, serve personalized content,
-                        and analyze our traffic. By clicking "Accept All", you consent to our use of cookies.{' '}
-                        <Link to="/privacy" className="underline hover:no-underline" style={{ color: '#a78bfa' }}>
+                      <p
+                        className="text-sm leading-relaxed"
+                        style={{ color: 'var(--foreground-muted)' }}
+                      >
+                        We use cookies to enhance your browsing experience,
+                        serve personalized content, and analyze our traffic. By
+                        clicking "Accept All", you consent to our use of
+                        cookies.{' '}
+                        <Link
+                          to="/privacy"
+                          className="underline hover:no-underline"
+                          style={{ color: '#a78bfa' }}
+                        >
                           Privacy Policy
                         </Link>
                       </p>
@@ -156,12 +176,25 @@ export function CookieConsent() {
               >
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'rgba(139, 92, 246, 0.15)' }}>
+                    <div
+                      className="w-10 h-10 rounded-xl flex items-center justify-center"
+                      style={{ background: 'rgba(139, 92, 246, 0.15)' }}
+                    >
                       <Settings size={20} style={{ color: '#a78bfa' }} />
                     </div>
                     <div>
-                      <h3 className="text-lg font-bold" style={{ color: 'var(--foreground)' }}>Cookie Preferences</h3>
-                      <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>Manage your cookie settings</p>
+                      <h3
+                        className="text-lg font-bold"
+                        style={{ color: 'var(--foreground)' }}
+                      >
+                        Cookie Preferences
+                      </h3>
+                      <p
+                        className="text-xs"
+                        style={{ color: 'var(--foreground-muted)' }}
+                      >
+                        Manage your cookie settings
+                      </p>
                     </div>
                   </div>
                   <button
@@ -178,7 +211,8 @@ export function CookieConsent() {
                     {
                       id: 'essential',
                       name: 'Essential Cookies',
-                      description: 'Required for the website to function. Cannot be disabled.',
+                      description:
+                        'Required for the website to function. Cannot be disabled.',
                       required: true,
                       icon: Shield,
                       color: '#10b981',
@@ -186,7 +220,8 @@ export function CookieConsent() {
                     {
                       id: 'functional',
                       name: 'Functional Cookies',
-                      description: 'Remember your preferences like theme and language.',
+                      description:
+                        'Remember your preferences like theme and language.',
                       required: false,
                       icon: Settings,
                       color: '#3b82f6',
@@ -194,7 +229,8 @@ export function CookieConsent() {
                     {
                       id: 'analytics',
                       name: 'Analytics Cookies',
-                      description: 'Help us understand how visitors interact with our website.',
+                      description:
+                        'Help us understand how visitors interact with our website.',
                       required: false,
                       icon: Cookie,
                       color: '#f59e0b',
@@ -203,35 +239,76 @@ export function CookieConsent() {
                     <div
                       key={cookie.id}
                       className="flex items-center justify-between p-4 rounded-xl"
-                      style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.06)' }}
+                      style={{
+                        background: 'rgba(255, 255, 255, 0.03)',
+                        border: '1px solid rgba(255, 255, 255, 0.06)',
+                      }}
                     >
                       <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: `${cookie.color}20` }}>
-                          <cookie.icon size={18} style={{ color: cookie.color }} />
+                        <div
+                          className="w-10 h-10 rounded-lg flex items-center justify-center"
+                          style={{ background: `${cookie.color}20` }}
+                        >
+                          <cookie.icon
+                            size={18}
+                            style={{ color: cookie.color }}
+                          />
                         </div>
                         <div>
-                          <h4 className="font-medium text-sm" style={{ color: 'var(--foreground)' }}>{cookie.name}</h4>
-                          <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>{cookie.description}</p>
+                          <h4
+                            className="font-medium text-sm"
+                            style={{ color: 'var(--foreground)' }}
+                          >
+                            {cookie.name}
+                          </h4>
+                          <p
+                            className="text-xs"
+                            style={{ color: 'var(--foreground-muted)' }}
+                          >
+                            {cookie.description}
+                          </p>
                         </div>
                       </div>
                       <label className="relative inline-flex items-center cursor-pointer">
                         <input
                           type="checkbox"
-                          checked={preferences[cookie.id as keyof CookiePreferences]}
-                          onChange={(e) => !cookie.required && setPreferences({ ...preferences, [cookie.id]: e.target.checked })}
+                          checked={
+                            preferences[cookie.id as keyof CookiePreferences]
+                          }
+                          onChange={(e) =>
+                            !cookie.required &&
+                            setPreferences({
+                              ...preferences,
+                              [cookie.id]: e.target.checked,
+                            })
+                          }
                           disabled={cookie.required}
                           className="sr-only peer"
                         />
                         <div
                           className="w-11 h-6 rounded-full peer-focus:ring-2 peer-focus:ring-purple-500/50 transition-all"
                           style={{
-                            background: preferences[cookie.id as keyof CookiePreferences] ? 'linear-gradient(135deg, #8b5cf6, #a855f7)' : 'rgba(255, 255, 255, 0.1)',
+                            background: preferences[
+                              cookie.id as keyof CookiePreferences
+                            ]
+                              ? 'linear-gradient(135deg, #8b5cf6, #a855f7)'
+                              : 'rgba(255, 255, 255, 0.1)',
                           }}
                         >
                           <motion.div
                             className="w-5 h-5 bg-white rounded-full shadow-lg"
-                            animate={{ x: preferences[cookie.id as keyof CookiePreferences] ? 22 : 2 }}
-                            transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                            animate={{
+                              x: preferences[
+                                cookie.id as keyof CookiePreferences
+                              ]
+                                ? 22
+                                : 2,
+                            }}
+                            transition={{
+                              type: 'spring',
+                              stiffness: 500,
+                              damping: 30,
+                            }}
                             style={{ marginTop: 2 }}
                           />
                         </div>

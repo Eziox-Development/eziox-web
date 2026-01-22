@@ -13,14 +13,21 @@ export const Route = createFileRoute('/api/spotify-callback')({
         if (error) {
           return new Response(null, {
             status: 302,
-            headers: { Location: '/profile?tab=settings&spotify=error&reason=' + encodeURIComponent(error) },
+            headers: {
+              Location:
+                '/profile?tab=settings&spotify=error&reason=' +
+                encodeURIComponent(error),
+            },
           })
         }
 
         if (!code || !state) {
           return new Response(null, {
             status: 302,
-            headers: { Location: '/profile?tab=settings&spotify=error&reason=missing_params' },
+            headers: {
+              Location:
+                '/profile?tab=settings&spotify=error&reason=missing_params',
+            },
           })
         }
 
@@ -34,7 +41,10 @@ export const Route = createFileRoute('/api/spotify-callback')({
           console.error('Spotify callback error:', err)
           return new Response(null, {
             status: 302,
-            headers: { Location: '/profile?tab=settings&spotify=error&reason=callback_failed' },
+            headers: {
+              Location:
+                '/profile?tab=settings&spotify=error&reason=callback_failed',
+            },
           })
         }
       },

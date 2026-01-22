@@ -7,10 +7,13 @@ export const Route = createFileRoute('/api/webhooks/stripe')({
     handlers: {
       POST: async ({ request }) => {
         if (!stripe) {
-          return new Response(JSON.stringify({ error: 'Stripe not configured' }), {
-            status: 500,
-            headers: { 'Content-Type': 'application/json' },
-          })
+          return new Response(
+            JSON.stringify({ error: 'Stripe not configured' }),
+            {
+              status: 500,
+              headers: { 'Content-Type': 'application/json' },
+            },
+          )
         }
 
         const body = await request.text()
@@ -26,10 +29,13 @@ export const Route = createFileRoute('/api/webhooks/stripe')({
         const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET
         if (!webhookSecret) {
           console.error('STRIPE_WEBHOOK_SECRET is not set')
-          return new Response(JSON.stringify({ error: 'Webhook secret not configured' }), {
-            status: 500,
-            headers: { 'Content-Type': 'application/json' },
-          })
+          return new Response(
+            JSON.stringify({ error: 'Webhook secret not configured' }),
+            {
+              status: 500,
+              headers: { 'Content-Type': 'application/json' },
+            },
+          )
         }
 
         let event
@@ -44,13 +50,21 @@ export const Route = createFileRoute('/api/webhooks/stripe')({
         }
 
         try {
-          await handleStripeWebhook(event as unknown as { type: string; data: { object: Record<string, unknown> } })
+          await handleStripeWebhook(
+            event as unknown as {
+              type: string
+              data: { object: Record<string, unknown> }
+            },
+          )
         } catch (err) {
           console.error('Webhook handler error:', err)
-          return new Response(JSON.stringify({ error: 'Webhook handler failed' }), {
-            status: 500,
-            headers: { 'Content-Type': 'application/json' },
-          })
+          return new Response(
+            JSON.stringify({ error: 'Webhook handler failed' }),
+            {
+              status: 500,
+              headers: { 'Content-Type': 'application/json' },
+            },
+          )
         }
 
         return new Response(JSON.stringify({ received: true }), {

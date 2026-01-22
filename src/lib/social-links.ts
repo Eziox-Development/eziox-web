@@ -13,7 +13,8 @@ export const SOCIAL_PLATFORMS = {
   youtube: {
     name: 'YouTube',
     baseUrl: 'https://youtube.com/',
-    format: (username: string) => username.startsWith('@') ? username : `@${username}`,
+    format: (username: string) =>
+      username.startsWith('@') ? username : `@${username}`,
   },
   twitch: {
     name: 'Twitch',
@@ -23,7 +24,8 @@ export const SOCIAL_PLATFORMS = {
   tiktok: {
     name: 'TikTok',
     baseUrl: 'https://tiktok.com/',
-    format: (username: string) => username.startsWith('@') ? username : `@${username}`,
+    format: (username: string) =>
+      username.startsWith('@') ? username : `@${username}`,
   },
   discord: {
     name: 'Discord',
@@ -35,7 +37,7 @@ export const SOCIAL_PLATFORMS = {
     baseUrl: 'https://github.com/',
     format: (username: string) => username.replace('@', ''),
   },
-  
+
   // Additional platforms
   bluesky: {
     name: 'Bluesky',
@@ -45,7 +47,8 @@ export const SOCIAL_PLATFORMS = {
   threads: {
     name: 'Threads',
     baseUrl: 'https://threads.net/',
-    format: (username: string) => username.startsWith('@') ? username : `@${username}`,
+    format: (username: string) =>
+      username.startsWith('@') ? username : `@${username}`,
   },
   kick: {
     name: 'Kick',
@@ -112,7 +115,7 @@ export const SOCIAL_PLATFORMS = {
     baseUrl: 'https://ko-fi.com/',
     format: (username: string) => username.replace('@', ''),
   },
-  
+
   // Gaming platforms
   epicgames: {
     name: 'Epic Games',
@@ -139,12 +142,15 @@ export const SOCIAL_PLATFORMS = {
     baseUrl: 'https://tracker.gg/valorant/profile/riot/',
     format: (username: string) => encodeURIComponent(username.replace('@', '')),
   },
-  
+
   // Music platforms
   bandcamp: {
     name: 'Bandcamp',
     baseUrl: 'https://',
-    format: (username: string) => username.includes('.bandcamp.com') ? username : `${username}.bandcamp.com`,
+    format: (username: string) =>
+      username.includes('.bandcamp.com')
+        ? username
+        : `${username}.bandcamp.com`,
   },
   applemusic: {
     name: 'Apple Music',
@@ -164,12 +170,12 @@ export type SocialPlatform = keyof typeof SOCIAL_PLATFORMS
 export function getSocialUrl(platform: string, username: string): string {
   const platformKey = platform.toLowerCase() as SocialPlatform
   const config = SOCIAL_PLATFORMS[platformKey]
-  
+
   if (!config) {
     // If platform not recognized, return as-is (might be a full URL already)
     return username.startsWith('http') ? username : `https://${username}`
   }
-  
+
   const formattedUsername = config.format(username)
   return `${config.baseUrl}${formattedUsername}`
 }
@@ -181,10 +187,10 @@ export function getSocialUrl(platform: string, username: string): string {
  */
 export function isValidSocialUsername(username: string): boolean {
   if (!username || username.trim().length === 0) return false
-  
+
   // Allow @username, username, or full URLs
   const usernamePattern = /^@?[\w.-]+$/
   const urlPattern = /^https?:\/\/.+/
-  
+
   return usernamePattern.test(username) || urlPattern.test(username)
 }

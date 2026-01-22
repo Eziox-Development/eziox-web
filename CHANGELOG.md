@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added - Email Verification System 📧
 
 **Complete Email Verification:**
+
 - New `/verify-email` route with token validation
 - Verification email sent automatically on signup
 - Resend verification email functionality (rate limited: 3/hour)
@@ -23,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added - Modern Bio Page Schema 🚀
 
 **New Database Tables:**
+
 - `linkGroups` - Organize links into collapsible sections
 - `profileWidgets` - Customizable widgets (Spotify, Weather, Countdown, Social Feed)
 - `socialIntegrations` - Connect YouTube, Twitch, TikTok, etc.
@@ -33,6 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `emailSubscribers` - Email collection for creators
 
 **New Link Features:**
+
 - `mediaEmbed` - Spotify, SoundCloud, YouTube, Twitch, TikTok, Apple Music embeds
 - `linkType` - Different link types (link, embed, header, divider)
 - `groupId` - Assign links to groups
@@ -42,6 +45,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed - Schema Cleanup 🧹
 
 **Removed Deprecated Features:**
+
 - Removed `blogPosts` table (not needed for bio page)
 - Removed `projects` table (not needed for bio page)
 - Removed A/B testing fields (`abTestEnabled`, `abTestVariants`)
@@ -69,6 +73,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed - Tier System Simplification 💎
 
 **Simplified Subscription Model:**
+
 - **Free Tier Expanded** - All core features now completely free:
   - Unlimited links and short links
   - All 30+ themes and colors
@@ -107,12 +112,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Never pay again
 
 **Removed Artificial Limits:**
+
 - No more link limits for any tier
 - No more analytics paywalls
 - No more theme restrictions
 - No more basic customization locks
 
 **Updated Components:**
+
 - Simplified `stripe.ts` tier configuration
 - Removed `canAdvancedBackgrounds` and other redundant checks
 - Updated `CustomizationTab` to reflect new free features
@@ -122,6 +129,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Improved - Profile Page Architecture 🏗️
 
 **Modular Profile System:**
+
 - **ProfileDashboard** - New main container with state management
 - **ProfileSidebar** - Categorized navigation (Dashboard, Premium, Account)
 - **ProfileHeader** - Banner + Avatar + Badges display
@@ -130,12 +138,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Centralized types in `types.ts`
 
 **Profile Route Optimization:**
+
 - Reduced from 461 to 22 lines
 - All logic moved to ProfileDashboard component
 - Better separation of concerns
 - Improved maintainability
 
 **Tab Updates:**
+
 - All tabs now use centralized constants and types
 - Consistent theme integration with `useTheme()`
 - No hardcoded styles - all use CSS variables
@@ -144,6 +154,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Improved - Public Pages Redesign 🎨
 
 **About Page:**
+
 - Simplified hero section with cleaner messaging
 - "No paywalls" philosophy front and center
 - Reduced from verbose to concise feature highlights
@@ -152,6 +163,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Creator quote section with Saito's philosophy
 
 **Homepage:**
+
 - Performance optimizations (removed heavy animations)
 - Static gradients instead of animated blobs
 - Cleaner button hover states (CSS transitions instead of motion)
@@ -160,16 +172,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improved loading performance
 
 **Pricing Page:**
+
 - Updated with new tier structure and pricing
 - Clearer feature differentiation
 - Reusable CTASection component
 
 ### Fixed
+
 - **TypeScript Error** - Removed `canAdvancedBackgrounds` reference in CustomizationTab
 - **Build Optimization** - Reduced bundle size with static elements
 - **Consistency** - All components now use same theming approach
 
 ### Technical
+
 - Build size: 14.8 MB (4.29 MB gzip)
 - All TypeScript checks passing
 - No console warnings or errors
@@ -182,6 +197,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added - Playground & Theme Refactor 🎨
 
 **New Playground:**
+
 - **Live Preview** - Real-time preview with actual user data (profile, links, socials, badges)
 - **Desktop/Mobile Toggle** - Switch between device views in preview
 - **Background Editor** - Edit solid, gradient, image, video, and animated backgrounds
@@ -194,6 +210,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Abstract: Fluid, Geometric, Waves, Bokeh, Noise, Vortex
 
 **Theme System Unification:**
+
 - **ThemeSwitcher** now controls all colors (removed redundant accentColor)
 - **Appearance Section** removed from Settings (was duplicate of ThemeSwitcher)
 - All components now use `theme.colors.primary` instead of `accentColor`
@@ -219,6 +236,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added - Link Analytics & Scheduling System 📊
 
 **Link Scheduling:**
+
 - **Schedule Links** - Set start and end dates for links to appear/disappear automatically
 - **Time-Limited Links** - Links can auto-hide when expired with `hideWhenExpired` option
 - **Countdown Timer Display** - Show countdown on scheduled links with 3 styles:
@@ -228,6 +246,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Timezone Support** - Schedule respects user timezone settings
 
 **Link Analytics:**
+
 - **Per-Link Click Analytics** - Detailed tracking for each link
 - **Geographic Data** - Track country, city, and region of visitors
 - **Device/Browser Stats** - Monitor device types (mobile/desktop/tablet), browsers, and OS
@@ -239,17 +258,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Hourly click heatmap
 
 **New Database Schema:**
+
 - `linkClickAnalytics` table for detailed per-click tracking
 - Extended `LinkSchedule` interface with countdown options
 - Added `schedule` field to `updateLinkSchema`
 
 **UI Improvements:**
+
 - **Footer Full Width** - Footer now uses full viewport width instead of max-w-7xl
 - **Highlights Bar** - Changed from centered to space-between distribution
 - **Grid Layout** - Optimized column distribution (3-6-3 instead of 4-5-3)
 - **Responsive Padding** - Better spacing on all screen sizes
 
 **Pages & Routes:**
+
 - Deleted standalone `/links` route (was not linked anywhere)
 - Links management now exclusively in `/profile` → Links Tab
 - Added Analytics tab as default in LinkAdvancedSettings
@@ -257,12 +279,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 **Cloudflare Turnstile Bug:**
+
 - Fixed infinite verification loop in sign-in/sign-up forms
 - Problem: `useCallback` dependencies caused re-renders and widget re-initialization
 - Solution: Use refs for callbacks, empty dependency array for useEffect
 - Widget now renders once on mount and stays stable
 
 **SEO & Metadata:**
+
 - Enhanced Open Graph tags for better social sharing
 - Added Twitter card support with large image
 - Discord embed optimization
@@ -285,6 +309,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `Footer` - Full width layout
 
 ### Removed
+
 - `/links` route page (functionality moved to profile tabs)
 - Unused `useCallback` hooks in TurnstileWidget
 - `renderedRef` in TurnstileWidget (widgetIdRef is sufficient)
@@ -296,6 +321,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added - Security & Privacy Features 🔒
 
 **Authentication & Bot Protection:**
+
 - **Cloudflare Turnstile Integration** - Replaced custom bot protection with Cloudflare Turnstile
   - Invisible CAPTCHA on sign-up, sign-in, and forgot-password forms
   - Server-side token verification
@@ -306,6 +332,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **2FA Email Notifications** - Login alerts with IP address and timestamp
 
 **Data Security:**
+
 - **OAuth Token Encryption** - AES-256-GCM encryption for Spotify tokens at rest
 - **Magic Bytes Validation** - File upload security with MIME type verification
 - **Security Event Logging** - Comprehensive logging system for security events
@@ -313,6 +340,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `security-logger.ts` utility with event types and filtering
 
 **Admin & Authorization:**
+
 - **Admin Audit Log** - New `adminAuditLog` table for tracking admin actions
   - Logs badge assignments, user bans, role changes
   - `logAdminAction` utility in `audit.ts`
@@ -322,6 +350,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Server-side referral code validation
 
 **Privacy & GDPR Compliance:**
+
 - **Data Export** - Self-service data export functionality
   - `exportUserDataFn` exports all user data in JSON format
   - UI in Profile Settings → Privacy & Data section
@@ -331,6 +360,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - UI in Profile Settings → Danger Zone
 
 **Infrastructure:**
+
 - **HSTS Headers** - Strict-Transport-Security for HTTPS enforcement
 - **Enhanced Security Headers** - Complete set of security headers in `SECURITY_HEADERS`
 - **Email Utilities** - Password reset and login notification emails
@@ -338,12 +368,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 **Security Improvements:**
+
 - Updated CSP headers to include Cloudflare Turnstile domains
 - All OAuth tokens now encrypted before database storage
 - Enhanced rate limiting on authentication endpoints
 - Resource ownership validation on all mutations
 
 **UI/UX Updates:**
+
 - Updated About page security features (Turnstile, Encryption, GDPR)
 - Added Privacy & Data section to Profile Settings
 - Added Danger Zone section for account deletion
@@ -352,16 +384,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added Security contact (security@eziox.link) to footer
 
 **Documentation:**
+
 - Updated all legal pages (Privacy, Terms, Cookies) to January 19, 2026
 - Added comprehensive security documentation in CHECKLIST.md
 - Documented all new security features and implementations
 
 ### Removed
+
 - **Old Bot Protection System** - Removed custom bot protection (`bot-protection.ts`)
   - Deleted Slider, Rotate, and Pattern challenges
   - Removed `TURNSTILE_INTEGRATION.md` guide
 
 ### Fixed
+
 - Password reset flow now uses Turnstile for bot protection
 - Session validation improved with better error handling
 - File upload validation now checks magic bytes, not just extensions
@@ -371,6 +406,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.0.0] - 2026-01-19
 
 ### Added - Theme System Modernization 🎨
+
 - **31 Modernized Themes** - Complete overhaul of all themes with modern color palettes
   - New `eziox-default` signature theme with deep black (#030305) and violet (#8b5cf6)
   - All themes aligned with Tailwind CSS color palette
@@ -393,6 +429,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - JetBrains Mono, Fira Code for developer themes
 
 ### Changed
+
 - **Site Config Cleanup** - Removed unused properties:
   - Removed: owner (userId, role, bio, extendedBio, avatar, banner, location, availability, badges, stats, socialLinks)
   - Removed: metadata.copyright, header, navigation, footerLinks
@@ -406,6 +443,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Border: #1c1c22 (subtle dark)
 
 ### Fixed
+
 - Fixed duplicate `pastel-dream` theme (renamed second instance to `sakura-bloom`)
 - Theme IDs cleaned up (removed `-green`, `-purple`, `-red` suffixes from streamer themes)
 
@@ -414,6 +452,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.9.0] - 2026-01-19
 
 ### Added - UI Modernization 🎨
+
 - **Templates Page Redesign** - Complete modernization with modern UI/UX
   - Compact hero section with real-time template/featured counts
   - Modern category filters with motion animations
@@ -437,6 +476,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - My Templates list with delete functionality
 
 ### Improved
+
 - **Theme System** - Consistent use of `theme.colors.*` throughout both pages
 - **Motion Animations** - Spring-based hover effects, AnimatePresence for transitions
 - **Icons** - Modern Lucide icons (Code2, Wand2, LayoutGrid, FileUp, etc.)
@@ -444,6 +484,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Clean Code** - Removed unnecessary comments, compact structure
 
 ### Technical
+
 - Replaced deprecated Tailwind classes (`bg-gradient-to-*` → `bg-linear-to-*`)
 - Fixed TypeScript errors in preview component
 - Optimized component structure for better maintainability
@@ -453,6 +494,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.8.0] - 2026-01-18
 
 ### Added - Creator Tier Features 🎨
+
 - **Custom CSS Editor** - Sandboxed CSS customization with security validation
   - Real-time CSS input with character counter (10,000 max)
   - Forbidden pattern detection (fixed positioning, imports, expressions)
@@ -491,6 +533,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Profile backups & restore functionality
 
 ### Technical
+
 - **New Database Fields**:
   - `profiles`: `customCSS`, `customFonts`, `animatedProfile`, `openGraphSettings`
   - `userLinks`: `isFeatured`, `featuredStyle`, `schedule`, `abTestEnabled`, `abTestVariants`, `utmSource`, `utmMedium`, `utmCampaign`, `embedSettings`
@@ -509,6 +552,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `auth.ts`: Added tier to user response object
 
 ### Security
+
 - CSS sanitization with forbidden pattern detection
 - Tier-based access control on all Creator features
 - Input validation with Zod schemas
@@ -518,6 +562,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.6.0] - 2026-01-17
 
 ### Added
+
 - **Enhanced Analytics Dashboard** - Comprehensive profile performance tracking
   - Overview stats: total views, link clicks, followers with change indicators
   - Interactive bar chart for daily activity (views & clicks)
@@ -540,6 +585,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `analytics_daily` table for aggregated daily stats
 
 ### Technical
+
 - New files:
   - `src/server/functions/notifications.ts` - Notification CRUD operations
   - `src/server/functions/analytics.ts` - Analytics data aggregation
@@ -553,6 +599,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.5.0] - 2026-01-16
 
 ### Added
+
 - **Spotify Integration** - Complete OAuth flow with real-time playback display
   - OAuth 2.0 authentication with automatic token refresh
   - `spotify_connections` database table for secure token storage
@@ -573,12 +620,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Conditional display based on user preferences
 
 ### Fixed
+
 - **API Route Structure** - Moved Spotify callback from `_api` to `api` directory
   - Fixed 404 errors on callback route
   - TanStack Router pathless routes (`_api`) don't create URL paths
   - Proper route registration for production deployment
 
 ### Technical
+
 - New files:
   - `src/server/functions/spotify.ts` (404 lines)
   - `src/components/spotify/SpotifyConnect.tsx` (218 lines)
@@ -592,6 +641,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.4.1] - 2026-01-16
 
 ### Changed
+
 - **TypeScript 6.0+ Compatibility** - Removed deprecated `baseUrl` from tsconfig.json
   - Migrated to explicit path mappings for future TypeScript compatibility
   - Paths now use full relative paths (e.g., `./src/*`) instead of relying on baseUrl
@@ -602,12 +652,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Created centralized social-icons.tsx for icon management
 
 ### Fixed
+
 - **Build Configuration** - Cleaned up Vite build warnings
   - Removed `NODE_ENV=production` from .env file (not supported by Vite)
   - Removed conflicting esbuild config (oxc is now the default minifier)
   - Cleaner build output without warnings
 
 ### Technical
+
 - Updated 4 route files with new icon imports
 - Created `src/lib/social-icons.tsx` for centralized icon management
 - All deprecated Lucide brand icons replaced across the codebase
@@ -617,6 +669,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.4.0] - 2026-01-16
 
 ### Added
+
 - **Enhanced Partner Application System** - Professional multi-category partner program
   - 11 specialized categories: Streamer, VTuber, Content Creator, Gamer, Developer, Game Creator, Artist, Musician, Brand, Agency, Other
   - Dynamic form fields that adapt based on selected category
@@ -645,6 +698,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Content types and VTuber model types
 
 ### Changed
+
 - **Database Schema** - Extended `partner_applications` table
   - Added `subcategory` varchar field for more specific categorization
   - Added `categoryData` JSONB field for dynamic category-specific data
@@ -661,6 +715,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Better empty states and loading indicators
 
 ### Technical
+
 - Database migration: `0001_boring_ricochet.sql`
 - New component: `PartnerApplicationForm.tsx` (900+ lines)
 - Updated server functions with extended type safety
@@ -671,6 +726,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.3.0] - 2026-01-15
 
 ### Added
+
 - **FollowModal Component** - Modern modal-based followers/following UI (2026-01-15)
   - Glass-morphism design with backdrop blur and gradient header
   - Tab-based navigation between Followers/Following
@@ -725,6 +781,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **CHANGELOG.md** - Project changelog following Keep a Changelog format (2026-01-14)
 
 ### Fixed
+
 - **React Hydration Error #300** - Resolved SSR/CSR mismatch (2026-01-15)
   - Removed `isChildRoute` check causing hydration issues
   - Changed followers/following from child routes to sibling routes
@@ -742,6 +799,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Session Detection on Bio Pages** - Fixed using `useRouterState` to access parent loader data (2026-01-14)
 
 ### Changed
+
 - **Followers/Following UX** - Converted from separate pages to modal (2026-01-15)
   - Removed `/followers` and `/following` route pages
   - Integrated modal directly into bio page
@@ -771,6 +829,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2025-01-14
 
 ### Added
+
 - Initial release of Eziox Bio Link Platform
 - User authentication with secure sessions
 - Bio page creation and customization
@@ -782,6 +841,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - MIT License
 
 ### Technical Stack
+
 - React 19 with TypeScript 5.9
 - TanStack Start (SSR), Router & Query
 - Neon PostgreSQL with Drizzle ORM

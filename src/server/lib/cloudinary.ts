@@ -10,15 +10,24 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 })
 
-const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif']
+const ALLOWED_IMAGE_TYPES = [
+  'image/jpeg',
+  'image/jpg',
+  'image/png',
+  'image/webp',
+  'image/gif',
+]
 const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
 
 // Magic bytes for image validation
 const MAGIC_BYTES: Record<string, number[][]> = {
-  'image/jpeg': [[0xFF, 0xD8, 0xFF]],
-  'image/jpg': [[0xFF, 0xD8, 0xFF]],
-  'image/png': [[0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]],
-  'image/gif': [[0x47, 0x49, 0x46, 0x38, 0x37, 0x61], [0x47, 0x49, 0x46, 0x38, 0x39, 0x61]],
+  'image/jpeg': [[0xff, 0xd8, 0xff]],
+  'image/jpg': [[0xff, 0xd8, 0xff]],
+  'image/png': [[0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]],
+  'image/gif': [
+    [0x47, 0x49, 0x46, 0x38, 0x37, 0x61],
+    [0x47, 0x49, 0x46, 0x38, 0x39, 0x61],
+  ],
   'image/webp': [[0x52, 0x49, 0x46, 0x46]], // RIFF header, followed by WEBP at offset 8
 }
 
@@ -33,15 +42,18 @@ function validateMagicBytes(base64Data: string, mimeType: string): boolean {
       bytes[i] = binaryString.charCodeAt(i)
     }
 
-    return signatures.some(signature => 
-      signature.every((byte, index) => bytes[index] === byte)
+    return signatures.some((signature) =>
+      signature.every((byte, index) => bytes[index] === byte),
     )
   } catch {
     return false
   }
 }
 
-function validateImageDataUrl(dataUrl: string): { valid: boolean; error?: string } {
+function validateImageDataUrl(dataUrl: string): {
+  valid: boolean
+  error?: string
+} {
   if (!dataUrl.startsWith('data:')) {
     return { valid: false, error: 'Invalid data URL format' }
   }
@@ -55,7 +67,10 @@ function validateImageDataUrl(dataUrl: string): { valid: boolean; error?: string
   const base64Data = matches[2]
 
   if (!ALLOWED_IMAGE_TYPES.includes(mimeType)) {
-    return { valid: false, error: `Invalid file type. Allowed: ${ALLOWED_IMAGE_TYPES.join(', ')}` }
+    return {
+      valid: false,
+      error: `Invalid file type. Allowed: ${ALLOWED_IMAGE_TYPES.join(', ')}`,
+    }
   }
 
   // Validate magic bytes to prevent MIME type spoofing
@@ -65,7 +80,10 @@ function validateImageDataUrl(dataUrl: string): { valid: boolean; error?: string
 
   const sizeInBytes = (base64Data.length * 3) / 4
   if (sizeInBytes > MAX_FILE_SIZE) {
-    return { valid: false, error: `File too large. Maximum size: ${MAX_FILE_SIZE / 1024 / 1024}MB` }
+    return {
+      valid: false,
+      error: `File too large. Maximum size: ${MAX_FILE_SIZE / 1024 / 1024}MB`,
+    }
   }
 
   return { valid: true }
@@ -80,7 +98,7 @@ function validateImageDataUrl(dataUrl: string): { valid: boolean; error?: string
 export async function uploadImage(
   file: string,
   folder: string,
-  publicId?: string
+  publicId?: string,
 ): Promise<{ url: string; publicId: string }> {
   try {
     const result = await cloudinary.uploader.upload(file, {
@@ -88,10 +106,7 @@ export async function uploadImage(
       public_id: publicId,
       overwrite: true,
       resource_type: 'image',
-      transformation: [
-        { quality: 'auto:good' },
-        { fetch_format: 'auto' },
-      ],
+      transformation: [{ quality: 'auto:good' }, { fetch_format: 'auto' }],
     })
 
     return {
@@ -122,7 +137,7 @@ export async function deleteImage(publicId: string): Promise<void> {
  */
 export async function uploadAvatar(
   file: string,
-  userId: string
+  userId: string,
 ): Promise<string> {
   const validation = validateImageDataUrl(file)
   if (!validation.valid) {
@@ -131,7 +146,7 @@ export async function uploadAvatar(
 
   let lastError: Error | null = null
   const maxRetries = 3
-  
+
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
       const result = await cloudinary.uploader.upload(file, {
@@ -149,21 +164,28 @@ export async function uploadAvatar(
       return result.secure_url
     } catch (error) {
       lastError = error as Error
-      console.error(`Cloudinary avatar upload attempt ${attempt}/${maxRetries} failed:`, error)
-      
+      console.error(
+        `Cloudinary avatar upload attempt ${attempt}/${maxRetries} failed:`,
+        error,
+      )
+
       // Don't retry on validation errors
       if (error instanceof Error && error.message.includes('Invalid image')) {
         throw error
       }
-      
+
       // Wait before retry (exponential backoff)
       if (attempt < maxRetries) {
-        await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000))
+        await new Promise((resolve) =>
+          setTimeout(resolve, Math.pow(2, attempt) * 1000),
+        )
       }
     }
   }
 
-  throw new Error(`Failed to upload avatar after ${maxRetries} attempts: ${lastError?.message || 'Unknown error'}`)
+  throw new Error(
+    `Failed to upload avatar after ${maxRetries} attempts: ${lastError?.message || 'Unknown error'}`,
+  )
 }
 
 /**
@@ -171,7 +193,7 @@ export async function uploadAvatar(
  */
 export async function uploadBanner(
   file: string,
-  userId: string
+  userId: string,
 ): Promise<string> {
   const validation = validateImageDataUrl(file)
   if (!validation.valid) {
@@ -180,7 +202,7 @@ export async function uploadBanner(
 
   let lastError: Error | null = null
   const maxRetries = 3
-  
+
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
       const result = await cloudinary.uploader.upload(file, {
@@ -198,19 +220,26 @@ export async function uploadBanner(
       return result.secure_url
     } catch (error) {
       lastError = error as Error
-      console.error(`Cloudinary banner upload attempt ${attempt}/${maxRetries} failed:`, error)
-      
+      console.error(
+        `Cloudinary banner upload attempt ${attempt}/${maxRetries} failed:`,
+        error,
+      )
+
       // Don't retry on validation errors
       if (error instanceof Error && error.message.includes('Invalid image')) {
         throw error
       }
-      
+
       // Wait before retry (exponential backoff)
       if (attempt < maxRetries) {
-        await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000))
+        await new Promise((resolve) =>
+          setTimeout(resolve, Math.pow(2, attempt) * 1000),
+        )
       }
     }
   }
 
-  throw new Error(`Failed to upload banner after ${maxRetries} attempts: ${lastError?.message || 'Unknown error'}`)
+  throw new Error(
+    `Failed to upload banner after ${maxRetries} attempts: ${lastError?.message || 'Unknown error'}`,
+  )
 }

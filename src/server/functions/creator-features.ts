@@ -3,7 +3,12 @@ import { z } from 'zod'
 import { getCookie, setResponseStatus } from '@tanstack/react-start/server'
 import { db } from '../db'
 import { users, profiles, userLinks } from '../db/schema'
-import type { CustomFont, AnimatedProfileSettings, OpenGraphSettings, LinkSchedule } from '../db/schema'
+import type {
+  CustomFont,
+  AnimatedProfileSettings,
+  OpenGraphSettings,
+  LinkSchedule,
+} from '../db/schema'
 import { eq } from 'drizzle-orm'
 import { validateSession } from '../lib/auth'
 import type { TierType } from '../lib/stripe'
@@ -28,7 +33,7 @@ async function getUserTier(userId: string): Promise<TierType> {
     .from(users)
     .where(eq(users.id, userId))
     .limit(1)
-  
+
   const tier = userData?.tier || 'free'
   return (tier === 'standard' || !tier ? 'free' : tier) as TierType
 }
@@ -49,7 +54,11 @@ const FORBIDDEN_CSS_PATTERNS = [
   /behavior\s*:/gi,
 ]
 
-function sanitizeCSS(css: string): { valid: boolean; sanitized: string; errors: string[] } {
+function sanitizeCSS(css: string): {
+  valid: boolean
+  sanitized: string
+  errors: string[]
+} {
   const errors: string[] = []
   let sanitized = css
 
@@ -68,30 +77,33 @@ function sanitizeCSS(css: string): { valid: boolean; sanitized: string; errors: 
   return { valid: errors.length === 0, sanitized, errors }
 }
 
-export const getCreatorSettingsFn = createServerFn({ method: 'GET' }).handler(async () => {
-  const user = await getAuthenticatedUser()
-  const tier = await getUserTier(user.id)
+export const getCreatorSettingsFn = createServerFn({ method: 'GET' }).handler(
+  async () => {
+    const user = await getAuthenticatedUser()
+    const tier = await getUserTier(user.id)
 
-  const [profile] = await db
-    .select({
-      customCSS: profiles.customCSS,
-      customFonts: profiles.customFonts,
-      animatedProfile: profiles.animatedProfile,
-      openGraphSettings: profiles.openGraphSettings,
-    })
-    .from(profiles)
-    .where(eq(profiles.userId, user.id))
-    .limit(1)
+    const [profile] = await db
+      .select({
+        customCSS: profiles.customCSS,
+        customFonts: profiles.customFonts,
+        animatedProfile: profiles.animatedProfile,
+        openGraphSettings: profiles.openGraphSettings,
+      })
+      .from(profiles)
+      .where(eq(profiles.userId, user.id))
+      .limit(1)
 
-  return {
-    tier,
-    isCreator: isCreatorTier(tier),
-    customCSS: profile?.customCSS || '',
-    customFonts: (profile?.customFonts || []) as CustomFont[],
-    animatedProfile: profile?.animatedProfile as AnimatedProfileSettings | null,
-    openGraphSettings: profile?.openGraphSettings as OpenGraphSettings | null,
-  }
-})
+    return {
+      tier,
+      isCreator: isCreatorTier(tier),
+      customCSS: profile?.customCSS || '',
+      customFonts: (profile?.customFonts || []) as CustomFont[],
+      animatedProfile:
+        profile?.animatedProfile as AnimatedProfileSettings | null,
+      openGraphSettings: profile?.openGraphSettings as OpenGraphSettings | null,
+    }
+  },
+)
 
 export const updateCustomCSSFn = createServerFn({ method: 'POST' })
   .inputValidator(z.object({ css: z.string().max(10000) }))
@@ -101,14 +113,18 @@ export const updateCustomCSSFn = createServerFn({ method: 'POST' })
 
     if (!isCreatorTier(tier)) {
       setResponseStatus(403)
-      throw { message: 'Custom CSS requires Creator tier or higher', status: 403, code: 'TIER_REQUIRED' }
+      throw {
+        message: 'Custom CSS requires Creator tier or higher',
+        status: 403,
+        code: 'TIER_REQUIRED',
+      }
     }
 
     const { valid, sanitized, errors } = sanitizeCSS(data.css)
 
     await db
       .update(profiles)
-      .set({ 
+      .set({
         customCSS: sanitized,
         updatedAt: new Date(),
       })
@@ -132,7 +148,11 @@ export const addCustomFontFn = createServerFn({ method: 'POST' })
 
     if (!isCreatorTier(tier)) {
       setResponseStatus(403)
-      throw { message: 'Custom fonts require Creator tier or higher', status: 403, code: 'TIER_REQUIRED' }
+      throw {
+        message: 'Custom fonts require Creator tier or higher',
+        status: 403,
+        code: 'TIER_REQUIRED',
+      }
     }
 
     const [profile] = await db
@@ -142,7 +162,7 @@ export const addCustomFontFn = createServerFn({ method: 'POST' })
       .limit(1)
 
     const currentFonts = (profile?.customFonts || []) as CustomFont[]
-    
+
     if (currentFonts.length >= 4) {
       setResponseStatus(400)
       throw { message: 'Maximum 4 custom fonts allowed', status: 400 }
@@ -157,7 +177,7 @@ export const addCustomFontFn = createServerFn({ method: 'POST' })
 
     await db
       .update(profiles)
-      .set({ 
+      .set({
         customFonts: [...currentFonts, newFont],
         updatedAt: new Date(),
       })
@@ -178,11 +198,11 @@ export const removeCustomFontFn = createServerFn({ method: 'POST' })
       .limit(1)
 
     const currentFonts = (profile?.customFonts || []) as CustomFont[]
-    const filteredFonts = currentFonts.filter(f => f.id !== data.fontId)
+    const filteredFonts = currentFonts.filter((f) => f.id !== data.fontId)
 
     await db
       .update(profiles)
-      .set({ 
+      .set({
         customFonts: filteredFonts,
         updatedAt: new Date(),
       })
@@ -193,7 +213,14 @@ export const removeCustomFontFn = createServerFn({ method: 'POST' })
 
 const animatedProfileSchema = z.object({
   enabled: z.boolean(),
-  avatarAnimation: z.enum(['none', 'pulse', 'glow', 'bounce', 'rotate', 'shake']),
+  avatarAnimation: z.enum([
+    'none',
+    'pulse',
+    'glow',
+    'bounce',
+    'rotate',
+    'shake',
+  ]),
   bannerAnimation: z.enum(['none', 'parallax', 'gradient-shift', 'particles']),
   linkHoverEffect: z.enum(['none', 'scale', 'glow', 'slide', 'shake', 'flip']),
   pageTransition: z.enum(['none', 'fade', 'slide', 'zoom']),
@@ -207,12 +234,16 @@ export const updateAnimatedProfileFn = createServerFn({ method: 'POST' })
 
     if (!isCreatorTier(tier)) {
       setResponseStatus(403)
-      throw { message: 'Animated profiles require Creator tier or higher', status: 403, code: 'TIER_REQUIRED' }
+      throw {
+        message: 'Animated profiles require Creator tier or higher',
+        status: 403,
+        code: 'TIER_REQUIRED',
+      }
     }
 
     await db
       .update(profiles)
-      .set({ 
+      .set({
         animatedProfile: data,
         updatedAt: new Date(),
       })
@@ -236,12 +267,16 @@ export const updateOpenGraphFn = createServerFn({ method: 'POST' })
 
     if (!isCreatorTier(tier)) {
       setResponseStatus(403)
-      throw { message: 'Custom Open Graph requires Creator tier or higher', status: 403, code: 'TIER_REQUIRED' }
+      throw {
+        message: 'Custom Open Graph requires Creator tier or higher',
+        status: 403,
+        code: 'TIER_REQUIRED',
+      }
     }
 
     await db
       .update(profiles)
-      .set({ 
+      .set({
         openGraphSettings: data,
         updatedAt: new Date(),
       })
@@ -268,7 +303,11 @@ export const updateLinkScheduleFn = createServerFn({ method: 'POST' })
 
     if (!isCreatorTier(tier)) {
       setResponseStatus(403)
-      throw { message: 'Link scheduling requires Creator tier or higher', status: 403, code: 'TIER_REQUIRED' }
+      throw {
+        message: 'Link scheduling requires Creator tier or higher',
+        status: 403,
+        code: 'TIER_REQUIRED',
+      }
     }
 
     const [link] = await db
@@ -284,7 +323,7 @@ export const updateLinkScheduleFn = createServerFn({ method: 'POST' })
 
     await db
       .update(userLinks)
-      .set({ 
+      .set({
         schedule: data.schedule as LinkSchedule,
         updatedAt: new Date(),
       })
@@ -296,7 +335,9 @@ export const updateLinkScheduleFn = createServerFn({ method: 'POST' })
 const featuredLinkSchema = z.object({
   linkId: z.string().uuid(),
   isFeatured: z.boolean(),
-  featuredStyle: z.enum(['default', 'glow', 'gradient', 'outline', 'neon']).optional(),
+  featuredStyle: z
+    .enum(['default', 'glow', 'gradient', 'outline', 'neon'])
+    .optional(),
 })
 
 export const updateFeaturedLinkFn = createServerFn({ method: 'POST' })
@@ -307,7 +348,11 @@ export const updateFeaturedLinkFn = createServerFn({ method: 'POST' })
 
     if (!isCreatorTier(tier)) {
       setResponseStatus(403)
-      throw { message: 'Featured links require Creator tier or higher', status: 403, code: 'TIER_REQUIRED' }
+      throw {
+        message: 'Featured links require Creator tier or higher',
+        status: 403,
+        code: 'TIER_REQUIRED',
+      }
     }
 
     const [link] = await db
@@ -323,7 +368,7 @@ export const updateFeaturedLinkFn = createServerFn({ method: 'POST' })
 
     await db
       .update(userLinks)
-      .set({ 
+      .set({
         isFeatured: data.isFeatured,
         featuredStyle: data.featuredStyle || null,
         updatedAt: new Date(),
@@ -332,4 +377,3 @@ export const updateFeaturedLinkFn = createServerFn({ method: 'POST' })
 
     return { success: true }
   })
-

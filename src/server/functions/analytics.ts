@@ -29,7 +29,7 @@ async function getUserTier(userId: string): Promise<TierType> {
     .from(users)
     .where(eq(users.id, userId))
     .limit(1)
-  
+
   const tier = userData?.tier || 'free'
   return (tier === 'standard' || !tier ? 'free' : tier) as TierType
 }
@@ -78,63 +78,80 @@ export interface ReferrerData {
   percentage: number
 }
 
-export const getAnalyticsOverviewFn = createServerFn({ method: 'GET' }).handler(async () => {
-  const user = await getAuthenticatedUser()
-  const tier = await getUserTier(user.id)
-  const cutoffDate = getAnalyticsCutoffDate(tier)
-  const isRealtime = hasRealtimeAnalytics(tier)
+export const getAnalyticsOverviewFn = createServerFn({ method: 'GET' }).handler(
+  async () => {
+    const user = await getAuthenticatedUser()
+    const tier = await getUserTier(user.id)
+    const cutoffDate = getAnalyticsCutoffDate(tier)
+    const isRealtime = hasRealtimeAnalytics(tier)
 
-  const stats = await db.query.userStats.findFirst({
-    where: eq(userStats.userId, user.id),
-  })
-
-  const now = new Date()
-  const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
-  const sixtyDaysAgo = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000)
-
-  const currentPeriod = await db
-    .select({
-      views: sql<number>`COALESCE(SUM(${analyticsDaily.profileViews}), 0)`,
-      clicks: sql<number>`COALESCE(SUM(${analyticsDaily.linkClicks}), 0)`,
-      followers: sql<number>`COALESCE(SUM(${analyticsDaily.newFollowers}), 0)`,
+    const stats = await db.query.userStats.findFirst({
+      where: eq(userStats.userId, user.id),
     })
-    .from(analyticsDaily)
-    .where(and(
-      eq(analyticsDaily.userId, user.id), 
-      gte(analyticsDaily.date, thirtyDaysAgo),
-      lte(analyticsDaily.date, cutoffDate)
-    ))
 
-  const previousPeriod = await db
-    .select({
-      views: sql<number>`COALESCE(SUM(${analyticsDaily.profileViews}), 0)`,
-      clicks: sql<number>`COALESCE(SUM(${analyticsDaily.linkClicks}), 0)`,
-      followers: sql<number>`COALESCE(SUM(${analyticsDaily.newFollowers}), 0)`,
-    })
-    .from(analyticsDaily)
-    .where(
-      and(eq(analyticsDaily.userId, user.id), gte(analyticsDaily.date, sixtyDaysAgo), lte(analyticsDaily.date, thirtyDaysAgo))
-    )
+    const now = new Date()
+    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
+    const sixtyDaysAgo = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000)
 
-  const current = currentPeriod[0] || { views: 0, clicks: 0, followers: 0 }
-  const previous = previousPeriod[0] || { views: 0, clicks: 0, followers: 0 }
+    const currentPeriod = await db
+      .select({
+        views: sql<number>`COALESCE(SUM(${analyticsDaily.profileViews}), 0)`,
+        clicks: sql<number>`COALESCE(SUM(${analyticsDaily.linkClicks}), 0)`,
+        followers: sql<number>`COALESCE(SUM(${analyticsDaily.newFollowers}), 0)`,
+      })
+      .from(analyticsDaily)
+      .where(
+        and(
+          eq(analyticsDaily.userId, user.id),
+          gte(analyticsDaily.date, thirtyDaysAgo),
+          lte(analyticsDaily.date, cutoffDate),
+        ),
+      )
 
-  const calculateChange = (curr: number, prev: number) => {
-    if (prev === 0) return curr > 0 ? 100 : 0
-    return Math.round(((curr - prev) / prev) * 100)
-  }
+    const previousPeriod = await db
+      .select({
+        views: sql<number>`COALESCE(SUM(${analyticsDaily.profileViews}), 0)`,
+        clicks: sql<number>`COALESCE(SUM(${analyticsDaily.linkClicks}), 0)`,
+        followers: sql<number>`COALESCE(SUM(${analyticsDaily.newFollowers}), 0)`,
+      })
+      .from(analyticsDaily)
+      .where(
+        and(
+          eq(analyticsDaily.userId, user.id),
+          gte(analyticsDaily.date, sixtyDaysAgo),
+          lte(analyticsDaily.date, thirtyDaysAgo),
+        ),
+      )
 
-  return {
-    totalViews: stats?.profileViews || 0,
-    totalClicks: stats?.totalLinkClicks || 0,
-    totalFollowers: stats?.followers || 0,
-    viewsChange: calculateChange(Number(current.views), Number(previous.views)),
-    clicksChange: calculateChange(Number(current.clicks), Number(previous.clicks)),
-    followersChange: calculateChange(Number(current.followers), Number(previous.followers)),
-    isRealtime,
-    analyticsDelay: isRealtime ? 0 : ANALYTICS_DELAY_HOURS,
-  } as AnalyticsOverview
-})
+    const current = currentPeriod[0] || { views: 0, clicks: 0, followers: 0 }
+    const previous = previousPeriod[0] || { views: 0, clicks: 0, followers: 0 }
+
+    const calculateChange = (curr: number, prev: number) => {
+      if (prev === 0) return curr > 0 ? 100 : 0
+      return Math.round(((curr - prev) / prev) * 100)
+    }
+
+    return {
+      totalViews: stats?.profileViews || 0,
+      totalClicks: stats?.totalLinkClicks || 0,
+      totalFollowers: stats?.followers || 0,
+      viewsChange: calculateChange(
+        Number(current.views),
+        Number(previous.views),
+      ),
+      clicksChange: calculateChange(
+        Number(current.clicks),
+        Number(previous.clicks),
+      ),
+      followersChange: calculateChange(
+        Number(current.followers),
+        Number(previous.followers),
+      ),
+      isRealtime,
+      analyticsDelay: isRealtime ? 0 : ANALYTICS_DELAY_HOURS,
+    } as AnalyticsOverview
+  },
+)
 
 export const getDailyStatsFn = createServerFn({ method: 'GET' })
   .inputValidator(z.object({ days: z.number().min(7).max(365).optional() }))
@@ -151,11 +168,13 @@ export const getDailyStatsFn = createServerFn({ method: 'GET' })
     const dailyData = await db
       .select()
       .from(analyticsDaily)
-      .where(and(
-        eq(analyticsDaily.userId, user.id), 
-        gte(analyticsDaily.date, startDate),
-        lte(analyticsDaily.date, cutoffDate)
-      ))
+      .where(
+        and(
+          eq(analyticsDaily.userId, user.id),
+          gte(analyticsDaily.date, startDate),
+          lte(analyticsDaily.date, cutoffDate),
+        ),
+      )
       .orderBy(analyticsDaily.date)
 
     const dateMap = new Map<string, DailyStats>()
@@ -191,10 +210,10 @@ export const getTopLinksFn = createServerFn({ method: 'GET' })
     const { limit = 10 } = data
 
     if (!hasRealtimeAnalytics(tier)) {
-      return { 
-        links: [] as TopLink[], 
+      return {
+        links: [] as TopLink[],
         requiresUpgrade: true,
-        message: 'Per-link analytics requires Pro tier or higher'
+        message: 'Per-link analytics requires Pro tier or higher',
       }
     }
 
@@ -218,7 +237,10 @@ export const getTopLinksFn = createServerFn({ method: 'GET' })
         title: link.title,
         url: link.url,
         clicks: link.clicks || 0,
-        percentage: totalClicks > 0 ? Math.round(((link.clicks || 0) / totalClicks) * 100) : 0,
+        percentage:
+          totalClicks > 0
+            ? Math.round(((link.clicks || 0) / totalClicks) * 100)
+            : 0,
       })) as TopLink[],
       requiresUpgrade: false,
     }
@@ -232,10 +254,10 @@ export const getReferrersFn = createServerFn({ method: 'GET' })
     const { days = 30 } = data
 
     if (!hasRealtimeAnalytics(tier)) {
-      return { 
-        referrers: [] as ReferrerData[], 
+      return {
+        referrers: [] as ReferrerData[],
         requiresUpgrade: true,
-        message: 'Referrer tracking requires Pro tier or higher'
+        message: 'Referrer tracking requires Pro tier or higher',
       }
     }
 
@@ -245,20 +267,33 @@ export const getReferrersFn = createServerFn({ method: 'GET' })
     const dailyData = await db
       .select({ referrers: analyticsDaily.referrers })
       .from(analyticsDaily)
-      .where(and(eq(analyticsDaily.userId, user.id), gte(analyticsDaily.date, startDate)))
+      .where(
+        and(
+          eq(analyticsDaily.userId, user.id),
+          gte(analyticsDaily.date, startDate),
+        ),
+      )
 
     const referrerMap = new Map<string, number>()
 
     for (const row of dailyData) {
-      const referrers = row.referrers as { source: string; count: number }[] | null
+      const referrers = row.referrers as
+        | { source: string; count: number }[]
+        | null
       if (referrers) {
         for (const ref of referrers) {
-          referrerMap.set(ref.source, (referrerMap.get(ref.source) || 0) + ref.count)
+          referrerMap.set(
+            ref.source,
+            (referrerMap.get(ref.source) || 0) + ref.count,
+          )
         }
       }
     }
 
-    const totalCount = Array.from(referrerMap.values()).reduce((sum, count) => sum + count, 0)
+    const totalCount = Array.from(referrerMap.values()).reduce(
+      (sum, count) => sum + count,
+      0,
+    )
 
     const result: ReferrerData[] = Array.from(referrerMap.entries())
       .map(([source, count]) => ({
@@ -273,7 +308,12 @@ export const getReferrersFn = createServerFn({ method: 'GET' })
   })
 
 export const exportAnalyticsFn = createServerFn({ method: 'GET' })
-  .inputValidator(z.object({ days: z.number().min(7).max(365).optional(), format: z.enum(['json', 'csv']).optional() }))
+  .inputValidator(
+    z.object({
+      days: z.number().min(7).max(365).optional(),
+      format: z.enum(['json', 'csv']).optional(),
+    }),
+  )
   .handler(async ({ data }) => {
     const user = await getAuthenticatedUser()
     const tier = await getUserTier(user.id)
@@ -281,7 +321,11 @@ export const exportAnalyticsFn = createServerFn({ method: 'GET' })
 
     if (!hasRealtimeAnalytics(tier)) {
       setResponseStatus(403)
-      throw { message: 'Export analytics requires Pro tier or higher', status: 403, code: 'TIER_REQUIRED' }
+      throw {
+        message: 'Export analytics requires Pro tier or higher',
+        status: 403,
+        code: 'TIER_REQUIRED',
+      }
     }
 
     const startDate = new Date()
@@ -290,11 +334,22 @@ export const exportAnalyticsFn = createServerFn({ method: 'GET' })
     const dailyData = await db
       .select()
       .from(analyticsDaily)
-      .where(and(eq(analyticsDaily.userId, user.id), gte(analyticsDaily.date, startDate)))
+      .where(
+        and(
+          eq(analyticsDaily.userId, user.id),
+          gte(analyticsDaily.date, startDate),
+        ),
+      )
       .orderBy(analyticsDaily.date)
 
     if (format === 'csv') {
-      const headers = ['Date', 'Profile Views', 'Link Clicks', 'New Followers', 'Unique Visitors']
+      const headers = [
+        'Date',
+        'Profile Views',
+        'Link Clicks',
+        'New Followers',
+        'Unique Visitors',
+      ]
       const rows = dailyData.map((row) => [
         row.date.toISOString().split('T')[0],
         row.profileViews || 0,
@@ -302,7 +357,10 @@ export const exportAnalyticsFn = createServerFn({ method: 'GET' })
         row.newFollowers || 0,
         row.uniqueVisitors || 0,
       ])
-      return { data: [headers, ...rows].map((row) => row.join(',')).join('\n'), format: 'csv' }
+      return {
+        data: [headers, ...rows].map((row) => row.join(',')).join('\n'),
+        format: 'csv',
+      }
     }
 
     return {
@@ -320,13 +378,16 @@ export const exportAnalyticsFn = createServerFn({ method: 'GET' })
 export async function recordDailyAnalytics(
   userId: string,
   type: 'view' | 'click' | 'follower',
-  referrer?: string
+  referrer?: string,
 ) {
   const today = new Date()
   today.setHours(0, 0, 0, 0)
 
   const existing = await db.query.analyticsDaily.findFirst({
-    where: and(eq(analyticsDaily.userId, userId), eq(analyticsDaily.date, today)),
+    where: and(
+      eq(analyticsDaily.userId, userId),
+      eq(analyticsDaily.date, today),
+    ),
   })
 
   if (existing) {
@@ -341,7 +402,8 @@ export async function recordDailyAnalytics(
     }
 
     if (referrer && type === 'view') {
-      const currentReferrers = (existing.referrers as { source: string; count: number }[]) || []
+      const currentReferrers =
+        (existing.referrers as { source: string; count: number }[]) || []
       const existingRef = currentReferrers.find((r) => r.source === referrer)
       if (existingRef) {
         existingRef.count++
@@ -351,7 +413,10 @@ export async function recordDailyAnalytics(
       updates.referrers = currentReferrers
     }
 
-    await db.update(analyticsDaily).set(updates).where(eq(analyticsDaily.id, existing.id))
+    await db
+      .update(analyticsDaily)
+      .set(updates)
+      .where(eq(analyticsDaily.id, existing.id))
   } else {
     const newRecord: Record<string, unknown> = {
       userId,
@@ -363,6 +428,8 @@ export async function recordDailyAnalytics(
       referrers: referrer ? [{ source: referrer, count: 1 }] : [],
     }
 
-    await db.insert(analyticsDaily).values(newRecord as typeof analyticsDaily.$inferInsert)
+    await db
+      .insert(analyticsDaily)
+      .values(newRecord as typeof analyticsDaily.$inferInsert)
   }
 }

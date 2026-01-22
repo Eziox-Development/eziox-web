@@ -41,7 +41,10 @@ export const Route = createFileRoute('/_protected/analytics')({
   head: () => ({
     meta: [
       { title: 'Analytics | Eziox' },
-      { name: 'description', content: 'Track your profile performance and engagement metrics.' },
+      {
+        name: 'description',
+        content: 'Track your profile performance and engagement metrics.',
+      },
       { name: 'robots', content: 'noindex, nofollow' },
     ],
   }),
@@ -69,7 +72,11 @@ function AnalyticsPage() {
   const getReferrers = useServerFn(getReferrersFn)
   const exportAnalytics = useServerFn(exportAnalyticsFn)
 
-  const { data: overview, isLoading: overviewLoading, refetch: refetchOverview } = useQuery({
+  const {
+    data: overview,
+    isLoading: overviewLoading,
+    refetch: refetchOverview,
+  } = useQuery({
     queryKey: ['analyticsOverview'],
     queryFn: async () => {
       const result = await getOverview()
@@ -87,11 +94,20 @@ function AnalyticsPage() {
     refetchInterval: 60000,
   })
 
-  const { data: dailyStats, isLoading: dailyLoading, refetch: refetchDaily } = useQuery({
+  const {
+    data: dailyStats,
+    isLoading: dailyLoading,
+    refetch: refetchDaily,
+  } = useQuery({
     queryKey: ['dailyStats', timeRange],
     queryFn: async () => {
       const result = await getDailyStats({ data: { days: timeRange } })
-      return result as Array<{ date: string; views: number; clicks: number; followers: number }>
+      return result as Array<{
+        date: string
+        views: number
+        clicks: number
+        followers: number
+      }>
     },
     refetchInterval: 60000,
   })
@@ -100,8 +116,14 @@ function AnalyticsPage() {
     queryKey: ['topLinks'],
     queryFn: async () => {
       const result = await getTopLinks({ data: { limit: 5 } })
-      return result as { 
-        links: Array<{ id: string; title: string; url: string; clicks: number; percentage: number }>
+      return result as {
+        links: Array<{
+          id: string
+          title: string
+          url: string
+          clicks: number
+          percentage: number
+        }>
         requiresUpgrade: boolean
         message?: string
       }
@@ -125,11 +147,17 @@ function AnalyticsPage() {
   const handleExport = async (format: 'json' | 'csv') => {
     setIsExporting(true)
     try {
-      const result = await exportAnalytics({ data: { days: timeRange, format } })
+      const result = await exportAnalytics({
+        data: { days: timeRange, format },
+      })
       const exportData = result as { data: string | unknown[]; format: string }
       const blob = new Blob(
-        [typeof exportData.data === 'string' ? exportData.data : JSON.stringify(exportData.data, null, 2)],
-        { type: format === 'csv' ? 'text/csv' : 'application/json' }
+        [
+          typeof exportData.data === 'string'
+            ? exportData.data
+            : JSON.stringify(exportData.data, null, 2),
+        ],
+        { type: format === 'csv' ? 'text/csv' : 'application/json' },
       )
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
@@ -149,21 +177,34 @@ function AnalyticsPage() {
     void refetchReferrers()
   }
 
-  const maxValue = Math.max(...(dailyStats?.map((d) => d.views + d.clicks) || [1]), 1)
+  const maxValue = Math.max(
+    ...(dailyStats?.map((d) => d.views + d.clicks) || [1]),
+    1,
+  )
   const totalPeriodViews = dailyStats?.reduce((sum, d) => sum + d.views, 0) || 0
-  const totalPeriodClicks = dailyStats?.reduce((sum, d) => sum + d.clicks, 0) || 0
-  const avgDailyViews = dailyStats?.length ? Math.round(totalPeriodViews / dailyStats.length) : 0
+  const totalPeriodClicks =
+    dailyStats?.reduce((sum, d) => sum + d.clicks, 0) || 0
+  const avgDailyViews = dailyStats?.length
+    ? Math.round(totalPeriodViews / dailyStats.length)
+    : 0
 
   return (
-    <div className="min-h-screen pt-20 pb-16" style={{ background: 'var(--background)' }}>
+    <div
+      className="min-h-screen pt-20 pb-16"
+      style={{ background: 'var(--background)' }}
+    >
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
         <div
           className="absolute top-0 left-1/4 w-[600px] h-[600px] rounded-full blur-[120px] opacity-20"
-          style={{ background: `radial-gradient(circle, ${theme.colors.primary}, transparent)` }}
+          style={{
+            background: `radial-gradient(circle, ${theme.colors.primary}, transparent)`,
+          }}
         />
         <div
           className="absolute bottom-0 right-1/4 w-[500px] h-[500px] rounded-full blur-[100px] opacity-15"
-          style={{ background: `radial-gradient(circle, ${theme.colors.accent}, transparent)` }}
+          style={{
+            background: `radial-gradient(circle, ${theme.colors.accent}, transparent)`,
+          }}
         />
       </div>
 
@@ -177,16 +218,24 @@ function AnalyticsPage() {
             <div className="flex items-center gap-4">
               <motion.div
                 className="w-14 h-14 rounded-2xl flex items-center justify-center"
-                style={{ background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})` }}
+                style={{
+                  background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
+                }}
                 whileHover={{ scale: 1.05, rotate: 5 }}
               >
                 <BarChart3 size={28} className="text-white" />
               </motion.div>
               <div>
-                <h1 className="text-3xl font-bold" style={{ color: theme.colors.foreground }}>
+                <h1
+                  className="text-3xl font-bold"
+                  style={{ color: theme.colors.foreground }}
+                >
                   Analytics
                 </h1>
-                <p className="text-sm mt-1" style={{ color: theme.colors.foregroundMuted }}>
+                <p
+                  className="text-sm mt-1"
+                  style={{ color: theme.colors.foregroundMuted }}
+                >
                   Track your profile performance • @{currentUser?.username}
                 </p>
               </div>
@@ -195,7 +244,10 @@ function AnalyticsPage() {
             <div className="flex flex-wrap items-center gap-3">
               <div
                 className="flex items-center rounded-xl p-1"
-                style={{ background: theme.colors.backgroundSecondary, border: `1px solid ${theme.colors.border}` }}
+                style={{
+                  background: theme.colors.backgroundSecondary,
+                  border: `1px solid ${theme.colors.border}`,
+                }}
               >
                 {([7, 30, 90, 365] as TimeRange[]).map((days) => (
                   <motion.button
@@ -203,8 +255,14 @@ function AnalyticsPage() {
                     onClick={() => setTimeRange(days)}
                     className="px-4 py-2 text-sm font-medium rounded-lg transition-all"
                     style={{
-                      background: timeRange === days ? `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})` : 'transparent',
-                      color: timeRange === days ? '#fff' : theme.colors.foregroundMuted,
+                      background:
+                        timeRange === days
+                          ? `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`
+                          : 'transparent',
+                      color:
+                        timeRange === days
+                          ? '#fff'
+                          : theme.colors.foregroundMuted,
                     }}
                     whileHover={{ scale: timeRange === days ? 1 : 1.02 }}
                     whileTap={{ scale: 0.98 }}
@@ -217,28 +275,46 @@ function AnalyticsPage() {
               <motion.button
                 onClick={handleRefreshAll}
                 className="p-2.5 rounded-xl transition-all"
-                style={{ background: theme.colors.backgroundSecondary, border: `1px solid ${theme.colors.border}` }}
+                style={{
+                  background: theme.colors.backgroundSecondary,
+                  border: `1px solid ${theme.colors.border}`,
+                }}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 title="Refresh data"
               >
-                <RefreshCw size={18} style={{ color: theme.colors.foregroundMuted }} />
+                <RefreshCw
+                  size={18}
+                  style={{ color: theme.colors.foregroundMuted }}
+                />
               </motion.button>
 
               <div className="relative group">
                 <motion.button
                   className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium text-sm"
-                  style={{ background: theme.colors.backgroundSecondary, border: `1px solid ${theme.colors.border}`, color: theme.colors.foreground }}
+                  style={{
+                    background: theme.colors.backgroundSecondary,
+                    border: `1px solid ${theme.colors.border}`,
+                    color: theme.colors.foreground,
+                  }}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   disabled={isExporting}
                 >
-                  {isExporting ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />}
+                  {isExporting ? (
+                    <Loader2 size={16} className="animate-spin" />
+                  ) : (
+                    <Download size={16} />
+                  )}
                   Export
                 </motion.button>
                 <div
                   className="absolute right-0 top-full mt-2 w-40 rounded-xl overflow-hidden opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50"
-                  style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}`, boxShadow: '0 10px 40px rgba(0,0,0,0.3)' }}
+                  style={{
+                    background: theme.colors.card,
+                    border: `1px solid ${theme.colors.border}`,
+                    boxShadow: '0 10px 40px rgba(0,0,0,0.3)',
+                  }}
                 >
                   <button
                     onClick={() => handleExport('csv')}
@@ -267,20 +343,29 @@ function AnalyticsPage() {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             className="mb-6 p-4 rounded-xl flex items-center justify-between gap-4"
-            style={{ 
+            style={{
               background: `linear-gradient(135deg, ${theme.colors.primary}15, ${theme.colors.accent}10)`,
-              border: `1px solid ${theme.colors.primary}30`
+              border: `1px solid ${theme.colors.primary}30`,
             }}
           >
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: `${theme.colors.primary}20` }}>
+              <div
+                className="w-10 h-10 rounded-xl flex items-center justify-center"
+                style={{ background: `${theme.colors.primary}20` }}
+              >
                 <Clock size={20} style={{ color: theme.colors.primary }} />
               </div>
               <div>
-                <p className="font-medium text-sm" style={{ color: theme.colors.foreground }}>
+                <p
+                  className="font-medium text-sm"
+                  style={{ color: theme.colors.foreground }}
+                >
                   Analytics delayed by {overview.analyticsDelay}h
                 </p>
-                <p className="text-xs" style={{ color: theme.colors.foregroundMuted }}>
+                <p
+                  className="text-xs"
+                  style={{ color: theme.colors.foregroundMuted }}
+                >
                   Upgrade to Pro for realtime analytics
                 </p>
               </div>
@@ -289,7 +374,10 @@ function AnalyticsPage() {
               to="/profile"
               search={{ tab: 'subscription' }}
               className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all hover:scale-105"
-              style={{ background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`, color: '#fff' }}
+              style={{
+                background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
+                color: '#fff',
+              }}
             >
               <Crown size={16} />
               Upgrade
@@ -346,32 +434,67 @@ function AnalyticsPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
             className="lg:col-span-2 rounded-2xl overflow-hidden"
-            style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}` }}
+            style={{
+              background: theme.colors.card,
+              border: `1px solid ${theme.colors.border}`,
+            }}
           >
-            <div className="p-6 border-b" style={{ borderColor: theme.colors.border }}>
+            <div
+              className="p-6 border-b"
+              style={{ borderColor: theme.colors.border }}
+            >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div
                     className="w-10 h-10 rounded-xl flex items-center justify-center"
                     style={{ background: `${theme.colors.primary}20` }}
                   >
-                    <Activity size={20} style={{ color: theme.colors.primary }} />
+                    <Activity
+                      size={20}
+                      style={{ color: theme.colors.primary }}
+                    />
                   </div>
                   <div>
-                    <h2 className="font-bold" style={{ color: theme.colors.foreground }}>Activity Overview</h2>
-                    <p className="text-xs" style={{ color: theme.colors.foregroundMuted }}>
-                      {timeRangeLabels[timeRange]} • {totalPeriodViews.toLocaleString()} views, {totalPeriodClicks.toLocaleString()} clicks
+                    <h2
+                      className="font-bold"
+                      style={{ color: theme.colors.foreground }}
+                    >
+                      Activity Overview
+                    </h2>
+                    <p
+                      className="text-xs"
+                      style={{ color: theme.colors.foregroundMuted }}
+                    >
+                      {timeRangeLabels[timeRange]} •{' '}
+                      {totalPeriodViews.toLocaleString()} views,{' '}
+                      {totalPeriodClicks.toLocaleString()} clicks
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full" style={{ background: theme.colors.primary }} />
-                    <span className="text-xs" style={{ color: theme.colors.foregroundMuted }}>Views</span>
+                    <div
+                      className="w-3 h-3 rounded-full"
+                      style={{ background: theme.colors.primary }}
+                    />
+                    <span
+                      className="text-xs"
+                      style={{ color: theme.colors.foregroundMuted }}
+                    >
+                      Views
+                    </span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full" style={{ background: '#22c55e' }} />
-                    <span className="text-xs" style={{ color: theme.colors.foregroundMuted }}>Clicks</span>
+                    <div
+                      className="w-3 h-3 rounded-full"
+                      style={{ background: '#22c55e' }}
+                    />
+                    <span
+                      className="text-xs"
+                      style={{ color: theme.colors.foregroundMuted }}
+                    >
+                      Clicks
+                    </span>
                   </div>
                 </div>
               </div>
@@ -380,45 +503,80 @@ function AnalyticsPage() {
             <div className="p-6">
               {dailyLoading ? (
                 <div className="h-64 flex items-center justify-center">
-                  <Loader2 className="animate-spin" size={32} style={{ color: theme.colors.primary }} />
+                  <Loader2
+                    className="animate-spin"
+                    size={32}
+                    style={{ color: theme.colors.primary }}
+                  />
                 </div>
               ) : (
                 <div className="h-64 flex items-end gap-[2px]">
-                  {dailyStats?.slice(-Math.min(dailyStats.length, 60)).map((day, i) => {
-                    const viewHeight = maxValue > 0 ? (day.views / maxValue) * 100 : 0
-                    const clickHeight = maxValue > 0 ? (day.clicks / maxValue) * 100 : 0
-                    
-                    return (
-                      <div key={day.date} className="flex-1 flex flex-col justify-end gap-px group relative min-w-[4px]">
-                        <motion.div
-                          className="rounded-t-sm cursor-pointer"
-                          style={{ background: theme.colors.primary }}
-                          initial={{ height: 0 }}
-                          animate={{ height: `${Math.max(viewHeight, 2)}%` }}
-                          transition={{ delay: i * 0.01, duration: 0.4, ease: 'easeOut' }}
-                          whileHover={{ opacity: 0.8 }}
-                        />
-                        <motion.div
-                          className="rounded-t-sm cursor-pointer"
-                          style={{ background: '#22c55e' }}
-                          initial={{ height: 0 }}
-                          animate={{ height: `${Math.max(clickHeight * 0.5, 1)}%` }}
-                          transition={{ delay: i * 0.01 + 0.1, duration: 0.4, ease: 'easeOut' }}
-                          whileHover={{ opacity: 0.8 }}
-                        />
+                  {dailyStats
+                    ?.slice(-Math.min(dailyStats.length, 60))
+                    .map((day, i) => {
+                      const viewHeight =
+                        maxValue > 0 ? (day.views / maxValue) * 100 : 0
+                      const clickHeight =
+                        maxValue > 0 ? (day.clicks / maxValue) * 100 : 0
+
+                      return (
                         <div
-                          className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 rounded-xl text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all pointer-events-none z-20"
-                          style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}`, boxShadow: '0 10px 30px rgba(0,0,0,0.3)' }}
+                          key={day.date}
+                          className="flex-1 flex flex-col justify-end gap-px group relative min-w-[4px]"
                         >
-                          <p className="font-medium mb-1" style={{ color: theme.colors.foreground }}>
-                            {new Date(day.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                          </p>
-                          <p style={{ color: theme.colors.primary }}>{day.views} views</p>
-                          <p style={{ color: '#22c55e' }}>{day.clicks} clicks</p>
+                          <motion.div
+                            className="rounded-t-sm cursor-pointer"
+                            style={{ background: theme.colors.primary }}
+                            initial={{ height: 0 }}
+                            animate={{ height: `${Math.max(viewHeight, 2)}%` }}
+                            transition={{
+                              delay: i * 0.01,
+                              duration: 0.4,
+                              ease: 'easeOut',
+                            }}
+                            whileHover={{ opacity: 0.8 }}
+                          />
+                          <motion.div
+                            className="rounded-t-sm cursor-pointer"
+                            style={{ background: '#22c55e' }}
+                            initial={{ height: 0 }}
+                            animate={{
+                              height: `${Math.max(clickHeight * 0.5, 1)}%`,
+                            }}
+                            transition={{
+                              delay: i * 0.01 + 0.1,
+                              duration: 0.4,
+                              ease: 'easeOut',
+                            }}
+                            whileHover={{ opacity: 0.8 }}
+                          />
+                          <div
+                            className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 rounded-xl text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all pointer-events-none z-20"
+                            style={{
+                              background: theme.colors.card,
+                              border: `1px solid ${theme.colors.border}`,
+                              boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
+                            }}
+                          >
+                            <p
+                              className="font-medium mb-1"
+                              style={{ color: theme.colors.foreground }}
+                            >
+                              {new Date(day.date).toLocaleDateString('en-US', {
+                                month: 'short',
+                                day: 'numeric',
+                              })}
+                            </p>
+                            <p style={{ color: theme.colors.primary }}>
+                              {day.views} views
+                            </p>
+                            <p style={{ color: '#22c55e' }}>
+                              {day.clicks} clicks
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    )
-                  })}
+                      )
+                    })}
                 </div>
               )}
             </div>
@@ -429,9 +587,15 @@ function AnalyticsPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.25 }}
             className="rounded-2xl overflow-hidden"
-            style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}` }}
+            style={{
+              background: theme.colors.card,
+              border: `1px solid ${theme.colors.border}`,
+            }}
           >
-            <div className="p-5 border-b" style={{ borderColor: theme.colors.border }}>
+            <div
+              className="p-5 border-b"
+              style={{ borderColor: theme.colors.border }}
+            >
               <div className="flex items-center gap-3">
                 <div
                   className="w-10 h-10 rounded-xl flex items-center justify-center"
@@ -440,22 +604,49 @@ function AnalyticsPage() {
                   <Link2 size={20} style={{ color: '#22c55e' }} />
                 </div>
                 <div>
-                  <h3 className="font-bold" style={{ color: theme.colors.foreground }}>Top Links</h3>
-                  <p className="text-xs" style={{ color: theme.colors.foregroundMuted }}>By total clicks</p>
+                  <h3
+                    className="font-bold"
+                    style={{ color: theme.colors.foreground }}
+                  >
+                    Top Links
+                  </h3>
+                  <p
+                    className="text-xs"
+                    style={{ color: theme.colors.foregroundMuted }}
+                  >
+                    By total clicks
+                  </p>
                 </div>
               </div>
             </div>
             <div className="p-4">
               {topLinksData?.requiresUpgrade ? (
                 <div className="py-8 text-center">
-                  <Crown size={32} className="mx-auto mb-3 opacity-50" style={{ color: theme.colors.primary }} />
-                  <p className="text-sm font-medium mb-1" style={{ color: theme.colors.foreground }}>Per-Link Analytics</p>
-                  <p className="text-xs mb-4" style={{ color: theme.colors.foregroundMuted }}>Track clicks on individual links</p>
+                  <Crown
+                    size={32}
+                    className="mx-auto mb-3 opacity-50"
+                    style={{ color: theme.colors.primary }}
+                  />
+                  <p
+                    className="text-sm font-medium mb-1"
+                    style={{ color: theme.colors.foreground }}
+                  >
+                    Per-Link Analytics
+                  </p>
+                  <p
+                    className="text-xs mb-4"
+                    style={{ color: theme.colors.foregroundMuted }}
+                  >
+                    Track clicks on individual links
+                  </p>
                   <Link
                     to="/profile"
                     search={{ tab: 'subscription' }}
                     className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all hover:scale-105"
-                    style={{ background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`, color: '#fff' }}
+                    style={{
+                      background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
+                      color: '#fff',
+                    }}
                   >
                     <Crown size={14} />
                     Upgrade to Pro
@@ -474,35 +665,74 @@ function AnalyticsPage() {
                       <div
                         className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold"
                         style={{
-                          background: i === 0 ? 'linear-gradient(135deg, #f59e0b, #ef4444)' : i === 1 ? 'linear-gradient(135deg, #94a3b8, #64748b)' : i === 2 ? 'linear-gradient(135deg, #d97706, #92400e)' : theme.colors.backgroundSecondary,
+                          background:
+                            i === 0
+                              ? 'linear-gradient(135deg, #f59e0b, #ef4444)'
+                              : i === 1
+                                ? 'linear-gradient(135deg, #94a3b8, #64748b)'
+                                : i === 2
+                                  ? 'linear-gradient(135deg, #d97706, #92400e)'
+                                  : theme.colors.backgroundSecondary,
                           color: i < 3 ? '#fff' : theme.colors.foregroundMuted,
                         }}
                       >
                         {i + 1}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium truncate" style={{ color: theme.colors.foreground }}>{link.title}</p>
+                        <p
+                          className="text-sm font-medium truncate"
+                          style={{ color: theme.colors.foreground }}
+                        >
+                          {link.title}
+                        </p>
                         <div className="flex items-center gap-2 mt-1">
-                          <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: theme.colors.backgroundSecondary }}>
+                          <div
+                            className="flex-1 h-1.5 rounded-full overflow-hidden"
+                            style={{
+                              background: theme.colors.backgroundSecondary,
+                            }}
+                          >
                             <motion.div
                               className="h-full rounded-full"
                               style={{ background: '#22c55e' }}
                               initial={{ width: 0 }}
                               animate={{ width: `${link.percentage}%` }}
-                              transition={{ delay: 0.4 + i * 0.05, duration: 0.5 }}
+                              transition={{
+                                delay: 0.4 + i * 0.05,
+                                duration: 0.5,
+                              }}
                             />
                           </div>
-                          <span className="text-xs font-medium" style={{ color: theme.colors.foregroundMuted }}>{link.percentage}%</span>
+                          <span
+                            className="text-xs font-medium"
+                            style={{ color: theme.colors.foregroundMuted }}
+                          >
+                            {link.percentage}%
+                          </span>
                         </div>
                       </div>
-                      <span className="text-sm font-bold" style={{ color: '#22c55e' }}>{link.clicks}</span>
+                      <span
+                        className="text-sm font-bold"
+                        style={{ color: '#22c55e' }}
+                      >
+                        {link.clicks}
+                      </span>
                     </motion.div>
                   ))}
                 </div>
               ) : (
                 <div className="py-8 text-center">
-                  <Link2 size={32} className="mx-auto mb-3 opacity-30" style={{ color: theme.colors.foregroundMuted }} />
-                  <p className="text-sm" style={{ color: theme.colors.foregroundMuted }}>No link data yet</p>
+                  <Link2
+                    size={32}
+                    className="mx-auto mb-3 opacity-30"
+                    style={{ color: theme.colors.foregroundMuted }}
+                  />
+                  <p
+                    className="text-sm"
+                    style={{ color: theme.colors.foregroundMuted }}
+                  >
+                    No link data yet
+                  </p>
                   <Link
                     to="/profile"
                     className="inline-flex items-center gap-1 text-xs mt-2 hover:underline"
@@ -522,9 +752,15 @@ function AnalyticsPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
             className="rounded-2xl overflow-hidden"
-            style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}` }}
+            style={{
+              background: theme.colors.card,
+              border: `1px solid ${theme.colors.border}`,
+            }}
           >
-            <div className="p-5 border-b" style={{ borderColor: theme.colors.border }}>
+            <div
+              className="p-5 border-b"
+              style={{ borderColor: theme.colors.border }}
+            >
               <div className="flex items-center gap-3">
                 <div
                   className="w-10 h-10 rounded-xl flex items-center justify-center"
@@ -533,22 +769,49 @@ function AnalyticsPage() {
                   <Globe size={20} style={{ color: '#8b5cf6' }} />
                 </div>
                 <div>
-                  <h3 className="font-bold" style={{ color: theme.colors.foreground }}>Traffic Sources</h3>
-                  <p className="text-xs" style={{ color: theme.colors.foregroundMuted }}>Where your visitors come from</p>
+                  <h3
+                    className="font-bold"
+                    style={{ color: theme.colors.foreground }}
+                  >
+                    Traffic Sources
+                  </h3>
+                  <p
+                    className="text-xs"
+                    style={{ color: theme.colors.foregroundMuted }}
+                  >
+                    Where your visitors come from
+                  </p>
                 </div>
               </div>
             </div>
             <div className="p-4">
               {referrersData?.requiresUpgrade ? (
                 <div className="py-8 text-center">
-                  <Crown size={32} className="mx-auto mb-3 opacity-50" style={{ color: '#8b5cf6' }} />
-                  <p className="text-sm font-medium mb-1" style={{ color: theme.colors.foreground }}>Referrer Tracking</p>
-                  <p className="text-xs mb-4" style={{ color: theme.colors.foregroundMuted }}>See where your visitors come from</p>
+                  <Crown
+                    size={32}
+                    className="mx-auto mb-3 opacity-50"
+                    style={{ color: '#8b5cf6' }}
+                  />
+                  <p
+                    className="text-sm font-medium mb-1"
+                    style={{ color: theme.colors.foreground }}
+                  >
+                    Referrer Tracking
+                  </p>
+                  <p
+                    className="text-xs mb-4"
+                    style={{ color: theme.colors.foregroundMuted }}
+                  >
+                    See where your visitors come from
+                  </p>
                   <Link
                     to="/profile"
                     search={{ tab: 'subscription' }}
                     className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all hover:scale-105"
-                    style={{ background: 'linear-gradient(135deg, #8b5cf6, #ec4899)', color: '#fff' }}
+                    style={{
+                      background: 'linear-gradient(135deg, #8b5cf6, #ec4899)',
+                      color: '#fff',
+                    }}
                   >
                     <Crown size={14} />
                     Upgrade to Pro
@@ -567,25 +830,44 @@ function AnalyticsPage() {
                       <div className="flex items-center gap-3">
                         <div
                           className="w-8 h-8 rounded-lg flex items-center justify-center"
-                          style={{ background: theme.colors.backgroundSecondary }}
+                          style={{
+                            background: theme.colors.backgroundSecondary,
+                          }}
                         >
-                          <Globe size={14} style={{ color: theme.colors.foregroundMuted }} />
+                          <Globe
+                            size={14}
+                            style={{ color: theme.colors.foregroundMuted }}
+                          />
                         </div>
-                        <span className="text-sm font-medium" style={{ color: theme.colors.foreground }}>
+                        <span
+                          className="text-sm font-medium"
+                          style={{ color: theme.colors.foreground }}
+                        >
                           {ref.source || 'Direct'}
                         </span>
                       </div>
                       <div className="flex items-center gap-3">
-                        <div className="w-24 h-1.5 rounded-full overflow-hidden" style={{ background: theme.colors.backgroundSecondary }}>
+                        <div
+                          className="w-24 h-1.5 rounded-full overflow-hidden"
+                          style={{
+                            background: theme.colors.backgroundSecondary,
+                          }}
+                        >
                           <motion.div
                             className="h-full rounded-full"
                             style={{ background: '#8b5cf6' }}
                             initial={{ width: 0 }}
                             animate={{ width: `${ref.percentage}%` }}
-                            transition={{ delay: 0.4 + i * 0.05, duration: 0.5 }}
+                            transition={{
+                              delay: 0.4 + i * 0.05,
+                              duration: 0.5,
+                            }}
                           />
                         </div>
-                        <span className="text-xs font-medium w-16 text-right" style={{ color: theme.colors.foregroundMuted }}>
+                        <span
+                          className="text-xs font-medium w-16 text-right"
+                          style={{ color: theme.colors.foregroundMuted }}
+                        >
                           {ref.count} ({ref.percentage}%)
                         </span>
                       </div>
@@ -594,9 +876,23 @@ function AnalyticsPage() {
                 </div>
               ) : (
                 <div className="py-8 text-center">
-                  <Globe size={32} className="mx-auto mb-3 opacity-30" style={{ color: theme.colors.foregroundMuted }} />
-                  <p className="text-sm" style={{ color: theme.colors.foregroundMuted }}>No referrer data yet</p>
-                  <p className="text-xs mt-1" style={{ color: theme.colors.foregroundMuted }}>Share your profile to see traffic sources</p>
+                  <Globe
+                    size={32}
+                    className="mx-auto mb-3 opacity-30"
+                    style={{ color: theme.colors.foregroundMuted }}
+                  />
+                  <p
+                    className="text-sm"
+                    style={{ color: theme.colors.foregroundMuted }}
+                  >
+                    No referrer data yet
+                  </p>
+                  <p
+                    className="text-xs mt-1"
+                    style={{ color: theme.colors.foregroundMuted }}
+                  >
+                    Share your profile to see traffic sources
+                  </p>
                 </div>
               )}
             </div>
@@ -607,19 +903,34 @@ function AnalyticsPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.35 }}
             className="rounded-2xl overflow-hidden"
-            style={{ background: `linear-gradient(135deg, ${theme.colors.primary}15, ${theme.colors.accent}15)`, border: `1px solid ${theme.colors.border}` }}
+            style={{
+              background: `linear-gradient(135deg, ${theme.colors.primary}15, ${theme.colors.accent}15)`,
+              border: `1px solid ${theme.colors.border}`,
+            }}
           >
             <div className="p-6">
               <div className="flex items-center gap-3 mb-6">
                 <div
                   className="w-12 h-12 rounded-xl flex items-center justify-center"
-                  style={{ background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})` }}
+                  style={{
+                    background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
+                  }}
                 >
                   <Sparkles size={24} className="text-white" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-lg" style={{ color: theme.colors.foreground }}>Quick Insights</h3>
-                  <p className="text-xs" style={{ color: theme.colors.foregroundMuted }}>Performance summary</p>
+                  <h3
+                    className="font-bold text-lg"
+                    style={{ color: theme.colors.foreground }}
+                  >
+                    Quick Insights
+                  </h3>
+                  <p
+                    className="text-xs"
+                    style={{ color: theme.colors.foregroundMuted }}
+                  >
+                    Performance summary
+                  </p>
                 </div>
               </div>
 
@@ -627,20 +938,44 @@ function AnalyticsPage() {
                 <InsightItem
                   icon={Target}
                   label="Click-through Rate"
-                  value={overview && overview.totalViews > 0 ? `${((overview.totalClicks / overview.totalViews) * 100).toFixed(1)}%` : '0%'}
+                  value={
+                    overview && overview.totalViews > 0
+                      ? `${((overview.totalClicks / overview.totalViews) * 100).toFixed(1)}%`
+                      : '0%'
+                  }
                   theme={theme}
                 />
                 <InsightItem
                   icon={TrendingUp}
                   label="Views Trend"
-                  value={overview?.viewsChange !== undefined ? `${overview.viewsChange >= 0 ? '+' : ''}${overview.viewsChange}%` : '0%'}
-                  positive={overview?.viewsChange !== undefined ? overview.viewsChange >= 0 : true}
+                  value={
+                    overview?.viewsChange !== undefined
+                      ? `${overview.viewsChange >= 0 ? '+' : ''}${overview.viewsChange}%`
+                      : '0%'
+                  }
+                  positive={
+                    overview?.viewsChange !== undefined
+                      ? overview.viewsChange >= 0
+                      : true
+                  }
                   theme={theme}
                 />
                 <InsightItem
                   icon={Zap}
                   label="Engagement Score"
-                  value={overview ? Math.min(100, Math.round((overview.totalClicks + overview.totalFollowers * 5) / Math.max(overview.totalViews, 1) * 100)).toString() : '0'}
+                  value={
+                    overview
+                      ? Math.min(
+                          100,
+                          Math.round(
+                            ((overview.totalClicks +
+                              overview.totalFollowers * 5) /
+                              Math.max(overview.totalViews, 1)) *
+                              100,
+                          ),
+                        ).toString()
+                      : '0'
+                  }
                   suffix="/100"
                   theme={theme}
                 />
@@ -655,7 +990,10 @@ function AnalyticsPage() {
               <Link
                 to="/profile"
                 className="mt-6 w-full flex items-center justify-center gap-2 py-3 rounded-xl font-medium text-sm transition-all hover:opacity-90"
-                style={{ background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`, color: '#fff' }}
+                style={{
+                  background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
+                  color: '#fff',
+                }}
               >
                 <ArrowUpRight size={16} />
                 Optimize Profile
@@ -680,7 +1018,17 @@ interface StatCardProps {
   subtitle?: string
 }
 
-function StatCard({ title, value, change, icon: Icon, iconColor, theme, loading, delay = 0, subtitle }: StatCardProps) {
+function StatCard({
+  title,
+  value,
+  change,
+  icon: Icon,
+  iconColor,
+  theme,
+  loading,
+  delay = 0,
+  subtitle,
+}: StatCardProps) {
   const isPositive = change !== undefined ? change >= 0 : true
 
   return (
@@ -689,7 +1037,10 @@ function StatCard({ title, value, change, icon: Icon, iconColor, theme, loading,
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay }}
       className="rounded-2xl p-5 relative overflow-hidden group"
-      style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}` }}
+      style={{
+        background: theme.colors.card,
+        border: `1px solid ${theme.colors.border}`,
+      }}
     >
       <div
         className="absolute top-0 right-0 w-32 h-32 rounded-full blur-3xl opacity-10 group-hover:opacity-20 transition-opacity"
@@ -711,18 +1062,32 @@ function StatCard({ title, value, change, icon: Icon, iconColor, theme, loading,
               transition={{ delay: delay + 0.2 }}
               className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold"
               style={{
-                background: isPositive ? 'rgba(34, 197, 94, 0.15)' : 'rgba(239, 68, 68, 0.15)',
+                background: isPositive
+                  ? 'rgba(34, 197, 94, 0.15)'
+                  : 'rgba(239, 68, 68, 0.15)',
                 color: isPositive ? '#22c55e' : '#ef4444',
               }}
             >
-              {isPositive ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
+              {isPositive ? (
+                <TrendingUp size={12} />
+              ) : (
+                <TrendingDown size={12} />
+              )}
               {Math.abs(change)}%
             </motion.div>
           )}
         </div>
-        <p className="text-sm mb-1" style={{ color: theme.colors.foregroundMuted }}>{title}</p>
+        <p
+          className="text-sm mb-1"
+          style={{ color: theme.colors.foregroundMuted }}
+        >
+          {title}
+        </p>
         {loading ? (
-          <div className="h-9 w-24 rounded-lg animate-pulse" style={{ background: theme.colors.backgroundSecondary }} />
+          <div
+            className="h-9 w-24 rounded-lg animate-pulse"
+            style={{ background: theme.colors.backgroundSecondary }}
+          />
         ) : (
           <motion.p
             className="text-3xl font-bold"
@@ -735,7 +1100,12 @@ function StatCard({ title, value, change, icon: Icon, iconColor, theme, loading,
           </motion.p>
         )}
         {subtitle && (
-          <p className="text-xs mt-1" style={{ color: theme.colors.foregroundMuted }}>{subtitle}</p>
+          <p
+            className="text-xs mt-1"
+            style={{ color: theme.colors.foregroundMuted }}
+          >
+            {subtitle}
+          </p>
         )}
       </div>
     </motion.div>
@@ -751,18 +1121,41 @@ interface InsightItemProps {
   theme: ReturnType<typeof useTheme>['theme']
 }
 
-function InsightItem({ icon: Icon, label, value, suffix, positive, theme }: InsightItemProps) {
+function InsightItem({
+  icon: Icon,
+  label,
+  value,
+  suffix,
+  positive,
+  theme,
+}: InsightItemProps) {
   return (
-    <div className="flex items-center justify-between p-3 rounded-xl" style={{ background: 'rgba(255,255,255,0.05)' }}>
+    <div
+      className="flex items-center justify-between p-3 rounded-xl"
+      style={{ background: 'rgba(255,255,255,0.05)' }}
+    >
       <div className="flex items-center gap-3">
         <Icon size={18} style={{ color: theme.colors.foregroundMuted }} />
-        <span className="text-sm" style={{ color: theme.colors.foregroundMuted }}>{label}</span>
+        <span
+          className="text-sm"
+          style={{ color: theme.colors.foregroundMuted }}
+        >
+          {label}
+        </span>
       </div>
       <span
         className="text-sm font-bold"
-        style={{ color: positive !== undefined ? (positive ? '#22c55e' : '#ef4444') : theme.colors.foreground }}
+        style={{
+          color:
+            positive !== undefined
+              ? positive
+                ? '#22c55e'
+                : '#ef4444'
+              : theme.colors.foreground,
+        }}
       >
-        {value}{suffix}
+        {value}
+        {suffix}
       </span>
     </div>
   )

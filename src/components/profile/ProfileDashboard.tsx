@@ -28,7 +28,10 @@ interface ProfileDashboardProps {
   initialTab?: TabType
 }
 
-export function ProfileDashboard({ currentUser, initialTab }: ProfileDashboardProps) {
+export function ProfileDashboard({
+  currentUser,
+  initialTab,
+}: ProfileDashboardProps) {
   useTheme()
   const navigate = useNavigate()
   const updateProfile = useServerFn(updateProfileFn)
@@ -66,12 +69,17 @@ export function ProfileDashboard({ currentUser, initialTab }: ProfileDashboardPr
     }
   }, [initialTab])
 
-  const handleTabChange = useCallback((tab: TabType) => {
-    setActiveTab(tab)
-    void navigate({ to: '/profile', search: { tab } })
-  }, [navigate])
+  const handleTabChange = useCallback(
+    (tab: TabType) => {
+      setActiveTab(tab)
+      void navigate({ to: '/profile', search: { tab } })
+    },
+    [navigate],
+  )
 
-  const isOwner = currentUser.email === siteConfig.owner.email || currentUser.email === import.meta.env.OWNER_EMAIL
+  const isOwner =
+    currentUser.email === siteConfig.owner.email ||
+    currentUser.email === import.meta.env.OWNER_EMAIL
 
   const { data: links = [] } = useQuery({
     queryKey: ['my-links'],
@@ -111,13 +119,19 @@ export function ProfileDashboard({ currentUser, initialTab }: ProfileDashboardPr
     setTimeout(() => setCopiedBioUrl(false), 2000)
   }, [currentUser.username])
 
-  const updateField = useCallback(<K extends keyof ProfileFormData>(key: K, value: ProfileFormData[K]) => {
-    setFormData(prev => ({ ...prev, [key]: value }))
-    setHasChanges(true)
-  }, [])
+  const updateField = useCallback(
+    <K extends keyof ProfileFormData>(key: K, value: ProfileFormData[K]) => {
+      setFormData((prev) => ({ ...prev, [key]: value }))
+      setHasChanges(true)
+    },
+    [],
+  )
 
   const updateSocial = useCallback((key: string, value: string) => {
-    setFormData(prev => ({ ...prev, socials: { ...prev.socials, [key]: value } }))
+    setFormData((prev) => ({
+      ...prev,
+      socials: { ...prev.socials, [key]: value },
+    }))
     setHasChanges(true)
   }, [])
 
@@ -125,7 +139,8 @@ export function ProfileDashboard({ currentUser, initialTab }: ProfileDashboardPr
     setIsSaving(true)
     setSaveError(null)
     try {
-      const pronounsToSave = formData.pronouns === 'custom' ? customPronouns : formData.pronouns
+      const pronounsToSave =
+        formData.pronouns === 'custom' ? customPronouns : formData.pronouns
       await updateProfile({
         data: {
           name: formData.name || undefined,
@@ -135,17 +150,25 @@ export function ProfileDashboard({ currentUser, initialTab }: ProfileDashboardPr
           location: formData.location || undefined,
           pronouns: pronounsToSave || undefined,
           birthday: formData.birthday || undefined,
-          creatorTypes: formData.creatorTypes.length > 0 ? formData.creatorTypes : undefined,
+          creatorTypes:
+            formData.creatorTypes.length > 0
+              ? formData.creatorTypes
+              : undefined,
           isPublic: formData.isPublic,
           showActivity: formData.showActivity,
-          socials: Object.keys(formData.socials).length > 0 ? formData.socials : undefined,
+          socials:
+            Object.keys(formData.socials).length > 0
+              ? formData.socials
+              : undefined,
         },
       })
       setSaveSuccess(true)
       setHasChanges(false)
       setTimeout(() => setSaveSuccess(false), 3000)
     } catch (error) {
-      setSaveError((error as { message?: string }).message || 'Failed to update')
+      setSaveError(
+        (error as { message?: string }).message || 'Failed to update',
+      )
     } finally {
       setIsSaving(false)
     }
@@ -156,7 +179,12 @@ export function ProfileDashboard({ currentUser, initialTab }: ProfileDashboardPr
     window.location.reload()
   }
 
-  const stats = currentUser.stats || { profileViews: 0, totalLinkClicks: 0, followers: 0, following: 0 }
+  const stats = currentUser.stats || {
+    profileViews: 0,
+    totalLinkClicks: 0,
+    followers: 0,
+    following: 0,
+  }
   const totalClicks = links.reduce((sum, link) => sum + (link.clicks || 0), 0)
   const referralCount = referralStats?.referralCount || 0
   const userBadges = (currentUser.profile?.badges || []) as string[]
@@ -205,7 +233,11 @@ export function ProfileDashboard({ currentUser, initialTab }: ProfileDashboardPr
             currentUser={currentUser}
             activeTab={activeTab}
             setActiveTab={handleTabChange}
-            badges={{ links: links.length, referrals: referralCount, badges: userBadges.length }}
+            badges={{
+              links: links.length,
+              referrals: referralCount,
+              badges: userBadges.length,
+            }}
             onCopyBioUrl={copyBioUrl}
             copied={copiedBioUrl}
           />
@@ -241,12 +273,8 @@ export function ProfileDashboard({ currentUser, initialTab }: ProfileDashboardPr
                   setCustomPronouns={setCustomPronouns}
                 />
               )}
-              {activeTab === 'links' && (
-                <LinksTab key="links" />
-              )}
-              {activeTab === 'referrals' && (
-                <ReferralsTab key="referrals" />
-              )}
+              {activeTab === 'links' && <LinksTab key="links" />}
+              {activeTab === 'referrals' && <ReferralsTab key="referrals" />}
               {activeTab === 'badges' && (
                 <BadgesTab
                   key="badges"
@@ -255,8 +283,12 @@ export function ProfileDashboard({ currentUser, initialTab }: ProfileDashboardPr
                   isEarlyAdopter={userBadges.includes('early_adopter')}
                 />
               )}
-              {activeTab === 'subscription' && <SubscriptionTab key="subscription" />}
-              {activeTab === 'customization' && <CustomizationTab key="customization" />}
+              {activeTab === 'subscription' && (
+                <SubscriptionTab key="subscription" />
+              )}
+              {activeTab === 'customization' && (
+                <CustomizationTab key="customization" />
+              )}
               {activeTab === 'creator' && <CreatorTab key="creator" />}
               {activeTab === 'settings' && (
                 <SettingsTab
@@ -286,10 +318,13 @@ export function ProfileDashboard({ currentUser, initialTab }: ProfileDashboardPr
 
 export function ProfileDashboardLoader() {
   const { theme } = useTheme()
-  
+
   return (
     <div className="min-h-screen flex items-center justify-center">
-      <Loader2 className="w-10 h-10 animate-spin" style={{ color: theme.colors.primary }} />
+      <Loader2
+        className="w-10 h-10 animate-spin"
+        style={{ color: theme.colors.primary }}
+      />
     </div>
   )
 }

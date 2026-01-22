@@ -154,7 +154,9 @@ export const profiles = pgTable('profiles', {
   isPublic: boolean('is_public').default(true),
   showActivity: boolean('show_activity').default(true),
   referralCode: varchar('referral_code', { length: 20 }),
-  referredBy: uuid('referred_by').references(() => users.id, { onDelete: 'set null' }),
+  referredBy: uuid('referred_by').references(() => users.id, {
+    onDelete: 'set null',
+  }),
   creatorTypes: jsonb('creator_types').$type<string[]>().default([]),
   isFeatured: boolean('is_featured').default(false),
   notifyNewFollower: boolean('notify_new_follower').default(true),
@@ -206,7 +208,13 @@ export interface QRCodeStyle {
 }
 
 export interface MediaEmbed {
-  type: 'spotify' | 'soundcloud' | 'youtube' | 'twitch' | 'tiktok' | 'apple-music'
+  type:
+    | 'spotify'
+    | 'soundcloud'
+    | 'youtube'
+    | 'twitch'
+    | 'tiktok'
+    | 'apple-music'
   embedId?: string
   embedUrl?: string
   autoplay?: boolean
@@ -354,12 +362,15 @@ export const socialIntegrations = pgTable('social_integrations', {
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 })
 
-export const socialIntegrationsRelations = relations(socialIntegrations, ({ one }) => ({
-  user: one(users, {
-    fields: [socialIntegrations.userId],
-    references: [users.id],
+export const socialIntegrationsRelations = relations(
+  socialIntegrations,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [socialIntegrations.userId],
+      references: [users.id],
+    }),
   }),
-}))
+)
 
 // MEDIA LIBRARY TABLE (for storing uploaded media)
 export const mediaLibrary = pgTable('media_library', {
@@ -393,8 +404,9 @@ export const scheduledPosts = pgTable('scheduled_posts', {
   userId: uuid('user_id')
     .notNull()
     .references(() => users.id, { onDelete: 'cascade' }),
-  linkId: uuid('link_id')
-    .references(() => userLinks.id, { onDelete: 'cascade' }),
+  linkId: uuid('link_id').references(() => userLinks.id, {
+    onDelete: 'cascade',
+  }),
   action: varchar('action', { length: 20 }).notNull(),
   scheduledFor: timestamp('scheduled_for').notNull(),
   executedAt: timestamp('executed_at'),
@@ -531,7 +543,6 @@ export const activityLogRelations = relations(activityLog, ({ one }) => ({
   }),
 }))
 
-
 // SHORT LINKS TABLE (URL Shortener)
 export const shortLinks = pgTable('short_links', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -563,31 +574,40 @@ export const partnerApplications = pgTable('partner_applications', {
     .references(() => users.id, { onDelete: 'cascade' }),
   companyName: varchar('company_name', { length: 200 }),
   website: varchar('website', { length: 255 }),
-  socialLinks: jsonb('social_links').$type<Record<string, string>>().default({}),
+  socialLinks: jsonb('social_links')
+    .$type<Record<string, string>>()
+    .default({}),
   category: varchar('category', { length: 50 }).notNull(),
   subcategory: varchar('subcategory', { length: 50 }),
-  categoryData: jsonb('category_data').$type<Record<string, string | string[] | number | boolean | null>>().default({}),
+  categoryData: jsonb('category_data')
+    .$type<Record<string, string | string[] | number | boolean | null>>()
+    .default({}),
   audienceSize: varchar('audience_size', { length: 50 }),
   description: text('description').notNull(),
   whyPartner: text('why_partner').notNull(),
   status: varchar('status', { length: 20 }).default('pending').notNull(),
   adminNotes: text('admin_notes'),
-  reviewedBy: uuid('reviewed_by').references(() => users.id, { onDelete: 'set null' }),
+  reviewedBy: uuid('reviewed_by').references(() => users.id, {
+    onDelete: 'set null',
+  }),
   reviewedAt: timestamp('reviewed_at'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 })
 
-export const partnerApplicationsRelations = relations(partnerApplications, ({ one }) => ({
-  user: one(users, {
-    fields: [partnerApplications.userId],
-    references: [users.id],
+export const partnerApplicationsRelations = relations(
+  partnerApplications,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [partnerApplications.userId],
+      references: [users.id],
+    }),
+    reviewer: one(users, {
+      fields: [partnerApplications.reviewedBy],
+      references: [users.id],
+    }),
   }),
-  reviewer: one(users, {
-    fields: [partnerApplications.reviewedBy],
-    references: [users.id],
-  }),
-}))
+)
 
 // NOTIFICATIONS TABLE
 export const notifications = pgTable('notifications', {
@@ -622,8 +642,12 @@ export const analyticsDaily = pgTable('analytics_daily', {
   linkClicks: integer('link_clicks').default(0),
   newFollowers: integer('new_followers').default(0),
   uniqueVisitors: integer('unique_visitors').default(0),
-  topLinks: jsonb('top_links').$type<{ linkId: string; clicks: number }[]>().default([]),
-  referrers: jsonb('referrers').$type<{ source: string; count: number }[]>().default([]),
+  topLinks: jsonb('top_links')
+    .$type<{ linkId: string; clicks: number }[]>()
+    .default([]),
+  referrers: jsonb('referrers')
+    .$type<{ source: string; count: number }[]>()
+    .default([]),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 })
@@ -656,16 +680,19 @@ export const linkClickAnalytics = pgTable('link_click_analytics', {
   clickedAt: timestamp('clicked_at').defaultNow().notNull(),
 })
 
-export const linkClickAnalyticsRelations = relations(linkClickAnalytics, ({ one }) => ({
-  link: one(userLinks, {
-    fields: [linkClickAnalytics.linkId],
-    references: [userLinks.id],
+export const linkClickAnalyticsRelations = relations(
+  linkClickAnalytics,
+  ({ one }) => ({
+    link: one(userLinks, {
+      fields: [linkClickAnalytics.linkId],
+      references: [userLinks.id],
+    }),
+    user: one(users, {
+      fields: [linkClickAnalytics.userId],
+      references: [users.id],
+    }),
   }),
-  user: one(users, {
-    fields: [linkClickAnalytics.userId],
-    references: [users.id],
-  }),
-}))
+)
 
 // CUSTOM DOMAINS TABLE (Creator Tier Feature)
 export const customDomains = pgTable('custom_domains', {
@@ -706,12 +733,15 @@ export const profileViewAnalytics = pgTable('profile_view_analytics', {
   viewedAt: timestamp('viewed_at').defaultNow().notNull(),
 })
 
-export const profileViewAnalyticsRelations = relations(profileViewAnalytics, ({ one }) => ({
-  profileUser: one(users, {
-    fields: [profileViewAnalytics.profileUserId],
-    references: [users.id],
+export const profileViewAnalyticsRelations = relations(
+  profileViewAnalytics,
+  ({ one }) => ({
+    profileUser: one(users, {
+      fields: [profileViewAnalytics.profileUserId],
+      references: [users.id],
+    }),
   }),
-}))
+)
 
 // EMAIL SUBSCRIBERS TABLE (Creator Tier Feature)
 export const emailSubscribers = pgTable('email_subscribers', {
@@ -726,12 +756,15 @@ export const emailSubscribers = pgTable('email_subscribers', {
   source: varchar('source', { length: 50 }),
 })
 
-export const emailSubscribersRelations = relations(emailSubscribers, ({ one }) => ({
-  user: one(users, {
-    fields: [emailSubscribers.userId],
-    references: [users.id],
+export const emailSubscribersRelations = relations(
+  emailSubscribers,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [emailSubscribers.userId],
+      references: [users.id],
+    }),
   }),
-}))
+)
 
 // SPOTIFY CONNECTIONS TABLE
 export const spotifyConnections = pgTable('spotify_connections', {
@@ -749,12 +782,15 @@ export const spotifyConnections = pgTable('spotify_connections', {
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 })
 
-export const spotifyConnectionsRelations = relations(spotifyConnections, ({ one }) => ({
-  user: one(users, {
-    fields: [spotifyConnections.userId],
-    references: [users.id],
+export const spotifyConnectionsRelations = relations(
+  spotifyConnections,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [spotifyConnections.userId],
+      references: [users.id],
+    }),
   }),
-}))
+)
 
 // SUBSCRIPTIONS TABLE (Stripe subscription tracking)
 export const subscriptions = pgTable('subscriptions', {
@@ -762,7 +798,9 @@ export const subscriptions = pgTable('subscriptions', {
   userId: uuid('user_id')
     .notNull()
     .references(() => users.id, { onDelete: 'cascade' }),
-  stripeSubscriptionId: varchar('stripe_subscription_id', { length: 255 }).notNull().unique(),
+  stripeSubscriptionId: varchar('stripe_subscription_id', { length: 255 })
+    .notNull()
+    .unique(),
   stripePriceId: varchar('stripe_price_id', { length: 255 }).notNull(),
   stripeCustomerId: varchar('stripe_customer_id', { length: 255 }).notNull(),
   tier: varchar('tier', { length: 20 }).notNull(), // pro, creator
@@ -815,12 +853,15 @@ export const communityTemplates = pgTable('community_templates', {
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 })
 
-export const communityTemplatesRelations = relations(communityTemplates, ({ one }) => ({
-  user: one(users, {
-    fields: [communityTemplates.userId],
-    references: [users.id],
+export const communityTemplatesRelations = relations(
+  communityTemplates,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [communityTemplates.userId],
+      references: [users.id],
+    }),
   }),
-}))
+)
 
 // TEMPLATE LIKES TABLE
 export const templateLikes = pgTable('template_likes', {
@@ -882,12 +923,15 @@ export const contactMessages = pgTable('contact_messages', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
 })
 
-export const contactMessagesRelations = relations(contactMessages, ({ one }) => ({
-  responder: one(users, {
-    fields: [contactMessages.respondedBy],
-    references: [users.id],
+export const contactMessagesRelations = relations(
+  contactMessages,
+  ({ one }) => ({
+    responder: one(users, {
+      fields: [contactMessages.respondedBy],
+      references: [users.id],
+    }),
   }),
-}))
+)
 
 // TYPE EXPORTS
 export type User = typeof users.$inferSelect

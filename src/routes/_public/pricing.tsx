@@ -23,7 +23,7 @@ import {
   Shield,
   Rocket,
   Heart,
-  Infinity,
+  Infinity as InfinityIcon,
   ChevronDown,
 } from 'lucide-react'
 import type { TierType, TierConfig } from '@/server/lib/stripe'
@@ -32,7 +32,17 @@ export const Route = createFileRoute('/_public/pricing')({
   head: () => ({
     meta: [
       { title: 'Pricing | Eziox' },
-      { name: 'description', content: 'Choose the perfect plan for your bio link page. From free to lifetime access.' },
+      {
+        name: 'description',
+        content:
+          'Choose the perfect plan for your bio link page. From free to lifetime access.',
+      },
+      { property: 'og:title', content: 'Pricing | Eziox' },
+      {
+        property: 'og:description',
+        content:
+          'Simple, transparent pricing. Start free, upgrade when you need more.',
+      },
     ],
   }),
   component: PricingPage,
@@ -45,7 +55,10 @@ const TIER_ICONS: Record<TierType, React.ElementType> = {
   lifetime: Gem,
 }
 
-const TIER_STYLES: Record<TierType, { primary: string; gradient: string; glow: string; bg: string }> = {
+const TIER_STYLES: Record<
+  TierType,
+  { primary: string; gradient: string; glow: string; bg: string }
+> = {
   free: {
     primary: '#6b7280',
     gradient: 'linear-gradient(135deg, #6b7280 0%, #9ca3af 100%)',
@@ -77,7 +90,7 @@ const TIER_ORDER: TierType[] = ['free', 'pro', 'creator', 'lifetime']
 const FAQ_ITEMS = [
   {
     q: 'Can I switch plans anytime?',
-    a: 'Yes! You can upgrade or downgrade your plan at any time. When upgrading, you\'ll be charged the prorated difference. When downgrading, the change takes effect at the end of your billing period.',
+    a: "Yes! You can upgrade or downgrade your plan at any time. When upgrading, you'll be charged the prorated difference. When downgrading, the change takes effect at the end of your billing period.",
   },
   {
     q: 'What payment methods do you accept?',
@@ -89,7 +102,7 @@ const FAQ_ITEMS = [
   },
   {
     q: 'What happens if I cancel?',
-    a: 'If you cancel, you\'ll keep access to your paid features until the end of your billing period. After that, your account will revert to the Free tier.',
+    a: "If you cancel, you'll keep access to your paid features until the end of your billing period. After that, your account will revert to the Free tier.",
   },
   {
     q: 'Is the Lifetime plan really forever?',
@@ -103,6 +116,21 @@ function PricingPage() {
   const [selectedTier, setSelectedTier] = useState<TierType | null>(null)
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null)
   const [checkoutError, setCheckoutError] = useState<string | null>(null)
+
+  const cardRadius =
+    theme.effects.borderRadius === 'pill'
+      ? '24px'
+      : theme.effects.borderRadius === 'sharp'
+        ? '8px'
+        : '16px'
+  const glowOpacity =
+    theme.effects.glowIntensity === 'strong'
+      ? 0.5
+      : theme.effects.glowIntensity === 'medium'
+        ? 0.35
+        : theme.effects.glowIntensity === 'subtle'
+          ? 0.2
+          : 0
 
   const getTierConfig = useServerFn(getTierConfigFn)
   const getCurrentSubscription = useServerFn(getCurrentSubscriptionFn)
@@ -120,7 +148,8 @@ function PricingPage() {
   })
 
   const checkoutMutation = useMutation({
-    mutationFn: (tier: 'pro' | 'creator' | 'lifetime') => createCheckout({ data: { tier } }),
+    mutationFn: (tier: 'pro' | 'creator' | 'lifetime') =>
+      createCheckout({ data: { tier } }),
     onSuccess: (data) => {
       if (data.url) {
         window.location.href = data.url
@@ -129,9 +158,10 @@ function PricingPage() {
       }
     },
     onError: (error: unknown) => {
-      const errorMessage = error && typeof error === 'object' && 'message' in error 
-        ? String(error.message) 
-        : 'Failed to create checkout session'
+      const errorMessage =
+        error && typeof error === 'object' && 'message' in error
+          ? String(error.message)
+          : 'Failed to create checkout session'
       setCheckoutError(errorMessage)
     },
   })
@@ -151,41 +181,94 @@ function PricingPage() {
   }
 
   return (
-    <div className="min-h-screen pt-20" style={{ background: theme.colors.background }}>
-      <section className="relative py-20 overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl opacity-20" style={{ background: theme.colors.primary }} />
-          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full blur-3xl opacity-20" style={{ background: theme.colors.accent }} />
-        </div>
+    <div
+      className="min-h-screen"
+      style={{ background: theme.colors.background }}
+    >
+      {/* Animated Background */}
+      <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
+        <motion.div
+          className="absolute top-20 right-1/4 w-[600px] h-[600px] rounded-full blur-[200px]"
+          style={{
+            background: theme.colors.primary,
+            opacity: glowOpacity * 0.3,
+          }}
+          animate={{ scale: [1, 1.2, 1], x: [0, -50, 0] }}
+          transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
+        />
+        <motion.div
+          className="absolute bottom-20 left-1/4 w-[500px] h-[500px] rounded-full blur-[180px]"
+          style={{
+            background: theme.colors.accent,
+            opacity: glowOpacity * 0.25,
+          }}
+          animate={{ scale: [1.2, 1, 1.2], y: [0, -40, 0] }}
+          transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut' }}
+        />
+      </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+      <section className="relative pt-32 pb-24 px-4 overflow-hidden">
+        <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
             className="text-center mb-16"
           >
             <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6"
-              style={{ background: `${theme.colors.primary}15`, border: `1px solid ${theme.colors.primary}30` }}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.1 }}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-8"
+              style={{
+                background: `linear-gradient(135deg, ${theme.colors.primary}20, ${theme.colors.accent}15)`,
+                border: `1px solid ${theme.colors.primary}30`,
+              }}
             >
-              <Sparkles size={16} style={{ color: theme.colors.primary }} />
-              <span className="text-sm font-medium" style={{ color: theme.colors.primary }}>Simple, transparent pricing</span>
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
+              >
+                <Sparkles size={18} style={{ color: theme.colors.primary }} />
+              </motion.div>
+              <span
+                className="text-sm font-medium"
+                style={{ color: theme.colors.foreground }}
+              >
+                Simple, transparent pricing
+              </span>
             </motion.div>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6" style={{ color: theme.colors.foreground }}>
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6"
+              style={{
+                color: theme.colors.foreground,
+                fontFamily: theme.typography.displayFont,
+              }}
+            >
               Choose Your{' '}
-              <span className="bg-clip-text text-transparent" style={{ backgroundImage: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})` }}>
+              <span
+                className="bg-clip-text text-transparent"
+                style={{
+                  backgroundImage: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
+                }}
+              >
                 Perfect Plan
               </span>
-            </h1>
+            </motion.h1>
 
-            <p className="text-lg max-w-2xl mx-auto" style={{ color: theme.colors.foregroundMuted }}>
-              Start free, upgrade when you need more. No hidden fees, cancel anytime.
-            </p>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="text-lg lg:text-xl max-w-2xl mx-auto"
+              style={{ color: theme.colors.foregroundMuted }}
+            >
+              Start free, upgrade when you need more. No hidden fees, cancel
+              anytime.
+            </motion.p>
           </motion.div>
 
           {checkoutError && (
@@ -193,7 +276,7 @@ function PricingPage() {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               className="max-w-2xl mx-auto mb-8 p-4 rounded-lg border border-red-500"
-              style={{ 
+              style={{
                 background: '#ef444415',
                 color: '#ef4444',
               }}
@@ -203,178 +286,326 @@ function PricingPage() {
           )}
 
           {tiersLoading ? (
-            <div className="flex justify-center py-20">
-              <Loader2 className="w-10 h-10 animate-spin" style={{ color: theme.colors.primary }} />
+            <div className="flex flex-col items-center justify-center py-20">
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                className="w-16 h-16 mb-6 rounded-full flex items-center justify-center"
+                style={{ background: `${theme.colors.primary}20` }}
+              >
+                <Loader2 size={32} style={{ color: theme.colors.primary }} />
+              </motion.div>
+              <p style={{ color: theme.colors.foregroundMuted }}>
+                Loading plans...
+              </p>
             </div>
           ) : (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-              {tiers && TIER_ORDER.map((tier, index) => {
-                const config = tiers[tier]
-                const Icon = TIER_ICONS[tier]
-                const styles = TIER_STYLES[tier]
-                const isCurrentTier = currentUser && currentTier === tier
-                const isPopular = config.popular
-                const isLifetime = tier === 'lifetime'
-                const isLifetimeUser = currentTier === 'lifetime'
+              {tiers &&
+                TIER_ORDER.map((tier, index) => {
+                  const config = tiers[tier]
+                  const Icon = TIER_ICONS[tier]
+                  const styles = TIER_STYLES[tier]
+                  const isCurrentTier = currentUser && currentTier === tier
+                  const isPopular = config.popular
+                  const isLifetime = tier === 'lifetime'
+                  const isLifetimeUser = currentTier === 'lifetime'
 
-                return (
-                  <motion.div
-                    key={tier}
-                    initial={{ opacity: 0, y: 40 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1, duration: 0.5 }}
-                    className="relative group"
-                  >
-                    {(isPopular || isLifetime) && (
+                  return (
+                    <motion.div
+                      key={tier}
+                      initial={{ opacity: 0, y: 40 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{
+                        delay: index * 0.1,
+                        type: 'spring',
+                        stiffness: 300,
+                        damping: 30,
+                      }}
+                      className="relative group"
+                    >
+                      {(isPopular || isLifetime) && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: index * 0.1 + 0.2 }}
+                          className="absolute -top-4 left-1/2 -translate-x-1/2 z-10"
+                        >
+                          <div
+                            className="px-4 py-1.5 rounded-full text-xs font-bold text-white flex items-center gap-1.5"
+                            style={{
+                              background: styles.gradient,
+                              boxShadow: styles.glow,
+                            }}
+                          >
+                            {isLifetime ? (
+                              <InfinityIcon size={12} />
+                            ) : (
+                              <Rocket size={12} />
+                            )}
+                            {isLifetime ? 'BEST VALUE' : 'MOST POPULAR'}
+                          </div>
+                        </motion.div>
+                      )}
+
                       <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="absolute -top-4 left-1/2 -translate-x-1/2 z-10"
+                        className="h-full p-[2px] overflow-hidden"
+                        style={{
+                          background:
+                            isPopular || isLifetime
+                              ? styles.gradient
+                              : theme.colors.border,
+                          borderRadius: cardRadius,
+                        }}
+                        whileHover={{ scale: 1.03, y: -8 }}
+                        transition={{
+                          type: 'spring',
+                          stiffness: 400,
+                          damping: 25,
+                        }}
                       >
                         <div
-                          className="px-4 py-1.5 rounded-full text-xs font-bold text-white flex items-center gap-1.5"
-                          style={{ background: styles.gradient, boxShadow: styles.glow }}
+                          className="h-full p-6 flex flex-col relative overflow-hidden"
+                          style={{
+                            background:
+                              theme.effects.cardStyle === 'glass'
+                                ? `${theme.colors.card}95`
+                                : theme.colors.card,
+                            borderRadius: `calc(${cardRadius} - 2px)`,
+                            backdropFilter:
+                              theme.effects.cardStyle === 'glass'
+                                ? 'blur(20px)'
+                                : undefined,
+                          }}
                         >
-                          {isLifetime ? <Infinity size={12} /> : <Rocket size={12} />}
-                          {isLifetime ? 'BEST VALUE' : 'MOST POPULAR'}
-                        </div>
-                      </motion.div>
-                    )}
+                          {/* Glow effect on hover */}
+                          <div
+                            className="absolute -top-20 -right-20 w-40 h-40 rounded-full blur-3xl opacity-0 group-hover:opacity-30 transition-opacity duration-300"
+                            style={{ background: styles.primary }}
+                          />
 
-                    <motion.div
-                      className="h-full rounded-3xl p-[1px] overflow-hidden"
-                      style={{
-                        background: isPopular || isLifetime ? styles.gradient : theme.colors.border,
-                      }}
-                      whileHover={{ scale: 1.02 }}
-                      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                    >
-                      <div
-                        className="h-full rounded-3xl p-6 flex flex-col"
-                        style={{ background: theme.colors.card }}
-                      >
-                        <div className="flex items-center gap-3 mb-4">
-                          <motion.div
-                            className="w-12 h-12 rounded-2xl flex items-center justify-center"
-                            style={{ background: styles.bg }}
-                            whileHover={{ rotate: 10, scale: 1.1 }}
-                          >
-                            <Icon size={24} style={{ color: styles.primary }} />
-                          </motion.div>
-                          <div>
-                            <h3 className="text-xl font-bold" style={{ color: theme.colors.foreground }}>
-                              {config.name}
-                            </h3>
-                            <p className="text-xs" style={{ color: theme.colors.foregroundMuted }}>
-                              {config.tagline}
+                          <div className="relative flex items-center gap-3 mb-4">
+                            <motion.div
+                              className="w-14 h-14 rounded-2xl flex items-center justify-center"
+                              style={{ background: styles.bg }}
+                              whileHover={{ rotate: 10, scale: 1.1 }}
+                              transition={{
+                                type: 'spring',
+                                stiffness: 400,
+                                damping: 25,
+                              }}
+                            >
+                              <Icon
+                                size={26}
+                                style={{ color: styles.primary }}
+                              />
+                            </motion.div>
+                            <div>
+                              <h3
+                                className="text-xl font-bold"
+                                style={{ color: theme.colors.foreground }}
+                              >
+                                {config.name}
+                              </h3>
+                              <p
+                                className="text-xs"
+                                style={{ color: theme.colors.foregroundMuted }}
+                              >
+                                {config.tagline}
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="mb-6">
+                            <div className="flex items-baseline gap-1">
+                              <span
+                                className="text-4xl font-bold"
+                                style={{ color: styles.primary }}
+                              >
+                                €{config.price}
+                              </span>
+                              {config.price > 0 && (
+                                <span
+                                  className="text-sm"
+                                  style={{
+                                    color: theme.colors.foregroundMuted,
+                                  }}
+                                >
+                                  {config.billingType === 'lifetime'
+                                    ? ' one-time'
+                                    : '/month'}
+                                </span>
+                              )}
+                            </div>
+                            <p
+                              className="text-sm mt-2"
+                              style={{ color: theme.colors.foregroundMuted }}
+                            >
+                              {config.description}
                             </p>
                           </div>
-                        </div>
 
-                        <div className="mb-6">
-                          <div className="flex items-baseline gap-1">
-                            <span className="text-4xl font-bold" style={{ color: theme.colors.foreground }}>
-                              €{config.price}
-                            </span>
-                            {config.price > 0 && (
-                              <span className="text-sm" style={{ color: theme.colors.foregroundMuted }}>
-                                {config.billingType === 'lifetime' ? ' onetime' : '/month'}
-                              </span>
-                            )}
-                          </div>
-                          <p className="text-sm mt-2" style={{ color: theme.colors.foregroundMuted }}>
-                            {config.description}
-                          </p>
-                        </div>
-
-                        <div className="flex-1 space-y-3 mb-6">
-                          {config.features.map((feature, i) => (
-                            <motion.div
-                              key={i}
-                              initial={{ opacity: 0, x: -10 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{ delay: index * 0.1 + i * 0.03 }}
-                              className="flex items-start gap-2"
-                            >
-                              <div
-                                className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5"
-                                style={{ background: `${styles.primary}20` }}
+                          <div className="flex-1 space-y-3 mb-6">
+                            {config.features.map((feature, i) => (
+                              <motion.div
+                                key={i}
+                                initial={{ opacity: 0, x: -10 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: index * 0.1 + i * 0.03 }}
+                                className="flex items-start gap-2.5"
                               >
-                                <Check size={12} style={{ color: styles.primary }} />
-                              </div>
-                              <span className="text-sm" style={{ color: theme.colors.foreground }}>
-                                {feature}
-                              </span>
-                            </motion.div>
-                          ))}
-                        </div>
+                                <div
+                                  className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5"
+                                  style={{ background: `${styles.primary}20` }}
+                                >
+                                  <Check
+                                    size={12}
+                                    style={{ color: styles.primary }}
+                                  />
+                                </div>
+                                <span
+                                  className="text-sm"
+                                  style={{ color: theme.colors.foreground }}
+                                >
+                                  {feature}
+                                </span>
+                              </motion.div>
+                            ))}
+                          </div>
 
-                        {isCurrentTier ? (
-                          <div
-                            className="w-full py-3 rounded-xl text-center font-medium flex items-center justify-center gap-2"
-                            style={{ background: theme.colors.backgroundSecondary, color: theme.colors.foregroundMuted }}
-                          >
-                            <Shield size={16} />
-                            Current Plan
-                          </div>
-                        ) : isLifetimeUser ? (
-                          <div
-                            className="w-full py-3 rounded-xl text-center font-medium flex items-center justify-center gap-2"
-                            style={{ background: theme.colors.backgroundSecondary, color: theme.colors.foregroundMuted }}
-                          >
-                            <Heart size={16} />
-                            Lifetime Access
-                          </div>
-                        ) : tier === 'free' ? (
-                          <Link
-                            to="/sign-up"
-                            className="w-full py-3 rounded-xl text-center font-medium flex items-center justify-center gap-2 transition-all hover:opacity-90"
-                            style={{ background: theme.colors.backgroundSecondary, color: theme.colors.foreground }}
-                          >
-                            Get Started Free
-                            <ArrowRight size={16} />
-                          </Link>
-                        ) : (
-                          <motion.button
-                            onClick={() => handleSelectPlan(tier)}
-                            disabled={checkoutMutation.isPending}
-                            className="w-full py-3 rounded-xl font-medium text-white flex items-center justify-center gap-2 transition-all"
-                            style={{ background: styles.gradient, boxShadow: `0 4px 20px ${styles.primary}40` }}
-                            whileHover={{ scale: 1.02, boxShadow: styles.glow }}
-                            whileTap={{ scale: 0.98 }}
-                          >
-                            {checkoutMutation.isPending && selectedTier === tier ? (
-                              <Loader2 size={18} className="animate-spin" />
-                            ) : (
-                              <>
-                                {isLifetime ? 'Get Lifetime' : 'Upgrade Now'}
+                          {isCurrentTier ? (
+                            <div
+                              className="w-full py-3.5 rounded-xl text-center font-medium flex items-center justify-center gap-2"
+                              style={{
+                                background: `${styles.primary}15`,
+                                color: styles.primary,
+                                border: `1px solid ${styles.primary}30`,
+                              }}
+                            >
+                              <Shield size={16} />
+                              Current Plan
+                            </div>
+                          ) : isLifetimeUser ? (
+                            <div
+                              className="w-full py-3.5 rounded-xl text-center font-medium flex items-center justify-center gap-2"
+                              style={{
+                                background: `${TIER_STYLES.lifetime.primary}15`,
+                                color: TIER_STYLES.lifetime.primary,
+                                border: `1px solid ${TIER_STYLES.lifetime.primary}30`,
+                              }}
+                            >
+                              <Heart size={16} />
+                              Lifetime Access
+                            </div>
+                          ) : tier === 'free' ? (
+                            <Link to="/sign-up">
+                              <motion.div
+                                className="w-full py-3.5 rounded-xl text-center font-medium flex items-center justify-center gap-2"
+                                style={{
+                                  background: theme.colors.backgroundSecondary,
+                                  color: theme.colors.foreground,
+                                  border: `1px solid ${theme.colors.border}`,
+                                }}
+                                whileHover={{ scale: 1.02, y: -2 }}
+                                whileTap={{ scale: 0.98 }}
+                                transition={{
+                                  type: 'spring',
+                                  stiffness: 400,
+                                  damping: 25,
+                                }}
+                              >
+                                Get Started Free
                                 <ArrowRight size={16} />
-                              </>
-                            )}
-                          </motion.button>
-                        )}
-                      </div>
+                              </motion.div>
+                            </Link>
+                          ) : (
+                            <motion.button
+                              onClick={() => handleSelectPlan(tier)}
+                              disabled={checkoutMutation.isPending}
+                              className="w-full py-3.5 rounded-xl font-semibold text-white flex items-center justify-center gap-2"
+                              style={{
+                                background: styles.gradient,
+                                boxShadow:
+                                  glowOpacity > 0
+                                    ? `0 10px 30px ${styles.primary}40`
+                                    : `0 4px 15px ${styles.primary}30`,
+                              }}
+                              whileHover={{ scale: 1.02, y: -2 }}
+                              whileTap={{ scale: 0.98 }}
+                              transition={{
+                                type: 'spring',
+                                stiffness: 400,
+                                damping: 25,
+                              }}
+                            >
+                              {checkoutMutation.isPending &&
+                              selectedTier === tier ? (
+                                <Loader2 size={18} className="animate-spin" />
+                              ) : (
+                                <>
+                                  {isLifetime ? 'Get Lifetime' : 'Upgrade Now'}
+                                  <ArrowRight size={16} />
+                                </>
+                              )}
+                            </motion.button>
+                          )}
+                        </div>
+                      </motion.div>
                     </motion.div>
-                  </motion.div>
-                )
-              })}
+                  )
+                })}
             </div>
           )}
         </div>
       </section>
 
-      <section className="py-20" style={{ background: theme.colors.backgroundSecondary }}>
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section
+        className="py-24 px-4"
+        style={{ background: theme.colors.backgroundSecondary }}
+      >
+        <div className="max-w-3xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <h2 className="text-3xl font-bold mb-4" style={{ color: theme.colors.foreground }}>
-              Frequently Asked Questions
+            <div
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6"
+              style={{
+                background: `linear-gradient(135deg, ${theme.colors.primary}20, ${theme.colors.accent}15)`,
+                border: `1px solid ${theme.colors.primary}30`,
+              }}
+            >
+              <ChevronDown size={16} style={{ color: theme.colors.primary }} />
+              <span
+                className="text-sm font-medium"
+                style={{ color: theme.colors.foreground }}
+              >
+                FAQ
+              </span>
+            </div>
+            <h2
+              className="text-3xl lg:text-4xl font-bold mb-4"
+              style={{
+                color: theme.colors.foreground,
+                fontFamily: theme.typography.displayFont,
+              }}
+            >
+              Frequently Asked{' '}
+              <span
+                className="bg-clip-text text-transparent"
+                style={{
+                  backgroundImage: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
+                }}
+              >
+                Questions
+              </span>
             </h2>
-            <p style={{ color: theme.colors.foregroundMuted }}>
+            <p
+              className="text-lg"
+              style={{ color: theme.colors.foregroundMuted }}
+            >
               Everything you need to know about our plans
             </p>
           </motion.div>
@@ -386,20 +617,58 @@ function PricingPage() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className="rounded-2xl overflow-hidden"
-                style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}` }}
+                transition={{
+                  delay: index * 0.05,
+                  type: 'spring',
+                  stiffness: 300,
+                  damping: 30,
+                }}
+                className="overflow-hidden"
+                style={{
+                  background:
+                    theme.effects.cardStyle === 'glass'
+                      ? `${theme.colors.card}90`
+                      : theme.colors.card,
+                  border: `1px solid ${theme.colors.border}`,
+                  borderRadius: cardRadius,
+                  backdropFilter:
+                    theme.effects.cardStyle === 'glass'
+                      ? 'blur(10px)'
+                      : undefined,
+                }}
               >
                 <button
-                  onClick={() => setExpandedFaq(expandedFaq === index ? null : index)}
-                  className="w-full flex items-center justify-between p-5 text-left"
+                  onClick={() =>
+                    setExpandedFaq(expandedFaq === index ? null : index)
+                  }
+                  className="w-full flex items-center justify-between p-5 text-left group"
                 >
-                  <span className="font-medium" style={{ color: theme.colors.foreground }}>{item.q}</span>
+                  <span
+                    className="font-medium pr-4"
+                    style={{ color: theme.colors.foreground }}
+                  >
+                    {item.q}
+                  </span>
                   <motion.div
                     animate={{ rotate: expandedFaq === index ? 180 : 0 }}
-                    transition={{ duration: 0.2 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                    className="shrink-0 w-8 h-8 rounded-lg flex items-center justify-center"
+                    style={{
+                      background:
+                        expandedFaq === index
+                          ? `${theme.colors.primary}20`
+                          : theme.colors.backgroundSecondary,
+                    }}
                   >
-                    <ChevronDown size={20} style={{ color: theme.colors.foregroundMuted }} />
+                    <ChevronDown
+                      size={18}
+                      style={{
+                        color:
+                          expandedFaq === index
+                            ? theme.colors.primary
+                            : theme.colors.foregroundMuted,
+                      }}
+                    />
                   </motion.div>
                 </button>
                 <AnimatePresence>
@@ -408,9 +677,16 @@ function PricingPage() {
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: 'auto', opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.2 }}
+                      transition={{
+                        type: 'spring',
+                        stiffness: 300,
+                        damping: 30,
+                      }}
                     >
-                      <p className="px-5 pb-5 text-sm" style={{ color: theme.colors.foregroundMuted }}>
+                      <p
+                        className="px-5 pb-5"
+                        style={{ color: theme.colors.foregroundMuted }}
+                      >
                         {item.a}
                       </p>
                     </motion.div>

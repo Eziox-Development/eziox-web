@@ -8,12 +8,12 @@
 User → Vercel Edge → TanStack Start SSR → Neon PostgreSQL
 ```
 
-| Component | Service |
-|-----------|---------|
-| Frontend | Vercel Edge Network |
-| Database | Neon PostgreSQL (Serverless) |
-| ORM | Drizzle ORM |
-| Domain | eziox.link |
+| Component | Service                      |
+| --------- | ---------------------------- |
+| Frontend  | Vercel Edge Network          |
+| Database  | Neon PostgreSQL (Serverless) |
+| ORM       | Drizzle ORM                  |
+| Domain    | eziox.link                   |
 
 ## Prerequisites
 
@@ -62,18 +62,18 @@ vercel --prod
 
 ### Database Tables
 
-| Table | Purpose |
-|-------|---------|
-| `users` | User accounts |
-| `profiles` | Bio, avatar, banner |
-| `sessions` | Auth sessions |
-| `user_links` | Bio links |
-| `user_stats` | Views, clicks, score |
-| `follows` | Follower relationships |
-| `short_links` | URL shortener |
-| `spotify_connections` | Spotify OAuth tokens |
-| `notifications` | User notifications |
-| `analytics_daily` | Aggregated daily analytics |
+| Table                 | Purpose                    |
+| --------------------- | -------------------------- |
+| `users`               | User accounts              |
+| `profiles`            | Bio, avatar, banner        |
+| `sessions`            | Auth sessions              |
+| `user_links`          | Bio links                  |
+| `user_stats`          | Views, clicks, score       |
+| `follows`             | Follower relationships     |
+| `short_links`         | URL shortener              |
+| `spotify_connections` | Spotify OAuth tokens       |
+| `notifications`       | User notifications         |
+| `analytics_daily`     | Aggregated daily analytics |
 
 ## Continuous Deployment
 

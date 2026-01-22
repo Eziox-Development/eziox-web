@@ -1,6 +1,11 @@
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
-import { getCookie, setCookie, setResponseStatus, getRequestIP } from '@tanstack/react-start/server'
+import {
+  getCookie,
+  setCookie,
+  setResponseStatus,
+  getRequestIP,
+} from '@tanstack/react-start/server'
 import { db } from '../db'
 import { spotifyConnections } from '../db/schema'
 import { eq } from 'drizzle-orm'
@@ -58,7 +63,10 @@ export interface NowPlayingData {
   } | null
 }
 
-async function refreshAccessToken(userId: string, refreshToken: string): Promise<string | null> {
+async function refreshAccessToken(
+  userId: string,
+  refreshToken: string,
+): Promise<string | null> {
   try {
     const response = await fetch(SPOTIFY_TOKEN_URL, {
       method: 'POST',
@@ -111,45 +119,49 @@ async function getValidAccessToken(userId: string): Promise<string | null> {
   return decrypt(connection.accessToken)
 }
 
-export const getSpotifyAuthUrlFn = createServerFn({ method: 'GET' }).handler(async () => {
-  const token = getCookie('session-token')
-  if (!token) {
-    setResponseStatus(401)
-    throw { message: 'Not authenticated', status: 401 }
-  }
+export const getSpotifyAuthUrlFn = createServerFn({ method: 'GET' }).handler(
+  async () => {
+    const token = getCookie('session-token')
+    if (!token) {
+      setResponseStatus(401)
+      throw { message: 'Not authenticated', status: 401 }
+    }
 
-  const user = await validateSession(token)
-  if (!user) {
-    setResponseStatus(401)
-    throw { message: 'Not authenticated', status: 401 }
-  }
+    const user = await validateSession(token)
+    if (!user) {
+      setResponseStatus(401)
+      throw { message: 'Not authenticated', status: 401 }
+    }
 
-  if (!SPOTIFY_CLIENT_ID || !SPOTIFY_REDIRECT_URI) {
-    setResponseStatus(500)
-    throw { message: 'Spotify integration not configured', status: 500 }
-  }
+    if (!SPOTIFY_CLIENT_ID || !SPOTIFY_REDIRECT_URI) {
+      setResponseStatus(500)
+      throw { message: 'Spotify integration not configured', status: 500 }
+    }
 
-  const state = Buffer.from(JSON.stringify({ userId: user.id, timestamp: Date.now() })).toString('base64')
+    const state = Buffer.from(
+      JSON.stringify({ userId: user.id, timestamp: Date.now() }),
+    ).toString('base64')
 
-  setCookie('spotify-state', state, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    path: '/',
-    maxAge: 60 * 10,
-  })
+    setCookie('spotify-state', state, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 60 * 10,
+    })
 
-  const params = new URLSearchParams({
-    client_id: SPOTIFY_CLIENT_ID,
-    response_type: 'code',
-    redirect_uri: SPOTIFY_REDIRECT_URI,
-    scope: SPOTIFY_SCOPES,
-    state,
-    show_dialog: 'true',
-  })
+    const params = new URLSearchParams({
+      client_id: SPOTIFY_CLIENT_ID,
+      response_type: 'code',
+      redirect_uri: SPOTIFY_REDIRECT_URI,
+      scope: SPOTIFY_SCOPES,
+      state,
+      show_dialog: 'true',
+    })
 
-  return { url: `${SPOTIFY_AUTH_URL}?${params.toString()}` }
-})
+    return { url: `${SPOTIFY_AUTH_URL}?${params.toString()}` }
+  },
+)
 
 export const handleSpotifyCallbackFn = createServerFn({ method: 'POST' })
   .inputValidator(z.object({ code: z.string(), state: z.string() }))
@@ -226,43 +238,49 @@ export const handleSpotifyCallbackFn = createServerFn({ method: 'POST' })
     return { success: true }
   })
 
-export const getSpotifyConnectionFn = createServerFn({ method: 'GET' }).handler(async () => {
-  const token = getCookie('session-token')
-  if (!token) return null
+export const getSpotifyConnectionFn = createServerFn({ method: 'GET' }).handler(
+  async () => {
+    const token = getCookie('session-token')
+    if (!token) return null
 
-  const user = await validateSession(token)
-  if (!user) return null
+    const user = await validateSession(token)
+    if (!user) return null
 
-  const connection = await db.query.spotifyConnections.findFirst({
-    where: eq(spotifyConnections.userId, user.id),
-  })
+    const connection = await db.query.spotifyConnections.findFirst({
+      where: eq(spotifyConnections.userId, user.id),
+    })
 
-  if (!connection) return null
+    if (!connection) return null
 
-  return {
-    connected: true,
-    showOnProfile: connection.showOnProfile,
-    connectedAt: connection.createdAt.toISOString(),
-  }
-})
+    return {
+      connected: true,
+      showOnProfile: connection.showOnProfile,
+      connectedAt: connection.createdAt.toISOString(),
+    }
+  },
+)
 
-export const disconnectSpotifyFn = createServerFn({ method: 'POST' }).handler(async () => {
-  const token = getCookie('session-token')
-  if (!token) {
-    setResponseStatus(401)
-    throw { message: 'Not authenticated', status: 401 }
-  }
+export const disconnectSpotifyFn = createServerFn({ method: 'POST' }).handler(
+  async () => {
+    const token = getCookie('session-token')
+    if (!token) {
+      setResponseStatus(401)
+      throw { message: 'Not authenticated', status: 401 }
+    }
 
-  const user = await validateSession(token)
-  if (!user) {
-    setResponseStatus(401)
-    throw { message: 'Not authenticated', status: 401 }
-  }
+    const user = await validateSession(token)
+    if (!user) {
+      setResponseStatus(401)
+      throw { message: 'Not authenticated', status: 401 }
+    }
 
-  await db.delete(spotifyConnections).where(eq(spotifyConnections.userId, user.id))
+    await db
+      .delete(spotifyConnections)
+      .where(eq(spotifyConnections.userId, user.id))
 
-  return { success: true }
-})
+    return { success: true }
+  },
+)
 
 export const updateSpotifySettingsFn = createServerFn({ method: 'POST' })
   .inputValidator(z.object({ showOnProfile: z.boolean() }))
@@ -287,62 +305,71 @@ export const updateSpotifySettingsFn = createServerFn({ method: 'POST' })
     return { success: true }
   })
 
-export const getNowPlayingFn = createServerFn({ method: 'GET' }).handler(async (): Promise<NowPlayingData> => {
-  const token = getCookie('session-token')
-  if (!token) return { isPlaying: false, track: null }
+export const getNowPlayingFn = createServerFn({ method: 'GET' }).handler(
+  async (): Promise<NowPlayingData> => {
+    const token = getCookie('session-token')
+    if (!token) return { isPlaying: false, track: null }
 
-  const user = await validateSession(token)
-  if (!user) return { isPlaying: false, track: null }
+    const user = await validateSession(token)
+    if (!user) return { isPlaying: false, track: null }
 
-  const accessToken = await getValidAccessToken(user.id)
-  if (!accessToken) return { isPlaying: false, track: null }
+    const accessToken = await getValidAccessToken(user.id)
+    if (!accessToken) return { isPlaying: false, track: null }
 
-  try {
-    const response = await fetch(`${SPOTIFY_API_URL}/me/player/currently-playing`, {
-      headers: { Authorization: `Bearer ${accessToken}` },
-    })
+    try {
+      const response = await fetch(
+        `${SPOTIFY_API_URL}/me/player/currently-playing`,
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        },
+      )
 
-    if (response.status === 204) {
+      if (response.status === 204) {
+        return { isPlaying: false, track: null }
+      }
+
+      if (!response.ok) {
+        console.error('Spotify API error:', response.status)
+        return { isPlaying: false, track: null }
+      }
+
+      const data: SpotifyPlaybackState = await response.json()
+
+      if (!data.item || data.currently_playing_type !== 'track') {
+        return { isPlaying: false, track: null }
+      }
+
+      return {
+        isPlaying: data.is_playing,
+        track: {
+          id: data.item.id,
+          name: data.item.name,
+          artist: data.item.artists.map((a) => a.name).join(', '),
+          artists: data.item.artists.map((a) => a.name),
+          album: data.item.album.name,
+          albumArt: data.item.album.images[0]?.url || '',
+          spotifyUrl: data.item.external_urls.spotify,
+          duration: data.item.duration_ms,
+          progress: data.progress_ms,
+          previewUrl: data.item.preview_url,
+        },
+      }
+    } catch (error) {
+      console.error('Error fetching now playing:', error)
       return { isPlaying: false, track: null }
     }
-
-    if (!response.ok) {
-      console.error('Spotify API error:', response.status)
-      return { isPlaying: false, track: null }
-    }
-
-    const data: SpotifyPlaybackState = await response.json()
-
-    if (!data.item || data.currently_playing_type !== 'track') {
-      return { isPlaying: false, track: null }
-    }
-
-    return {
-      isPlaying: data.is_playing,
-      track: {
-        id: data.item.id,
-        name: data.item.name,
-        artist: data.item.artists.map((a) => a.name).join(', '),
-        artists: data.item.artists.map((a) => a.name),
-        album: data.item.album.name,
-        albumArt: data.item.album.images[0]?.url || '',
-        spotifyUrl: data.item.external_urls.spotify,
-        duration: data.item.duration_ms,
-        progress: data.progress_ms,
-        previewUrl: data.item.preview_url,
-      },
-    }
-  } catch (error) {
-    console.error('Error fetching now playing:', error)
-    return { isPlaying: false, track: null }
-  }
-})
+  },
+)
 
 export const getUserNowPlayingFn = createServerFn({ method: 'GET' })
   .inputValidator(z.object({ userId: z.string().uuid() }))
   .handler(async ({ data }): Promise<NowPlayingData> => {
     const ip = getRequestIP() || 'unknown'
-    const rateLimit = checkRateLimit(`spotify:${ip}`, RATE_LIMITS.API_SPOTIFY.maxRequests, RATE_LIMITS.API_SPOTIFY.windowMs)
+    const rateLimit = checkRateLimit(
+      `spotify:${ip}`,
+      RATE_LIMITS.API_SPOTIFY.maxRequests,
+      RATE_LIMITS.API_SPOTIFY.windowMs,
+    )
     if (!rateLimit.allowed) {
       return { isPlaying: false, track: null }
     }
@@ -359,9 +386,12 @@ export const getUserNowPlayingFn = createServerFn({ method: 'GET' })
     if (!accessToken) return { isPlaying: false, track: null }
 
     try {
-      const response = await fetch(`${SPOTIFY_API_URL}/me/player/currently-playing`, {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      })
+      const response = await fetch(
+        `${SPOTIFY_API_URL}/me/player/currently-playing`,
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        },
+      )
 
       if (response.status === 204) {
         return { isPlaying: false, track: null }
@@ -373,7 +403,10 @@ export const getUserNowPlayingFn = createServerFn({ method: 'GET' })
 
       const playbackData: SpotifyPlaybackState = await response.json()
 
-      if (!playbackData.item || playbackData.currently_playing_type !== 'track') {
+      if (
+        !playbackData.item ||
+        playbackData.currently_playing_type !== 'track'
+      ) {
         return { isPlaying: false, track: null }
       }
 
@@ -399,10 +432,19 @@ export const getUserNowPlayingFn = createServerFn({ method: 'GET' })
   })
 
 export const getRecentlyPlayedFn = createServerFn({ method: 'GET' })
-  .inputValidator(z.object({ userId: z.string().uuid().optional(), limit: z.number().min(1).max(50).default(5) }))
+  .inputValidator(
+    z.object({
+      userId: z.string().uuid().optional(),
+      limit: z.number().min(1).max(50).default(5),
+    }),
+  )
   .handler(async ({ data }) => {
     const ip = getRequestIP() || 'unknown'
-    const rateLimit = checkRateLimit(`spotify:${ip}`, RATE_LIMITS.API_SPOTIFY.maxRequests, RATE_LIMITS.API_SPOTIFY.windowMs)
+    const rateLimit = checkRateLimit(
+      `spotify:${ip}`,
+      RATE_LIMITS.API_SPOTIFY.maxRequests,
+      RATE_LIMITS.API_SPOTIFY.windowMs,
+    )
     if (!rateLimit.allowed) {
       return { tracks: [] }
     }
@@ -427,24 +469,29 @@ export const getRecentlyPlayedFn = createServerFn({ method: 'GET' })
     if (!accessToken) return { tracks: [] }
 
     try {
-      const response = await fetch(`${SPOTIFY_API_URL}/me/player/recently-played?limit=${data.limit}`, {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      })
+      const response = await fetch(
+        `${SPOTIFY_API_URL}/me/player/recently-played?limit=${data.limit}`,
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        },
+      )
 
       if (!response.ok) return { tracks: [] }
 
       const recentData = await response.json()
 
       return {
-        tracks: recentData.items.map((item: { track: SpotifyTrack; played_at: string }) => ({
-          id: item.track.id,
-          name: item.track.name,
-          artist: item.track.artists.map((a) => a.name).join(', '),
-          album: item.track.album.name,
-          albumArt: item.track.album.images[0]?.url || '',
-          spotifyUrl: item.track.external_urls.spotify,
-          playedAt: item.played_at,
-        })),
+        tracks: recentData.items.map(
+          (item: { track: SpotifyTrack; played_at: string }) => ({
+            id: item.track.id,
+            name: item.track.name,
+            artist: item.track.artists.map((a) => a.name).join(', '),
+            album: item.track.album.name,
+            albumArt: item.track.album.images[0]?.url || '',
+            spotifyUrl: item.track.external_urls.spotify,
+            playedAt: item.played_at,
+          }),
+        ),
       }
     } catch (error) {
       console.error('Error fetching recently played:', error)

@@ -10,7 +10,18 @@ import {
   deleteNotificationFn,
   clearAllNotificationsFn,
 } from '@/server/functions/notifications'
-import { Bell, Check, CheckCheck, Trash2, X, UserPlus, Trophy, Link as LinkIcon, Sparkles, Info } from 'lucide-react'
+import {
+  Bell,
+  Check,
+  CheckCheck,
+  Trash2,
+  X,
+  UserPlus,
+  Trophy,
+  Link as LinkIcon,
+  Sparkles,
+  Info,
+} from 'lucide-react'
 import { useTheme } from '@/components/layout/ThemeProvider'
 
 interface NotificationItem {
@@ -73,10 +84,13 @@ export function NotificationBell() {
   const notifications = notificationsData || []
 
   const markAsReadMutation = useMutation({
-    mutationFn: (notificationId: string) => markAsRead({ data: { notificationId } }),
+    mutationFn: (notificationId: string) =>
+      markAsRead({ data: { notificationId } }),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['notifications'] })
-      void queryClient.invalidateQueries({ queryKey: ['notificationsUnreadCount'] })
+      void queryClient.invalidateQueries({
+        queryKey: ['notificationsUnreadCount'],
+      })
     },
   })
 
@@ -84,15 +98,20 @@ export function NotificationBell() {
     mutationFn: () => markAllAsRead(),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['notifications'] })
-      void queryClient.invalidateQueries({ queryKey: ['notificationsUnreadCount'] })
+      void queryClient.invalidateQueries({
+        queryKey: ['notificationsUnreadCount'],
+      })
     },
   })
 
   const deleteNotificationMutation = useMutation({
-    mutationFn: (notificationId: string) => deleteNotification({ data: { notificationId } }),
+    mutationFn: (notificationId: string) =>
+      deleteNotification({ data: { notificationId } }),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['notifications'] })
-      void queryClient.invalidateQueries({ queryKey: ['notificationsUnreadCount'] })
+      void queryClient.invalidateQueries({
+        queryKey: ['notificationsUnreadCount'],
+      })
     },
   })
 
@@ -100,13 +119,18 @@ export function NotificationBell() {
     mutationFn: () => clearAllNotifications(),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['notifications'] })
-      void queryClient.invalidateQueries({ queryKey: ['notificationsUnreadCount'] })
+      void queryClient.invalidateQueries({
+        queryKey: ['notificationsUnreadCount'],
+      })
     },
   })
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false)
       }
     }
@@ -143,7 +167,9 @@ export function NotificationBell() {
       <motion.button
         onClick={() => setIsOpen(!isOpen)}
         className="relative p-2 rounded-xl transition-all"
-        style={{ background: isOpen ? theme.colors.backgroundSecondary : 'transparent' }}
+        style={{
+          background: isOpen ? theme.colors.backgroundSecondary : 'transparent',
+        }}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
       >
@@ -171,10 +197,21 @@ export function NotificationBell() {
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ duration: 0.15 }}
             className="absolute right-0 mt-2 w-80 rounded-2xl overflow-hidden shadow-2xl z-50"
-            style={{ background: theme.colors.card, border: `1px solid ${theme.colors.border}` }}
+            style={{
+              background: theme.colors.card,
+              border: `1px solid ${theme.colors.border}`,
+            }}
           >
-            <div className="p-4 border-b flex items-center justify-between" style={{ borderColor: theme.colors.border }}>
-              <h3 className="font-bold" style={{ color: theme.colors.foreground }}>Notifications</h3>
+            <div
+              className="p-4 border-b flex items-center justify-between"
+              style={{ borderColor: theme.colors.border }}
+            >
+              <h3
+                className="font-bold"
+                style={{ color: theme.colors.foreground }}
+              >
+                Notifications
+              </h3>
               <div className="flex items-center gap-1">
                 {unreadCount > 0 && (
                   <motion.button
@@ -185,7 +222,10 @@ export function NotificationBell() {
                     whileTap={{ scale: 0.95 }}
                     title="Mark all as read"
                   >
-                    <CheckCheck size={14} style={{ color: theme.colors.foregroundMuted }} />
+                    <CheckCheck
+                      size={14}
+                      style={{ color: theme.colors.foregroundMuted }}
+                    />
                   </motion.button>
                 )}
                 {notifications.length > 0 && (
@@ -197,7 +237,10 @@ export function NotificationBell() {
                     whileTap={{ scale: 0.95 }}
                     title="Clear all"
                   >
-                    <Trash2 size={14} style={{ color: theme.colors.foregroundMuted }} />
+                    <Trash2
+                      size={14}
+                      style={{ color: theme.colors.foregroundMuted }}
+                    />
                   </motion.button>
                 )}
               </div>
@@ -208,30 +251,55 @@ export function NotificationBell() {
                 <div className="p-8 flex items-center justify-center">
                   <motion.div
                     className="w-6 h-6 rounded-full border-2"
-                    style={{ borderColor: theme.colors.border, borderTopColor: theme.colors.primary }}
+                    style={{
+                      borderColor: theme.colors.border,
+                      borderTopColor: theme.colors.primary,
+                    }}
                     animate={{ rotate: 360 }}
-                    transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                    transition={{
+                      duration: 1,
+                      repeat: Infinity,
+                      ease: 'linear',
+                    }}
                   />
                 </div>
               ) : notifications.length === 0 ? (
                 <div className="p-8 text-center">
-                  <Bell size={32} className="mx-auto mb-2 opacity-30" style={{ color: theme.colors.foregroundMuted }} />
-                  <p className="text-sm" style={{ color: theme.colors.foregroundMuted }}>No notifications yet</p>
+                  <Bell
+                    size={32}
+                    className="mx-auto mb-2 opacity-30"
+                    style={{ color: theme.colors.foregroundMuted }}
+                  />
+                  <p
+                    className="text-sm"
+                    style={{ color: theme.colors.foregroundMuted }}
+                  >
+                    No notifications yet
+                  </p>
                 </div>
               ) : (
-                <div className="divide-y" style={{ borderColor: theme.colors.border }}>
+                <div
+                  className="divide-y"
+                  style={{ borderColor: theme.colors.border }}
+                >
                   {notifications.map((notification: NotificationItem) => {
                     const Icon = notificationIcons[notification.type] || Info
-                    const iconColor = notificationColors[notification.type] || theme.colors.foregroundMuted
+                    const iconColor =
+                      notificationColors[notification.type] ||
+                      theme.colors.foregroundMuted
 
                     return (
                       <motion.div
                         key={notification.id}
                         className="p-3 flex gap-3 transition-all cursor-pointer group relative"
                         style={{
-                          background: notification.isRead ? 'transparent' : `${theme.colors.primary}08`,
+                          background: notification.isRead
+                            ? 'transparent'
+                            : `${theme.colors.primary}08`,
                         }}
-                        whileHover={{ background: theme.colors.backgroundSecondary }}
+                        whileHover={{
+                          background: theme.colors.backgroundSecondary,
+                        }}
                         onClick={() => handleNotificationClick(notification)}
                       >
                         <div
@@ -241,15 +309,24 @@ export function NotificationBell() {
                           <Icon size={16} style={{ color: iconColor }} />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium truncate" style={{ color: theme.colors.foreground }}>
+                          <p
+                            className="text-sm font-medium truncate"
+                            style={{ color: theme.colors.foreground }}
+                          >
                             {notification.title}
                           </p>
                           {notification.message && (
-                            <p className="text-xs truncate mt-0.5" style={{ color: theme.colors.foregroundMuted }}>
+                            <p
+                              className="text-xs truncate mt-0.5"
+                              style={{ color: theme.colors.foregroundMuted }}
+                            >
                               {notification.message}
                             </p>
                           )}
-                          <p className="text-[10px] mt-1" style={{ color: theme.colors.foregroundMuted }}>
+                          <p
+                            className="text-[10px] mt-1"
+                            style={{ color: theme.colors.foregroundMuted }}
+                          >
                             {formatTime(notification.createdAt)}
                           </p>
                         </div>
@@ -261,12 +338,17 @@ export function NotificationBell() {
                                 markAsReadMutation.mutate(notification.id)
                               }}
                               className="p-1 rounded-lg"
-                              style={{ background: theme.colors.backgroundSecondary }}
+                              style={{
+                                background: theme.colors.backgroundSecondary,
+                              }}
                               whileHover={{ scale: 1.1 }}
                               whileTap={{ scale: 0.9 }}
                               title="Mark as read"
                             >
-                              <Check size={12} style={{ color: theme.colors.foregroundMuted }} />
+                              <Check
+                                size={12}
+                                style={{ color: theme.colors.foregroundMuted }}
+                              />
                             </motion.button>
                           )}
                           <motion.button
@@ -275,12 +357,17 @@ export function NotificationBell() {
                               deleteNotificationMutation.mutate(notification.id)
                             }}
                             className="p-1 rounded-lg"
-                            style={{ background: theme.colors.backgroundSecondary }}
+                            style={{
+                              background: theme.colors.backgroundSecondary,
+                            }}
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
                             title="Delete"
                           >
-                            <X size={12} style={{ color: theme.colors.foregroundMuted }} />
+                            <X
+                              size={12}
+                              style={{ color: theme.colors.foregroundMuted }}
+                            />
                           </motion.button>
                         </div>
                         {!notification.isRead && (

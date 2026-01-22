@@ -1,92 +1,41 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
-import { motion } from 'motion/react'
-import { Fragment } from 'react'
+import { createFileRoute } from '@tanstack/react-router'
 import {
-  Shield, Lock, Eye, Database, Cookie, Mail, Globe,
-  UserCheck, FileText, AlertCircle, ChevronRight, Calendar,
+  Shield,
+  Lock,
+  Eye,
+  Database,
+  Cookie,
+  Mail,
+  Globe,
+  UserCheck,
+  FileText,
+  AlertCircle,
+  Calendar,
 } from 'lucide-react'
-
-function renderContent(text: string) {
-  const parts: React.ReactNode[] = []
-  const lines = text.split('\n')
-  
-  lines.forEach((line, lineIndex) => {
-    if (lineIndex > 0) parts.push(<br key={`br-${lineIndex}`} />)
-    
-    let remaining = line
-    let partIndex = 0
-    
-    while (remaining.length > 0) {
-      const boldMatch = remaining.match(/\*\*([^*]+)\*\*/)
-      const linkMatch = remaining.match(/\[([^\]]+)\]\(([^)]+)\)/)
-      const bulletMatch = remaining.match(/^• /)
-      
-      if (bulletMatch && remaining.startsWith('• ')) {
-        parts.push(<span key={`bullet-${lineIndex}-${partIndex}`} className="text-primary">• </span>)
-        remaining = remaining.slice(2)
-        partIndex++
-        continue
-      }
-      
-      let nextMatch: { index: number; type: 'bold' | 'link'; length: number } | null = null
-      
-      if (boldMatch?.index !== undefined) {
-        nextMatch = { index: boldMatch.index, type: 'bold', length: boldMatch[0].length }
-      }
-      if (linkMatch?.index !== undefined && (!nextMatch || linkMatch.index < nextMatch.index)) {
-        nextMatch = { index: linkMatch.index, type: 'link', length: linkMatch[0].length }
-      }
-      
-      if (!nextMatch) {
-        parts.push(<Fragment key={`text-${lineIndex}-${partIndex}`}>{remaining}</Fragment>)
-        break
-      }
-      
-      if (nextMatch.index > 0) {
-        parts.push(<Fragment key={`pre-${lineIndex}-${partIndex}`}>{remaining.slice(0, nextMatch.index)}</Fragment>)
-        partIndex++
-      }
-      
-      if (nextMatch.type === 'bold' && boldMatch) {
-        parts.push(
-          <strong key={`bold-${lineIndex}-${partIndex}`} style={{ color: 'var(--foreground)' }}>
-            {boldMatch[1]}
-          </strong>
-        )
-      } else if (nextMatch.type === 'link' && linkMatch) {
-        parts.push(
-          <Link
-            key={`link-${lineIndex}-${partIndex}`}
-            to={linkMatch[2] as '/'}
-            className="underline hover:no-underline"
-            style={{ color: '#14b8a6' }}
-          >
-            {linkMatch[1]}
-          </Link>
-        )
-      }
-      
-      remaining = remaining.slice(nextMatch.index + nextMatch.length)
-      partIndex++
-    }
-  })
-  
-  return parts
-}
+import {
+  LegalPageLayout,
+  type LegalSection,
+  type RelatedLink,
+} from '@/components/legal/LegalPageLayout'
 
 export const Route = createFileRoute('/_public/privacy')({
   head: () => ({
     meta: [
       { title: 'Privacy Policy | Eziox' },
-      { name: 'description', content: 'Privacy Policy for Eziox - Learn how we collect, use, and protect your data.' },
+      {
+        name: 'description',
+        content:
+          'Privacy Policy for Eziox - Learn how we collect, use, and protect your data.',
+      },
     ],
   }),
   component: PrivacyPage,
 })
 
 const LAST_UPDATED = 'January 21, 2026'
+const ACCENT_COLOR = '#14b8a6'
 
-const SECTIONS = [
+const SECTIONS: LegalSection[] = [
   {
     id: 'introduction',
     title: 'Introduction',
@@ -277,7 +226,7 @@ For additional assistance, contact us at privacy@eziox.link`,
   },
   {
     id: 'children',
-    title: 'Children\'s Privacy',
+    title: "Children's Privacy",
     icon: AlertCircle,
     content: `Our Service is not intended for children under 13 years of age.
 
@@ -330,117 +279,23 @@ We aim to respond to all inquiries within 48 hours.`,
   },
 ]
 
+const RELATED_LINKS: RelatedLink[] = [
+  { title: 'Terms of Service', href: '/terms', icon: FileText },
+  { title: 'Cookie Policy', href: '/cookies', icon: Cookie },
+  { title: 'About Us', href: '/about', icon: Globe },
+]
+
 function PrivacyPage() {
   return (
-    <div className="min-h-screen pt-24 pb-12 px-4" style={{ background: 'var(--background)' }}>
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-12"
-        >
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6" style={{ background: 'rgba(20, 184, 166, 0.1)', border: '1px solid rgba(20, 184, 166, 0.2)' }}>
-            <Shield size={16} style={{ color: '#14b8a6' }} />
-            <span className="text-sm font-medium" style={{ color: '#14b8a6' }}>Privacy Policy</span>
-          </div>
-          
-          <h1 className="text-4xl md:text-5xl font-bold mb-4" style={{ color: 'var(--foreground)' }}>
-            Your Privacy Matters
-          </h1>
-          <p className="text-lg mb-4" style={{ color: 'var(--foreground-muted)' }}>
-            We're committed to protecting your data and being transparent about how we use it.
-          </p>
-          <p className="text-sm" style={{ color: 'var(--foreground-muted)' }}>
-            Last Updated: {LAST_UPDATED}
-          </p>
-        </motion.div>
-
-        {/* Quick Navigation */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="mb-12 p-6 rounded-3xl"
-          style={{ background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.08)' }}
-        >
-          <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--foreground)' }}>Quick Navigation</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-            {SECTIONS.map((section) => (
-              <a
-                key={section.id}
-                href={`#${section.id}`}
-                className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm transition-all hover:scale-[1.02]"
-                style={{ background: 'rgba(255, 255, 255, 0.03)', color: 'var(--foreground-muted)' }}
-              >
-                <section.icon size={14} style={{ color: '#14b8a6' }} />
-                <span className="truncate">{section.title}</span>
-              </a>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Sections */}
-        <div className="space-y-8">
-          {SECTIONS.map((section, index) => (
-            <motion.section
-              key={section.id}
-              id={section.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 + index * 0.05 }}
-              className="p-6 rounded-3xl scroll-mt-24"
-              style={{ background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.08)' }}
-            >
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'rgba(20, 184, 166, 0.15)' }}>
-                  <section.icon size={20} style={{ color: '#14b8a6' }} />
-                </div>
-                <h2 className="text-xl font-bold" style={{ color: 'var(--foreground)' }}>{section.title}</h2>
-              </div>
-              <div 
-                className="prose prose-invert max-w-none text-sm leading-relaxed space-y-3"
-                style={{ color: 'var(--foreground-muted)' }}
-              >
-                {section.content.split('\n\n').map((paragraph, i) => (
-                  <p key={i}>{renderContent(paragraph)}</p>
-                ))}
-              </div>
-            </motion.section>
-          ))}
-        </div>
-
-        {/* Related Links */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="mt-12 p-6 rounded-3xl"
-          style={{ background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.08)' }}
-        >
-          <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--foreground)' }}>Related Policies</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {[
-              { title: 'Terms of Service', href: '/terms', icon: FileText },
-              { title: 'Cookie Policy', href: '/cookies', icon: Cookie },
-              { title: 'About Us', href: '/about', icon: Globe },
-            ].map((link) => (
-              <Link
-                key={link.href}
-                to={link.href}
-                className="flex items-center justify-between p-4 rounded-xl transition-all hover:scale-[1.02]"
-                style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.06)' }}
-              >
-                <div className="flex items-center gap-3">
-                  <link.icon size={18} style={{ color: '#14b8a6' }} />
-                  <span style={{ color: 'var(--foreground)' }}>{link.title}</span>
-                </div>
-                <ChevronRight size={16} style={{ color: 'var(--foreground-muted)' }} />
-              </Link>
-            ))}
-          </div>
-        </motion.div>
-      </div>
-    </div>
+    <LegalPageLayout
+      title="Your Privacy Matters"
+      subtitle="We're committed to protecting your data and being transparent about how we use it."
+      badge="Privacy Policy"
+      badgeIcon={Shield}
+      accentColor={ACCENT_COLOR}
+      lastUpdated={LAST_UPDATED}
+      sections={SECTIONS}
+      relatedLinks={RELATED_LINKS}
+    />
   )
 }

@@ -26,7 +26,10 @@ export const Route = createFileRoute('/_auth/reset-password')({
   head: () => ({
     meta: [
       { title: 'Reset Password | Eziox' },
-      { name: 'description', content: 'Set a new password for your Eziox account' },
+      {
+        name: 'description',
+        content: 'Set a new password for your Eziox account',
+      },
       { name: 'robots', content: 'noindex, nofollow' },
     ],
   }),
@@ -34,18 +37,20 @@ export const Route = createFileRoute('/_auth/reset-password')({
   validateSearch: searchSchema,
 })
 
-const resetPasswordSchema = z.object({
-  password: z
-    .string()
-    .min(8, 'Password must be at least 8 characters')
-    .regex(/[A-Z]/, 'Must contain uppercase letter')
-    .regex(/[a-z]/, 'Must contain lowercase letter')
-    .regex(/[0-9]/, 'Must contain number'),
-  confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: 'Passwords do not match',
-  path: ['confirmPassword'],
-})
+const resetPasswordSchema = z
+  .object({
+    password: z
+      .string()
+      .min(8, 'Password must be at least 8 characters')
+      .regex(/[A-Z]/, 'Must contain uppercase letter')
+      .regex(/[a-z]/, 'Must contain lowercase letter')
+      .regex(/[0-9]/, 'Must contain number'),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'Passwords do not match',
+    path: ['confirmPassword'],
+  })
 
 type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>
 
@@ -66,13 +71,17 @@ function ResetPasswordPage() {
 
   const resetMutation = useMutation({
     mutationFn: async (data: ResetPasswordFormData) => {
-      return await resetPassword({ data: { token: search.token, password: data.password } })
+      return await resetPassword({
+        data: { token: search.token, password: data.password },
+      })
     },
     onSuccess: () => {
       setResetSuccess(true)
     },
     onError: (error: { message?: string }) => {
-      form.setError('root', { message: error.message || 'Failed to reset password' })
+      form.setError('root', {
+        message: error.message || 'Failed to reset password',
+      })
     },
   })
 
@@ -100,11 +109,15 @@ function ResetPasswordPage() {
           >
             <CheckCircle2 className="w-10 h-10" style={{ color: '#22c55e' }} />
           </div>
-          <h2 className="text-2xl font-bold mb-4" style={{ color: 'var(--foreground)' }}>
+          <h2
+            className="text-2xl font-bold mb-4"
+            style={{ color: 'var(--foreground)' }}
+          >
             Password reset successful
           </h2>
           <p className="mb-8" style={{ color: 'var(--foreground-muted)' }}>
-            Your password has been updated. You can now sign in with your new password.
+            Your password has been updated. You can now sign in with your new
+            password.
           </p>
           <Link
             to="/sign-in"
@@ -137,12 +150,23 @@ function ResetPasswordPage() {
         <div className="mb-8">
           <div
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-4"
-            style={{ background: 'rgba(99, 102, 241, 0.1)', border: '1px solid rgba(99, 102, 241, 0.2)' }}
+            style={{
+              background: 'rgba(99, 102, 241, 0.1)',
+              border: '1px solid rgba(99, 102, 241, 0.2)',
+            }}
           >
             <KeyRound size={14} style={{ color: 'var(--primary)' }} />
-            <span className="text-xs font-semibold" style={{ color: 'var(--primary)' }}>New Password</span>
+            <span
+              className="text-xs font-semibold"
+              style={{ color: 'var(--primary)' }}
+            >
+              New Password
+            </span>
           </div>
-          <h2 className="text-3xl font-bold mb-2" style={{ color: 'var(--foreground)' }}>
+          <h2
+            className="text-3xl font-bold mb-2"
+            style={{ color: 'var(--foreground)' }}
+          >
             Reset password
           </h2>
           <p style={{ color: 'var(--foreground-muted)' }}>
@@ -155,20 +179,31 @@ function ResetPasswordPage() {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             className="mb-6 p-4 rounded-2xl flex items-center gap-3"
-            style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)' }}
+            style={{
+              background: 'rgba(239, 68, 68, 0.1)',
+              border: '1px solid rgba(239, 68, 68, 0.2)',
+            }}
           >
             <AlertCircle className="w-5 h-5 text-red-400 shrink-0" />
-            <p className="text-sm text-red-400">{form.formState.errors.root.message}</p>
+            <p className="text-sm text-red-400">
+              {form.formState.errors.root.message}
+            </p>
           </motion.div>
         )}
 
         <form onSubmit={onSubmit} className="space-y-5">
           <div>
-            <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--foreground)' }}>
+            <label
+              className="block text-sm font-semibold mb-2"
+              style={{ color: 'var(--foreground)' }}
+            >
               New Password
             </label>
             <div className="relative">
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5" style={{ color: 'var(--foreground-muted)' }} />
+              <Lock
+                className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5"
+                style={{ color: 'var(--foreground-muted)' }}
+              />
               <input
                 {...form.register('password')}
                 type={showPassword ? 'text' : 'password'}
@@ -186,17 +221,29 @@ function ResetPasswordPage() {
                 className="absolute right-4 top-1/2 -translate-y-1/2 p-1"
                 style={{ color: 'var(--foreground-muted)' }}
               >
-                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                {showPassword ? (
+                  <EyeOff className="w-5 h-5" />
+                ) : (
+                  <Eye className="w-5 h-5" />
+                )}
               </button>
             </div>
             {form.formState.errors.password && (
-              <p className="mt-2 text-xs text-red-400">{form.formState.errors.password.message}</p>
+              <p className="mt-2 text-xs text-red-400">
+                {form.formState.errors.password.message}
+              </p>
             )}
           </div>
 
           <div className="grid grid-cols-2 gap-2">
             {requirements.map((req) => (
-              <div key={req.text} className="flex items-center gap-2 text-xs" style={{ color: req.met ? '#22c55e' : 'var(--foreground-muted)' }}>
+              <div
+                key={req.text}
+                className="flex items-center gap-2 text-xs"
+                style={{
+                  color: req.met ? '#22c55e' : 'var(--foreground-muted)',
+                }}
+              >
                 <CheckCircle2 size={12} />
                 <span>{req.text}</span>
               </div>
@@ -204,11 +251,17 @@ function ResetPasswordPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--foreground)' }}>
+            <label
+              className="block text-sm font-semibold mb-2"
+              style={{ color: 'var(--foreground)' }}
+            >
               Confirm Password
             </label>
             <div className="relative">
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5" style={{ color: 'var(--foreground-muted)' }} />
+              <Lock
+                className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5"
+                style={{ color: 'var(--foreground-muted)' }}
+              />
               <input
                 {...form.register('confirmPassword')}
                 type={showConfirmPassword ? 'text' : 'password'}
@@ -226,11 +279,17 @@ function ResetPasswordPage() {
                 className="absolute right-4 top-1/2 -translate-y-1/2 p-1"
                 style={{ color: 'var(--foreground-muted)' }}
               >
-                {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                {showConfirmPassword ? (
+                  <EyeOff className="w-5 h-5" />
+                ) : (
+                  <Eye className="w-5 h-5" />
+                )}
               </button>
             </div>
             {form.formState.errors.confirmPassword && (
-              <p className="mt-2 text-xs text-red-400">{form.formState.errors.confirmPassword.message}</p>
+              <p className="mt-2 text-xs text-red-400">
+                {form.formState.errors.confirmPassword.message}
+              </p>
             )}
           </div>
 

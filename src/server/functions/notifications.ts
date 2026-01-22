@@ -6,7 +6,13 @@ import { notifications, users, profiles } from '../db/schema'
 import { eq, desc, and, count } from 'drizzle-orm'
 import { validateSession } from '../lib/auth'
 
-export type NotificationType = 'new_follower' | 'profile_milestone' | 'link_milestone' | 'system' | 'badge_earned' | 'subscription'
+export type NotificationType =
+  | 'new_follower'
+  | 'profile_milestone'
+  | 'link_milestone'
+  | 'system'
+  | 'badge_earned'
+  | 'subscription'
 
 export interface NotificationData {
   id: string
@@ -34,7 +40,13 @@ async function getAuthenticatedUser() {
 }
 
 export const getNotificationsFn = createServerFn({ method: 'GET' })
-  .inputValidator(z.object({ limit: z.number().optional(), offset: z.number().optional(), unreadOnly: z.boolean().optional() }))
+  .inputValidator(
+    z.object({
+      limit: z.number().optional(),
+      offset: z.number().optional(),
+      unreadOnly: z.boolean().optional(),
+    }),
+  )
   // @ts-expect-error - Drizzle JSONB type incompatibility with Record<string, unknown>
   .handler(async ({ data }): Promise<NotificationData[]> => {
     const user = await getAuthenticatedUser()
@@ -66,20 +78,24 @@ export const getNotificationsFn = createServerFn({ method: 'GET' })
     }))
   })
 
-export const getUnreadCountFn = createServerFn({ method: 'GET' }).handler(async () => {
-  const token = getCookie('session-token')
-  if (!token) return 0
+export const getUnreadCountFn = createServerFn({ method: 'GET' }).handler(
+  async () => {
+    const token = getCookie('session-token')
+    if (!token) return 0
 
-  const user = await validateSession(token)
-  if (!user) return 0
+    const user = await validateSession(token)
+    if (!user) return 0
 
-  const result = await db
-    .select({ count: count() })
-    .from(notifications)
-    .where(and(eq(notifications.userId, user.id), eq(notifications.isRead, false)))
+    const result = await db
+      .select({ count: count() })
+      .from(notifications)
+      .where(
+        and(eq(notifications.userId, user.id), eq(notifications.isRead, false)),
+      )
 
-  return result[0]?.count || 0
-})
+    return result[0]?.count || 0
+  },
+)
 
 export const markAsReadFn = createServerFn({ method: 'POST' })
   .inputValidator(z.object({ notificationId: z.string() }))
@@ -89,21 +105,30 @@ export const markAsReadFn = createServerFn({ method: 'POST' })
     await db
       .update(notifications)
       .set({ isRead: true })
-      .where(and(eq(notifications.id, data.notificationId), eq(notifications.userId, user.id)))
+      .where(
+        and(
+          eq(notifications.id, data.notificationId),
+          eq(notifications.userId, user.id),
+        ),
+      )
 
     return { success: true }
   })
 
-export const markAllAsReadFn = createServerFn({ method: 'POST' }).handler(async () => {
-  const user = await getAuthenticatedUser()
+export const markAllAsReadFn = createServerFn({ method: 'POST' }).handler(
+  async () => {
+    const user = await getAuthenticatedUser()
 
-  await db
-    .update(notifications)
-    .set({ isRead: true })
-    .where(and(eq(notifications.userId, user.id), eq(notifications.isRead, false)))
+    await db
+      .update(notifications)
+      .set({ isRead: true })
+      .where(
+        and(eq(notifications.userId, user.id), eq(notifications.isRead, false)),
+      )
 
-  return { success: true }
-})
+    return { success: true }
+  },
+)
 
 export const deleteNotificationFn = createServerFn({ method: 'POST' })
   .inputValidator(z.object({ notificationId: z.string() }))
@@ -112,12 +137,19 @@ export const deleteNotificationFn = createServerFn({ method: 'POST' })
 
     await db
       .delete(notifications)
-      .where(and(eq(notifications.id, data.notificationId), eq(notifications.userId, user.id)))
+      .where(
+        and(
+          eq(notifications.id, data.notificationId),
+          eq(notifications.userId, user.id),
+        ),
+      )
 
     return { success: true }
   })
 
-export const clearAllNotificationsFn = createServerFn({ method: 'POST' }).handler(async () => {
+export const clearAllNotificationsFn = createServerFn({
+  method: 'POST',
+}).handler(async () => {
   const user = await getAuthenticatedUser()
 
   await db.delete(notifications).where(eq(notifications.userId, user.id))
@@ -125,7 +157,10 @@ export const clearAllNotificationsFn = createServerFn({ method: 'POST' }).handle
   return { success: true }
 })
 
-export async function createFollowerNotification(followerId: string, followedUserId: string) {
+export async function createFollowerNotification(
+  followerId: string,
+  followedUserId: string,
+) {
   const [targetProfile] = await db
     .select({ notifyNewFollower: profiles.notifyNewFollower })
     .from(profiles)
@@ -166,7 +201,7 @@ export async function createMilestoneNotification(
   userId: string,
   type: 'profile_milestone' | 'link_milestone',
   milestone: number,
-  linkTitle?: string
+  linkTitle?: string,
 ) {
   const [userProfile] = await db
     .select({ notifyMilestones: profiles.notifyMilestones })
@@ -176,7 +211,8 @@ export async function createMilestoneNotification(
 
   if (userProfile?.notifyMilestones === false) return
 
-  const title = type === 'profile_milestone' ? 'Profile Milestone!' : 'Link Milestone!'
+  const title =
+    type === 'profile_milestone' ? 'Profile Milestone!' : 'Link Milestone!'
 
   const message =
     type === 'profile_milestone'
@@ -193,7 +229,11 @@ export async function createMilestoneNotification(
   })
 }
 
-export async function createBadgeNotification(userId: string, badgeName: string, badgeIcon: string) {
+export async function createBadgeNotification(
+  userId: string,
+  badgeName: string,
+  badgeIcon: string,
+) {
   await db.insert(notifications).values({
     userId,
     type: 'badge_earned',
@@ -204,7 +244,12 @@ export async function createBadgeNotification(userId: string, badgeName: string,
   })
 }
 
-export async function createSystemNotification(userId: string, title: string, message: string, actionUrl?: string) {
+export async function createSystemNotification(
+  userId: string,
+  title: string,
+  message: string,
+  actionUrl?: string,
+) {
   await db.insert(notifications).values({
     userId,
     type: 'system',
@@ -215,7 +260,7 @@ export async function createSystemNotification(userId: string, title: string, me
   })
 }
 
-export type SubscriptionEvent = 
+export type SubscriptionEvent =
   | 'upgraded'
   | 'downgraded'
   | 'canceled'
@@ -235,15 +280,17 @@ const TIER_NAMES: Record<string, string> = {
 export async function createSubscriptionNotification(
   userId: string,
   event: SubscriptionEvent,
-  data: { 
+  data: {
     tier?: string
     previousTier?: string
     expiresAt?: Date | null
     adminGranted?: boolean
-  } = {}
+  } = {},
 ) {
   const tierName = data.tier ? TIER_NAMES[data.tier] || data.tier : ''
-  const previousTierName = data.previousTier ? TIER_NAMES[data.previousTier] || data.previousTier : ''
+  const previousTierName = data.previousTier
+    ? TIER_NAMES[data.previousTier] || data.previousTier
+    : ''
 
   let title = ''
   let message = ''
@@ -268,7 +315,8 @@ export async function createSubscriptionNotification(
       break
     case 'payment_failed':
       title = 'Payment Failed'
-      message = 'We couldn\'t process your payment. Please update your payment method to keep your subscription active.'
+      message =
+        "We couldn't process your payment. Please update your payment method to keep your subscription active."
       break
     case 'trial_ending':
       title = 'Trial Ending Soon'
@@ -276,7 +324,7 @@ export async function createSubscriptionNotification(
       break
     case 'tier_granted':
       title = 'Tier Granted'
-      message = data.adminGranted 
+      message = data.adminGranted
         ? `You've been granted ${tierName} access by an admin. Enjoy your new features!`
         : `You now have ${tierName} access!`
       break
@@ -294,14 +342,25 @@ export async function createSubscriptionNotification(
     type: 'subscription',
     title,
     message,
-    data: { event, tier: data.tier, previousTier: data.previousTier, expiresAt: data.expiresAt },
+    data: {
+      event,
+      tier: data.tier,
+      previousTier: data.previousTier,
+      expiresAt: data.expiresAt,
+    },
     actionUrl,
   })
 }
 
-const MILESTONES = [10, 50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000]
+const MILESTONES = [
+  10, 50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000,
+]
 
-export async function checkAndCreateMilestoneNotifications(userId: string, currentViews: number, previousViews: number) {
+export async function checkAndCreateMilestoneNotifications(
+  userId: string,
+  currentViews: number,
+  previousViews: number,
+) {
   for (const milestone of MILESTONES) {
     if (currentViews >= milestone && previousViews < milestone) {
       await createMilestoneNotification(userId, 'profile_milestone', milestone)
@@ -310,16 +369,28 @@ export async function checkAndCreateMilestoneNotifications(userId: string, curre
   }
 }
 
-export async function checkLinkMilestone(userId: string, linkTitle: string, currentClicks: number, previousClicks: number) {
+export async function checkLinkMilestone(
+  userId: string,
+  linkTitle: string,
+  currentClicks: number,
+  previousClicks: number,
+) {
   for (const milestone of MILESTONES) {
     if (currentClicks >= milestone && previousClicks < milestone) {
-      await createMilestoneNotification(userId, 'link_milestone', milestone, linkTitle)
+      await createMilestoneNotification(
+        userId,
+        'link_milestone',
+        milestone,
+        linkTitle,
+      )
       break
     }
   }
 }
 
-export const getNotificationSettingsFn = createServerFn({ method: 'GET' }).handler(async () => {
+export const getNotificationSettingsFn = createServerFn({
+  method: 'GET',
+}).handler(async () => {
   const user = await getAuthenticatedUser()
 
   const [profile] = await db
@@ -359,7 +430,7 @@ export const updateNotificationSettingsFn = createServerFn({ method: 'POST' })
       emailSecurityAlerts: z.boolean().optional(),
       emailWeeklyDigest: z.boolean().optional(),
       emailProductUpdates: z.boolean().optional(),
-    })
+    }),
   )
   .handler(async ({ data }) => {
     const user = await getAuthenticatedUser()

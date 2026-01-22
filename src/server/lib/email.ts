@@ -24,7 +24,7 @@ interface EmailResult {
 export async function sendPasswordResetEmail(
   to: string,
   token: string,
-  username: string
+  username: string,
 ): Promise<EmailResult> {
   const resetUrl = `${APP_URL}/reset-password?token=${token}`
 
@@ -95,7 +95,7 @@ export async function sendLoginNotificationEmail(
   username: string,
   ipAddress: string,
   userAgent: string,
-  timestamp: Date
+  timestamp: Date,
 ): Promise<EmailResult> {
   const deviceInfo = parseUserAgent(userAgent)
   const formattedTime = timestamp.toLocaleString('en-US', {
@@ -189,7 +189,7 @@ export async function sendLoginNotificationEmail(
 
 export async function sendWelcomeEmail(
   to: string,
-  username: string
+  username: string,
 ): Promise<EmailResult> {
   try {
     const { error } = await getResend().emails.send({
@@ -259,7 +259,7 @@ export async function sendWelcomeEmail(
 export async function sendEmailVerificationEmail(
   to: string,
   username: string,
-  token: string
+  token: string,
 ): Promise<EmailResult> {
   const verifyUrl = `${APP_URL}/verify-email?token=${token}`
 
@@ -278,7 +278,8 @@ export async function sendEmailVerificationEmail(
         `,
         buttonText: 'Verify Email',
         buttonUrl: verifyUrl,
-        footer: 'This link expires in 24 hours. If you didn\'t create an account, you can safely ignore this email.',
+        footer:
+          "This link expires in 24 hours. If you didn't create an account, you can safely ignore this email.",
       }),
     })
 
@@ -298,7 +299,7 @@ export async function sendPasswordChangedEmail(
   to: string,
   username: string,
   ipAddress: string,
-  timestamp: Date
+  timestamp: Date,
 ): Promise<EmailResult> {
   const formattedTime = formatTimestamp(timestamp)
 
@@ -326,7 +327,10 @@ export async function sendPasswordChangedEmail(
             </tr>
           </table>
         `,
-        footer: 'If you didn\'t make this change, please <a href="' + APP_URL + '/forgot-password" style="color: #8b5cf6;">reset your password</a> immediately and contact support.',
+        footer:
+          'If you didn\'t make this change, please <a href="' +
+          APP_URL +
+          '/forgot-password" style="color: #8b5cf6;">reset your password</a> immediately and contact support.',
       }),
     })
 
@@ -346,7 +350,7 @@ export async function sendEmailChangedEmail(
   oldEmail: string,
   newEmail: string,
   username: string,
-  timestamp: Date
+  timestamp: Date,
 ): Promise<EmailResult> {
   const formattedTime = formatTimestamp(timestamp)
 
@@ -381,7 +385,8 @@ export async function sendEmailChangedEmail(
             </tr>
           </table>
         `,
-        footer: 'If you didn\'t make this change, please contact support immediately at <a href="mailto:support@eziox.link" style="color: #8b5cf6;">support@eziox.link</a>.',
+        footer:
+          'If you didn\'t make this change, please contact support immediately at <a href="mailto:support@eziox.link" style="color: #8b5cf6;">support@eziox.link</a>.',
       }),
     })
 
@@ -394,7 +399,7 @@ export async function sendEmailChangedEmail(
 
 export async function sendAccountDeletedEmail(
   to: string,
-  username: string
+  username: string,
 ): Promise<EmailResult> {
   try {
     const { error } = await getResend().emails.send({
@@ -418,7 +423,8 @@ export async function sendAccountDeletedEmail(
             We're sorry to see you go. If you ever want to come back, you're always welcome to create a new account.
           </p>
         `,
-        footer: 'Thank you for being part of Eziox. If you have any feedback, feel free to reach out at <a href="mailto:feedback@eziox.link" style="color: #8b5cf6;">feedback@eziox.link</a>.',
+        footer:
+          'Thank you for being part of Eziox. If you have any feedback, feel free to reach out at <a href="mailto:feedback@eziox.link" style="color: #8b5cf6;">feedback@eziox.link</a>.',
       }),
     })
 
@@ -437,7 +443,7 @@ export async function sendAccountDeletedEmail(
 export async function send2FAEnabledEmail(
   to: string,
   username: string,
-  timestamp: Date
+  timestamp: Date,
 ): Promise<EmailResult> {
   const formattedTime = formatTimestamp(timestamp)
 
@@ -462,7 +468,8 @@ export async function send2FAEnabledEmail(
             Enabled at: ${formattedTime}
           </p>
         `,
-        footer: 'Make sure to keep your recovery codes in a safe place. If you lose access to your authenticator app, you\'ll need them to sign in.',
+        footer:
+          "Make sure to keep your recovery codes in a safe place. If you lose access to your authenticator app, you'll need them to sign in.",
       }),
     })
 
@@ -482,7 +489,7 @@ export async function send2FADisabledEmail(
   to: string,
   username: string,
   ipAddress: string,
-  timestamp: Date
+  timestamp: Date,
 ): Promise<EmailResult> {
   const formattedTime = formatTimestamp(timestamp)
 
@@ -517,7 +524,8 @@ export async function send2FADisabledEmail(
         `,
         buttonText: 'Re-enable 2FA',
         buttonUrl: `${APP_URL}/profile/settings`,
-        footer: 'If you didn\'t make this change, please secure your account immediately by changing your password and re-enabling 2FA.',
+        footer:
+          "If you didn't make this change, please secure your account immediately by changing your password and re-enabling 2FA.",
       }),
     })
 
@@ -537,7 +545,7 @@ export async function sendSubscriptionEmail(
   to: string,
   username: string,
   tier: string,
-  action: 'upgraded' | 'downgraded' | 'cancelled' | 'renewed'
+  action: 'upgraded' | 'downgraded' | 'cancelled' | 'renewed',
 ): Promise<EmailResult> {
   const titles: Record<typeof action, string> = {
     upgraded: `Welcome to ${tier}! 🎉`,
@@ -593,9 +601,14 @@ export async function sendSubscriptionEmail(
         title: titles[action],
         subtitle: subtitles[action],
         content: contents[action],
-        buttonText: action === 'cancelled' ? 'Resubscribe' : 'View Your Account',
-        buttonUrl: action === 'cancelled' ? `${APP_URL}/pricing` : `${APP_URL}/profile/settings`,
-        footer: 'Questions about your subscription? Contact us at <a href="mailto:billing@eziox.link" style="color: #8b5cf6;">billing@eziox.link</a>.',
+        buttonText:
+          action === 'cancelled' ? 'Resubscribe' : 'View Your Account',
+        buttonUrl:
+          action === 'cancelled'
+            ? `${APP_URL}/pricing`
+            : `${APP_URL}/profile/settings`,
+        footer:
+          'Questions about your subscription? Contact us at <a href="mailto:billing@eziox.link" style="color: #8b5cf6;">billing@eziox.link</a>.',
       }),
     })
 
@@ -619,7 +632,7 @@ export async function sendWeeklyDigestEmail(
     linkClicks: number
     newFollowers: number
     topLink?: { title: string; clicks: number }
-  }
+  },
 ): Promise<EmailResult> {
   try {
     const { error } = await getResend().emails.send({
@@ -648,16 +661,23 @@ export async function sendWeeklyDigestEmail(
               </td>
             </tr>
           </table>
-          ${stats.topLink ? `
+          ${
+            stats.topLink
+              ? `
           <div style="background: rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 16px; margin-bottom: 24px;">
             <p style="margin: 0 0 8px; font-size: 12px; color: rgba(255, 255, 255, 0.5);">🔥 Top Performing Link</p>
             <p style="margin: 0; font-size: 14px; color: #ffffff;">${stats.topLink.title} — <span style="color: #22c55e;">${stats.topLink.clicks} clicks</span></p>
           </div>
-          ` : ''}
+          `
+              : ''
+          }
         `,
         buttonText: 'View Full Analytics',
         buttonUrl: `${APP_URL}/profile/analytics`,
-        footer: 'You can manage your email preferences in your <a href="' + APP_URL + '/profile/settings" style="color: #8b5cf6;">account settings</a>.',
+        footer:
+          'You can manage your email preferences in your <a href="' +
+          APP_URL +
+          '/profile/settings" style="color: #8b5cf6;">account settings</a>.',
       }),
     })
 
@@ -706,16 +726,24 @@ function generateEmailTemplate(options: {
           <tr>
             <td style="padding: 0 32px 32px;">
               ${content}
-              ${buttonText && buttonUrl ? `
+              ${
+                buttonText && buttonUrl
+                  ? `
               <a href="${buttonUrl}" style="display: block; padding: 16px 24px; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #ffffff; text-decoration: none; font-weight: 600; font-size: 16px; text-align: center; border-radius: 12px; margin-top: 24px;">
                 ${buttonText}
               </a>
-              ` : ''}
-              ${footer ? `
+              `
+                  : ''
+              }
+              ${
+                footer
+                  ? `
               <p style="margin: 24px 0 0; font-size: 13px; color: rgba(255, 255, 255, 0.5); text-align: center;">
                 ${footer}
               </p>
-              ` : ''}
+              `
+                  : ''
+              }
             </td>
           </tr>
           <tr>
@@ -792,9 +820,14 @@ const CATEGORY_LABELS: Record<string, { label: string; color: string }> = {
   security: { label: 'Security', color: '#8b5cf6' },
 }
 
-export async function sendContactNotificationEmail(data: ContactNotificationData): Promise<EmailResult> {
+export async function sendContactNotificationEmail(
+  data: ContactNotificationData,
+): Promise<EmailResult> {
   const adminEmail = process.env.ADMIN_EMAIL || 'support@eziox.link'
-  const categoryInfo = CATEGORY_LABELS[data.category] || { label: data.category, color: '#6b7280' }
+  const categoryInfo = CATEGORY_LABELS[data.category] || {
+    label: data.category,
+    color: '#6b7280',
+  }
 
   try {
     const { error } = await getResend().emails.send({
@@ -892,9 +925,12 @@ export async function sendContactConfirmationEmail(
   to: string,
   name: string,
   subject: string,
-  category: string
+  category: string,
 ): Promise<EmailResult> {
-  const categoryInfo = CATEGORY_LABELS[category] || { label: category, color: '#6b7280' }
+  const categoryInfo = CATEGORY_LABELS[category] || {
+    label: category,
+    color: '#6b7280',
+  }
 
   try {
     const { error } = await getResend().emails.send({

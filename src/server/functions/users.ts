@@ -74,7 +74,7 @@ export const trackProfileViewFn = createServerFn({ method: 'POST' })
     const rateLimit = checkRateLimit(
       `profile-view:${data.userId}:${ip}`,
       RATE_LIMITS.PROFILE_VIEW.maxRequests,
-      RATE_LIMITS.PROFILE_VIEW.windowMs
+      RATE_LIMITS.PROFILE_VIEW.windowMs,
     )
     if (!rateLimit.allowed) {
       return { success: false }
@@ -135,6 +135,7 @@ export const getLeaderboardFn = createServerFn({ method: 'GET' })
           avatar: profiles.avatar,
           badges: profiles.badges,
           accentColor: profiles.accentColor,
+          bio: profiles.bio,
         },
         stats: {
           score: userStats.score,
@@ -217,6 +218,7 @@ export const getTopUsersFn = createServerFn({ method: 'GET' })
           avatar: profiles.avatar,
           badges: profiles.badges,
           accentColor: profiles.accentColor,
+          bio: profiles.bio,
         },
         stats: {
           score: userStats.score,

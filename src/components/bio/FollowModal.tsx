@@ -9,7 +9,12 @@ import { motion, AnimatePresence } from 'motion/react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
 import { Link } from '@tanstack/react-router'
-import { getFollowersFn, getFollowingFn, followUserFn, unfollowUserFn } from '@/server/functions/follows'
+import {
+  getFollowersFn,
+  getFollowingFn,
+  followUserFn,
+  unfollowUserFn,
+} from '@/server/functions/follows'
 import {
   X,
   Users,
@@ -35,14 +40,14 @@ interface FollowModalProps {
 
 type TabType = 'followers' | 'following'
 
-export function FollowModal({ 
-  isOpen, 
-  onClose, 
+export function FollowModal({
+  isOpen,
+  onClose,
   username,
   userId,
   initialTab = 'followers',
   currentUserId,
-  accentColor = '#8b5cf6'
+  accentColor = '#8b5cf6',
 }: FollowModalProps) {
   const [activeTab, setActiveTab] = useState<TabType>(initialTab)
   const [searchQuery, setSearchQuery] = useState('')
@@ -54,7 +59,11 @@ export function FollowModal({
   const unfollowUser = useServerFn(unfollowUserFn)
 
   // Followers query
-  const { data: followersData, isLoading: followersLoading, refetch: refetchFollowers } = useQuery({
+  const {
+    data: followersData,
+    isLoading: followersLoading,
+    refetch: refetchFollowers,
+  } = useQuery({
     queryKey: ['followers', userId],
     queryFn: () => getFollowers({ data: { userId, limit: 50, offset: 0 } }),
     enabled: isOpen && activeTab === 'followers',
@@ -62,7 +71,11 @@ export function FollowModal({
   })
 
   // Following query
-  const { data: followingData, isLoading: followingLoading, refetch: refetchFollowing } = useQuery({
+  const {
+    data: followingData,
+    isLoading: followingLoading,
+    refetch: refetchFollowing,
+  } = useQuery({
     queryKey: ['following', userId],
     queryFn: () => getFollowing({ data: { userId, limit: 50, offset: 0 } }),
     enabled: isOpen && activeTab === 'following',
@@ -78,7 +91,10 @@ export function FollowModal({
   }, [isOpen, initialTab])
 
   // Handle follow/unfollow
-  const handleFollowToggle = async (targetUserId: string, isFollowing: boolean) => {
+  const handleFollowToggle = async (
+    targetUserId: string,
+    isFollowing: boolean,
+  ) => {
     if (!currentUserId) return
 
     try {
@@ -87,39 +103,54 @@ export function FollowModal({
       } else {
         await followUser({ data: { targetUserId } })
       }
-      
+
       // Invalidate queries
       await queryClient.invalidateQueries({ queryKey: ['followers', userId] })
       await queryClient.invalidateQueries({ queryKey: ['following', userId] })
       await queryClient.invalidateQueries({ queryKey: ['isFollowing'] })
-      await queryClient.invalidateQueries({ queryKey: ['publicProfile', username] })
+      await queryClient.invalidateQueries({
+        queryKey: ['publicProfile', username],
+      })
     } catch (error) {
       console.error('Follow toggle error:', error)
     }
   }
 
   // Filter users based on search
-  const filterUsers = (users: Array<{
-    user: { id: string; username: string; name: string | null; role: string | null }
-    profile: { avatar: string | null; bio: string | null } | null
-    isFollowing: boolean
-    isSelf: boolean
-  }>) => {
+  const filterUsers = (
+    users: Array<{
+      user: {
+        id: string
+        username: string
+        name: string | null
+        role: string | null
+      }
+      profile: { avatar: string | null; bio: string | null } | null
+      isFollowing: boolean
+      isSelf: boolean
+    }>,
+  ) => {
     if (!searchQuery.trim()) return users
-    
+
     const query = searchQuery.toLowerCase()
-    return users.filter(item => {
+    return users.filter((item) => {
       const user = item.user
       const name = user?.name?.toLowerCase() || ''
       const username = user?.username?.toLowerCase() || ''
       const bio = item.profile?.bio?.toLowerCase() || ''
-      
-      return name.includes(query) || username.includes(query) || bio.includes(query)
+
+      return (
+        name.includes(query) || username.includes(query) || bio.includes(query)
+      )
     })
   }
 
-  const currentData = activeTab === 'followers' ? followersData?.followers : followingData?.following
-  const isLoading = activeTab === 'followers' ? followersLoading : followingLoading
+  const currentData =
+    activeTab === 'followers'
+      ? followersData?.followers
+      : followingData?.following
+  const isLoading =
+    activeTab === 'followers' ? followersLoading : followingLoading
   const filteredUsers = currentData ? filterUsers(currentData) : []
 
   const handleRefresh = () => {
@@ -139,7 +170,10 @@ export function FollowModal({
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         className="fixed inset-0 z-50 flex items-center justify-center p-4"
-        style={{ background: 'rgba(0, 0, 0, 0.7)', backdropFilter: 'blur(8px)' }}
+        style={{
+          background: 'rgba(0, 0, 0, 0.7)',
+          backdropFilter: 'blur(8px)',
+        }}
         onClick={onClose}
       >
         <motion.div
@@ -148,19 +182,19 @@ export function FollowModal({
           exit={{ scale: 0.9, opacity: 0, y: 20 }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
           className="relative w-full max-w-2xl max-h-[85vh] rounded-3xl overflow-hidden"
-          style={{ 
+          style={{
             background: 'var(--card)',
             border: '1px solid var(--border)',
-            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
           }}
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div 
+          <div
             className="relative p-6 pb-4"
             style={{
               background: `linear-gradient(135deg, ${accentColor}15, ${accentColor}05)`,
-              borderBottom: '1px solid var(--border)'
+              borderBottom: '1px solid var(--border)',
             }}
           >
             {/* Close button */}
@@ -174,14 +208,17 @@ export function FollowModal({
 
             {/* Title */}
             <div className="flex items-center gap-3 mb-4">
-              <div 
+              <div
                 className="p-3 rounded-2xl"
                 style={{ background: `${accentColor}20` }}
               >
                 <Users className="w-6 h-6" style={{ color: accentColor }} />
               </div>
               <div>
-                <h2 className="text-2xl font-bold" style={{ color: 'var(--foreground)' }}>
+                <h2
+                  className="text-2xl font-bold"
+                  style={{ color: 'var(--foreground)' }}
+                >
                   @{username}
                 </h2>
                 <p className="text-sm opacity-60">
@@ -196,37 +233,53 @@ export function FollowModal({
                 onClick={() => setActiveTab('followers')}
                 className="flex-1 px-4 py-2.5 rounded-xl font-medium transition-all"
                 style={{
-                  background: activeTab === 'followers' ? accentColor : 'transparent',
-                  color: activeTab === 'followers' ? '#fff' : 'var(--foreground)',
+                  background:
+                    activeTab === 'followers' ? accentColor : 'transparent',
+                  color:
+                    activeTab === 'followers' ? '#fff' : 'var(--foreground)',
                   opacity: activeTab === 'followers' ? 1 : 0.6,
                 }}
               >
                 <div className="flex items-center justify-center gap-2">
                   <Users className="w-4 h-4" />
                   <span>Followers</span>
-                  <span className="px-2 py-0.5 rounded-full text-xs" style={{ 
-                    background: activeTab === 'followers' ? 'rgba(255,255,255,0.2)' : 'var(--background-secondary)'
-                  }}>
+                  <span
+                    className="px-2 py-0.5 rounded-full text-xs"
+                    style={{
+                      background:
+                        activeTab === 'followers'
+                          ? 'rgba(255,255,255,0.2)'
+                          : 'var(--background-secondary)',
+                    }}
+                  >
                     {followersData?.total || 0}
                   </span>
                 </div>
               </button>
-              
+
               <button
                 onClick={() => setActiveTab('following')}
                 className="flex-1 px-4 py-2.5 rounded-xl font-medium transition-all"
                 style={{
-                  background: activeTab === 'following' ? accentColor : 'transparent',
-                  color: activeTab === 'following' ? '#fff' : 'var(--foreground)',
+                  background:
+                    activeTab === 'following' ? accentColor : 'transparent',
+                  color:
+                    activeTab === 'following' ? '#fff' : 'var(--foreground)',
                   opacity: activeTab === 'following' ? 1 : 0.6,
                 }}
               >
                 <div className="flex items-center justify-center gap-2">
                   <Eye className="w-4 h-4" />
                   <span>Following</span>
-                  <span className="px-2 py-0.5 rounded-full text-xs" style={{ 
-                    background: activeTab === 'following' ? 'rgba(255,255,255,0.2)' : 'var(--background-secondary)'
-                  }}>
+                  <span
+                    className="px-2 py-0.5 rounded-full text-xs"
+                    style={{
+                      background:
+                        activeTab === 'following'
+                          ? 'rgba(255,255,255,0.2)'
+                          : 'var(--background-secondary)',
+                    }}
+                  >
                     {followingData?.total || 0}
                   </span>
                 </div>
@@ -235,7 +288,13 @@ export function FollowModal({
           </div>
 
           {/* Search & Actions */}
-          <div className="p-4 border-b" style={{ borderColor: 'var(--border)', background: 'var(--background-secondary)' }}>
+          <div
+            className="p-4 border-b"
+            style={{
+              borderColor: 'var(--border)',
+              background: 'var(--background-secondary)',
+            }}
+          >
             <div className="flex gap-2">
               <div className="flex-1 relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 opacity-40" />
@@ -245,15 +304,17 @@ export function FollowModal({
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full pl-10 pr-4 py-2.5 rounded-xl border transition-all focus:outline-none focus:ring-2"
-                  style={{
-                    background: 'var(--card)',
-                    borderColor: 'var(--border)',
-                    color: 'var(--foreground)',
-                    '--tw-ring-color': `${accentColor}40`
-                  } as React.CSSProperties}
+                  style={
+                    {
+                      background: 'var(--card)',
+                      borderColor: 'var(--border)',
+                      color: 'var(--foreground)',
+                      '--tw-ring-color': `${accentColor}40`,
+                    } as React.CSSProperties
+                  }
                 />
               </div>
-              
+
               <button
                 onClick={handleRefresh}
                 className="p-2.5 rounded-xl border transition-all hover:bg-white/5"
@@ -266,21 +327,28 @@ export function FollowModal({
 
             {searchQuery && (
               <p className="text-xs opacity-60 mt-2">
-                {filteredUsers.length} result{filteredUsers.length !== 1 ? 's' : ''} found
+                {filteredUsers.length} result
+                {filteredUsers.length !== 1 ? 's' : ''} found
               </p>
             )}
           </div>
 
           {/* Content */}
-          <div className="overflow-y-auto" style={{ maxHeight: 'calc(85vh - 280px)' }}>
+          <div
+            className="overflow-y-auto"
+            style={{ maxHeight: 'calc(85vh - 280px)' }}
+          >
             {isLoading ? (
               <div className="flex flex-col items-center justify-center py-16">
-                <Loader2 className="w-8 h-8 animate-spin mb-3" style={{ color: accentColor }} />
+                <Loader2
+                  className="w-8 h-8 animate-spin mb-3"
+                  style={{ color: accentColor }}
+                />
                 <p className="text-sm opacity-60">Loading...</p>
               </div>
             ) : filteredUsers.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16 px-6">
-                <div 
+                <div
                   className="p-4 rounded-full mb-4"
                   style={{ background: `${accentColor}15` }}
                 >
@@ -290,12 +358,11 @@ export function FollowModal({
                   {searchQuery ? 'No results found' : `No ${activeTab} yet`}
                 </h3>
                 <p className="text-sm opacity-60 text-center max-w-sm">
-                  {searchQuery 
+                  {searchQuery
                     ? `No users match "${searchQuery}"`
-                    : activeTab === 'followers' 
+                    : activeTab === 'followers'
                       ? 'This user has no followers yet'
-                      : 'This user is not following anyone yet'
-                  }
+                      : 'This user is not following anyone yet'}
                 </p>
               </div>
             ) : (
@@ -304,7 +371,7 @@ export function FollowModal({
                   {filteredUsers.map((item, index) => {
                     const user = item.user
                     const profile = item.profile
-                    
+
                     if (!user) return null
 
                     const isCurrentUser = currentUserId === user.id
@@ -325,23 +392,29 @@ export function FollowModal({
                       >
                         <div className="flex items-center gap-4">
                           {/* Avatar */}
-                          <Link to="/$username" params={{ username: user.username }} className="shrink-0">
+                          <Link
+                            to="/$username"
+                            params={{ username: user.username }}
+                            className="shrink-0"
+                          >
                             <motion.div whileHover={{ scale: 1.05 }}>
-                              <div 
+                              <div
                                 className="w-14 h-14 rounded-full flex items-center justify-center overflow-hidden ring-2 ring-offset-2 ring-blue-500/30"
-                                style={{ 
+                                style={{
                                   background: `linear-gradient(135deg, ${accentColor}, #8b5cf6)`,
                                 }}
                               >
                                 {profile?.avatar ? (
-                                  <img 
-                                    src={profile.avatar} 
+                                  <img
+                                    src={profile.avatar}
                                     alt={user.name || user.username}
                                     className="w-full h-full object-cover"
                                   />
                                 ) : (
                                   <span className="text-white font-bold text-xl">
-                                    {(user.name || user.username).charAt(0).toUpperCase()}
+                                    {(user.name || user.username)
+                                      .charAt(0)
+                                      .toUpperCase()}
                                   </span>
                                 )}
                               </div>
@@ -349,22 +422,37 @@ export function FollowModal({
                           </Link>
 
                           {/* User Info */}
-                          <Link to="/$username" params={{ username: user.username }} className="flex-1 min-w-0">
+                          <Link
+                            to="/$username"
+                            params={{ username: user.username }}
+                            className="flex-1 min-w-0"
+                          >
                             <div className="flex items-center gap-2 mb-1">
-                              <h3 className="font-semibold truncate" style={{ color: 'var(--foreground)' }}>
+                              <h3
+                                className="font-semibold truncate"
+                                style={{ color: 'var(--foreground)' }}
+                              >
                                 {user.name || user.username}
                               </h3>
-                              
+
                               {user.role === 'owner' && (
-                                <Crown className="w-4 h-4 shrink-0" style={{ color: '#fbbf24' }} />
+                                <Crown
+                                  className="w-4 h-4 shrink-0"
+                                  style={{ color: '#fbbf24' }}
+                                />
                               )}
                               {user.role === 'admin' && (
-                                <BadgeCheck className="w-4 h-4 shrink-0" style={{ color: '#3b82f6' }} />
+                                <BadgeCheck
+                                  className="w-4 h-4 shrink-0"
+                                  style={{ color: '#3b82f6' }}
+                                />
                               )}
                             </div>
-                            
-                            <p className="text-sm opacity-60 mb-1">@{user.username}</p>
-                            
+
+                            <p className="text-sm opacity-60 mb-1">
+                              @{user.username}
+                            </p>
+
                             {profile?.bio && (
                               <p className="text-sm opacity-70 line-clamp-1">
                                 {profile.bio}
@@ -377,12 +465,20 @@ export function FollowModal({
                             <motion.button
                               whileHover={{ scale: 1.05 }}
                               whileTap={{ scale: 0.95 }}
-                              onClick={() => handleFollowToggle(user.id, isFollowing)}
+                              onClick={() =>
+                                handleFollowToggle(user.id, isFollowing)
+                              }
                               className="px-4 py-2 rounded-xl font-medium transition-all shrink-0"
                               style={{
-                                background: isFollowing ? 'transparent' : accentColor,
-                                color: isFollowing ? 'var(--foreground)' : '#fff',
-                                border: isFollowing ? '1px solid var(--border)' : 'none',
+                                background: isFollowing
+                                  ? 'transparent'
+                                  : accentColor,
+                                color: isFollowing
+                                  ? 'var(--foreground)'
+                                  : '#fff',
+                                border: isFollowing
+                                  ? '1px solid var(--border)'
+                                  : 'none',
                               }}
                             >
                               <div className="flex items-center gap-2">

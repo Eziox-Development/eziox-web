@@ -45,7 +45,7 @@ export function logSecurityEvent(
     ip?: string
     userAgent?: string
     details?: Record<string, unknown>
-  }
+  },
 ): void {
   const event: SecurityEvent = {
     type,
@@ -67,11 +67,13 @@ export function logSecurityEvent(
   if (process.env.NODE_ENV === 'development') {
     console.log(`[Security] ${type}`, options?.details || '')
   } else {
-    console.log(JSON.stringify({
-      level: 'security',
-      ...event,
-      timestamp: event.timestamp.toISOString(),
-    }))
+    console.log(
+      JSON.stringify({
+        level: 'security',
+        ...event,
+        timestamp: event.timestamp.toISOString(),
+      }),
+    )
   }
 }
 
@@ -79,14 +81,16 @@ export function getRecentSecurityEvents(limit = 100): SecurityEvent[] {
   return securityEvents.slice(-limit)
 }
 
-export function getSecurityEventsByUser(userId: string, limit = 50): SecurityEvent[] {
-  return securityEvents
-    .filter(e => e.userId === userId)
-    .slice(-limit)
+export function getSecurityEventsByUser(
+  userId: string,
+  limit = 50,
+): SecurityEvent[] {
+  return securityEvents.filter((e) => e.userId === userId).slice(-limit)
 }
 
-export function getSecurityEventsByType(type: SecurityEventType, limit = 100): SecurityEvent[] {
-  return securityEvents
-    .filter(e => e.type === type)
-    .slice(-limit)
+export function getSecurityEventsByType(
+  type: SecurityEventType,
+  limit = 100,
+): SecurityEvent[] {
+  return securityEvents.filter((e) => e.type === type).slice(-limit)
 }

@@ -54,7 +54,11 @@ const config = defineConfig({
               return 'react-dom'
             }
             // React core only (not react-dom, not other react-* packages)
-            if (id.includes('/react/') || id.includes('react/index') || id.includes('react/jsx')) {
+            if (
+              id.includes('/react/') ||
+              id.includes('react/index') ||
+              id.includes('react/jsx')
+            ) {
               return 'react-core'
             }
             // Charts - large, lazy load
@@ -62,11 +66,17 @@ const config = defineConfig({
               return 'charts-vendor'
             }
             // TanStack Router
-            if (id.includes('@tanstack/react-router') || id.includes('@tanstack/router')) {
+            if (
+              id.includes('@tanstack/react-router') ||
+              id.includes('@tanstack/router')
+            ) {
               return 'tanstack-router'
             }
             // TanStack Query
-            if (id.includes('@tanstack/react-query') || id.includes('@tanstack/query')) {
+            if (
+              id.includes('@tanstack/react-query') ||
+              id.includes('@tanstack/query')
+            ) {
               return 'tanstack-query'
             }
             // Other TanStack
@@ -82,7 +92,11 @@ const config = defineConfig({
               return 'radix-vendor'
             }
             // Form/validation
-            if (id.includes('zod') || id.includes('react-hook-form') || id.includes('@hookform')) {
+            if (
+              id.includes('zod') ||
+              id.includes('react-hook-form') ||
+              id.includes('@hookform')
+            ) {
               return 'form-vendor'
             }
             // UI utilities

@@ -9,6 +9,8 @@ import { motion } from 'motion/react'
 import { useQuery } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
 import { validateReferralCodeFn } from '@/server/functions/referrals'
+import { useTheme } from '@/components/layout/ThemeProvider'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   Gift,
   Sparkles,
@@ -17,23 +19,59 @@ import {
   AlertCircle,
   Crown,
   CheckCircle,
+  Users,
+  Link2,
+  Palette,
+  BarChart3,
+  Zap,
+  Star,
 } from 'lucide-react'
 
 export const Route = createFileRoute('/_public/join/$code')({
+  head: () => ({
+    meta: [
+      { title: 'Join Eziox – Referral Invite' },
+      {
+        name: 'description',
+        content:
+          "You've been invited to join Eziox! Create your personal bio link page for free.",
+      },
+    ],
+  }),
   component: JoinPage,
 })
 
 function JoinPage() {
   const { code } = Route.useParams()
+  const { theme } = useTheme()
   const [storedCode, setStoredCode] = useState(false)
 
   const validateCode = useServerFn(validateReferralCodeFn)
 
-  const { data: validation, isLoading, error } = useQuery({
+  const {
+    data: validation,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ['validateReferral', code],
     queryFn: () => validateCode({ data: { code } }),
     retry: false,
   })
+
+  const cardRadius =
+    theme.effects.borderRadius === 'pill'
+      ? '24px'
+      : theme.effects.borderRadius === 'sharp'
+        ? '8px'
+        : '16px'
+  const glowOpacity =
+    theme.effects.glowIntensity === 'strong'
+      ? 0.5
+      : theme.effects.glowIntensity === 'medium'
+        ? 0.35
+        : theme.effects.glowIntensity === 'subtle'
+          ? 0.2
+          : 0
 
   // Mark code as ready for redirect
   useEffect(() => {
@@ -42,56 +80,139 @@ function JoinPage() {
     }
   }, [validation?.valid, code])
 
+  // Loading State
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--background)' }}>
+      <div
+        className="min-h-screen flex items-center justify-center"
+        style={{ background: theme.colors.background }}
+      >
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           className="text-center"
         >
-          <Loader2 className="w-10 h-10 animate-spin mx-auto mb-4" style={{ color: 'var(--primary)' }} />
-          <p className="text-sm" style={{ color: 'var(--foreground-muted)' }}>Validating referral code...</p>
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+            className="w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center"
+            style={{
+              background: `linear-gradient(135deg, ${theme.colors.primary}20, ${theme.colors.accent}15)`,
+              border: `1px solid ${theme.colors.primary}30`,
+            }}
+          >
+            <Loader2
+              className="w-8 h-8"
+              style={{ color: theme.colors.primary }}
+            />
+          </motion.div>
+          <p
+            className="text-lg font-medium"
+            style={{ color: theme.colors.foreground }}
+          >
+            Validating invite...
+          </p>
+          <p
+            className="text-sm mt-1"
+            style={{ color: theme.colors.foregroundMuted }}
+          >
+            Code: {code.toUpperCase()}
+          </p>
         </motion.div>
       </div>
     )
   }
 
+  // Error State
   if (error || !validation?.valid) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4" style={{ background: 'var(--background)' }}>
+      <div
+        className="min-h-screen flex items-center justify-center p-4"
+        style={{ background: theme.colors.background }}
+      >
+        {/* Background */}
+        <div className="fixed inset-0 pointer-events-none overflow-hidden">
+          <div
+            className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-[200px]"
+            style={{ background: '#ef4444', opacity: glowOpacity * 0.2 }}
+          />
+        </div>
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center max-w-md"
+          className="relative text-center max-w-md"
         >
-          <div
-            className="w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center"
-            style={{ background: 'rgba(239, 68, 68, 0.1)' }}
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: 'spring', stiffness: 200, damping: 15 }}
+            className="w-24 h-24 rounded-full mx-auto mb-6 flex items-center justify-center"
+            style={{
+              background: 'rgba(239, 68, 68, 0.15)',
+              border: '2px solid rgba(239, 68, 68, 0.3)',
+            }}
           >
-            <AlertCircle className="w-10 h-10 text-red-500" />
-          </div>
-          <h1 className="text-2xl font-bold mb-3" style={{ color: 'var(--foreground)' }}>
-            Invalid Referral Code
+            <AlertCircle className="w-12 h-12 text-red-500" />
+          </motion.div>
+
+          <h1
+            className="text-3xl font-bold mb-3"
+            style={{
+              color: theme.colors.foreground,
+              fontFamily: theme.typography.displayFont,
+            }}
+          >
+            Invalid Invite Code
           </h1>
-          <p className="mb-6" style={{ color: 'var(--foreground-muted)' }}>
-            The referral code "{code}" is not valid or has expired.
+          <p
+            className="text-lg mb-2"
+            style={{ color: theme.colors.foregroundMuted }}
+          >
+            The code{' '}
+            <span
+              className="font-mono font-bold"
+              style={{ color: theme.colors.foreground }}
+            >
+              "{code.toUpperCase()}"
+            </span>{' '}
+            is not valid.
           </p>
+          <p className="mb-8" style={{ color: theme.colors.foregroundMuted }}>
+            It may have expired or was entered incorrectly.
+          </p>
+
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link
-              to="/sign-up"
-              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-medium transition-all hover:scale-105"
-              style={{ background: 'var(--primary)', color: 'white' }}
-            >
-              Sign Up Anyway
-              <ArrowRight size={18} />
+            <Link to="/sign-up">
+              <motion.button
+                whileHover={{ scale: 1.03, y: -2 }}
+                whileTap={{ scale: 0.98 }}
+                className="flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-white w-full"
+                style={{
+                  background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
+                  boxShadow:
+                    glowOpacity > 0
+                      ? `0 10px 30px ${theme.colors.primary}40`
+                      : undefined,
+                }}
+              >
+                Sign Up Anyway
+                <ArrowRight size={18} />
+              </motion.button>
             </Link>
-            <Link
-              to="/"
-              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-medium transition-all"
-              style={{ background: 'var(--background-secondary)', color: 'var(--foreground)' }}
-            >
-              Go Home
+            <Link to="/">
+              <motion.button
+                whileHover={{ scale: 1.03, y: -2 }}
+                whileTap={{ scale: 0.98 }}
+                className="flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold w-full"
+                style={{
+                  background: theme.colors.card,
+                  border: `1px solid ${theme.colors.border}`,
+                  color: theme.colors.foreground,
+                }}
+              >
+                Go Home
+              </motion.button>
             </Link>
           </div>
         </motion.div>
@@ -101,150 +222,359 @@ function JoinPage() {
 
   const referrer = validation.referrer
 
+  // Success State
   return (
-    <div className="min-h-screen flex items-center justify-center p-4" style={{ background: 'var(--background)' }}>
-      {/* Background Effects */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+    <div
+      className="min-h-screen flex items-center justify-center p-4 py-20"
+      style={{
+        background: theme.colors.background,
+        fontFamily: theme.typography.bodyFont,
+      }}
+    >
+      {/* Animated Background */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
         <motion.div
-          className="absolute -top-40 -right-40 w-80 h-80 rounded-full blur-3xl opacity-20"
-          style={{ background: 'var(--primary)' }}
-          animate={{ scale: [1, 1.2, 1], x: [0, 20, 0] }}
-          transition={{ duration: 10, repeat: Infinity }}
+          className="absolute -top-40 -right-40 w-[600px] h-[600px] rounded-full blur-[200px]"
+          style={{
+            background: theme.colors.primary,
+            opacity: glowOpacity * 0.3,
+          }}
+          animate={{ scale: [1, 1.2, 1], x: [0, 50, 0] }}
+          transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut' }}
         />
         <motion.div
-          className="absolute -bottom-40 -left-40 w-96 h-96 rounded-full blur-3xl opacity-15"
-          style={{ background: 'var(--accent)' }}
-          animate={{ scale: [1.2, 1, 1.2], y: [0, -20, 0] }}
-          transition={{ duration: 12, repeat: Infinity }}
+          className="absolute -bottom-40 -left-40 w-[500px] h-[500px] rounded-full blur-[180px]"
+          style={{
+            background: theme.colors.accent,
+            opacity: glowOpacity * 0.25,
+          }}
+          animate={{ scale: [1.2, 1, 1.2], y: [0, -40, 0] }}
+          transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
         />
+
+        {/* Floating particles */}
+        {[...Array(5)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-2 h-2 rounded-full"
+            style={{
+              background:
+                i % 2 === 0 ? theme.colors.primary : theme.colors.accent,
+              left: `${20 + i * 15}%`,
+              top: `${30 + (i % 3) * 20}%`,
+              opacity: 0.4,
+            }}
+            animate={{
+              y: [0, -30, 0],
+              scale: [1, 1.5, 1],
+              opacity: [0.4, 0.8, 0.4],
+            }}
+            transition={{ duration: 4 + i, repeat: Infinity, delay: i * 0.3 }}
+          />
+        ))}
       </div>
 
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative z-10 text-center max-w-lg w-full"
+        transition={{ duration: 0.6 }}
+        className="relative z-10 text-center max-w-xl w-full"
       >
+        {/* Invite Badge */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.1 }}
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6"
+          style={{
+            background: `linear-gradient(135deg, ${theme.colors.primary}20, ${theme.colors.accent}15)`,
+            border: `1px solid ${theme.colors.primary}30`,
+          }}
+        >
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
+          >
+            <Sparkles size={16} style={{ color: theme.colors.primary }} />
+          </motion.div>
+          <span
+            className="text-sm font-medium"
+            style={{ color: theme.colors.foreground }}
+          >
+            Exclusive Invite
+          </span>
+          <Star size={14} style={{ color: theme.colors.accent }} />
+        </motion.div>
+
         {/* Gift Icon */}
         <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ type: 'spring', stiffness: 200, damping: 15, delay: 0.1 }}
-          className="w-24 h-24 rounded-full mx-auto mb-6 flex items-center justify-center"
-          style={{ background: 'linear-gradient(135deg, var(--primary), var(--accent))' }}
+          initial={{ scale: 0, rotate: -180 }}
+          animate={{ scale: 1, rotate: 0 }}
+          transition={{
+            type: 'spring',
+            stiffness: 200,
+            damping: 15,
+            delay: 0.2,
+          }}
+          className="relative w-28 h-28 mx-auto mb-8"
         >
-          <Gift className="w-12 h-12 text-white" />
+          <div
+            className="absolute inset-0 rounded-full blur-xl"
+            style={{
+              background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
+              opacity: 0.4,
+            }}
+          />
+          <div
+            className="relative w-full h-full rounded-full flex items-center justify-center"
+            style={{
+              background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
+              boxShadow: `0 20px 50px ${theme.colors.primary}50`,
+            }}
+          >
+            <Gift className="w-14 h-14 text-white" />
+          </div>
+          <motion.div
+            className="absolute -top-2 -right-2"
+            animate={{ rotate: [0, 10, -10, 0], scale: [1, 1.1, 1] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          >
+            <div
+              className="w-8 h-8 rounded-full flex items-center justify-center"
+              style={{
+                background: '#22c55e',
+                boxShadow: '0 4px 15px rgba(34, 197, 94, 0.5)',
+              }}
+            >
+              <CheckCircle size={18} className="text-white" />
+            </div>
+          </motion.div>
         </motion.div>
 
         {/* Title */}
         <motion.h1
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="text-3xl sm:text-4xl font-bold mb-4"
-          style={{ color: 'var(--foreground)' }}
+          transition={{ delay: 0.3 }}
+          className="text-4xl sm:text-5xl font-bold mb-4"
+          style={{
+            color: theme.colors.foreground,
+            fontFamily: theme.typography.displayFont,
+          }}
         >
-          You've Been Invited!
+          You're{' '}
+          <span
+            className="bg-clip-text text-transparent"
+            style={{
+              backgroundImage: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
+            }}
+          >
+            Invited!
+          </span>
         </motion.h1>
 
         {/* Referrer Card */}
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="p-6 rounded-2xl mb-6"
-          style={{ background: 'var(--card)', border: '1px solid var(--border)' }}
+          transition={{ delay: 0.4 }}
+          className="relative p-6 mb-8 overflow-hidden"
+          style={{
+            background:
+              theme.effects.cardStyle === 'glass'
+                ? `${theme.colors.card}90`
+                : theme.colors.card,
+            border: `1px solid ${theme.colors.border}`,
+            borderRadius: cardRadius,
+            backdropFilter:
+              theme.effects.cardStyle === 'glass' ? 'blur(20px)' : undefined,
+          }}
         >
-          <div className="flex items-center justify-center gap-4 mb-4">
+          {/* Glow */}
+          <div
+            className="absolute -top-10 -right-10 w-32 h-32 rounded-full blur-2xl"
+            style={{
+              background: theme.colors.primary,
+              opacity: glowOpacity * 0.15,
+            }}
+          />
+
+          <div className="relative flex items-center justify-center gap-5">
             {/* Avatar */}
-            <div 
-              className="w-16 h-16 rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center overflow-hidden"
-            >
-              {referrer?.avatar ? (
-                <img 
-                  src={referrer.avatar} 
-                  alt={referrer.name || referrer.username}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <span className="text-white font-bold text-2xl">
-                  {(referrer?.name || referrer?.username || 'U').charAt(0).toUpperCase()}
-                </span>
+            <div className="relative">
+              <div
+                className="absolute inset-0 rounded-full blur-lg"
+                style={{
+                  background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
+                  opacity: 0.4,
+                }}
+              />
+              <Avatar
+                className="w-20 h-20 ring-4 relative"
+                style={
+                  {
+                    '--tw-ring-color': theme.colors.primary,
+                  } as React.CSSProperties
+                }
+              >
+                <AvatarImage src={referrer?.avatar || undefined} />
+                <AvatarFallback
+                  className="text-2xl font-bold"
+                  style={{
+                    background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
+                    color: 'white',
+                  }}
+                >
+                  {(referrer?.name || referrer?.username || 'U')
+                    .charAt(0)
+                    .toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              {referrer?.isOwner && (
+                <div
+                  className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full flex items-center justify-center"
+                  style={{
+                    background: 'linear-gradient(135deg, #fbbf24, #f59e0b)',
+                    boxShadow: '0 2px 10px rgba(251, 191, 36, 0.5)',
+                  }}
+                >
+                  <Crown size={14} className="text-white" />
+                </div>
               )}
             </div>
+
             <div className="text-left">
-              <div className="flex items-center gap-2">
-                <span className="font-bold text-lg" style={{ color: 'var(--foreground)' }}>
+              <div className="flex items-center gap-2 mb-1">
+                <span
+                  className="font-bold text-xl"
+                  style={{ color: theme.colors.foreground }}
+                >
                   {referrer?.name || referrer?.username}
                 </span>
                 {referrer?.isOwner && (
-                  <Crown size={18} className="text-yellow-500" />
+                  <span
+                    className="px-2 py-0.5 rounded-full text-xs font-semibold"
+                    style={{
+                      background: 'linear-gradient(135deg, #fbbf24, #f59e0b)',
+                      color: '#000',
+                    }}
+                  >
+                    Owner
+                  </span>
                 )}
               </div>
-              <span className="text-sm" style={{ color: 'var(--foreground-muted)' }}>
+              <p
+                className="text-sm"
+                style={{ color: theme.colors.foregroundMuted }}
+              >
                 @{referrer?.username}
-              </span>
+              </p>
+              <p
+                className="text-sm mt-2"
+                style={{ color: theme.colors.foregroundMuted }}
+              >
+                invited you to join{' '}
+                <span
+                  className="font-semibold"
+                  style={{ color: theme.colors.primary }}
+                >
+                  Eziox
+                </span>
+              </p>
             </div>
           </div>
-          <p style={{ color: 'var(--foreground-muted)' }}>
-            invited you to join <span className="font-semibold" style={{ color: 'var(--primary)' }}>Eziox</span>
-          </p>
         </motion.div>
 
         {/* Benefits */}
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
+          transition={{ delay: 0.5 }}
           className="mb-8"
         >
-          <div className="flex flex-col gap-3">
-            <div className="flex items-center gap-3 p-3 rounded-xl" style={{ background: 'var(--background-secondary)' }}>
-              <CheckCircle size={20} style={{ color: '#22c55e' }} />
-              <span style={{ color: 'var(--foreground)' }}>Create your personal bio page</span>
-            </div>
-            <div className="flex items-center gap-3 p-3 rounded-xl" style={{ background: 'var(--background-secondary)' }}>
-              <CheckCircle size={20} style={{ color: '#22c55e' }} />
-              <span style={{ color: 'var(--foreground)' }}>Share all your links in one place</span>
-            </div>
-            <div className="flex items-center gap-3 p-3 rounded-xl" style={{ background: 'var(--background-secondary)' }}>
-              <CheckCircle size={20} style={{ color: '#22c55e' }} />
-              <span style={{ color: 'var(--foreground)' }}>Track views and analytics</span>
-            </div>
+          <p
+            className="text-sm font-medium mb-4"
+            style={{ color: theme.colors.foregroundMuted }}
+          >
+            What you'll get:
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {[
+              { icon: Link2, text: 'Unlimited bio links', color: '#6366f1' },
+              { icon: Palette, text: '30+ free themes', color: '#ec4899' },
+              { icon: BarChart3, text: 'Live analytics', color: '#22c55e' },
+              { icon: Zap, text: 'Instant setup', color: '#f59e0b' },
+            ].map((benefit, i) => (
+              <motion.div
+                key={benefit.text}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.6 + i * 0.05 }}
+                className="flex items-center gap-3 p-3"
+                style={{
+                  background: theme.colors.backgroundSecondary,
+                  borderRadius: cardRadius,
+                  border: `1px solid ${theme.colors.border}`,
+                }}
+              >
+                <div
+                  className="w-8 h-8 rounded-lg flex items-center justify-center"
+                  style={{ background: `${benefit.color}20` }}
+                >
+                  <benefit.icon size={16} style={{ color: benefit.color }} />
+                </div>
+                <span
+                  className="text-sm font-medium"
+                  style={{ color: theme.colors.foreground }}
+                >
+                  {benefit.text}
+                </span>
+              </motion.div>
+            ))}
           </div>
         </motion.div>
 
-        {/* Stored Code Indicator */}
+        {/* Referral Code Badge */}
         {storedCode && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="flex items-center justify-center gap-2 mb-4 text-sm"
-            style={{ color: '#22c55e' }}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6"
+            style={{
+              background: 'rgba(34, 197, 94, 0.15)',
+              border: '1px solid rgba(34, 197, 94, 0.3)',
+            }}
           >
-            <Sparkles size={16} />
-            <span>Referral code: {code.toUpperCase()}</span>
+            <CheckCircle size={16} className="text-green-500" />
+            <span className="text-sm font-medium text-green-500">
+              Code applied: {code.toUpperCase()}
+            </span>
           </motion.div>
         )}
 
         {/* CTA Button */}
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
+          transition={{ delay: 0.7 }}
         >
-          <Link
-            to="/sign-up"
-            search={{ referral: code.toUpperCase() }}
-            className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl font-semibold text-lg transition-all hover:scale-105 w-full sm:w-auto"
-            style={{ 
-              background: 'linear-gradient(135deg, var(--primary), var(--accent))',
-              color: 'white',
-              boxShadow: '0 4px 20px rgba(99, 102, 241, 0.4)'
-            }}
-          >
-            <Sparkles size={20} />
-            Join Eziox Now
-            <ArrowRight size={20} />
+          <Link to="/sign-up" search={{ referral: code.toUpperCase() }}>
+            <motion.button
+              whileHover={{ scale: 1.03, y: -3 }}
+              whileTap={{ scale: 0.98 }}
+              className="flex items-center justify-center gap-3 px-10 py-5 rounded-2xl font-bold text-xl text-white w-full sm:w-auto mx-auto"
+              style={{
+                background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
+                boxShadow:
+                  glowOpacity > 0
+                    ? `0 20px 50px ${theme.colors.primary}50`
+                    : `0 10px 30px rgba(0,0,0,0.3)`,
+              }}
+            >
+              <Users size={24} />
+              Join Eziox Now
+              <ArrowRight size={24} />
+            </motion.button>
           </Link>
         </motion.div>
 
@@ -252,12 +582,16 @@ function JoinPage() {
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
-          className="mt-6 text-sm"
-          style={{ color: 'var(--foreground-muted)' }}
+          transition={{ delay: 0.8 }}
+          className="mt-8 text-sm"
+          style={{ color: theme.colors.foregroundMuted }}
         >
           Already have an account?{' '}
-          <Link to="/sign-in" className="font-medium hover:underline" style={{ color: 'var(--primary)' }}>
+          <Link
+            to="/sign-in"
+            className="font-semibold hover:underline"
+            style={{ color: theme.colors.primary }}
+          >
             Sign In
           </Link>
         </motion.p>

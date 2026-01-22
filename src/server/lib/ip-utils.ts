@@ -1,7 +1,7 @@
 /**
  * IP Address Utilities
  * GDPR-compliant IP handling with anonymization options
- * 
+ *
  * GDPR Compliance Notes:
  * - IP addresses are considered personal data under GDPR
  * - We anonymize IPs by zeroing the last octet (IPv4) or last 80 bits (IPv6)
@@ -41,7 +41,7 @@ export function anonymizeIPv6(ip: string): string {
   // Expand abbreviated IPv6 and zero last 5 groups
   const parts = ip.split(':')
   if (parts.length < 3) return ip
-  
+
   // Keep first 3 groups, zero the rest
   const anonymized = parts.slice(0, 3).join(':') + '::'
   return anonymized
@@ -52,25 +52,25 @@ export function anonymizeIPv6(ip: string): string {
  */
 export function anonymizeIP(ip: string | null | undefined): string {
   if (!ip || ip === 'unknown') return 'unknown'
-  
+
   // Clean the IP
   const cleanIP = ip.trim()
-  
+
   // Check for localhost/loopback
   if (cleanIP === '127.0.0.1' || cleanIP === '::1' || cleanIP === 'localhost') {
     return 'localhost'
   }
-  
+
   // IPv6
   if (cleanIP.includes(':')) {
     return anonymizeIPv6(cleanIP)
   }
-  
+
   // IPv4
   if (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(cleanIP)) {
     return anonymizeIPv4(cleanIP)
   }
-  
+
   return 'unknown'
 }
 
@@ -81,12 +81,12 @@ export function anonymizeIP(ip: string | null | undefined): string {
  */
 export function hashIP(ip: string | null | undefined, salt?: string): string {
   if (!ip || ip === 'unknown') return 'unknown'
-  
+
   const effectiveSalt = salt || process.env.ENCRYPTION_KEY || 'eziox-ip-salt'
   const hash = createHash('sha256')
     .update(ip + effectiveSalt)
     .digest('hex')
-  
+
   // Return first 16 chars for a shorter but still secure hash
   return hash.substring(0, 16)
 }
@@ -106,24 +106,24 @@ export function extractClientIP(headers: {
   if (headers['cf-connecting-ip']) {
     return headers['cf-connecting-ip']
   }
-  
+
   // Vercel
   if (headers['x-vercel-forwarded-for']) {
     const ips = headers['x-vercel-forwarded-for'].split(',')
     return ips[0]?.trim() || 'unknown'
   }
-  
+
   // Standard proxy header
   if (headers['x-forwarded-for']) {
     const ips = headers['x-forwarded-for'].split(',')
     return ips[0]?.trim() || 'unknown'
   }
-  
+
   // nginx real IP
   if (headers['x-real-ip']) {
     return headers['x-real-ip']
   }
-  
+
   return 'unknown'
 }
 
@@ -132,29 +132,29 @@ export function extractClientIP(headers: {
  */
 export function isPrivateIP(ip: string): boolean {
   if (!ip || ip === 'unknown') return false
-  
+
   // IPv4 private ranges
   const privateRanges = [
-    /^10\./,                    // 10.0.0.0/8
+    /^10\./, // 10.0.0.0/8
     /^172\.(1[6-9]|2[0-9]|3[0-1])\./, // 172.16.0.0/12
-    /^192\.168\./,              // 192.168.0.0/16
-    /^127\./,                   // 127.0.0.0/8 (loopback)
-    /^169\.254\./,              // 169.254.0.0/16 (link-local)
+    /^192\.168\./, // 192.168.0.0/16
+    /^127\./, // 127.0.0.0/8 (loopback)
+    /^169\.254\./, // 169.254.0.0/16 (link-local)
   ]
-  
+
   // IPv6 private/special ranges
   const ipv6Private = [
-    /^::1$/,                    // Loopback
-    /^fe80:/i,                  // Link-local
-    /^fc00:/i,                  // Unique local
-    /^fd00:/i,                  // Unique local
+    /^::1$/, // Loopback
+    /^fe80:/i, // Link-local
+    /^fc00:/i, // Unique local
+    /^fd00:/i, // Unique local
   ]
-  
+
   if (ip.includes(':')) {
-    return ipv6Private.some(pattern => pattern.test(ip))
+    return ipv6Private.some((pattern) => pattern.test(ip))
   }
-  
-  return privateRanges.some(pattern => pattern.test(ip))
+
+  return privateRanges.some((pattern) => pattern.test(ip))
 }
 
 /**
@@ -163,20 +163,21 @@ export function isPrivateIP(ip: string): boolean {
  */
 export function maskIP(ip: string | null | undefined): string {
   if (!ip || ip === 'unknown') return 'Unknown'
-  if (ip === 'localhost' || ip === '127.0.0.1' || ip === '::1') return 'Localhost'
-  
+  if (ip === 'localhost' || ip === '127.0.0.1' || ip === '::1')
+    return 'Localhost'
+
   // IPv4: show first two octets
   if (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(ip)) {
     const parts = ip.split('.')
     return `${parts[0]}.${parts[1]}.x.x`
   }
-  
+
   // IPv6: show first group
   if (ip.includes(':')) {
     const parts = ip.split(':')
     return `${parts[0]}:****`
   }
-  
+
   return 'Unknown'
 }
 

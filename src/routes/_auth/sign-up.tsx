@@ -57,24 +57,28 @@ export const Route = createFileRoute('/_auth/sign-up')({
   },
 })
 
-const signUpSchema = z.object({
-  name: z.string().min(2, 'Min 2 characters').optional(),
-  username: z.string()
-    .min(3, 'Min 3 characters')
-    .max(30, 'Max 30 characters')
-    .regex(/^[a-zA-Z0-9_-]+$/, 'Letters, numbers, _ and - only'),
-  email: z.email({ error: 'Invalid email' }),
-  password: z.string()
-    .min(8, 'Min 8 characters')
-    .regex(/[A-Z]/, 'Need uppercase')
-    .regex(/[a-z]/, 'Need lowercase')
-    .regex(/[0-9]/, 'Need number'),
-  confirmPassword: z.string().min(1, 'Confirm password'),
-  acceptTerms: z.boolean().refine(val => val, { message: 'Required' }),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: 'Passwords don\'t match',
-  path: ['confirmPassword'],
-})
+const signUpSchema = z
+  .object({
+    name: z.string().min(2, 'Min 2 characters').optional(),
+    username: z
+      .string()
+      .min(3, 'Min 3 characters')
+      .max(30, 'Max 30 characters')
+      .regex(/^[a-zA-Z0-9_-]+$/, 'Letters, numbers, _ and - only'),
+    email: z.email({ error: 'Invalid email' }),
+    password: z
+      .string()
+      .min(8, 'Min 8 characters')
+      .regex(/[A-Z]/, 'Need uppercase')
+      .regex(/[a-z]/, 'Need lowercase')
+      .regex(/[0-9]/, 'Need number'),
+    confirmPassword: z.string().min(1, 'Confirm password'),
+    acceptTerms: z.boolean().refine((val) => val, { message: 'Required' }),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ['confirmPassword'],
+  })
 
 type SignUpFormData = z.infer<typeof signUpSchema>
 
@@ -91,7 +95,7 @@ function SignUpPage() {
   const navigate = useNavigate()
   const router = useRouter()
   const signUp = useServerFn(signUpFn)
-  
+
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
   const [turnstileToken, setTurnstileToken] = useState<string>('')
@@ -144,7 +148,9 @@ function SignUpPage() {
       if (!turnstileToken) {
         throw { message: 'Please complete the security check', status: 400 }
       }
-      return await signUp({ data: { ...data, referralCode: search.referral, turnstileToken } })
+      return await signUp({
+        data: { ...data, referralCode: search.referral, turnstileToken },
+      })
     },
     onSuccess: async () => {
       await router.invalidate()
@@ -156,7 +162,9 @@ function SignUpPage() {
         await navigate({ to: search.redirect || '/' })
         return
       }
-      form.setError('root', { message: error.message || 'Failed to create account' })
+      form.setError('root', {
+        message: error.message || 'Failed to create account',
+      })
     },
   })
 
@@ -165,8 +173,14 @@ function SignUpPage() {
   return (
     <div className="min-h-[calc(100vh-80px)] flex flex-col lg:flex-row">
       <div className="hidden lg:flex lg:w-1/2 xl:w-[55%] relative overflow-hidden">
-        <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(139, 92, 246, 0.08))' }} />
-        
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              'linear-gradient(135deg, rgba(99, 102, 241, 0.12), rgba(139, 92, 246, 0.08))',
+          }}
+        />
+
         <motion.div
           className="absolute top-1/3 left-1/4 w-72 h-72 rounded-full blur-3xl"
           style={{ background: 'rgba(99, 102, 241, 0.2)' }}
@@ -181,24 +195,53 @@ function SignUpPage() {
         />
 
         <div className="relative z-10 flex flex-col justify-center px-12 xl:px-20 py-12 w-full">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-12">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-12"
+          >
             <Link to="/" className="inline-flex items-center gap-4 group">
               <div className="w-14 h-14 rounded-2xl overflow-hidden ring-2 ring-white/10 group-hover:ring-indigo-500/50 transition-all">
-                <img src="/icon.png" alt="Eziox" className="w-full h-full object-cover" />
+                <img
+                  src="/icon.png"
+                  alt="Eziox"
+                  className="w-full h-full object-cover"
+                />
               </div>
-              <span className="text-3xl font-bold" style={{ color: 'var(--foreground)' }}>Eziox</span>
+              <span
+                className="text-3xl font-bold"
+                style={{ color: 'var(--foreground)' }}
+              >
+                Eziox
+              </span>
             </Link>
           </motion.div>
 
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="mb-12">
-            <h1 className="text-5xl xl:text-6xl font-bold leading-tight mb-6" style={{ color: 'var(--foreground)' }}>
-              Create your<br />
-              <span style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="mb-12"
+          >
+            <h1
+              className="text-5xl xl:text-6xl font-bold leading-tight mb-6"
+              style={{ color: 'var(--foreground)' }}
+            >
+              Create your
+              <br />
+              <span
+                style={{
+                  background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                }}
+              >
                 bio page
               </span>
             </h1>
             <p className="text-xl" style={{ color: 'var(--foreground-muted)' }}>
-              Join {stats.totalUsers.toLocaleString()}+ creators sharing their world.
+              Join {stats.totalUsers.toLocaleString()}+ creators sharing their
+              world.
             </p>
           </motion.div>
 
@@ -210,11 +253,27 @@ function SignUpPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 + i * 0.1 }}
                 className="p-5 rounded-2xl backdrop-blur-xl"
-                style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.08)' }}
+                style={{
+                  background: 'rgba(255, 255, 255, 0.03)',
+                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                }}
               >
-                <feature.icon className="w-6 h-6 mb-3" style={{ color: 'var(--primary)' }} />
-                <div className="font-semibold mb-1" style={{ color: 'var(--foreground)' }}>{feature.title}</div>
-                <div className="text-sm" style={{ color: 'var(--foreground-muted)' }}>{feature.desc}</div>
+                <feature.icon
+                  className="w-6 h-6 mb-3"
+                  style={{ color: 'var(--primary)' }}
+                />
+                <div
+                  className="font-semibold mb-1"
+                  style={{ color: 'var(--foreground)' }}
+                >
+                  {feature.title}
+                </div>
+                <div
+                  className="text-sm"
+                  style={{ color: 'var(--foreground-muted)' }}
+                >
+                  {feature.desc}
+                </div>
               </motion.div>
             ))}
           </div>
@@ -230,21 +289,53 @@ function SignUpPage() {
           <div className="lg:hidden mb-8">
             <Link to="/" className="inline-flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl overflow-hidden">
-                <img src="/icon.png" alt="Eziox" className="w-full h-full object-cover" />
+                <img
+                  src="/icon.png"
+                  alt="Eziox"
+                  className="w-full h-full object-cover"
+                />
               </div>
-              <span className="text-xl font-bold" style={{ color: 'var(--foreground)' }}>Eziox</span>
+              <span
+                className="text-xl font-bold"
+                style={{ color: 'var(--foreground)' }}
+              >
+                Eziox
+              </span>
             </Link>
           </div>
 
           <div className="mb-8">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-4" style={{ background: 'rgba(99, 102, 241, 0.1)', border: '1px solid rgba(99, 102, 241, 0.2)' }}>
+            <div
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-4"
+              style={{
+                background: 'rgba(99, 102, 241, 0.1)',
+                border: '1px solid rgba(99, 102, 241, 0.2)',
+              }}
+            >
               <Sparkles size={14} style={{ color: 'var(--primary)' }} />
-              <span className="text-xs font-semibold" style={{ color: 'var(--primary)' }}>Free Forever</span>
+              <span
+                className="text-xs font-semibold"
+                style={{ color: 'var(--primary)' }}
+              >
+                Free Forever
+              </span>
             </div>
-            <h2 className="text-3xl font-bold mb-2" style={{ color: 'var(--foreground)' }}>Create account</h2>
+            <h2
+              className="text-3xl font-bold mb-2"
+              style={{ color: 'var(--foreground)' }}
+            >
+              Create account
+            </h2>
             <p style={{ color: 'var(--foreground-muted)' }}>
               Already have an account?{' '}
-              <Link to="/sign-in" search={search.redirect ? { redirect: search.redirect } : undefined} className="font-semibold hover:underline" style={{ color: 'var(--primary)' }}>
+              <Link
+                to="/sign-in"
+                search={
+                  search.redirect ? { redirect: search.redirect } : undefined
+                }
+                className="font-semibold hover:underline"
+                style={{ color: 'var(--primary)' }}
+              >
                 Sign in
               </Link>
             </p>
@@ -257,10 +348,15 @@ function SignUpPage() {
                 animate={{ opacity: 1, y: 0, height: 'auto' }}
                 exit={{ opacity: 0, y: -10, height: 0 }}
                 className="mb-6 p-4 rounded-2xl flex items-center gap-3"
-                style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)' }}
+                style={{
+                  background: 'rgba(239, 68, 68, 0.1)',
+                  border: '1px solid rgba(239, 68, 68, 0.2)',
+                }}
               >
                 <AlertCircle className="w-5 h-5 text-red-400 shrink-0" />
-                <p className="text-sm text-red-400">{form.formState.errors.root.message}</p>
+                <p className="text-sm text-red-400">
+                  {form.formState.errors.root.message}
+                </p>
               </motion.div>
             )}
           </AnimatePresence>
@@ -268,32 +364,60 @@ function SignUpPage() {
           <form onSubmit={onSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--foreground)' }}>Name</label>
+                <label
+                  className="block text-sm font-semibold mb-2"
+                  style={{ color: 'var(--foreground)' }}
+                >
+                  Name
+                </label>
                 <div className="relative">
-                  <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5" style={{ color: 'var(--foreground-muted)' }} />
+                  <User
+                    className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5"
+                    style={{ color: 'var(--foreground-muted)' }}
+                  />
                   <input
                     {...form.register('name')}
                     type="text"
                     placeholder="Your name"
                     className="w-full pl-12 pr-4 py-3 rounded-xl outline-none transition-all focus:ring-2 focus:ring-purple-500/50"
-                    style={{ background: 'var(--background-secondary)', border: '1px solid var(--border)', color: 'var(--foreground)' }}
+                    style={{
+                      background: 'var(--background-secondary)',
+                      border: '1px solid var(--border)',
+                      color: 'var(--foreground)',
+                    }}
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--foreground)' }}>Username</label>
+                <label
+                  className="block text-sm font-semibold mb-2"
+                  style={{ color: 'var(--foreground)' }}
+                >
+                  Username
+                </label>
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm" style={{ color: 'var(--foreground-muted)' }}>@</span>
+                  <span
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-sm"
+                    style={{ color: 'var(--foreground-muted)' }}
+                  >
+                    @
+                  </span>
                   <input
                     {...form.register('username')}
                     type="text"
                     placeholder="username"
                     className="w-full pl-10 pr-4 py-3 rounded-xl outline-none transition-all focus:ring-2 focus:ring-purple-500/50"
-                    style={{ background: 'var(--background-secondary)', border: '1px solid var(--border)', color: 'var(--foreground)' }}
+                    style={{
+                      background: 'var(--background-secondary)',
+                      border: '1px solid var(--border)',
+                      color: 'var(--foreground)',
+                    }}
                   />
                 </div>
                 {form.formState.errors.username && (
-                  <p className="mt-1 text-xs text-red-400">{form.formState.errors.username.message}</p>
+                  <p className="mt-1 text-xs text-red-400">
+                    {form.formState.errors.username.message}
+                  </p>
                 )}
               </div>
             </div>
@@ -303,43 +427,88 @@ function SignUpPage() {
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 className="p-3 rounded-xl text-sm"
-                style={{ background: 'rgba(99, 102, 241, 0.08)', border: '1px solid rgba(99, 102, 241, 0.15)' }}
+                style={{
+                  background: 'rgba(99, 102, 241, 0.08)',
+                  border: '1px solid rgba(99, 102, 241, 0.15)',
+                }}
               >
-                <span style={{ color: 'var(--foreground-muted)' }}>Your link: </span>
-                <span className="font-semibold" style={{ color: 'var(--primary)' }}>eziox.link/{username}</span>
+                <span style={{ color: 'var(--foreground-muted)' }}>
+                  Your link:{' '}
+                </span>
+                <span
+                  className="font-semibold"
+                  style={{ color: 'var(--primary)' }}
+                >
+                  eziox.link/{username}
+                </span>
               </motion.div>
             )}
 
             <div>
-              <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--foreground)' }}>Email</label>
+              <label
+                className="block text-sm font-semibold mb-2"
+                style={{ color: 'var(--foreground)' }}
+              >
+                Email
+              </label>
               <div className="relative">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5" style={{ color: 'var(--foreground-muted)' }} />
+                <Mail
+                  className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5"
+                  style={{ color: 'var(--foreground-muted)' }}
+                />
                 <input
                   {...form.register('email')}
                   type="email"
                   placeholder="you@example.com"
                   className="w-full pl-12 pr-4 py-3 rounded-xl outline-none transition-all focus:ring-2 focus:ring-purple-500/50"
-                  style={{ background: 'var(--background-secondary)', border: '1px solid var(--border)', color: 'var(--foreground)' }}
+                  style={{
+                    background: 'var(--background-secondary)',
+                    border: '1px solid var(--border)',
+                    color: 'var(--foreground)',
+                  }}
                 />
               </div>
               {form.formState.errors.email && (
-                <p className="mt-1 text-xs text-red-400">{form.formState.errors.email.message}</p>
+                <p className="mt-1 text-xs text-red-400">
+                  {form.formState.errors.email.message}
+                </p>
               )}
             </div>
 
             <div>
-              <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--foreground)' }}>Password</label>
+              <label
+                className="block text-sm font-semibold mb-2"
+                style={{ color: 'var(--foreground)' }}
+              >
+                Password
+              </label>
               <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5" style={{ color: 'var(--foreground-muted)' }} />
+                <Lock
+                  className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5"
+                  style={{ color: 'var(--foreground-muted)' }}
+                />
                 <input
                   {...form.register('password')}
                   type={showPassword ? 'text' : 'password'}
                   placeholder="••••••••"
                   className="w-full pl-12 pr-12 py-3 rounded-xl outline-none transition-all focus:ring-2 focus:ring-purple-500/50"
-                  style={{ background: 'var(--background-secondary)', border: '1px solid var(--border)', color: 'var(--foreground)' }}
+                  style={{
+                    background: 'var(--background-secondary)',
+                    border: '1px solid var(--border)',
+                    color: 'var(--foreground)',
+                  }}
                 />
-                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 p-1" style={{ color: 'var(--foreground-muted)' }}>
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 p-1"
+                  style={{ color: 'var(--foreground-muted)' }}
+                >
+                  {showPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
                 </button>
               </div>
               {password && (
@@ -349,7 +518,12 @@ function SignUpPage() {
                       <div
                         key={i}
                         className="h-1 flex-1 rounded-full transition-all"
-                        style={{ background: i <= passwordStrength.score ? passwordStrength.color : 'var(--border)' }}
+                        style={{
+                          background:
+                            i <= passwordStrength.score
+                              ? passwordStrength.color
+                              : 'var(--border)',
+                        }}
                       />
                     ))}
                   </div>
@@ -358,7 +532,12 @@ function SignUpPage() {
                       <span
                         key={req.label}
                         className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full"
-                        style={{ background: req.met ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)', color: req.met ? '#22c55e' : '#ef4444' }}
+                        style={{
+                          background: req.met
+                            ? 'rgba(34, 197, 94, 0.1)'
+                            : 'rgba(239, 68, 68, 0.1)',
+                          color: req.met ? '#22c55e' : '#ef4444',
+                        }}
                       >
                         {req.met ? <Check size={10} /> : <X size={10} />}
                         {req.label}
@@ -370,22 +549,45 @@ function SignUpPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--foreground)' }}>Confirm Password</label>
+              <label
+                className="block text-sm font-semibold mb-2"
+                style={{ color: 'var(--foreground)' }}
+              >
+                Confirm Password
+              </label>
               <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5" style={{ color: 'var(--foreground-muted)' }} />
+                <Lock
+                  className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5"
+                  style={{ color: 'var(--foreground-muted)' }}
+                />
                 <input
                   {...form.register('confirmPassword')}
                   type={showConfirm ? 'text' : 'password'}
                   placeholder="••••••••"
                   className="w-full pl-12 pr-12 py-3 rounded-xl outline-none transition-all focus:ring-2 focus:ring-purple-500/50"
-                  style={{ background: 'var(--background-secondary)', border: '1px solid var(--border)', color: 'var(--foreground)' }}
+                  style={{
+                    background: 'var(--background-secondary)',
+                    border: '1px solid var(--border)',
+                    color: 'var(--foreground)',
+                  }}
                 />
-                <button type="button" onClick={() => setShowConfirm(!showConfirm)} className="absolute right-4 top-1/2 -translate-y-1/2 p-1" style={{ color: 'var(--foreground-muted)' }}>
-                  {showConfirm ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                <button
+                  type="button"
+                  onClick={() => setShowConfirm(!showConfirm)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 p-1"
+                  style={{ color: 'var(--foreground-muted)' }}
+                >
+                  {showConfirm ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
                 </button>
               </div>
               {form.formState.errors.confirmPassword && (
-                <p className="mt-1 text-xs text-red-400">{form.formState.errors.confirmPassword.message}</p>
+                <p className="mt-1 text-xs text-red-400">
+                  {form.formState.errors.confirmPassword.message}
+                </p>
               )}
             </div>
 
@@ -399,18 +601,43 @@ function SignUpPage() {
 
             <label className="flex items-start gap-3 cursor-pointer">
               <div className="relative mt-0.5">
-                <input type="checkbox" {...form.register('acceptTerms')} className="sr-only peer" />
-                <div className="w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all peer-checked:border-purple-500 peer-checked:bg-purple-500" style={{ borderColor: 'var(--border)' }}>
-                  <motion.div initial={false} animate={{ scale: form.watch('acceptTerms') ? 1 : 0 }}>
+                <input
+                  type="checkbox"
+                  {...form.register('acceptTerms')}
+                  className="sr-only peer"
+                />
+                <div
+                  className="w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all peer-checked:border-purple-500 peer-checked:bg-purple-500"
+                  style={{ borderColor: 'var(--border)' }}
+                >
+                  <motion.div
+                    initial={false}
+                    animate={{ scale: form.watch('acceptTerms') ? 1 : 0 }}
+                  >
                     <CheckCircle2 className="w-3.5 h-3.5 text-white" />
                   </motion.div>
                 </div>
               </div>
-              <span className="text-sm" style={{ color: 'var(--foreground-muted)' }}>
+              <span
+                className="text-sm"
+                style={{ color: 'var(--foreground-muted)' }}
+              >
                 I agree to the{' '}
-                <Link to="/terms" className="font-medium underline" style={{ color: 'var(--primary)' }}>Terms</Link>
+                <Link
+                  to="/terms"
+                  className="font-medium underline"
+                  style={{ color: 'var(--primary)' }}
+                >
+                  Terms
+                </Link>
                 {' & '}
-                <Link to="/privacy" className="font-medium underline" style={{ color: 'var(--primary)' }}>Privacy</Link>
+                <Link
+                  to="/privacy"
+                  className="font-medium underline"
+                  style={{ color: 'var(--primary)' }}
+                >
+                  Privacy
+                </Link>
               </span>
             </label>
 
@@ -418,7 +645,10 @@ function SignUpPage() {
               type="submit"
               disabled={signUpMutation.isPending || !turnstileToken}
               className="w-full py-4 rounded-2xl font-bold text-white relative overflow-hidden group disabled:opacity-60"
-              style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', boxShadow: '0 8px 32px rgba(99, 102, 241, 0.3)' }}
+              style={{
+                background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                boxShadow: '0 8px 32px rgba(99, 102, 241, 0.3)',
+              }}
               whileHover={{ scale: 1.01 }}
               whileTap={{ scale: 0.99 }}
             >
@@ -438,7 +668,10 @@ function SignUpPage() {
             </motion.button>
           </form>
 
-          <div className="mt-8 flex items-center justify-center gap-6 text-xs" style={{ color: 'var(--foreground-muted)' }}>
+          <div
+            className="mt-8 flex items-center justify-center gap-6 text-xs"
+            style={{ color: 'var(--foreground-muted)' }}
+          >
             <div className="flex items-center gap-2">
               <Shield size={14} style={{ color: 'var(--primary)' }} />
               <span>Secure</span>

@@ -1,11 +1,23 @@
-import { createFileRoute, Link, notFound, useRouterState } from '@tanstack/react-router'
+import {
+  createFileRoute,
+  Link,
+  notFound,
+  useRouterState,
+} from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
-import { getPublicProfileFn, trackProfileViewFn } from '@/server/functions/users'
+import {
+  getPublicProfileFn,
+  trackProfileViewFn,
+} from '@/server/functions/users'
 import { trackLinkClickFn } from '@/server/functions/links'
-import { isFollowingFn, followUserFn, unfollowUserFn } from '@/server/functions/follows'
+import {
+  isFollowingFn,
+  followUserFn,
+  unfollowUserFn,
+} from '@/server/functions/follows'
 import {
   User,
   Eye,
@@ -40,8 +52,16 @@ import { SpotifyWidget } from '@/components/spotify'
 import { useTheme } from '@/components/layout/ThemeProvider'
 import { checkSpotifyConnectionFn } from '@/server/functions/spotify'
 import type { TierType } from '@/server/lib/stripe'
-import type { CustomBackground, LayoutSettings, AnimatedProfileSettings, CustomFont } from '@/server/db/schema'
-import { AnimatedBackground, VideoBackground } from '@/components/backgrounds/AnimatedBackgrounds'
+import type {
+  CustomBackground,
+  LayoutSettings,
+  AnimatedProfileSettings,
+  CustomFont,
+} from '@/server/db/schema'
+import {
+  AnimatedBackground,
+  VideoBackground,
+} from '@/components/backgrounds/AnimatedBackgrounds'
 import { sanitizeCSS, sanitizeFontURL, escapeHTML } from '@/lib/security'
 
 const socialIconMap: Record<string, ComponentType<{ size?: number }>> = {
@@ -98,13 +118,19 @@ export const Route = createFileRoute('/_bio/$username')({
   },
   head: ({ loaderData }) => {
     const profile = loaderData?.profile
-    if (!profile || !profile.profile || 'isPublic' in profile.profile && !profile.profile.isPublic) return {}
+    if (
+      !profile ||
+      !profile.profile ||
+      ('isPublic' in profile.profile && !profile.profile.isPublic)
+    )
+      return {}
 
     const displayName = profile.user.name || profile.user.username
     const title = `${displayName} (@${profile.user.username}) | Eziox`
     const bio = 'bio' in profile.profile ? profile.profile.bio : null
     const description = bio || `Check out ${displayName}'s bio page on Eziox`
-    const avatarUrl = 'avatar' in profile.profile ? profile.profile.avatar : null
+    const avatarUrl =
+      'avatar' in profile.profile ? profile.profile.avatar : null
 
     return {
       meta: [
@@ -113,9 +139,15 @@ export const Route = createFileRoute('/_bio/$username')({
         { property: 'og:title', content: title },
         { property: 'og:description', content: description },
         { property: 'og:type', content: 'profile' },
-        { property: 'og:url', content: `https://eziox.link/${profile.user.username}` },
+        {
+          property: 'og:url',
+          content: `https://eziox.link/${profile.user.username}`,
+        },
         ...(avatarUrl ? [{ property: 'og:image', content: avatarUrl }] : []),
-        { name: 'twitter:card', content: avatarUrl ? 'summary_large_image' : 'summary' },
+        {
+          name: 'twitter:card',
+          content: avatarUrl ? 'summary_large_image' : 'summary',
+        },
         { name: 'twitter:title', content: title },
         { name: 'twitter:description', content: description },
         ...(avatarUrl ? [{ name: 'twitter:image', content: avatarUrl }] : []),
@@ -130,15 +162,23 @@ function BioPage() {
   const username = params.username as string
   const queryClient = useQueryClient()
   const { theme } = useTheme()
-  
+
   // Get currentUser from parent layout loader via router state
   const routerState = useRouterState()
-  const bioMatch = routerState.matches.find((m: { routeId: string }) => m.routeId === '/_bio')
-  const currentUser = (bioMatch?.loaderData as { currentUser?: { id: string; username: string } } | undefined)?.currentUser
+  const bioMatch = routerState.matches.find(
+    (m: { routeId: string }) => m.routeId === '/_bio',
+  )
+  const currentUser = (
+    bioMatch?.loaderData as
+      | { currentUser?: { id: string; username: string } }
+      | undefined
+  )?.currentUser
 
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [modalTab, setModalTab] = useState<'followers' | 'following'>('followers')
+  const [modalTab, setModalTab] = useState<'followers' | 'following'>(
+    'followers',
+  )
 
   const getProfile = useServerFn(getPublicProfileFn)
   const trackClick = useServerFn(trackLinkClickFn)
@@ -148,14 +188,19 @@ function BioPage() {
   const unfollowUser = useServerFn(unfollowUserFn)
   const checkSpotifyConnection = useServerFn(checkSpotifyConnectionFn)
 
-  const { data: profile, isLoading, error } = useQuery({
+  const {
+    data: profile,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ['publicProfile', username],
     queryFn: () => getProfile({ data: { username } }),
   })
 
   const { data: spotifyStatus } = useQuery<SpotifyConnectionStatus>({
     queryKey: ['spotifyConnection', profile?.user?.id],
-    queryFn: () => checkSpotifyConnection({ data: { userId: profile!.user.id } }),
+    queryFn: () =>
+      checkSpotifyConnection({ data: { userId: profile!.user.id } }),
     enabled: !!profile?.user?.id,
   })
 
@@ -215,13 +260,13 @@ function BioPage() {
   // Handle follow/unfollow with optimistic updates
   const handleFollowToggle = async () => {
     if (!profile?.user?.id || !isAuthenticated || isSelf) return
-    
+
     setIsFollowLoading(true)
     const wasFollowing = isFollowing
 
     // Optimistic update
     setIsFollowing(!wasFollowing)
-    setFollowerCount(prev => (prev ?? 0) + (wasFollowing ? -1 : 1))
+    setFollowerCount((prev) => (prev ?? 0) + (wasFollowing ? -1 : 1))
 
     try {
       const result = wasFollowing
@@ -233,17 +278,21 @@ function BioPage() {
         setFollowerCount(result.newFollowerCount)
         setIsFollowing(result.isFollowing)
         // Invalidate queries to refresh data
-        void queryClient.invalidateQueries({ queryKey: ['followStatus', profile.user.id] })
-        void queryClient.invalidateQueries({ queryKey: ['publicProfile', username] })
+        void queryClient.invalidateQueries({
+          queryKey: ['followStatus', profile.user.id],
+        })
+        void queryClient.invalidateQueries({
+          queryKey: ['publicProfile', username],
+        })
       } else {
         // Revert on error
         setIsFollowing(wasFollowing)
-        setFollowerCount(prev => (prev ?? 0) + (wasFollowing ? 1 : -1))
+        setFollowerCount((prev) => (prev ?? 0) + (wasFollowing ? 1 : -1))
       }
     } catch {
       // Revert on error
       setIsFollowing(wasFollowing)
-      setFollowerCount(prev => (prev ?? 0) + (wasFollowing ? 1 : -1))
+      setFollowerCount((prev) => (prev ?? 0) + (wasFollowing ? 1 : -1))
     } finally {
       setIsFollowLoading(false)
     }
@@ -251,12 +300,12 @@ function BioPage() {
 
   const handleLinkClick = (linkId: string, url: string) => {
     setClickedLink(linkId)
-    trackClick({ 
-      data: { 
+    trackClick({
+      data: {
         linkId,
         userAgent: navigator.userAgent,
         referrer: document.referrer || undefined,
-      } 
+      },
     }).catch(console.error)
     window.open(url, '_blank', 'noopener,noreferrer')
     setTimeout(() => setClickedLink(null), 500)
@@ -265,7 +314,10 @@ function BioPage() {
   const handleShare = async () => {
     const url = `https://eziox.link/${username}`
     if (navigator.share) {
-      await navigator.share({ title: `${profile?.user.name || username}'s Bio`, url })
+      await navigator.share({
+        title: `${profile?.user.name || username}'s Bio`,
+        url,
+      })
     } else {
       await navigator.clipboard.writeText(url)
       setCopied(true)
@@ -275,14 +327,22 @@ function BioPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--background)' }}>
+      <div
+        className="min-h-screen flex items-center justify-center"
+        style={{ background: 'var(--background)' }}
+      >
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           className="text-center"
         >
-          <Loader2 className="w-10 h-10 animate-spin mx-auto mb-4" style={{ color: 'var(--primary)' }} />
-          <p className="text-sm" style={{ color: 'var(--foreground-muted)' }}>Loading bio...</p>
+          <Loader2
+            className="w-10 h-10 animate-spin mx-auto mb-4"
+            style={{ color: 'var(--primary)' }}
+          />
+          <p className="text-sm" style={{ color: 'var(--foreground-muted)' }}>
+            Loading bio...
+          </p>
         </motion.div>
       </div>
     )
@@ -290,7 +350,10 @@ function BioPage() {
 
   if (error || !profile) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4" style={{ background: 'var(--background)' }}>
+      <div
+        className="min-h-screen flex items-center justify-center p-4"
+        style={{ background: 'var(--background)' }}
+      >
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -300,18 +363,31 @@ function BioPage() {
             className="w-24 h-24 rounded-full mx-auto mb-6 flex items-center justify-center"
             style={{ background: 'var(--background-secondary)' }}
           >
-            <User className="w-12 h-12" style={{ color: 'var(--foreground-muted)' }} />
+            <User
+              className="w-12 h-12"
+              style={{ color: 'var(--foreground-muted)' }}
+            />
           </div>
-          <h1 className="text-3xl font-bold mb-3" style={{ color: 'var(--foreground)' }}>
+          <h1
+            className="text-3xl font-bold mb-3"
+            style={{ color: 'var(--foreground)' }}
+          >
             @{username}
           </h1>
-          <p className="text-lg mb-8" style={{ color: 'var(--foreground-muted)' }}>
+          <p
+            className="text-lg mb-8"
+            style={{ color: 'var(--foreground-muted)' }}
+          >
             This bio page doesn't exist yet.
           </p>
           <Link
             to="/sign-up"
             className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-all hover:scale-105"
-            style={{ background: 'linear-gradient(135deg, var(--primary), var(--accent))', color: 'white' }}
+            style={{
+              background:
+                'linear-gradient(135deg, var(--primary), var(--accent))',
+              color: 'white',
+            }}
           >
             <Sparkles size={18} />
             Claim this username
@@ -321,23 +397,26 @@ function BioPage() {
     )
   }
 
-  const profileData = profile.profile && 'bio' in profile.profile ? profile.profile : null
+  const profileData =
+    profile.profile && 'bio' in profile.profile ? profile.profile : null
   const accentColor = 'var(--primary)'
-  
+
   // Customization settings
-  const customBackground = profileData?.customBackground as CustomBackground | null
+  const customBackground =
+    profileData?.customBackground as CustomBackground | null
   const layoutSettings = profileData?.layoutSettings as LayoutSettings | null
   const customCSS = profileData?.customCSS as string | null
-  const animatedProfile = profileData?.animatedProfile as AnimatedProfileSettings | null
+  const animatedProfile =
+    profileData?.animatedProfile as AnimatedProfileSettings | null
   const customFonts = profileData?.customFonts as CustomFont[] | null
-  
+
   // Get layout values with defaults
   const cardSpacing = layoutSettings?.cardSpacing ?? 12
   const cardBorderRadius = layoutSettings?.cardBorderRadius ?? 16
   const cardPadding = layoutSettings?.cardPadding ?? 16
   const cardShadow = layoutSettings?.cardShadow ?? 'md'
   const linkStyle = layoutSettings?.linkStyle ?? 'default'
-  
+
   // Shadow map
   const shadowMap: Record<string, string> = {
     none: 'none',
@@ -346,61 +425,116 @@ function BioPage() {
     lg: '0 10px 15px rgba(0,0,0,0.15)',
     xl: '0 20px 25px rgba(0,0,0,0.2)',
   }
-  
+
   // Animation classes based on settings
   const getAvatarAnimation = () => {
     if (!animatedProfile?.enabled) return {}
     switch (animatedProfile.avatarAnimation) {
-      case 'pulse': return { animate: { scale: [1, 1.05, 1] }, transition: { duration: 2, repeat: Infinity } }
-      case 'glow': return { animate: { boxShadow: [`0 0 20px ${accentColor}40`, `0 0 40px ${accentColor}60`, `0 0 20px ${accentColor}40`] }, transition: { duration: 2, repeat: Infinity } }
-      case 'bounce': return { animate: { y: [0, -5, 0] }, transition: { duration: 1.5, repeat: Infinity } }
-      case 'rotate': return { animate: { rotate: [0, 5, -5, 0] }, transition: { duration: 3, repeat: Infinity } }
-      case 'shake': return { animate: { x: [0, -2, 2, -2, 0] }, transition: { duration: 0.5, repeat: Infinity, repeatDelay: 2 } }
-      default: return {}
+      case 'pulse':
+        return {
+          animate: { scale: [1, 1.05, 1] },
+          transition: { duration: 2, repeat: Infinity },
+        }
+      case 'glow':
+        return {
+          animate: {
+            boxShadow: [
+              `0 0 20px ${accentColor}40`,
+              `0 0 40px ${accentColor}60`,
+              `0 0 20px ${accentColor}40`,
+            ],
+          },
+          transition: { duration: 2, repeat: Infinity },
+        }
+      case 'bounce':
+        return {
+          animate: { y: [0, -5, 0] },
+          transition: { duration: 1.5, repeat: Infinity },
+        }
+      case 'rotate':
+        return {
+          animate: { rotate: [0, 5, -5, 0] },
+          transition: { duration: 3, repeat: Infinity },
+        }
+      case 'shake':
+        return {
+          animate: { x: [0, -2, 2, -2, 0] },
+          transition: { duration: 0.5, repeat: Infinity, repeatDelay: 2 },
+        }
+      default:
+        return {}
     }
   }
-  
+
   const getLinkHoverEffect = () => {
     if (!animatedProfile?.enabled) return { scale: 1.02, y: -2 }
     switch (animatedProfile.linkHoverEffect) {
-      case 'scale': return { scale: 1.05 }
-      case 'glow': return { scale: 1.02, boxShadow: `0 0 30px ${accentColor}40` }
-      case 'slide': return { x: 5 }
-      case 'shake': return { x: [0, -2, 2, -2, 0] }
-      case 'flip': return { rotateY: 5 }
-      default: return { scale: 1.02, y: -2 }
+      case 'scale':
+        return { scale: 1.05 }
+      case 'glow':
+        return { scale: 1.02, boxShadow: `0 0 30px ${accentColor}40` }
+      case 'slide':
+        return { x: 5 }
+      case 'shake':
+        return { x: [0, -2, 2, -2, 0] }
+      case 'flip':
+        return { rotateY: 5 }
+      default:
+        return { scale: 1.02, y: -2 }
     }
   }
-  
+
   // Link style variants
   const getLinkStyle = () => {
     switch (linkStyle) {
-      case 'minimal': return { background: 'transparent', border: `1px solid ${accentColor}30` }
-      case 'bold': return { background: `${accentColor}20`, border: 'none' }
-      case 'glass': return { background: 'rgba(255,255,255,0.05)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.1)' }
-      default: return { background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }
+      case 'minimal':
+        return {
+          background: 'transparent',
+          border: `1px solid ${accentColor}30`,
+        }
+      case 'bold':
+        return { background: `${accentColor}20`, border: 'none' }
+      case 'glass':
+        return {
+          background: 'rgba(255,255,255,0.05)',
+          backdropFilter: 'blur(20px)',
+          border: '1px solid rgba(255,255,255,0.1)',
+        }
+      default:
+        return {
+          background: 'rgba(255,255,255,0.03)',
+          border: '1px solid rgba(255,255,255,0.08)',
+        }
     }
   }
-  
+
   // Background style
   const getBackgroundStyle = (): React.CSSProperties => {
     if (!customBackground) return { background: 'var(--background)' }
     switch (customBackground.type) {
-      case 'solid': return { background: customBackground.value || 'var(--background)' }
-      case 'gradient': return { background: customBackground.value || 'var(--background)' }
-      case 'image': return {
-        background: `url(${customBackground.imageUrl}) center/cover fixed`,
-        ...(customBackground.imageBlur ? { filter: `blur(${customBackground.imageBlur}px)` } : {}),
-      }
-      case 'video': return { background: 'var(--background)' }
-      case 'animated': return { background: 'var(--background)' }
-      default: return { background: 'var(--background)' }
+      case 'solid':
+        return { background: customBackground.value || 'var(--background)' }
+      case 'gradient':
+        return { background: customBackground.value || 'var(--background)' }
+      case 'image':
+        return {
+          background: `url(${customBackground.imageUrl}) center/cover fixed`,
+          ...(customBackground.imageBlur
+            ? { filter: `blur(${customBackground.imageBlur}px)` }
+            : {}),
+        }
+      case 'video':
+        return { background: 'var(--background)' }
+      case 'animated':
+        return { background: 'var(--background)' }
+      default:
+        return { background: 'var(--background)' }
     }
   }
 
   const renderAnimatedBackground = () => {
     if (!customBackground) return null
-    
+
     if (customBackground.type === 'video' && customBackground.videoUrl) {
       return (
         <VideoBackground
@@ -410,8 +544,11 @@ function BioPage() {
         />
       )
     }
-    
-    if (customBackground.type === 'animated' && customBackground.animatedPreset) {
+
+    if (
+      customBackground.type === 'animated' &&
+      customBackground.animatedPreset
+    ) {
       return (
         <AnimatedBackground
           preset={customBackground.animatedPreset}
@@ -421,45 +558,60 @@ function BioPage() {
         />
       )
     }
-    
+
     return null
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden" style={getBackgroundStyle()}>
+    <div
+      className="min-h-screen relative overflow-hidden"
+      style={getBackgroundStyle()}
+    >
       {/* Animated Background Layer - z-index 1 */}
-      <div className="fixed inset-0 z-1">
-        {renderAnimatedBackground()}
-      </div>
-      
+      <div className="fixed inset-0 z-1">{renderAnimatedBackground()}</div>
+
       {customCSS && (
         <style dangerouslySetInnerHTML={{ __html: sanitizeCSS(customCSS) }} />
       )}
-      
+
       {customFonts && customFonts.length > 0 && (
         <>
-          {customFonts.map(font => {
+          {customFonts.map((font) => {
             const safeUrl = sanitizeFontURL(font.url)
-            return safeUrl ? <link key={font.id} rel="stylesheet" href={safeUrl} /> : null
+            return safeUrl ? (
+              <link key={font.id} rel="stylesheet" href={safeUrl} />
+            ) : null
           })}
-          <style dangerouslySetInnerHTML={{ __html: customFonts.map(font => {
-            const safeName = escapeHTML(font.name).replace(/['"\\]/g, '')
-            return font.type === 'display' 
-              ? `h1, h2, h3, .display-font { font-family: '${safeName}', sans-serif !important; }`
-              : `body, p, span, .body-font { font-family: '${safeName}', sans-serif !important; }`
-          }).join('\n') }} />
+          <style
+            dangerouslySetInnerHTML={{
+              __html: customFonts
+                .map((font) => {
+                  const safeName = escapeHTML(font.name).replace(/['"\\]/g, '')
+                  return font.type === 'display'
+                    ? `h1, h2, h3, .display-font { font-family: '${safeName}', sans-serif !important; }`
+                    : `body, p, span, .body-font { font-family: '${safeName}', sans-serif !important; }`
+                })
+                .join('\n'),
+            }}
+          />
         </>
       )}
-      
-      {customBackground?.type === 'image' && customBackground.imageOpacity !== undefined && customBackground.imageOpacity < 1 && (
-        <div 
-          className="fixed inset-0 pointer-events-none" 
-          style={{ background: `rgba(0,0,0,${1 - customBackground.imageOpacity})` }} 
-        />
-      )}
-      
+
+      {customBackground?.type === 'image' &&
+        customBackground.imageOpacity !== undefined &&
+        customBackground.imageOpacity < 1 && (
+          <div
+            className="fixed inset-0 pointer-events-none"
+            style={{
+              background: `rgba(0,0,0,${1 - customBackground.imageOpacity})`,
+            }}
+          />
+        )}
+
       {/* Decorative blobs - only show when no animated/video background */}
-      {(!customBackground || (customBackground.type !== 'animated' && customBackground.type !== 'video')) && (
+      {(!customBackground ||
+        (customBackground.type !== 'animated' &&
+          customBackground.type !== 'video')) && (
         <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
           <motion.div
             className="absolute -top-40 -right-40 w-80 h-80 rounded-full blur-3xl opacity-20"
@@ -487,9 +639,16 @@ function BioPage() {
           <button
             onClick={handleShare}
             className="flex items-center gap-2 px-3 py-1.5 rounded-full text-sm transition-all hover:scale-105"
-            style={{ background: 'var(--background-secondary)', color: 'var(--foreground-muted)' }}
+            style={{
+              background: 'var(--background-secondary)',
+              color: 'var(--foreground-muted)',
+            }}
           >
-            {copied ? <Check size={14} style={{ color: '#22c55e' }} /> : <Share2 size={14} />}
+            {copied ? (
+              <Check size={14} style={{ color: '#22c55e' }} />
+            ) : (
+              <Share2 size={14} />
+            )}
             {copied ? 'Copied!' : 'Share'}
           </button>
         </motion.div>
@@ -512,7 +671,11 @@ function BioPage() {
               <motion.div
                 className="absolute inset-0"
                 animate={{ backgroundPosition: ['0% 0%', '100% 100%'] }}
-                transition={{ duration: 20, repeat: Infinity, repeatType: 'reverse' }}
+                transition={{
+                  duration: 20,
+                  repeat: Infinity,
+                  repeatType: 'reverse',
+                }}
                 style={{
                   backgroundImage: `radial-gradient(circle at 20% 50%, rgba(255,255,255,0.2) 2px, transparent 2px),
                                    radial-gradient(circle at 80% 30%, rgba(255,255,255,0.15) 2px, transparent 2px)`,
@@ -539,17 +702,27 @@ function BioPage() {
               {...getAvatarAnimation()}
             >
               {profileData?.avatar ? (
-                <img src={profileData.avatar} alt={profile.user.name || username} className="w-full h-full object-cover" />
+                <img
+                  src={profileData.avatar}
+                  alt={profile.user.name || username}
+                  className="w-full h-full object-cover"
+                />
               ) : (
                 <div
                   className="w-full h-full flex items-center justify-center text-4xl font-bold display-font"
-                  style={{ background: `linear-gradient(135deg, ${accentColor}, var(--accent))`, color: 'white' }}
+                  style={{
+                    background: `linear-gradient(135deg, ${accentColor}, var(--accent))`,
+                    color: 'white',
+                  }}
                 >
-                  {(profile.user.name?.[0] || username?.[0] || 'U').toUpperCase()}
+                  {(
+                    profile.user.name?.[0] ||
+                    username?.[0] ||
+                    'U'
+                  ).toUpperCase()}
                 </div>
               )}
             </motion.div>
-            
           </motion.div>
         </motion.div>
 
@@ -561,21 +734,34 @@ function BioPage() {
           className="text-center mb-8"
         >
           <div className="flex items-center justify-center gap-2 mb-1">
-            <h1 className="text-2xl sm:text-3xl font-bold" style={{ color: 'var(--foreground)' }}>
+            <h1
+              className="text-2xl sm:text-3xl font-bold"
+              style={{ color: 'var(--foreground)' }}
+            >
               {profile.user.name || profile.user.username}
             </h1>
             {profileData?.badges && profileData.badges.length > 0 && (
-              <BadgeDisplay badges={profileData.badges as string[]} size="md" maxDisplay={3} />
+              <BadgeDisplay
+                badges={profileData.badges as string[]}
+                size="md"
+                maxDisplay={3}
+              />
             )}
           </div>
-          <p className="text-sm mb-4" style={{ color: 'var(--foreground-muted)' }}>
+          <p
+            className="text-sm mb-4"
+            style={{ color: 'var(--foreground-muted)' }}
+          >
             @{profile.user.username}
             {profileData?.pronouns && ` · ${profileData.pronouns}`}
           </p>
 
           {/* Bio */}
           {profileData?.bio && (
-            <p className="text-sm leading-relaxed max-w-sm mx-auto mb-4" style={{ color: 'var(--foreground-muted)' }}>
+            <p
+              className="text-sm leading-relaxed max-w-sm mx-auto mb-4"
+              style={{ color: 'var(--foreground-muted)' }}
+            >
               {profileData.bio}
             </p>
           )}
@@ -583,7 +769,10 @@ function BioPage() {
           {/* Location & Website */}
           <div className="flex items-center justify-center gap-4 text-sm flex-wrap mb-6">
             {profileData?.location && (
-              <span className="flex items-center gap-1" style={{ color: 'var(--foreground-muted)' }}>
+              <span
+                className="flex items-center gap-1"
+                style={{ color: 'var(--foreground-muted)' }}
+              >
                 <MapPin size={14} />
                 {profileData.location}
               </span>
@@ -597,7 +786,9 @@ function BioPage() {
                 style={{ color: accentColor }}
               >
                 <Globe size={14} />
-                {profileData.website.replace(/^https?:\/\//, '').replace(/\/$/, '')}
+                {profileData.website
+                  .replace(/^https?:\/\//, '')
+                  .replace(/\/$/, '')}
               </a>
             )}
           </div>
@@ -607,20 +798,36 @@ function BioPage() {
             <div className="text-center">
               <div className="flex items-center justify-center gap-1 mb-0.5">
                 <Eye size={14} style={{ color: accentColor }} />
-                <span className="font-bold" style={{ color: 'var(--foreground)' }}>
+                <span
+                  className="font-bold"
+                  style={{ color: 'var(--foreground)' }}
+                >
                   {(profile.stats?.profileViews || 0).toLocaleString()}
                 </span>
               </div>
-              <span className="text-xs" style={{ color: 'var(--foreground-muted)' }}>views</span>
+              <span
+                className="text-xs"
+                style={{ color: 'var(--foreground-muted)' }}
+              >
+                views
+              </span>
             </div>
             <div className="text-center">
               <div className="flex items-center justify-center gap-1 mb-0.5">
                 <MousePointerClick size={14} style={{ color: accentColor }} />
-                <span className="font-bold" style={{ color: 'var(--foreground)' }}>
+                <span
+                  className="font-bold"
+                  style={{ color: 'var(--foreground)' }}
+                >
                   {(profile.stats?.totalLinkClicks || 0).toLocaleString()}
                 </span>
               </div>
-              <span className="text-xs" style={{ color: 'var(--foreground-muted)' }}>clicks</span>
+              <span
+                className="text-xs"
+                style={{ color: 'var(--foreground-muted)' }}
+              >
+                clicks
+              </span>
             </div>
             <button
               onClick={() => {
@@ -631,11 +838,23 @@ function BioPage() {
             >
               <div className="flex items-center justify-center gap-1 mb-0.5">
                 <Heart size={14} style={{ color: accentColor }} />
-                <span className="font-bold" style={{ color: 'var(--foreground)' }}>
-                  {(followerCount ?? profile.stats?.followers ?? 0).toLocaleString()}
+                <span
+                  className="font-bold"
+                  style={{ color: 'var(--foreground)' }}
+                >
+                  {(
+                    followerCount ??
+                    profile.stats?.followers ??
+                    0
+                  ).toLocaleString()}
                 </span>
               </div>
-              <span className="text-xs" style={{ color: 'var(--foreground-muted)' }}>followers</span>
+              <span
+                className="text-xs"
+                style={{ color: 'var(--foreground-muted)' }}
+              >
+                followers
+              </span>
             </button>
             <button
               onClick={() => {
@@ -646,11 +865,19 @@ function BioPage() {
             >
               <div className="flex items-center justify-center gap-1 mb-0.5">
                 <UserPlus size={14} style={{ color: accentColor }} />
-                <span className="font-bold" style={{ color: 'var(--foreground)' }}>
+                <span
+                  className="font-bold"
+                  style={{ color: 'var(--foreground)' }}
+                >
                   {(profile.stats?.following || 0).toLocaleString()}
                 </span>
               </div>
-              <span className="text-xs" style={{ color: 'var(--foreground-muted)' }}>following</span>
+              <span
+                className="text-xs"
+                style={{ color: 'var(--foreground-muted)' }}
+              >
+                following
+              </span>
             </button>
           </div>
 
@@ -661,8 +888,8 @@ function BioPage() {
               disabled={isFollowLoading}
               className="flex items-center justify-center gap-2 px-6 py-2.5 rounded-full font-medium transition-all mx-auto"
               style={{
-                background: isFollowing 
-                  ? 'var(--background-secondary)' 
+                background: isFollowing
+                  ? 'var(--background-secondary)'
                   : `linear-gradient(135deg, ${accentColor}, var(--accent))`,
                 color: isFollowing ? 'var(--foreground)' : 'white',
                 border: isFollowing ? '1px solid var(--border)' : 'none',
@@ -705,147 +932,209 @@ function BioPage() {
         </motion.div>
 
         {/* Social Links */}
-        {profileData?.socials && Object.keys(profileData.socials).length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="flex justify-center gap-3 mb-8"
-          >
-            {Object.entries(profileData.socials).map(([platform, username]) => {
-              const Icon = socialIconMap[platform.toLowerCase()] || Globe
-              const socialUrl = getSocialUrl(platform, username as string)
-              return (
-                <motion.a
-                  key={platform}
-                  href={socialUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-3 rounded-xl transition-all"
-                  style={{ background: 'var(--card)', border: '1px solid var(--border)' }}
-                  whileHover={{ scale: 1.1, y: -2 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Icon size={20} />
-                </motion.a>
-              )
-            })}
-          </motion.div>
-        )}
+        {profileData?.socials &&
+          Object.keys(profileData.socials).length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="flex justify-center gap-3 mb-8"
+            >
+              {Object.entries(profileData.socials).map(
+                ([platform, username]) => {
+                  const Icon = socialIconMap[platform.toLowerCase()] || Globe
+                  const socialUrl = getSocialUrl(platform, username as string)
+                  return (
+                    <motion.a
+                      key={platform}
+                      href={socialUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-3 rounded-xl transition-all"
+                      style={{
+                        background: 'var(--card)',
+                        border: '1px solid var(--border)',
+                      }}
+                      whileHover={{ scale: 1.1, y: -2 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <Icon size={20} />
+                    </motion.a>
+                  )
+                },
+              )}
+            </motion.div>
+          )}
 
         {/* Spotify Now Playing */}
-        {spotifyStatus?.connected && spotifyStatus.showOnProfile && profile?.user?.id && (
-          <div className="mb-8">
-            <SpotifyWidget userId={profile.user.id} theme={theme} />
-          </div>
-        )}
+        {spotifyStatus?.connected &&
+          spotifyStatus.showOnProfile &&
+          profile?.user?.id && (
+            <div className="mb-8">
+              <SpotifyWidget userId={profile.user.id} theme={theme} />
+            </div>
+          )}
 
         {/* Links */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: `${cardSpacing}px` }} className="mb-12">
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: `${cardSpacing}px`,
+          }}
+          className="mb-12"
+        >
           <AnimatePresence>
             {profile.links && profile.links.length > 0 ? (
               profile.links.map((link, index) => {
                 const isFeatured = link.isFeatured
                 const featuredStyle = link.featuredStyle || 'default'
-                
+
                 // Featured link styles
                 const getFeaturedBorder = () => {
                   if (!isFeatured) return {}
                   switch (featuredStyle) {
-                    case 'glow': return { boxShadow: `0 0 20px ${accentColor}60` }
-                    case 'gradient': return { background: `linear-gradient(135deg, ${accentColor}40, var(--accent)40)` }
-                    case 'outline': return { border: `2px dashed ${accentColor}` }
-                    case 'neon': return { boxShadow: `0 0 10px ${accentColor}, 0 0 20px ${accentColor}60, 0 0 30px ${accentColor}40` }
-                    default: return { border: `2px solid ${accentColor}` }
+                    case 'glow':
+                      return { boxShadow: `0 0 20px ${accentColor}60` }
+                    case 'gradient':
+                      return {
+                        background: `linear-gradient(135deg, ${accentColor}40, var(--accent)40)`,
+                      }
+                    case 'outline':
+                      return { border: `2px dashed ${accentColor}` }
+                    case 'neon':
+                      return {
+                        boxShadow: `0 0 10px ${accentColor}, 0 0 20px ${accentColor}60, 0 0 30px ${accentColor}40`,
+                      }
+                    default:
+                      return { border: `2px solid ${accentColor}` }
                   }
                 }
-                
+
                 return (
-                <motion.button
-                  key={link.id}
-                  initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                  transition={{ 
-                    delay: 0.3 + index * 0.05,
-                    type: 'spring',
-                    stiffness: 300,
-                    damping: 25
-                  }}
-                  onClick={() => handleLinkClick(link.id, link.url)}
-                  disabled={clickedLink === link.id}
-                  className="w-full text-left transition-all disabled:opacity-50 group relative overflow-hidden"
-                  style={{
-                    padding: cardPadding,
-                    borderRadius: cardBorderRadius,
-                    boxShadow: shadowMap[cardShadow],
-                    ...getLinkStyle(),
-                    ...(link.backgroundColor ? { background: link.backgroundColor, border: 'none' } : {}),
-                    ...getFeaturedBorder(),
-                  }}
-                  whileHover={getLinkHoverEffect()}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  {/* Hover glow effect */}
-                  <motion.div
-                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-                    style={{
-                      background: `linear-gradient(135deg, ${accentColor}10, transparent)`,
+                  <motion.button
+                    key={link.id}
+                    initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                    transition={{
+                      delay: 0.3 + index * 0.05,
+                      type: 'spring',
+                      stiffness: 300,
+                      damping: 25,
                     }}
-                  />
-                  <div className="flex items-center justify-between relative z-10">
-                    <div className="flex items-center gap-3 flex-1 min-w-0">
-                      {link.icon && (
-                        <motion.span 
-                          className="text-2xl shrink-0"
-                          whileHover={{ scale: 1.2, rotate: 5 }}
-                        >
-                          {link.icon}
-                        </motion.span>
-                      )}
-                      <div className="min-w-0">
-                        <p className="font-semibold truncate" style={{ color: link.textColor || 'var(--foreground)' }}>
-                          {link.title}
-                        </p>
-                        {link.description && (
-                          <p className="text-sm truncate" style={{ color: link.textColor ? `${link.textColor}99` : 'var(--foreground-muted)' }}>
-                            {link.description}
-                          </p>
-                        )}
-                      </div>
-                    </div>
+                    onClick={() => handleLinkClick(link.id, link.url)}
+                    disabled={clickedLink === link.id}
+                    className="w-full text-left transition-all disabled:opacity-50 group relative overflow-hidden"
+                    style={{
+                      padding: cardPadding,
+                      borderRadius: cardBorderRadius,
+                      boxShadow: shadowMap[cardShadow],
+                      ...getLinkStyle(),
+                      ...(link.backgroundColor
+                        ? { background: link.backgroundColor, border: 'none' }
+                        : {}),
+                      ...getFeaturedBorder(),
+                    }}
+                    whileHover={getLinkHoverEffect()}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    {/* Hover glow effect */}
                     <motion.div
-                      className="shrink-0 ml-3"
-                      animate={{ 
-                        x: clickedLink === link.id ? 0 : [0, 4, 0],
-                        rotate: clickedLink === link.id ? 0 : [0, 5, 0]
+                      className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+                      style={{
+                        background: `linear-gradient(135deg, ${accentColor}10, transparent)`,
                       }}
-                      transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-                    >
-                      {clickedLink === link.id ? (
-                        <Loader2 size={18} className="animate-spin" style={{ color: link.textColor || accentColor }} />
-                      ) : (
-                        <ExternalLink size={18} className="opacity-40 group-hover:opacity-100 transition-opacity" style={{ color: link.textColor || accentColor }} />
-                      )}
-                    </motion.div>
-                  </div>
-                </motion.button>
-              )})
+                    />
+                    <div className="flex items-center justify-between relative z-10">
+                      <div className="flex items-center gap-3 flex-1 min-w-0">
+                        {link.icon && (
+                          <motion.span
+                            className="text-2xl shrink-0"
+                            whileHover={{ scale: 1.2, rotate: 5 }}
+                          >
+                            {link.icon}
+                          </motion.span>
+                        )}
+                        <div className="min-w-0">
+                          <p
+                            className="font-semibold truncate"
+                            style={{
+                              color: link.textColor || 'var(--foreground)',
+                            }}
+                          >
+                            {link.title}
+                          </p>
+                          {link.description && (
+                            <p
+                              className="text-sm truncate"
+                              style={{
+                                color: link.textColor
+                                  ? `${link.textColor}99`
+                                  : 'var(--foreground-muted)',
+                              }}
+                            >
+                              {link.description}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                      <motion.div
+                        className="shrink-0 ml-3"
+                        animate={{
+                          x: clickedLink === link.id ? 0 : [0, 4, 0],
+                          rotate: clickedLink === link.id ? 0 : [0, 5, 0],
+                        }}
+                        transition={{
+                          duration: 2,
+                          repeat: Infinity,
+                          ease: 'easeInOut',
+                        }}
+                      >
+                        {clickedLink === link.id ? (
+                          <Loader2
+                            size={18}
+                            className="animate-spin"
+                            style={{ color: link.textColor || accentColor }}
+                          />
+                        ) : (
+                          <ExternalLink
+                            size={18}
+                            className="opacity-40 group-hover:opacity-100 transition-opacity"
+                            style={{ color: link.textColor || accentColor }}
+                          />
+                        )}
+                      </motion.div>
+                    </div>
+                  </motion.button>
+                )
+              })
             ) : (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
                 className="text-center py-16 rounded-2xl"
-                style={{ 
-                  background: 'rgba(255,255,255,0.02)', 
+                style={{
+                  background: 'rgba(255,255,255,0.02)',
                   border: '1px solid rgba(255,255,255,0.05)',
-                  backdropFilter: 'blur(12px)'
+                  backdropFilter: 'blur(12px)',
                 }}
               >
-                <LinkIcon className="w-12 h-12 mx-auto mb-4 opacity-20" style={{ color: 'var(--foreground-muted)' }} />
-                <p className="font-medium mb-1" style={{ color: 'var(--foreground)' }}>No links yet</p>
-                <p className="text-sm" style={{ color: 'var(--foreground-muted)' }}>
+                <LinkIcon
+                  className="w-12 h-12 mx-auto mb-4 opacity-20"
+                  style={{ color: 'var(--foreground-muted)' }}
+                />
+                <p
+                  className="font-medium mb-1"
+                  style={{ color: 'var(--foreground)' }}
+                >
+                  No links yet
+                </p>
+                <p
+                  className="text-sm"
+                  style={{ color: 'var(--foreground-muted)' }}
+                >
                   This creator hasn't added any links
                 </p>
               </motion.div>
@@ -855,10 +1144,12 @@ function BioPage() {
 
         {(() => {
           const userTier = (profile.user.tier || 'free') as TierType
-          const showBranding = !['pro', 'creator', 'lifetime'].includes(userTier)
-          
+          const showBranding = !['pro', 'creator', 'lifetime'].includes(
+            userTier,
+          )
+
           if (!showBranding) return null
-          
+
           return (
             <motion.div
               initial={{ opacity: 0 }}
@@ -869,7 +1160,10 @@ function BioPage() {
               <Link
                 to="/sign-up"
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm transition-all hover:scale-105"
-                style={{ background: 'var(--background-secondary)', color: 'var(--foreground-muted)' }}
+                style={{
+                  background: 'var(--background-secondary)',
+                  color: 'var(--foreground-muted)',
+                }}
               >
                 <Sparkles size={14} style={{ color: 'var(--primary)' }} />
                 Create your own Eziox page

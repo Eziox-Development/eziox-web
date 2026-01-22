@@ -44,11 +44,13 @@ export function ProfileHeader({
     >
       <motion.div
         className="absolute inset-0 rounded-3xl blur-3xl -z-10"
-        style={{ background: `linear-gradient(135deg, ${accentColor}30, ${theme.colors.accent}20)` }}
+        style={{
+          background: `linear-gradient(135deg, ${accentColor}30, ${theme.colors.accent}20)`,
+        }}
         animate={{ opacity: [0.3, 0.5, 0.3] }}
         transition={{ duration: 4, repeat: Infinity }}
       />
-      
+
       <div
         className="relative rounded-3xl overflow-hidden"
         style={{
@@ -59,9 +61,11 @@ export function ProfileHeader({
       >
         <div
           className="absolute top-0 left-0 right-0 h-px"
-          style={{ background: `linear-gradient(90deg, transparent, ${theme.colors.border}, transparent)` }}
+          style={{
+            background: `linear-gradient(90deg, transparent, ${theme.colors.border}, transparent)`,
+          }}
         />
-        
+
         <div className="relative h-44 md:h-52">
           <ImageUpload
             type="banner"
@@ -70,7 +74,10 @@ export function ProfileHeader({
           />
           <div
             className="absolute bottom-0 left-0 right-0 h-32"
-            style={{ background: 'linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent)' }}
+            style={{
+              background:
+                'linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent)',
+            }}
           />
         </div>
 
@@ -90,7 +97,7 @@ export function ProfileHeader({
                   transition={{ duration: 2, repeat: Infinity }}
                 />
               </div>
-              
+
               <div className="space-y-1.5">
                 <div className="flex items-center gap-2 flex-wrap">
                   <h1
@@ -100,7 +107,11 @@ export function ProfileHeader({
                     {currentUser.name || 'Anonymous'}
                   </h1>
                   {userBadges.length > 0 && (
-                    <BadgeDisplay badges={userBadges} size="sm" maxDisplay={4} />
+                    <BadgeDisplay
+                      badges={userBadges}
+                      size="sm"
+                      maxDisplay={4}
+                    />
                   )}
                   {creatorTypes.length > 0 && (
                     <div className="flex items-center gap-1 flex-wrap">
@@ -108,14 +119,23 @@ export function ProfileHeader({
                         <span
                           key={type}
                           className="px-2 py-0.5 rounded-full text-xs flex items-center gap-1"
-                          style={{ background: theme.colors.backgroundSecondary, color: theme.colors.foregroundMuted }}
+                          style={{
+                            background: theme.colors.backgroundSecondary,
+                            color: theme.colors.foregroundMuted,
+                          }}
                         >
                           <Sparkles size={10} />
-                          {CREATOR_TYPES.find(t => t.value === type)?.label || type}
+                          {CREATOR_TYPES.find((t) => t.value === type)?.label ||
+                            type}
                         </span>
                       ))}
                       {creatorTypes.length > 3 && (
-                        <span className="text-xs" style={{ color: theme.colors.foregroundMuted }}>+{creatorTypes.length - 3}</span>
+                        <span
+                          className="text-xs"
+                          style={{ color: theme.colors.foregroundMuted }}
+                        >
+                          +{creatorTypes.length - 3}
+                        </span>
                       )}
                     </div>
                   )}
@@ -143,7 +163,10 @@ export function ProfileHeader({
                 <motion.button
                   onClick={onCancel}
                   className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm"
-                  style={{ background: theme.colors.backgroundSecondary, color: theme.colors.foreground }}
+                  style={{
+                    background: theme.colors.backgroundSecondary,
+                    color: theme.colors.foreground,
+                  }}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
@@ -157,7 +180,11 @@ export function ProfileHeader({
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  {isSaving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
+                  {isSaving ? (
+                    <Loader2 size={14} className="animate-spin" />
+                  ) : (
+                    <Save size={14} />
+                  )}
                   Save
                 </motion.button>
               </div>

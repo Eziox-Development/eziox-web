@@ -57,7 +57,9 @@ function ForgotPasswordPage() {
       setEmailSent(true)
     },
     onError: (error: { message?: string }) => {
-      form.setError('root', { message: error.message || 'Failed to send reset email' })
+      form.setError('root', {
+        message: error.message || 'Failed to send reset email',
+      })
     },
   })
 
@@ -77,11 +79,15 @@ function ForgotPasswordPage() {
           >
             <CheckCircle2 className="w-10 h-10" style={{ color: '#22c55e' }} />
           </div>
-          <h2 className="text-2xl font-bold mb-4" style={{ color: 'var(--foreground)' }}>
+          <h2
+            className="text-2xl font-bold mb-4"
+            style={{ color: 'var(--foreground)' }}
+          >
             Check your email
           </h2>
           <p className="mb-8" style={{ color: 'var(--foreground-muted)' }}>
-            If an account exists for <strong>{form.getValues('email')}</strong>, we've sent password reset instructions.
+            If an account exists for <strong>{form.getValues('email')}</strong>,
+            we've sent password reset instructions.
           </p>
           <Link
             to="/sign-in"
@@ -115,16 +121,28 @@ function ForgotPasswordPage() {
         <div className="mb-8">
           <div
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-4"
-            style={{ background: 'rgba(99, 102, 241, 0.1)', border: '1px solid rgba(99, 102, 241, 0.2)' }}
+            style={{
+              background: 'rgba(99, 102, 241, 0.1)',
+              border: '1px solid rgba(99, 102, 241, 0.2)',
+            }}
           >
             <KeyRound size={14} style={{ color: 'var(--primary)' }} />
-            <span className="text-xs font-semibold" style={{ color: 'var(--primary)' }}>Password Reset</span>
+            <span
+              className="text-xs font-semibold"
+              style={{ color: 'var(--primary)' }}
+            >
+              Password Reset
+            </span>
           </div>
-          <h2 className="text-3xl font-bold mb-2" style={{ color: 'var(--foreground)' }}>
+          <h2
+            className="text-3xl font-bold mb-2"
+            style={{ color: 'var(--foreground)' }}
+          >
             Forgot password?
           </h2>
           <p style={{ color: 'var(--foreground-muted)' }}>
-            Enter your email and we'll send you instructions to reset your password.
+            Enter your email and we'll send you instructions to reset your
+            password.
           </p>
         </div>
 
@@ -133,16 +151,24 @@ function ForgotPasswordPage() {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             className="mb-6 p-4 rounded-2xl flex items-center gap-3"
-            style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)' }}
+            style={{
+              background: 'rgba(239, 68, 68, 0.1)',
+              border: '1px solid rgba(239, 68, 68, 0.2)',
+            }}
           >
             <AlertCircle className="w-5 h-5 text-red-400 shrink-0" />
-            <p className="text-sm text-red-400">{form.formState.errors.root.message}</p>
+            <p className="text-sm text-red-400">
+              {form.formState.errors.root.message}
+            </p>
           </motion.div>
         )}
 
         <form onSubmit={onSubmit} className="space-y-5">
           <div>
-            <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--foreground)' }}>
+            <label
+              className="block text-sm font-semibold mb-2"
+              style={{ color: 'var(--foreground)' }}
+            >
               Email
             </label>
             <div className="relative">
@@ -163,7 +189,9 @@ function ForgotPasswordPage() {
               />
             </div>
             {form.formState.errors.email && (
-              <p className="mt-2 text-xs text-red-400">{form.formState.errors.email.message}</p>
+              <p className="mt-2 text-xs text-red-400">
+                {form.formState.errors.email.message}
+              </p>
             )}
           </div>
 

@@ -5,7 +5,11 @@
 
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
-import { getCookie, setResponseStatus, getRequestIP } from '@tanstack/react-start/server'
+import {
+  getCookie,
+  setResponseStatus,
+  getRequestIP,
+} from '@tanstack/react-start/server'
 import { db } from '../db'
 import { profiles } from '../db/schema'
 import { eq } from 'drizzle-orm'
@@ -39,10 +43,17 @@ export const uploadAvatarFn = createServerFn({ method: 'POST' })
     }
 
     const ip = getRequestIP() || 'unknown'
-    const rateLimit = checkRateLimit(`upload:${user.id}:${ip}`, RATE_LIMITS.API_UPLOAD.maxRequests, RATE_LIMITS.API_UPLOAD.windowMs)
+    const rateLimit = checkRateLimit(
+      `upload:${user.id}:${ip}`,
+      RATE_LIMITS.API_UPLOAD.maxRequests,
+      RATE_LIMITS.API_UPLOAD.windowMs,
+    )
     if (!rateLimit.allowed) {
       setResponseStatus(429)
-      throw { message: 'Too many uploads. Please try again later.', status: 429 }
+      throw {
+        message: 'Too many uploads. Please try again later.',
+        status: 429,
+      }
     }
 
     try {
@@ -66,7 +77,8 @@ export const uploadAvatarFn = createServerFn({ method: 'POST' })
       }
     } catch (error) {
       console.error('Avatar upload error:', error)
-      const errorMessage = error instanceof Error ? error.message : 'Failed to upload avatar'
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to upload avatar'
       setResponseStatus(500)
       throw { message: errorMessage, status: 500 }
     }
@@ -89,10 +101,17 @@ export const uploadBannerFn = createServerFn({ method: 'POST' })
     }
 
     const ip = getRequestIP() || 'unknown'
-    const rateLimit = checkRateLimit(`upload:${user.id}:${ip}`, RATE_LIMITS.API_UPLOAD.maxRequests, RATE_LIMITS.API_UPLOAD.windowMs)
+    const rateLimit = checkRateLimit(
+      `upload:${user.id}:${ip}`,
+      RATE_LIMITS.API_UPLOAD.maxRequests,
+      RATE_LIMITS.API_UPLOAD.windowMs,
+    )
     if (!rateLimit.allowed) {
       setResponseStatus(429)
-      throw { message: 'Too many uploads. Please try again later.', status: 429 }
+      throw {
+        message: 'Too many uploads. Please try again later.',
+        status: 429,
+      }
     }
 
     try {
@@ -116,7 +135,8 @@ export const uploadBannerFn = createServerFn({ method: 'POST' })
       }
     } catch (error) {
       console.error('Banner upload error:', error)
-      const errorMessage = error instanceof Error ? error.message : 'Failed to upload banner'
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to upload banner'
       setResponseStatus(500)
       throw { message: errorMessage, status: 500 }
     }
@@ -157,7 +177,7 @@ export const removeAvatarFn = createServerFn({ method: 'POST' }).handler(
       setResponseStatus(500)
       throw { message: 'Failed to remove avatar', status: 500 }
     }
-  }
+  },
 )
 
 // Remove Banner
@@ -195,7 +215,7 @@ export const removeBannerFn = createServerFn({ method: 'POST' }).handler(
       setResponseStatus(500)
       throw { message: 'Failed to remove banner', status: 500 }
     }
-  }
+  },
 )
 
 // Type Exports

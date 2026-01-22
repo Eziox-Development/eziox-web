@@ -177,7 +177,6 @@ export function CustomizationTab() {
     )
   }
 
-
   const currentBackground =
     localBackground ?? settings?.customBackground ?? null
   const currentLayout =
@@ -686,9 +685,14 @@ export function CustomizationTab() {
                                     type: 'animated',
                                     value: preset.id,
                                     animatedPreset: preset.id,
-                                    animatedSpeed: currentBackground?.animatedSpeed || 'normal',
-                                    animatedIntensity: currentBackground?.animatedIntensity || 'normal',
-                                    animatedColors: currentBackground?.animatedColors,
+                                    animatedSpeed:
+                                      currentBackground?.animatedSpeed ||
+                                      'normal',
+                                    animatedIntensity:
+                                      currentBackground?.animatedIntensity ||
+                                      'normal',
+                                    animatedColors:
+                                      currentBackground?.animatedColors,
                                   })
                                 }
                                 className="p-2 rounded-lg text-left transition-all"

@@ -7,12 +7,14 @@ import type { SQL } from 'drizzle-orm'
 
 export const getCreatorsFn = createServerFn({ method: 'GET' })
   .inputValidator(
-    z.object({
-      category: z.string().optional(),
-      featured: z.boolean().optional(),
-      limit: z.number().int().min(1).max(100).default(50),
-      offset: z.number().int().min(0).default(0),
-    }).optional()
+    z
+      .object({
+        category: z.string().optional(),
+        featured: z.boolean().optional(),
+        limit: z.number().int().min(1).max(100).default(50),
+        offset: z.number().int().min(0).default(0),
+      })
+      .optional(),
   )
   .handler(async ({ data }) => {
     const limit = data?.limit || 50
@@ -23,7 +25,10 @@ export const getCreatorsFn = createServerFn({ method: 'GET' })
     let whereClause: SQL<unknown> = eq(profiles.isPublic, true)
 
     if (category && category !== 'all') {
-      whereClause = and(whereClause, sql`${profiles.creatorTypes} ? ${category}`)!
+      whereClause = and(
+        whereClause,
+        sql`${profiles.creatorTypes} ? ${category}`,
+      )!
     }
 
     if (featured) {
@@ -80,7 +85,7 @@ export const getCreatorsFn = createServerFn({ method: 'GET' })
           referrer = referrerData || null
         }
         return { ...creator, referrer }
-      })
+      }),
     )
 
     const [countResult] = await db
@@ -99,9 +104,11 @@ export const getCreatorsFn = createServerFn({ method: 'GET' })
 
 export const getFeaturedCreatorsFn = createServerFn({ method: 'GET' })
   .inputValidator(
-    z.object({
-      limit: z.number().int().min(1).max(10).default(6),
-    }).optional()
+    z
+      .object({
+        limit: z.number().int().min(1).max(10).default(6),
+      })
+      .optional(),
   )
   .handler(async ({ data }) => {
     const limit = data?.limit || 6
@@ -131,19 +138,21 @@ export const getFeaturedCreatorsFn = createServerFn({ method: 'GET' })
       .from(profiles)
       .innerJoin(users, eq(users.id, profiles.userId))
       .leftJoin(userStats, eq(userStats.userId, profiles.userId))
-      .where(and(
-        eq(profiles.isFeatured, true),
-        eq(profiles.isPublic, true),
-        sql`jsonb_array_length(${profiles.creatorTypes}) > 0`
-      ))
+      .where(
+        and(
+          eq(profiles.isFeatured, true),
+          eq(profiles.isPublic, true),
+          sql`jsonb_array_length(${profiles.creatorTypes}) > 0`,
+        ),
+      )
       .orderBy(desc(userStats.followers))
       .limit(limit)
 
     return results
   })
 
-export const getCreatorCategoriesFn = createServerFn({ method: 'GET' })
-  .handler(async () => {
+export const getCreatorCategoriesFn = createServerFn({ method: 'GET' }).handler(
+  async () => {
     const allProfiles = await db
       .select({
         creatorTypes: profiles.creatorTypes,
@@ -165,10 +174,11 @@ export const getCreatorCategoriesFn = createServerFn({ method: 'GET' })
     return Array.from(categoryMap.entries())
       .map(([category, count]) => ({ category, count }))
       .sort((a, b) => b.count - a.count)
-  })
+  },
+)
 
-export const getCreatorStatsFn = createServerFn({ method: 'GET' })
-  .handler(async () => {
+export const getCreatorStatsFn = createServerFn({ method: 'GET' }).handler(
+  async () => {
     try {
       const [totalCreators] = await db
         .select({ count: sql<number>`COUNT(*)::int` })
@@ -178,10 +188,7 @@ export const getCreatorStatsFn = createServerFn({ method: 'GET' })
       const [featuredCount] = await db
         .select({ count: sql<number>`COUNT(*)::int` })
         .from(profiles)
-        .where(and(
-          eq(profiles.isFeatured, true),
-          eq(profiles.isPublic, true)
-        ))
+        .where(and(eq(profiles.isFeatured, true), eq(profiles.isPublic, true)))
 
       const allProfiles = await db
         .select({
@@ -202,10 +209,7 @@ export const getCreatorStatsFn = createServerFn({ method: 'GET' })
       const [referredCreators] = await db
         .select({ count: sql<number>`COUNT(*)::int` })
         .from(profiles)
-        .where(and(
-          isNotNull(profiles.referredBy),
-          eq(profiles.isPublic, true)
-        ))
+        .where(and(isNotNull(profiles.referredBy), eq(profiles.isPublic, true)))
 
       return {
         totalCreators: totalCreators?.count ?? 0,
@@ -222,7 +226,12 @@ export const getCreatorStatsFn = createServerFn({ method: 'GET' })
         referredCreators: 0,
       }
     }
-  })
+  },
+)
 
-export type Creator = Awaited<ReturnType<typeof getCreatorsFn>>['creators'][number]
-export type CreatorCategory = Awaited<ReturnType<typeof getCreatorCategoriesFn>>[number]
+export type Creator = Awaited<
+  ReturnType<typeof getCreatorsFn>
+>['creators'][number]
+export type CreatorCategory = Awaited<
+  ReturnType<typeof getCreatorCategoriesFn>
+>[number]

@@ -20,19 +20,27 @@ const createLinkSchema = z.object({
   url: z.url({ error: 'Invalid URL' }),
   icon: z.string().max(50).optional(),
   description: z.string().max(255).optional(),
-  backgroundColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(),
-  textColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(),
+  backgroundColor: z
+    .string()
+    .regex(/^#[0-9A-Fa-f]{6}$/)
+    .optional(),
+  textColor: z
+    .string()
+    .regex(/^#[0-9A-Fa-f]{6}$/)
+    .optional(),
 })
 
-const linkScheduleSchema = z.object({
-  enabled: z.boolean(),
-  startDate: z.string().optional(),
-  endDate: z.string().optional(),
-  timezone: z.string().optional(),
-  showCountdown: z.boolean().optional(),
-  countdownStyle: z.enum(['minimal', 'detailed', 'badge']).optional(),
-  hideWhenExpired: z.boolean().optional(),
-}).optional()
+const linkScheduleSchema = z
+  .object({
+    enabled: z.boolean(),
+    startDate: z.string().optional(),
+    endDate: z.string().optional(),
+    timezone: z.string().optional(),
+    showCountdown: z.boolean().optional(),
+    countdownStyle: z.enum(['minimal', 'detailed', 'badge']).optional(),
+    hideWhenExpired: z.boolean().optional(),
+  })
+  .optional()
 
 const updateLinkSchema = z.object({
   id: z.uuid(),
@@ -40,8 +48,14 @@ const updateLinkSchema = z.object({
   url: z.url().optional(),
   icon: z.string().max(50).optional(),
   description: z.string().max(255).optional(),
-  backgroundColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(),
-  textColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(),
+  backgroundColor: z
+    .string()
+    .regex(/^#[0-9A-Fa-f]{6}$/)
+    .optional(),
+  textColor: z
+    .string()
+    .regex(/^#[0-9A-Fa-f]{6}$/)
+    .optional(),
   isActive: z.boolean().optional(),
   order: z.number().int().min(0).optional(),
   schedule: linkScheduleSchema,
@@ -52,10 +66,12 @@ const deleteLinkSchema = z.object({
 })
 
 const reorderLinksSchema = z.object({
-  links: z.array(z.object({
-    id: z.uuid(),
-    order: z.number().int().min(0),
-  })),
+  links: z.array(
+    z.object({
+      id: z.uuid(),
+      order: z.number().int().min(0),
+    }),
+  ),
 })
 
 // ============================================================================
@@ -258,11 +274,13 @@ export const reorderLinksFn = createServerFn({ method: 'POST' })
 // ============================================================================
 
 export const trackLinkClickFn = createServerFn({ method: 'POST' })
-  .inputValidator(z.object({
-    linkId: z.uuid(),
-    userAgent: z.string().optional(),
-    referrer: z.string().optional(),
-  }))
+  .inputValidator(
+    z.object({
+      linkId: z.uuid(),
+      userAgent: z.string().optional(),
+      referrer: z.string().optional(),
+    }),
+  )
   .handler(async ({ data }) => {
     try {
       const [link] = await db
@@ -277,9 +295,31 @@ export const trackLinkClickFn = createServerFn({ method: 'POST' })
 
       // Parse user agent for device/browser/os info
       const ua = data.userAgent || ''
-      const device = /Mobile|Android|iPhone|iPad/i.test(ua) ? 'mobile' : /Tablet/i.test(ua) ? 'tablet' : 'desktop'
-      const browser = /Chrome/i.test(ua) ? 'Chrome' : /Firefox/i.test(ua) ? 'Firefox' : /Safari/i.test(ua) ? 'Safari' : /Edge/i.test(ua) ? 'Edge' : 'Other'
-      const os = /Windows/i.test(ua) ? 'Windows' : /Mac/i.test(ua) ? 'macOS' : /Linux/i.test(ua) ? 'Linux' : /Android/i.test(ua) ? 'Android' : /iOS|iPhone|iPad/i.test(ua) ? 'iOS' : 'Other'
+      const device = /Mobile|Android|iPhone|iPad/i.test(ua)
+        ? 'mobile'
+        : /Tablet/i.test(ua)
+          ? 'tablet'
+          : 'desktop'
+      const browser = /Chrome/i.test(ua)
+        ? 'Chrome'
+        : /Firefox/i.test(ua)
+          ? 'Firefox'
+          : /Safari/i.test(ua)
+            ? 'Safari'
+            : /Edge/i.test(ua)
+              ? 'Edge'
+              : 'Other'
+      const os = /Windows/i.test(ua)
+        ? 'Windows'
+        : /Mac/i.test(ua)
+          ? 'macOS'
+          : /Linux/i.test(ua)
+            ? 'Linux'
+            : /Android/i.test(ua)
+              ? 'Android'
+              : /iOS|iPhone|iPad/i.test(ua)
+                ? 'iOS'
+                : 'Other'
 
       // Store detailed click analytics
       await db.insert(linkClickAnalytics).values({
@@ -323,10 +363,12 @@ export const trackLinkClickFn = createServerFn({ method: 'POST' })
 // ============================================================================
 
 export const getLinkAnalyticsFn = createServerFn({ method: 'GET' })
-  .inputValidator(z.object({
-    linkId: z.uuid(),
-    days: z.number().min(1).max(365).default(30),
-  }))
+  .inputValidator(
+    z.object({
+      linkId: z.uuid(),
+      days: z.number().min(1).max(365).default(30),
+    }),
+  )
   .handler(async ({ data }) => {
     const token = getCookie('session-token')
     if (!token) {
@@ -359,63 +401,88 @@ export const getLinkAnalyticsFn = createServerFn({ method: 'GET' })
     const clicks = await db
       .select()
       .from(linkClickAnalytics)
-      .where(and(
-        eq(linkClickAnalytics.linkId, data.linkId),
-        gte(linkClickAnalytics.clickedAt, startDate)
-      ))
+      .where(
+        and(
+          eq(linkClickAnalytics.linkId, data.linkId),
+          gte(linkClickAnalytics.clickedAt, startDate),
+        ),
+      )
       .orderBy(desc(linkClickAnalytics.clickedAt))
 
     // Aggregate by device
-    const deviceStats = clicks.reduce((acc, click) => {
-      const device = click.device || 'unknown'
-      acc[device] = (acc[device] || 0) + 1
-      return acc
-    }, {} as Record<string, number>)
+    const deviceStats = clicks.reduce(
+      (acc, click) => {
+        const device = click.device || 'unknown'
+        acc[device] = (acc[device] || 0) + 1
+        return acc
+      },
+      {} as Record<string, number>,
+    )
 
     // Aggregate by browser
-    const browserStats = clicks.reduce((acc, click) => {
-      const browser = click.browser || 'unknown'
-      acc[browser] = (acc[browser] || 0) + 1
-      return acc
-    }, {} as Record<string, number>)
+    const browserStats = clicks.reduce(
+      (acc, click) => {
+        const browser = click.browser || 'unknown'
+        acc[browser] = (acc[browser] || 0) + 1
+        return acc
+      },
+      {} as Record<string, number>,
+    )
 
     // Aggregate by OS
-    const osStats = clicks.reduce((acc, click) => {
-      const os = click.os || 'unknown'
-      acc[os] = (acc[os] || 0) + 1
-      return acc
-    }, {} as Record<string, number>)
+    const osStats = clicks.reduce(
+      (acc, click) => {
+        const os = click.os || 'unknown'
+        acc[os] = (acc[os] || 0) + 1
+        return acc
+      },
+      {} as Record<string, number>,
+    )
 
     // Aggregate by country
-    const countryStats = clicks.reduce((acc, click) => {
-      const country = click.country || 'unknown'
-      acc[country] = (acc[country] || 0) + 1
-      return acc
-    }, {} as Record<string, number>)
+    const countryStats = clicks.reduce(
+      (acc, click) => {
+        const country = click.country || 'unknown'
+        acc[country] = (acc[country] || 0) + 1
+        return acc
+      },
+      {} as Record<string, number>,
+    )
 
     // Aggregate by referrer
-    const referrerStats = clicks.reduce((acc, click) => {
-      const referrer = click.referrer ? new URL(click.referrer).hostname : 'direct'
-      acc[referrer] = (acc[referrer] || 0) + 1
-      return acc
-    }, {} as Record<string, number>)
+    const referrerStats = clicks.reduce(
+      (acc, click) => {
+        const referrer = click.referrer
+          ? new URL(click.referrer).hostname
+          : 'direct'
+        acc[referrer] = (acc[referrer] || 0) + 1
+        return acc
+      },
+      {} as Record<string, number>,
+    )
 
     // Aggregate by day
-    const dailyClicks = clicks.reduce((acc, click) => {
-      const dateParts = click.clickedAt.toISOString().split('T')
-      const date = dateParts[0] ?? 'unknown'
-      acc[date] = (acc[date] || 0) + 1
-      return acc
-    }, {} as Record<string, number>)
+    const dailyClicks = clicks.reduce(
+      (acc, click) => {
+        const dateParts = click.clickedAt.toISOString().split('T')
+        const date = dateParts[0] ?? 'unknown'
+        acc[date] = (acc[date] || 0) + 1
+        return acc
+      },
+      {} as Record<string, number>,
+    )
 
     // Aggregate by hour (for heatmap)
-    const hourlyClicks = clicks.reduce((acc, click) => {
-      const hour = click.clickedAt.getHours()
-      const day = click.clickedAt.getDay()
-      const key = `${day}-${hour}`
-      acc[key] = (acc[key] || 0) + 1
-      return acc
-    }, {} as Record<string, number>)
+    const hourlyClicks = clicks.reduce(
+      (acc, click) => {
+        const hour = click.clickedAt.getHours()
+        const day = click.clickedAt.getDay()
+        const key = `${day}-${hour}`
+        acc[key] = (acc[key] || 0) + 1
+        return acc
+      },
+      {} as Record<string, number>,
+    )
 
     return {
       link: {
@@ -445,9 +512,11 @@ export const getLinkAnalyticsFn = createServerFn({ method: 'GET' })
 // ============================================================================
 
 export const getAllLinksAnalyticsFn = createServerFn({ method: 'GET' })
-  .inputValidator(z.object({
-    days: z.number().min(1).max(365).default(30),
-  }))
+  .inputValidator(
+    z.object({
+      days: z.number().min(1).max(365).default(30),
+    }),
+  )
   .handler(async ({ data }) => {
     const token = getCookie('session-token')
     if (!token) {
@@ -475,40 +544,51 @@ export const getAllLinksAnalyticsFn = createServerFn({ method: 'GET' })
     const clicks = await db
       .select()
       .from(linkClickAnalytics)
-      .where(and(
-        eq(linkClickAnalytics.userId, user.id),
-        gte(linkClickAnalytics.clickedAt, startDate)
-      ))
+      .where(
+        and(
+          eq(linkClickAnalytics.userId, user.id),
+          gte(linkClickAnalytics.clickedAt, startDate),
+        ),
+      )
 
     // Aggregate per-link stats
-    const linkStats = links.map(link => {
-      const linkClicks = clicks.filter(c => c.linkId === link.id)
+    const linkStats = links.map((link) => {
+      const linkClicks = clicks.filter((c) => c.linkId === link.id)
       return {
         id: link.id,
         title: link.title,
         url: link.url,
         totalClicks: link.clicks || 0,
         periodClicks: linkClicks.length,
-        devices: linkClicks.reduce((acc, c) => {
-          acc[c.device || 'unknown'] = (acc[c.device || 'unknown'] || 0) + 1
-          return acc
-        }, {} as Record<string, number>),
+        devices: linkClicks.reduce(
+          (acc, c) => {
+            acc[c.device || 'unknown'] = (acc[c.device || 'unknown'] || 0) + 1
+            return acc
+          },
+          {} as Record<string, number>,
+        ),
       }
     })
 
     // Overall device stats
-    const deviceStats = clicks.reduce((acc, click) => {
-      const device = click.device || 'unknown'
-      acc[device] = (acc[device] || 0) + 1
-      return acc
-    }, {} as Record<string, number>)
+    const deviceStats = clicks.reduce(
+      (acc, click) => {
+        const device = click.device || 'unknown'
+        acc[device] = (acc[device] || 0) + 1
+        return acc
+      },
+      {} as Record<string, number>,
+    )
 
     // Overall browser stats
-    const browserStats = clicks.reduce((acc, click) => {
-      const browser = click.browser || 'unknown'
-      acc[browser] = (acc[browser] || 0) + 1
-      return acc
-    }, {} as Record<string, number>)
+    const browserStats = clicks.reduce(
+      (acc, click) => {
+        const browser = click.browser || 'unknown'
+        acc[browser] = (acc[browser] || 0) + 1
+        return acc
+      },
+      {} as Record<string, number>,
+    )
 
     return {
       period: {
