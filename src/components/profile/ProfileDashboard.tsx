@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { useQuery } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
+import { useNavigate } from '@tanstack/react-router'
 import { useTheme } from '@/components/layout/ThemeProvider'
 import { updateProfileFn } from '@/server/functions/auth'
 import { getMyLinksFn } from '@/server/functions/links'
@@ -24,15 +25,17 @@ import type { TabType, ProfileFormData, ProfileUser } from './types'
 
 interface ProfileDashboardProps {
   currentUser: ProfileUser
+  initialTab?: TabType
 }
 
-export function ProfileDashboard({ currentUser }: ProfileDashboardProps) {
+export function ProfileDashboard({ currentUser, initialTab }: ProfileDashboardProps) {
   useTheme()
+  const navigate = useNavigate()
   const updateProfile = useServerFn(updateProfileFn)
   const getMyLinks = useServerFn(getMyLinksFn)
   const getReferralStats = useServerFn(getReferralStatsFn)
 
-  const [activeTab, setActiveTab] = useState<TabType>('profile')
+  const [activeTab, setActiveTab] = useState<TabType>(initialTab || 'profile')
   const [isSaving, setIsSaving] = useState(false)
   const [saveSuccess, setSaveSuccess] = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null)
@@ -56,6 +59,17 @@ export function ProfileDashboard({ currentUser }: ProfileDashboardProps) {
     showActivity: true,
     socials: {},
   })
+
+  useEffect(() => {
+    if (initialTab && initialTab !== activeTab) {
+      setActiveTab(initialTab)
+    }
+  }, [initialTab])
+
+  const handleTabChange = useCallback((tab: TabType) => {
+    setActiveTab(tab)
+    void navigate({ to: '/profile', search: { tab } })
+  }, [navigate])
 
   const isOwner = currentUser.email === siteConfig.owner.email || currentUser.email === import.meta.env.OWNER_EMAIL
 
@@ -190,7 +204,7 @@ export function ProfileDashboard({ currentUser }: ProfileDashboardProps) {
           <ProfileSidebar
             currentUser={currentUser}
             activeTab={activeTab}
-            setActiveTab={setActiveTab}
+            setActiveTab={handleTabChange}
             badges={{ links: links.length, referrals: referralCount, badges: userBadges.length }}
             onCopyBioUrl={copyBioUrl}
             copied={copiedBioUrl}

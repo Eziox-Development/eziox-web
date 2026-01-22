@@ -19,4 +19,4 @@ async function fixCreatorTypes() {
   }
 }
 
-fixCreatorTypes()
+void fixCreatorTypes()
