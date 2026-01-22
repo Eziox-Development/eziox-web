@@ -14,7 +14,7 @@ import {
 import { ANIMATED_PRESETS } from '@/components/backgrounds/AnimatedBackgrounds'
 import { AnimatedBackground, VideoBackground } from '@/components/backgrounds/AnimatedBackgrounds'
 import type { CustomBackground, LayoutSettings } from '@/server/db/schema'
-import { useTheme } from '@/components/portfolio/ThemeProvider'
+import { useTheme } from '@/components/layout/ThemeProvider'
 import { BadgeDisplay } from '@/components/ui/badge-display'
 import {
   Sparkles,

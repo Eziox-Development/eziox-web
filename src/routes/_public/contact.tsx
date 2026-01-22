@@ -4,7 +4,7 @@ import { motion } from 'motion/react'
 import { useMutation } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
 import { submitContactFormFn } from '@/server/functions/contact'
-import { useTheme } from '@/components/portfolio/ThemeProvider'
+import { useTheme } from '@/components/layout/ThemeProvider'
 import { useAuth } from '@/hooks/use-auth'
 import { toast } from 'sonner'
 import {

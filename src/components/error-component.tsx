@@ -1,4 +1,4 @@
-import { useTheme } from '@/components/portfolio/ThemeProvider'
+import { useTheme } from '@/components/layout/ThemeProvider'
 import { useLocation } from '@tanstack/react-router'
 import { useEffect, useRef } from 'react'
 import { motion } from 'motion/react'

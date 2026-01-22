@@ -1,7 +1,7 @@
 import { motion } from 'motion/react'
 import { Lock, Eye, Activity, Crown, Zap, Users, Settings } from 'lucide-react'
 import type { ProfileFormData } from '@/components/profile/types'
-import { useTheme } from '@/components/portfolio/ThemeProvider'
+import { useTheme } from '@/components/layout/ThemeProvider'
 
 interface PrivacyTabProps {
   formData: ProfileFormData

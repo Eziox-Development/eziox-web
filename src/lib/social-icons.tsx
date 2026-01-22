@@ -1,8 +1,3 @@
-/**
- * Social Icons - Using react-icons/si (Simple Icons)
- * Replaces deprecated Lucide brand icons
- */
-
 import {
   SiX,
   SiInstagram,

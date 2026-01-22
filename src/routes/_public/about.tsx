@@ -3,7 +3,7 @@ import { motion } from 'motion/react'
 import { useQuery } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
 import { getPlatformStatsFn } from '@/server/functions/stats'
-import { useTheme } from '@/components/portfolio/ThemeProvider'
+import { useTheme } from '@/components/layout/ThemeProvider'
 import {
   ArrowRight, Users, Link2, Palette, Shield, BarChart3, Zap, Heart,
   Sparkles, Lock, Eye, Layers, Music, Calendar, Trophy,

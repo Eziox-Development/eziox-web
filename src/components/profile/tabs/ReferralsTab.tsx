@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
 import { getReferralCodeFn, getReferralStatsFn } from '@/server/functions/referrals'
 import { Users, Trophy, TrendingUp, Star, QrCode, Copy, Check, Share2, Loader2, Sparkles, ArrowRight } from 'lucide-react'
-import { useTheme } from '@/components/portfolio/ThemeProvider'
+import { useTheme } from '@/components/layout/ThemeProvider'
 
 export function ReferralsTab() {
   const { theme } = useTheme()

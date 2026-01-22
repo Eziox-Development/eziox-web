@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
 import { getCreatorsFn, getCreatorStatsFn } from '@/server/functions/creators'
 import { BadgeDisplay } from '@/components/ui/badge-display'
-import { useTheme } from '@/components/portfolio/ThemeProvider'
+import { useTheme } from '@/components/layout/ThemeProvider'
 import {
   Sparkles, Search, Loader2, Users2, Star, TrendingUp, Activity,
   Filter, Eye, Heart, ArrowRight, Video, Radio, Brush, Music,

@@ -5,7 +5,7 @@ import { useServerFn } from '@tanstack/react-start'
 import { getTopUsersFn } from '@/server/functions/users'
 import { getPlatformStatsFn } from '@/server/functions/stats'
 import { BadgeDisplay } from '@/components/ui/badge-display'
-import { useTheme } from '@/components/portfolio/ThemeProvider'
+import { useTheme } from '@/components/layout/ThemeProvider'
 import {
   Trophy, Crown, Medal, Star, Users2, TrendingUp, Activity,
   Eye, Heart, ArrowRight, Loader2, Sparkles, Flame, Zap,

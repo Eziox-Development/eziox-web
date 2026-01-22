@@ -6,9 +6,9 @@ import { useServerFn } from '@tanstack/react-start'
 import { getTopUsersFn } from '@/server/functions/users'
 import { getPlatformStatsFn } from '@/server/functions/stats'
 import { useAuth } from '@/hooks/use-auth'
-import { useTheme } from '@/components/portfolio/ThemeProvider'
+import { useTheme } from '@/components/layout/ThemeProvider'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { CTASection } from '@/components/portfolio/CTASection'
+import { CTASection } from '@/components/layout/CTASection'
 import {
   Link2,
   Zap,

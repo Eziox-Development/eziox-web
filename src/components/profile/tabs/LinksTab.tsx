@@ -9,7 +9,7 @@ import { getMyLinksFn, createLinkFn, updateLinkFn, deleteLinkFn } from '@/server
 import { Link as LinkIcon, Eye, EyeOff, MousePointerClick, TrendingUp, Plus, X, Save, Loader2, Edit3, Trash2, GripVertical, Settings2, Star } from 'lucide-react'
 import { LinkAdvancedSettings } from '@/components/profile/LinkAdvancedSettings'
 import { useAuth } from '@/hooks/use-auth'
-import { useTheme } from '@/components/portfolio/ThemeProvider'
+import { useTheme } from '@/components/layout/ThemeProvider'
 
 const linkSchema = z.object({
   title: z.string().min(1, 'Title is required').max(100),

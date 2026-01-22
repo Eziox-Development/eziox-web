@@ -1,6 +1,6 @@
 import { createFileRoute, Outlet } from '@tanstack/react-router'
 import { authMiddleware } from '@/server/functions/auth'
-import { Nav, Footer } from '@/components/portfolio'
+import { Nav, Footer } from '@/components/layout'
 
 export const Route = createFileRoute('/_public')({
   loader: async () => {

@@ -10,7 +10,7 @@ import { BADGE_LIST, getBadgeConfigs, sortBadgesByRarity, type BadgeConfig } fro
 import { Award, Sparkles, Lock, CheckCircle, Loader2 } from 'lucide-react'
 import * as LucideIcons from 'lucide-react'
 import { useState } from 'react'
-import { useTheme } from '@/components/portfolio/ThemeProvider'
+import { useTheme } from '@/components/layout/ThemeProvider'
 
 interface BadgesTabProps {
   badges: string[]

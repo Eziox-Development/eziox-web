@@ -1,5 +1,5 @@
 import { motion } from 'motion/react'
-import { useTheme } from '@/components/portfolio/ThemeProvider'
+import { useTheme } from '@/components/layout/ThemeProvider'
 import { Eye, MousePointerClick, Heart, Users } from 'lucide-react'
 
 interface ProfileStatsProps {

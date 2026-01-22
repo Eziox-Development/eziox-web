@@ -3,9 +3,9 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
-import { useTheme } from '@/components/portfolio/ThemeProvider'
+import { useTheme } from '@/components/layout/ThemeProvider'
 import { useAuth } from '@/hooks/use-auth'
-import { CTASection } from '@/components/portfolio/CTASection'
+import { CTASection } from '@/components/layout/CTASection'
 import {
   getTierConfigFn,
   getCurrentSubscriptionFn,

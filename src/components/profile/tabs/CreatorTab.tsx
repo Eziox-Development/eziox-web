@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'motion/react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
 import { Link } from '@tanstack/react-router'
-import { useTheme } from '@/components/portfolio/ThemeProvider'
+import { useTheme } from '@/components/layout/ThemeProvider'
 import { toast } from 'sonner'
 import {
   getCreatorSettingsFn,

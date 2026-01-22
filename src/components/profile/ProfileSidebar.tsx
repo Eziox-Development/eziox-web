@@ -1,6 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import { motion } from 'motion/react'
-import { useTheme } from '@/components/portfolio/ThemeProvider'
+import { useTheme } from '@/components/layout/ThemeProvider'
 import {
   ChevronRight, Globe, ExternalLink, BarChart3, TrendingUp, Palette, Paintbrush,
   Shield, Handshake, Crown, Copy, Check,

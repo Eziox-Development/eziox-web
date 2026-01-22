@@ -7,7 +7,7 @@ import { getPartnersFn, getMyApplicationFn, getPartnerStatsFn } from '@/server/f
 import { BadgeDisplay } from '@/components/ui/badge-display'
 import { PartnerApplicationForm } from '@/components/partner/PartnerApplicationForm'
 import { useAuth } from '@/hooks/use-auth'
-import { useTheme } from '@/components/portfolio/ThemeProvider'
+import { useTheme } from '@/components/layout/ThemeProvider'
 import {
   Handshake, Star, Loader2, Users2, TrendingUp,
   Eye, Heart, ArrowRight, Crown, Sparkles, Shield, CheckCircle2,

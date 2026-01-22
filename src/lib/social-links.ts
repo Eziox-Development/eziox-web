@@ -1,12 +1,8 @@
-/**
- * Social Links Helper
- * Converts platform names and usernames to full URLs
- */
-
 export const SOCIAL_PLATFORMS = {
+  // Primary platforms
   twitter: {
-    name: 'Twitter / X',
-    baseUrl: 'https://twitter.com/',
+    name: 'X (Twitter)',
+    baseUrl: 'https://x.com/',
     format: (username: string) => username.replace('@', ''),
   },
   instagram: {
@@ -24,11 +20,6 @@ export const SOCIAL_PLATFORMS = {
     baseUrl: 'https://twitch.tv/',
     format: (username: string) => username.replace('@', ''),
   },
-  github: {
-    name: 'GitHub',
-    baseUrl: 'https://github.com/',
-    format: (username: string) => username.replace('@', ''),
-  },
   tiktok: {
     name: 'TikTok',
     baseUrl: 'https://tiktok.com/',
@@ -39,49 +30,62 @@ export const SOCIAL_PLATFORMS = {
     baseUrl: 'https://discord.com/users/',
     format: (username: string) => username.replace('@', ''),
   },
+  github: {
+    name: 'GitHub',
+    baseUrl: 'https://github.com/',
+    format: (username: string) => username.replace('@', ''),
+  },
+  
+  // Additional platforms
+  bluesky: {
+    name: 'Bluesky',
+    baseUrl: 'https://bsky.app/profile/',
+    format: (username: string) => username.replace('@', ''),
+  },
+  threads: {
+    name: 'Threads',
+    baseUrl: 'https://threads.net/',
+    format: (username: string) => username.startsWith('@') ? username : `@${username}`,
+  },
+  kick: {
+    name: 'Kick',
+    baseUrl: 'https://kick.com/',
+    format: (username: string) => username.replace('@', ''),
+  },
   linkedin: {
     name: 'LinkedIn',
     baseUrl: 'https://linkedin.com/in/',
     format: (username: string) => username.replace('@', ''),
   },
-  steam: {
-    name: 'Steam',
-    baseUrl: 'https://steamcommunity.com/profiles/',
+  facebook: {
+    name: 'Facebook',
+    baseUrl: 'https://facebook.com/',
     format: (username: string) => username.replace('@', ''),
   },
-  epicgames: {
-    name: 'Epic Games',
-    baseUrl: 'https://store.epicgames.com/',
-    format: () => {
-      // Epic Games doesn't have public profiles
-      // Just redirect to the main store
-      return ''
-    },
+  reddit: {
+    name: 'Reddit',
+    baseUrl: 'https://reddit.com/user/',
+    format: (username: string) => username.replace(/^u\//, '').replace('@', ''),
   },
-  playstation: {
-    name: 'PlayStation',
-    baseUrl: 'https://psnprofiles.com/',
+  pinterest: {
+    name: 'Pinterest',
+    baseUrl: 'https://pinterest.com/',
     format: (username: string) => username.replace('@', ''),
   },
-  xbox: {
-    name: 'Xbox',
-    baseUrl: 'https://account.xbox.com/en-us/profile?gamertag=',
+  snapchat: {
+    name: 'Snapchat',
+    baseUrl: 'https://snapchat.com/add/',
     format: (username: string) => username.replace('@', ''),
   },
-  nintendo: {
-    name: 'Nintendo',
-    baseUrl: 'https://lounge.nintendo.com/friendcode/',
-    format: (username: string) => username.replace('@', '').replace(/-/g, ''),
+  telegram: {
+    name: 'Telegram',
+    baseUrl: 'https://t.me/',
+    format: (username: string) => username.replace('@', ''),
   },
-  battlenet: {
-    name: 'Battle.net',
-    baseUrl: 'https://playoverwatch.com/en-us/career/',
-    format: (username: string) => username.replace('@', '').replace('#', '-'),
-  },
-  riot: {
-    name: 'Riot Games',
-    baseUrl: 'https://tracker.gg/valorant/profile/riot/',
-    format: (username: string) => username.replace('@', '').replace('#', '%23'),
+  whatsapp: {
+    name: 'WhatsApp',
+    baseUrl: 'https://wa.me/',
+    format: (username: string) => username.replace(/[^0-9]/g, ''),
   },
   spotify: {
     name: 'Spotify',
@@ -93,14 +97,9 @@ export const SOCIAL_PLATFORMS = {
     baseUrl: 'https://soundcloud.com/',
     format: (username: string) => username.replace('@', ''),
   },
-  bandcamp: {
-    name: 'Bandcamp',
-    baseUrl: 'https://',
-    format: (username: string) => username.includes('.bandcamp.com') ? username : `${username}.bandcamp.com`,
-  },
-  applemusic: {
-    name: 'Apple Music',
-    baseUrl: 'https://music.apple.com/profile/',
+  steam: {
+    name: 'Steam',
+    baseUrl: 'https://steamcommunity.com/id/',
     format: (username: string) => username.replace('@', ''),
   },
   patreon: {
@@ -111,6 +110,45 @@ export const SOCIAL_PLATFORMS = {
   kofi: {
     name: 'Ko-fi',
     baseUrl: 'https://ko-fi.com/',
+    format: (username: string) => username.replace('@', ''),
+  },
+  
+  // Gaming platforms
+  epicgames: {
+    name: 'Epic Games',
+    baseUrl: 'https://store.epicgames.com/u/',
+    format: (username: string) => username.replace('@', ''),
+  },
+  playstation: {
+    name: 'PlayStation',
+    baseUrl: 'https://psnprofiles.com/',
+    format: (username: string) => username.replace('@', ''),
+  },
+  xbox: {
+    name: 'Xbox',
+    baseUrl: 'https://account.xbox.com/profile?gamertag=',
+    format: (username: string) => encodeURIComponent(username.replace('@', '')),
+  },
+  battlenet: {
+    name: 'Battle.net',
+    baseUrl: 'https://overwatch.blizzard.com/career/',
+    format: (username: string) => username.replace('@', '').replace('#', '-'),
+  },
+  riot: {
+    name: 'Riot Games',
+    baseUrl: 'https://tracker.gg/valorant/profile/riot/',
+    format: (username: string) => encodeURIComponent(username.replace('@', '')),
+  },
+  
+  // Music platforms
+  bandcamp: {
+    name: 'Bandcamp',
+    baseUrl: 'https://',
+    format: (username: string) => username.includes('.bandcamp.com') ? username : `${username}.bandcamp.com`,
+  },
+  applemusic: {
+    name: 'Apple Music',
+    baseUrl: 'https://music.apple.com/profile/',
     format: (username: string) => username.replace('@', ''),
   },
 } as const

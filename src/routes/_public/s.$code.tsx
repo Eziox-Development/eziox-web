@@ -1,7 +1,7 @@
 import { createFileRoute, redirect, Link } from '@tanstack/react-router'
 import { motion } from 'motion/react'
 import { resolveShortLinkFn } from '@/server/functions/shortener'
-import { useTheme } from '@/components/portfolio/ThemeProvider'
+import { useTheme } from '@/components/layout/ThemeProvider'
 import { LinkIcon, Home, Sparkles } from 'lucide-react'
 
 export const Route = createFileRoute('/_public/s/$code')({

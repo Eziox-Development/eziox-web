@@ -10,7 +10,7 @@ import {
   getReferrersFn,
   exportAnalyticsFn,
 } from '@/server/functions/analytics'
-import { useTheme } from '@/components/portfolio/ThemeProvider'
+import { useTheme } from '@/components/layout/ThemeProvider'
 import { useAuth } from '@/hooks/use-auth'
 import {
   Eye,

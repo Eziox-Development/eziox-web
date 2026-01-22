@@ -1,5 +1,5 @@
 import { motion } from 'motion/react'
-import { useTheme } from '@/components/portfolio/ThemeProvider'
+import { useTheme } from '@/components/layout/ThemeProvider'
 import { ImageUpload } from '@/components/profile/image-upload'
 import { BadgeDisplay } from '@/components/ui/badge-display'
 import { AtSign, Sparkles, Save, X, Loader2 } from 'lucide-react'

@@ -1,7 +1,7 @@
 import { Link } from '@tanstack/react-router'
 import { motion } from 'motion/react'
 import { Home, Search, ArrowLeft } from 'lucide-react'
-import { useTheme } from '@/components/portfolio/ThemeProvider'
+import { useTheme } from '@/components/layout/ThemeProvider'
 
 export function NotFoundComponent() {
   const { theme } = useTheme()

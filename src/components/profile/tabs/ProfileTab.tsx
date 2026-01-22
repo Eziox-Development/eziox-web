@@ -1,9 +1,9 @@
 import { useState, useRef, useEffect } from 'react'
-import { motion } from 'motion/react'
-import { User, AtSign, MapPin, Globe, Cake, Pencil, ChevronDown, Check } from 'lucide-react'
-import { SOCIAL_PLATFORMS, CREATOR_TYPES, PRONOUNS_OPTIONS } from '@/components/profile/constants'
+import { motion, AnimatePresence } from 'motion/react'
+import { User, AtSign, MapPin, Globe, Cake, Pencil, ChevronDown, Check, Plus, Search, X } from 'lucide-react'
+import { SOCIAL_PLATFORMS, ADDITIONAL_PLATFORMS, CREATOR_TYPES, PRONOUNS_OPTIONS } from '@/components/profile/constants'
 import type { ProfileFormData } from '@/components/profile/types'
-import { useTheme } from '@/components/portfolio/ThemeProvider'
+import { useTheme } from '@/components/layout/ThemeProvider'
 
 interface ProfileTabProps {
   formData: ProfileFormData
@@ -66,26 +66,197 @@ export function ProfileTab({ formData, updateField, updateSocial, customPronouns
       </div>
 
       {/* Socials */}
+      <SocialLinksSection formData={formData} updateSocial={updateSocial} accentColor={accentColor} />
+    </motion.div>
+  )
+}
+
+function SocialLinksSection({ formData, updateSocial, accentColor }: { 
+  formData: ProfileFormData
+  updateSocial: (key: string, value: string) => void
+  accentColor: string 
+}) {
+  const [showMoreModal, setShowMoreModal] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  
+  // Get additional platforms that have values set
+  const activeAdditionalPlatforms = ADDITIONAL_PLATFORMS.filter(p => formData.socials[p.key])
+  
+  // Filter additional platforms for search
+  const filteredAdditionalPlatforms = ADDITIONAL_PLATFORMS.filter(p => 
+    p.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    p.key.toLowerCase().includes(searchQuery.toLowerCase())
+  )
+
+  return (
+    <>
       <div className="rounded-2xl overflow-hidden" style={{ background: 'var(--card)', border: '1px solid var(--border)' }}>
         <div className="p-5 border-b" style={{ borderColor: 'var(--border)' }}>
-          <div className="flex items-center gap-2">
-            <Globe size={20} style={{ color: accentColor }} />
-            <h2 className="text-lg font-bold" style={{ color: 'var(--foreground)' }}>Social Links</h2>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Globe size={20} style={{ color: accentColor }} />
+              <h2 className="text-lg font-bold" style={{ color: 'var(--foreground)' }}>Social Links</h2>
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowMoreModal(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors hover:opacity-80"
+              style={{ background: accentColor + '20', color: accentColor }}
+            >
+              <Plus size={16} />
+              More
+            </button>
           </div>
         </div>
         <div className="p-5 space-y-3">
+          {/* Primary platforms */}
           {SOCIAL_PLATFORMS.map((p) => (
-            <div key={p.key} className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: p.color + '20' }}>
-                <p.icon size={20} style={{ color: p.color }} />
-              </div>
-              <input type="text" value={formData.socials[p.key] || ''} onChange={(e) => updateSocial(p.key, e.target.value)}
-                className="flex-1 px-4 py-2.5 rounded-xl outline-none" style={{ background: 'var(--background-secondary)', color: 'var(--foreground)', border: '1px solid var(--border)' }} placeholder={p.placeholder} />
-            </div>
+            <SocialInputRow key={p.key} platform={p} value={formData.socials[p.key] || ''} onChange={(v) => updateSocial(p.key, v)} />
+          ))}
+          
+          {/* Active additional platforms */}
+          {activeAdditionalPlatforms.map((p) => (
+            <SocialInputRow 
+              key={p.key} 
+              platform={p} 
+              value={formData.socials[p.key] || ''} 
+              onChange={(v) => updateSocial(p.key, v)}
+              onRemove={() => updateSocial(p.key, '')}
+            />
           ))}
         </div>
       </div>
-    </motion.div>
+
+      {/* More Platforms Modal */}
+      <AnimatePresence>
+        {showMoreModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }}
+            onClick={() => setShowMoreModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="w-full max-w-md rounded-2xl overflow-hidden"
+              style={{ background: 'var(--card)', border: '1px solid var(--border)' }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="p-4 border-b flex items-center justify-between" style={{ borderColor: 'var(--border)' }}>
+                <h3 className="text-lg font-bold" style={{ color: 'var(--foreground)' }}>Add Social Link</h3>
+                <button
+                  type="button"
+                  onClick={() => setShowMoreModal(false)}
+                  className="p-2 rounded-lg transition-colors hover:bg-[var(--background-secondary)]"
+                >
+                  <X size={20} style={{ color: 'var(--foreground-muted)' }} />
+                </button>
+              </div>
+              
+              {/* Search */}
+              <div className="p-4 border-b" style={{ borderColor: 'var(--border)' }}>
+                <div className="relative">
+                  <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--foreground-muted)' }} />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search platforms..."
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl outline-none"
+                    style={{ background: 'var(--background-secondary)', color: 'var(--foreground)', border: '1px solid var(--border)' }}
+                    autoFocus
+                  />
+                </div>
+              </div>
+              
+              {/* Platform List */}
+              <div className="max-h-80 overflow-y-auto p-2">
+                {filteredAdditionalPlatforms.map((p) => {
+                  const hasValue = !!formData.socials[p.key]
+                  return (
+                    <button
+                      key={p.key}
+                      type="button"
+                      onClick={() => {
+                        if (!hasValue) {
+                          updateSocial(p.key, '')
+                          setShowMoreModal(false)
+                          // Focus will be handled by the new input appearing
+                        }
+                      }}
+                      className="w-full p-3 rounded-xl flex items-center gap-3 transition-colors hover:bg-[var(--background-secondary)]"
+                      style={{ opacity: hasValue ? 0.5 : 1 }}
+                      disabled={hasValue}
+                    >
+                      <div 
+                        className="w-10 h-10 rounded-lg flex items-center justify-center"
+                        style={{ background: p.bgColor }}
+                      >
+                        <p.icon size={20} style={{ color: p.color }} />
+                      </div>
+                      <div className="text-left">
+                        <div className="font-medium" style={{ color: 'var(--foreground)' }}>{p.label}</div>
+                        <div className="text-xs" style={{ color: 'var(--foreground-muted)' }}>
+                          {hasValue ? 'Already added' : p.placeholder}
+                        </div>
+                      </div>
+                      {hasValue && (
+                        <Check size={18} className="ml-auto" style={{ color: 'var(--primary)' }} />
+                      )}
+                    </button>
+                  )
+                })}
+                {filteredAdditionalPlatforms.length === 0 && (
+                  <div className="p-8 text-center" style={{ color: 'var(--foreground-muted)' }}>
+                    No platforms found
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  )
+}
+
+function SocialInputRow({ platform, value, onChange, onRemove }: {
+  platform: { key: string; label: string; icon: React.ComponentType<{ size?: number; style?: React.CSSProperties }>; placeholder: string; color: string; bgColor: string }
+  value: string
+  onChange: (v: string) => void
+  onRemove?: () => void
+}) {
+  return (
+    <div className="flex items-center gap-3">
+      <div 
+        className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+        style={{ background: platform.bgColor }}
+      >
+        <platform.icon size={20} style={{ color: platform.color }} />
+      </div>
+      <input 
+        type="text" 
+        value={value} 
+        onChange={(e) => onChange(e.target.value)}
+        className="flex-1 px-4 py-2.5 rounded-xl outline-none min-w-0" 
+        style={{ background: 'var(--background-secondary)', color: 'var(--foreground)', border: '1px solid var(--border)' }} 
+        placeholder={platform.placeholder} 
+      />
+      {onRemove && (
+        <button
+          type="button"
+          onClick={onRemove}
+          className="p-2 rounded-lg transition-colors hover:bg-[var(--background-secondary)] flex-shrink-0"
+          title="Remove"
+        >
+          <X size={18} style={{ color: 'var(--foreground-muted)' }} />
+        </button>
+      )}
+    </div>
   )
 }
 

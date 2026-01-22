@@ -24,7 +24,7 @@ import {
   BarChart3,
   Crown,
 } from 'lucide-react'
-import { useTheme } from '@/components/portfolio/ThemeProvider'
+import { useTheme } from '@/components/layout/ThemeProvider'
 
 export const Route = createFileRoute('/_public/changelog')({
   head: () => ({

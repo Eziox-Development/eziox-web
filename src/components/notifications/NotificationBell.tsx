@@ -11,7 +11,7 @@ import {
   clearAllNotificationsFn,
 } from '@/server/functions/notifications'
 import { Bell, Check, CheckCheck, Trash2, X, UserPlus, Trophy, Link as LinkIcon, Sparkles, Info } from 'lucide-react'
-import { useTheme } from '@/components/portfolio/ThemeProvider'
+import { useTheme } from '@/components/layout/ThemeProvider'
 
 interface NotificationItem {
   id: string
