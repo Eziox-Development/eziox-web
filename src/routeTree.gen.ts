@@ -28,6 +28,7 @@ import { Route as PublicCreatorsRouteImport } from './routes/_public/creators'
 import { Route as PublicCookiesRouteImport } from './routes/_public/cookies'
 import { Route as PublicContactRouteImport } from './routes/_public/contact'
 import { Route as PublicChangelogRouteImport } from './routes/_public/changelog'
+import { Route as PublicApiDocsRouteImport } from './routes/_public/api-docs'
 import { Route as PublicAboutRouteImport } from './routes/_public/about'
 import { Route as ProtectedThemeBuilderRouteImport } from './routes/_protected/theme-builder'
 import { Route as ProtectedShortenerRouteImport } from './routes/_protected/shortener'
@@ -139,6 +140,11 @@ const PublicContactRoute = PublicContactRouteImport.update({
 const PublicChangelogRoute = PublicChangelogRouteImport.update({
   id: '/changelog',
   path: '/changelog',
+  getParentRoute: () => PublicRoute,
+} as any)
+const PublicApiDocsRoute = PublicApiDocsRouteImport.update({
+  id: '/api-docs',
+  path: '/api-docs',
   getParentRoute: () => PublicRoute,
 } as any)
 const PublicAboutRoute = PublicAboutRouteImport.update({
@@ -265,6 +271,7 @@ export interface FileRoutesByFullPath {
   '/shortener': typeof ProtectedShortenerRoute
   '/theme-builder': typeof ProtectedThemeBuilderRoute
   '/about': typeof PublicAboutRoute
+  '/api-docs': typeof PublicApiDocsRoute
   '/changelog': typeof PublicChangelogRoute
   '/contact': typeof PublicContactRoute
   '/cookies': typeof PublicCookiesRoute
@@ -303,6 +310,7 @@ export interface FileRoutesByTo {
   '/shortener': typeof ProtectedShortenerRoute
   '/theme-builder': typeof ProtectedThemeBuilderRoute
   '/about': typeof PublicAboutRoute
+  '/api-docs': typeof PublicApiDocsRoute
   '/changelog': typeof PublicChangelogRoute
   '/contact': typeof PublicContactRoute
   '/cookies': typeof PublicCookiesRoute
@@ -346,6 +354,7 @@ export interface FileRoutesById {
   '/_protected/shortener': typeof ProtectedShortenerRoute
   '/_protected/theme-builder': typeof ProtectedThemeBuilderRoute
   '/_public/about': typeof PublicAboutRoute
+  '/_public/api-docs': typeof PublicApiDocsRoute
   '/_public/changelog': typeof PublicChangelogRoute
   '/_public/contact': typeof PublicContactRoute
   '/_public/cookies': typeof PublicCookiesRoute
@@ -386,6 +395,7 @@ export interface FileRouteTypes {
     | '/shortener'
     | '/theme-builder'
     | '/about'
+    | '/api-docs'
     | '/changelog'
     | '/contact'
     | '/cookies'
@@ -424,6 +434,7 @@ export interface FileRouteTypes {
     | '/shortener'
     | '/theme-builder'
     | '/about'
+    | '/api-docs'
     | '/changelog'
     | '/contact'
     | '/cookies'
@@ -466,6 +477,7 @@ export interface FileRouteTypes {
     | '/_protected/shortener'
     | '/_protected/theme-builder'
     | '/_public/about'
+    | '/_public/api-docs'
     | '/_public/changelog'
     | '/_public/contact'
     | '/_public/cookies'
@@ -634,6 +646,13 @@ declare module '@tanstack/react-router' {
       path: '/changelog'
       fullPath: '/changelog'
       preLoaderRoute: typeof PublicChangelogRouteImport
+      parentRoute: typeof PublicRoute
+    }
+    '/_public/api-docs': {
+      id: '/_public/api-docs'
+      path: '/api-docs'
+      fullPath: '/api-docs'
+      preLoaderRoute: typeof PublicApiDocsRouteImport
       parentRoute: typeof PublicRoute
     }
     '/_public/about': {
@@ -843,6 +862,7 @@ const ProtectedRouteWithChildren = ProtectedRoute._addFileChildren(
 
 interface PublicRouteChildren {
   PublicAboutRoute: typeof PublicAboutRoute
+  PublicApiDocsRoute: typeof PublicApiDocsRoute
   PublicChangelogRoute: typeof PublicChangelogRoute
   PublicContactRoute: typeof PublicContactRoute
   PublicCookiesRoute: typeof PublicCookiesRoute
@@ -862,6 +882,7 @@ interface PublicRouteChildren {
 
 const PublicRouteChildren: PublicRouteChildren = {
   PublicAboutRoute: PublicAboutRoute,
+  PublicApiDocsRoute: PublicApiDocsRoute,
   PublicChangelogRoute: PublicChangelogRoute,
   PublicContactRoute: PublicContactRoute,
   PublicCookiesRoute: PublicCookiesRoute,

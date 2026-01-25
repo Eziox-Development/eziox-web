@@ -6,6 +6,7 @@ export type TabType =
   | 'subscription'
   | 'customization'
   | 'creator'
+  | 'api'
   | 'settings'
   | 'privacy'
 

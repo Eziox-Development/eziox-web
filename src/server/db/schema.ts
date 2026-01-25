@@ -908,6 +908,56 @@ export const adminAuditLogRelations = relations(adminAuditLog, ({ one }) => ({
   }),
 }))
 
+// API KEYS TABLE
+export const apiKeys = pgTable('api_keys', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  name: varchar('name', { length: 100 }).notNull(),
+  keyHash: text('key_hash').notNull(),
+  keyPrefix: varchar('key_prefix', { length: 20 }).notNull(),
+  permissions: jsonb('permissions').notNull(),
+  rateLimit: integer('rate_limit').default(1000),
+  rateLimitWindow: integer('rate_limit_window').default(3600),
+  lastUsedAt: timestamp('last_used_at'),
+  expiresAt: timestamp('expires_at'),
+  isActive: boolean('is_active').default(true).notNull(),
+  requestCount: integer('request_count').default(0),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+})
+
+export const apiKeysRelations = relations(apiKeys, ({ one }) => ({
+  user: one(users, {
+    fields: [apiKeys.userId],
+    references: [users.id],
+  }),
+}))
+
+// API REQUEST LOGS TABLE
+export const apiRequestLogs = pgTable('api_request_logs', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  apiKeyId: uuid('api_key_id')
+    .notNull()
+    .references(() => apiKeys.id, { onDelete: 'cascade' }),
+  endpoint: varchar('endpoint', { length: 255 }).notNull(),
+  method: varchar('method', { length: 10 }).notNull(),
+  statusCode: integer('status_code').notNull(),
+  responseTime: integer('response_time'),
+  ipAddress: varchar('ip_address', { length: 45 }),
+  userAgent: text('user_agent'),
+  errorMessage: text('error_message'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+})
+
+export const apiRequestLogsRelations = relations(apiRequestLogs, ({ one }) => ({
+  apiKey: one(apiKeys, {
+    fields: [apiRequestLogs.apiKeyId],
+    references: [apiKeys.id],
+  }),
+}))
+
 // CONTACT MESSAGES TABLE
 export const contactMessages = pgTable('contact_messages', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -983,3 +1033,7 @@ export type MediaLibraryItem = typeof mediaLibrary.$inferSelect
 export type NewMediaLibraryItem = typeof mediaLibrary.$inferInsert
 export type ScheduledPost = typeof scheduledPosts.$inferSelect
 export type NewScheduledPost = typeof scheduledPosts.$inferInsert
+export type ApiKey = typeof apiKeys.$inferSelect
+export type NewApiKey = typeof apiKeys.$inferInsert
+export type ApiRequestLog = typeof apiRequestLogs.$inferSelect
+export type NewApiRequestLog = typeof apiRequestLogs.$inferInsert

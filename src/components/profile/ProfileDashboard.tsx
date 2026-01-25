@@ -20,6 +20,7 @@ import { BadgesTab } from './tabs/BadgesTab'
 import { SubscriptionTab } from './tabs/SubscriptionTab'
 import { CustomizationTab } from './tabs/CustomizationTab'
 import { CreatorTab } from './tabs/CreatorTab'
+import { ApiAccessTab } from './tabs/ApiAccessTab'
 import { siteConfig } from '@/lib/site-config'
 import type { TabType, ProfileFormData, ProfileUser } from './types'
 
@@ -290,6 +291,7 @@ export function ProfileDashboard({
                 <CustomizationTab key="customization" />
               )}
               {activeTab === 'creator' && <CreatorTab key="creator" />}
+              {activeTab === 'api' && <ApiAccessTab key="api" />}
               {activeTab === 'settings' && (
                 <SettingsTab
                   key="settings"

@@ -33,6 +33,7 @@ import {
   Settings,
   Lock,
   Globe,
+  Key,
 } from 'lucide-react'
 import type { TabType } from './types'
 
@@ -329,6 +330,13 @@ export const DASHBOARD_TABS: Array<{
     label: 'Creator',
     icon: Wand2,
     description: 'Creator tools',
+    category: 'premium',
+  },
+  {
+    id: 'api',
+    label: 'API Access',
+    icon: Key,
+    description: 'Manage API keys',
     category: 'premium',
   },
   {
