@@ -18,7 +18,7 @@ import {
 } from 'lucide-react'
 import { useState, useMemo } from 'react'
 
-export const Route = createFileRoute('/_public/docs')({
+export const Route = createFileRoute('/_public/docs/')({
   head: () => ({
     meta: [
       { title: 'Documentation | Eziox' },

@@ -24,7 +24,6 @@ import { Route as PublicPrivacyRouteImport } from './routes/_public/privacy'
 import { Route as PublicPricingRouteImport } from './routes/_public/pricing'
 import { Route as PublicPartnersRouteImport } from './routes/_public/partners'
 import { Route as PublicLeaderboardRouteImport } from './routes/_public/leaderboard'
-import { Route as PublicDocsRouteImport } from './routes/_public/docs'
 import { Route as PublicCreatorsRouteImport } from './routes/_public/creators'
 import { Route as PublicCookiesRouteImport } from './routes/_public/cookies'
 import { Route as PublicContactRouteImport } from './routes/_public/contact'
@@ -45,18 +44,19 @@ import { Route as AuthForgotPasswordRouteImport } from './routes/_auth/forgot-pa
 import { Route as ApiSitemapRouteImport } from './routes/_api/sitemap'
 import { Route as ApiRssRouteImport } from './routes/_api/rss'
 import { Route as ApiHelloRouteImport } from './routes/_api/hello'
+import { Route as PublicDocsIndexRouteImport } from './routes/_public/docs/index'
 import { Route as ProtectedAdminIndexRouteImport } from './routes/_protected/admin/index'
 import { Route as ApiWebhooksStripeRouteImport } from './routes/api/webhooks/stripe'
 import { Route as PublicSCodeRouteImport } from './routes/_public/s.$code'
 import { Route as PublicJoinCodeRouteImport } from './routes/_public/join.$code'
-import { Route as PublicDocsSpotifyIntegrationRouteImport } from './routes/_public/docs.spotify-integration'
-import { Route as PublicDocsSecurityRouteImport } from './routes/_public/docs.security'
-import { Route as PublicDocsPremiumRouteImport } from './routes/_public/docs.premium'
-import { Route as PublicDocsGettingStartedRouteImport } from './routes/_public/docs.getting-started'
-import { Route as PublicDocsFaqRouteImport } from './routes/_public/docs.faq'
-import { Route as PublicDocsCustomizationRouteImport } from './routes/_public/docs.customization'
-import { Route as PublicDocsApiRouteImport } from './routes/_public/docs.api'
-import { Route as PublicDocsAnalyticsRouteImport } from './routes/_public/docs.analytics'
+import { Route as PublicDocsSpotifyIntegrationRouteImport } from './routes/_public/docs/spotify-integration'
+import { Route as PublicDocsSecurityRouteImport } from './routes/_public/docs/security'
+import { Route as PublicDocsPremiumRouteImport } from './routes/_public/docs/premium'
+import { Route as PublicDocsGettingStartedRouteImport } from './routes/_public/docs/getting-started'
+import { Route as PublicDocsFaqRouteImport } from './routes/_public/docs/faq'
+import { Route as PublicDocsCustomizationRouteImport } from './routes/_public/docs/customization'
+import { Route as PublicDocsApiRouteImport } from './routes/_public/docs/api'
+import { Route as PublicDocsAnalyticsRouteImport } from './routes/_public/docs/analytics'
 import { Route as ProtectedAdminPartnerApplicationsRouteImport } from './routes/_protected/admin/partner-applications'
 
 const PublicRoute = PublicRouteImport.update({
@@ -128,11 +128,6 @@ const PublicPartnersRoute = PublicPartnersRouteImport.update({
 const PublicLeaderboardRoute = PublicLeaderboardRouteImport.update({
   id: '/leaderboard',
   path: '/leaderboard',
-  getParentRoute: () => PublicRoute,
-} as any)
-const PublicDocsRoute = PublicDocsRouteImport.update({
-  id: '/docs',
-  path: '/docs',
   getParentRoute: () => PublicRoute,
 } as any)
 const PublicCreatorsRoute = PublicCreatorsRouteImport.update({
@@ -235,6 +230,11 @@ const ApiHelloRoute = ApiHelloRouteImport.update({
   path: '/hello',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PublicDocsIndexRoute = PublicDocsIndexRouteImport.update({
+  id: '/docs/',
+  path: '/docs/',
+  getParentRoute: () => PublicRoute,
+} as any)
 const ProtectedAdminIndexRoute = ProtectedAdminIndexRouteImport.update({
   id: '/admin/',
   path: '/admin/',
@@ -257,45 +257,45 @@ const PublicJoinCodeRoute = PublicJoinCodeRouteImport.update({
 } as any)
 const PublicDocsSpotifyIntegrationRoute =
   PublicDocsSpotifyIntegrationRouteImport.update({
-    id: '/spotify-integration',
-    path: '/spotify-integration',
-    getParentRoute: () => PublicDocsRoute,
+    id: '/docs/spotify-integration',
+    path: '/docs/spotify-integration',
+    getParentRoute: () => PublicRoute,
   } as any)
 const PublicDocsSecurityRoute = PublicDocsSecurityRouteImport.update({
-  id: '/security',
-  path: '/security',
-  getParentRoute: () => PublicDocsRoute,
+  id: '/docs/security',
+  path: '/docs/security',
+  getParentRoute: () => PublicRoute,
 } as any)
 const PublicDocsPremiumRoute = PublicDocsPremiumRouteImport.update({
-  id: '/premium',
-  path: '/premium',
-  getParentRoute: () => PublicDocsRoute,
+  id: '/docs/premium',
+  path: '/docs/premium',
+  getParentRoute: () => PublicRoute,
 } as any)
 const PublicDocsGettingStartedRoute =
   PublicDocsGettingStartedRouteImport.update({
-    id: '/getting-started',
-    path: '/getting-started',
-    getParentRoute: () => PublicDocsRoute,
+    id: '/docs/getting-started',
+    path: '/docs/getting-started',
+    getParentRoute: () => PublicRoute,
   } as any)
 const PublicDocsFaqRoute = PublicDocsFaqRouteImport.update({
-  id: '/faq',
-  path: '/faq',
-  getParentRoute: () => PublicDocsRoute,
+  id: '/docs/faq',
+  path: '/docs/faq',
+  getParentRoute: () => PublicRoute,
 } as any)
 const PublicDocsCustomizationRoute = PublicDocsCustomizationRouteImport.update({
-  id: '/customization',
-  path: '/customization',
-  getParentRoute: () => PublicDocsRoute,
+  id: '/docs/customization',
+  path: '/docs/customization',
+  getParentRoute: () => PublicRoute,
 } as any)
 const PublicDocsApiRoute = PublicDocsApiRouteImport.update({
-  id: '/api',
-  path: '/api',
-  getParentRoute: () => PublicDocsRoute,
+  id: '/docs/api',
+  path: '/docs/api',
+  getParentRoute: () => PublicRoute,
 } as any)
 const PublicDocsAnalyticsRoute = PublicDocsAnalyticsRouteImport.update({
-  id: '/analytics',
-  path: '/analytics',
-  getParentRoute: () => PublicDocsRoute,
+  id: '/docs/analytics',
+  path: '/docs/analytics',
+  getParentRoute: () => PublicRoute,
 } as any)
 const ProtectedAdminPartnerApplicationsRoute =
   ProtectedAdminPartnerApplicationsRouteImport.update({
@@ -325,7 +325,6 @@ export interface FileRoutesByFullPath {
   '/contact': typeof PublicContactRoute
   '/cookies': typeof PublicCookiesRoute
   '/creators': typeof PublicCreatorsRoute
-  '/docs': typeof PublicDocsRouteWithChildren
   '/leaderboard': typeof PublicLeaderboardRoute
   '/partners': typeof PublicPartnersRoute
   '/pricing': typeof PublicPricingRoute
@@ -350,6 +349,7 @@ export interface FileRoutesByFullPath {
   '/s/$code': typeof PublicSCodeRoute
   '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
   '/admin': typeof ProtectedAdminIndexRoute
+  '/docs': typeof PublicDocsIndexRoute
 }
 export interface FileRoutesByTo {
   '/hello': typeof ApiHelloRoute
@@ -372,7 +372,6 @@ export interface FileRoutesByTo {
   '/contact': typeof PublicContactRoute
   '/cookies': typeof PublicCookiesRoute
   '/creators': typeof PublicCreatorsRoute
-  '/docs': typeof PublicDocsRouteWithChildren
   '/leaderboard': typeof PublicLeaderboardRoute
   '/partners': typeof PublicPartnersRoute
   '/pricing': typeof PublicPricingRoute
@@ -397,6 +396,7 @@ export interface FileRoutesByTo {
   '/s/$code': typeof PublicSCodeRoute
   '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
   '/admin': typeof ProtectedAdminIndexRoute
+  '/docs': typeof PublicDocsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -424,7 +424,6 @@ export interface FileRoutesById {
   '/_public/contact': typeof PublicContactRoute
   '/_public/cookies': typeof PublicCookiesRoute
   '/_public/creators': typeof PublicCreatorsRoute
-  '/_public/docs': typeof PublicDocsRouteWithChildren
   '/_public/leaderboard': typeof PublicLeaderboardRoute
   '/_public/partners': typeof PublicPartnersRoute
   '/_public/pricing': typeof PublicPricingRoute
@@ -449,6 +448,7 @@ export interface FileRoutesById {
   '/_public/s/$code': typeof PublicSCodeRoute
   '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
   '/_protected/admin/': typeof ProtectedAdminIndexRoute
+  '/_public/docs/': typeof PublicDocsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -473,7 +473,6 @@ export interface FileRouteTypes {
     | '/contact'
     | '/cookies'
     | '/creators'
-    | '/docs'
     | '/leaderboard'
     | '/partners'
     | '/pricing'
@@ -498,6 +497,7 @@ export interface FileRouteTypes {
     | '/s/$code'
     | '/api/webhooks/stripe'
     | '/admin'
+    | '/docs'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/hello'
@@ -520,7 +520,6 @@ export interface FileRouteTypes {
     | '/contact'
     | '/cookies'
     | '/creators'
-    | '/docs'
     | '/leaderboard'
     | '/partners'
     | '/pricing'
@@ -545,6 +544,7 @@ export interface FileRouteTypes {
     | '/s/$code'
     | '/api/webhooks/stripe'
     | '/admin'
+    | '/docs'
   id:
     | '__root__'
     | '/_auth'
@@ -571,7 +571,6 @@ export interface FileRouteTypes {
     | '/_public/contact'
     | '/_public/cookies'
     | '/_public/creators'
-    | '/_public/docs'
     | '/_public/leaderboard'
     | '/_public/partners'
     | '/_public/pricing'
@@ -596,6 +595,7 @@ export interface FileRouteTypes {
     | '/_public/s/$code'
     | '/api/webhooks/stripe'
     | '/_protected/admin/'
+    | '/_public/docs/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -716,13 +716,6 @@ declare module '@tanstack/react-router' {
       path: '/leaderboard'
       fullPath: '/leaderboard'
       preLoaderRoute: typeof PublicLeaderboardRouteImport
-      parentRoute: typeof PublicRoute
-    }
-    '/_public/docs': {
-      id: '/_public/docs'
-      path: '/docs'
-      fullPath: '/docs'
-      preLoaderRoute: typeof PublicDocsRouteImport
       parentRoute: typeof PublicRoute
     }
     '/_public/creators': {
@@ -865,6 +858,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiHelloRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_public/docs/': {
+      id: '/_public/docs/'
+      path: '/docs'
+      fullPath: '/docs'
+      preLoaderRoute: typeof PublicDocsIndexRouteImport
+      parentRoute: typeof PublicRoute
+    }
     '/_protected/admin/': {
       id: '/_protected/admin/'
       path: '/admin'
@@ -895,59 +895,59 @@ declare module '@tanstack/react-router' {
     }
     '/_public/docs/spotify-integration': {
       id: '/_public/docs/spotify-integration'
-      path: '/spotify-integration'
+      path: '/docs/spotify-integration'
       fullPath: '/docs/spotify-integration'
       preLoaderRoute: typeof PublicDocsSpotifyIntegrationRouteImport
-      parentRoute: typeof PublicDocsRoute
+      parentRoute: typeof PublicRoute
     }
     '/_public/docs/security': {
       id: '/_public/docs/security'
-      path: '/security'
+      path: '/docs/security'
       fullPath: '/docs/security'
       preLoaderRoute: typeof PublicDocsSecurityRouteImport
-      parentRoute: typeof PublicDocsRoute
+      parentRoute: typeof PublicRoute
     }
     '/_public/docs/premium': {
       id: '/_public/docs/premium'
-      path: '/premium'
+      path: '/docs/premium'
       fullPath: '/docs/premium'
       preLoaderRoute: typeof PublicDocsPremiumRouteImport
-      parentRoute: typeof PublicDocsRoute
+      parentRoute: typeof PublicRoute
     }
     '/_public/docs/getting-started': {
       id: '/_public/docs/getting-started'
-      path: '/getting-started'
+      path: '/docs/getting-started'
       fullPath: '/docs/getting-started'
       preLoaderRoute: typeof PublicDocsGettingStartedRouteImport
-      parentRoute: typeof PublicDocsRoute
+      parentRoute: typeof PublicRoute
     }
     '/_public/docs/faq': {
       id: '/_public/docs/faq'
-      path: '/faq'
+      path: '/docs/faq'
       fullPath: '/docs/faq'
       preLoaderRoute: typeof PublicDocsFaqRouteImport
-      parentRoute: typeof PublicDocsRoute
+      parentRoute: typeof PublicRoute
     }
     '/_public/docs/customization': {
       id: '/_public/docs/customization'
-      path: '/customization'
+      path: '/docs/customization'
       fullPath: '/docs/customization'
       preLoaderRoute: typeof PublicDocsCustomizationRouteImport
-      parentRoute: typeof PublicDocsRoute
+      parentRoute: typeof PublicRoute
     }
     '/_public/docs/api': {
       id: '/_public/docs/api'
-      path: '/api'
+      path: '/docs/api'
       fullPath: '/docs/api'
       preLoaderRoute: typeof PublicDocsApiRouteImport
-      parentRoute: typeof PublicDocsRoute
+      parentRoute: typeof PublicRoute
     }
     '/_public/docs/analytics': {
       id: '/_public/docs/analytics'
-      path: '/analytics'
+      path: '/docs/analytics'
       fullPath: '/docs/analytics'
       preLoaderRoute: typeof PublicDocsAnalyticsRouteImport
-      parentRoute: typeof PublicDocsRoute
+      parentRoute: typeof PublicRoute
     }
     '/_protected/admin/partner-applications': {
       id: '/_protected/admin/partner-applications'
@@ -1014,39 +1014,12 @@ const ProtectedRouteWithChildren = ProtectedRoute._addFileChildren(
   ProtectedRouteChildren,
 )
 
-interface PublicDocsRouteChildren {
-  PublicDocsAnalyticsRoute: typeof PublicDocsAnalyticsRoute
-  PublicDocsApiRoute: typeof PublicDocsApiRoute
-  PublicDocsCustomizationRoute: typeof PublicDocsCustomizationRoute
-  PublicDocsFaqRoute: typeof PublicDocsFaqRoute
-  PublicDocsGettingStartedRoute: typeof PublicDocsGettingStartedRoute
-  PublicDocsPremiumRoute: typeof PublicDocsPremiumRoute
-  PublicDocsSecurityRoute: typeof PublicDocsSecurityRoute
-  PublicDocsSpotifyIntegrationRoute: typeof PublicDocsSpotifyIntegrationRoute
-}
-
-const PublicDocsRouteChildren: PublicDocsRouteChildren = {
-  PublicDocsAnalyticsRoute: PublicDocsAnalyticsRoute,
-  PublicDocsApiRoute: PublicDocsApiRoute,
-  PublicDocsCustomizationRoute: PublicDocsCustomizationRoute,
-  PublicDocsFaqRoute: PublicDocsFaqRoute,
-  PublicDocsGettingStartedRoute: PublicDocsGettingStartedRoute,
-  PublicDocsPremiumRoute: PublicDocsPremiumRoute,
-  PublicDocsSecurityRoute: PublicDocsSecurityRoute,
-  PublicDocsSpotifyIntegrationRoute: PublicDocsSpotifyIntegrationRoute,
-}
-
-const PublicDocsRouteWithChildren = PublicDocsRoute._addFileChildren(
-  PublicDocsRouteChildren,
-)
-
 interface PublicRouteChildren {
   PublicAboutRoute: typeof PublicAboutRoute
   PublicApiDocsRoute: typeof PublicApiDocsRoute
   PublicContactRoute: typeof PublicContactRoute
   PublicCookiesRoute: typeof PublicCookiesRoute
   PublicCreatorsRoute: typeof PublicCreatorsRoute
-  PublicDocsRoute: typeof PublicDocsRouteWithChildren
   PublicLeaderboardRoute: typeof PublicLeaderboardRoute
   PublicPartnersRoute: typeof PublicPartnersRoute
   PublicPricingRoute: typeof PublicPricingRoute
@@ -1056,8 +1029,17 @@ interface PublicRouteChildren {
   PublicTermsRoute: typeof PublicTermsRoute
   PublicVerifyEmailRoute: typeof PublicVerifyEmailRoute
   PublicIndexRoute: typeof PublicIndexRoute
+  PublicDocsAnalyticsRoute: typeof PublicDocsAnalyticsRoute
+  PublicDocsApiRoute: typeof PublicDocsApiRoute
+  PublicDocsCustomizationRoute: typeof PublicDocsCustomizationRoute
+  PublicDocsFaqRoute: typeof PublicDocsFaqRoute
+  PublicDocsGettingStartedRoute: typeof PublicDocsGettingStartedRoute
+  PublicDocsPremiumRoute: typeof PublicDocsPremiumRoute
+  PublicDocsSecurityRoute: typeof PublicDocsSecurityRoute
+  PublicDocsSpotifyIntegrationRoute: typeof PublicDocsSpotifyIntegrationRoute
   PublicJoinCodeRoute: typeof PublicJoinCodeRoute
   PublicSCodeRoute: typeof PublicSCodeRoute
+  PublicDocsIndexRoute: typeof PublicDocsIndexRoute
 }
 
 const PublicRouteChildren: PublicRouteChildren = {
@@ -1066,7 +1048,6 @@ const PublicRouteChildren: PublicRouteChildren = {
   PublicContactRoute: PublicContactRoute,
   PublicCookiesRoute: PublicCookiesRoute,
   PublicCreatorsRoute: PublicCreatorsRoute,
-  PublicDocsRoute: PublicDocsRouteWithChildren,
   PublicLeaderboardRoute: PublicLeaderboardRoute,
   PublicPartnersRoute: PublicPartnersRoute,
   PublicPricingRoute: PublicPricingRoute,
@@ -1076,8 +1057,17 @@ const PublicRouteChildren: PublicRouteChildren = {
   PublicTermsRoute: PublicTermsRoute,
   PublicVerifyEmailRoute: PublicVerifyEmailRoute,
   PublicIndexRoute: PublicIndexRoute,
+  PublicDocsAnalyticsRoute: PublicDocsAnalyticsRoute,
+  PublicDocsApiRoute: PublicDocsApiRoute,
+  PublicDocsCustomizationRoute: PublicDocsCustomizationRoute,
+  PublicDocsFaqRoute: PublicDocsFaqRoute,
+  PublicDocsGettingStartedRoute: PublicDocsGettingStartedRoute,
+  PublicDocsPremiumRoute: PublicDocsPremiumRoute,
+  PublicDocsSecurityRoute: PublicDocsSecurityRoute,
+  PublicDocsSpotifyIntegrationRoute: PublicDocsSpotifyIntegrationRoute,
   PublicJoinCodeRoute: PublicJoinCodeRoute,
   PublicSCodeRoute: PublicSCodeRoute,
+  PublicDocsIndexRoute: PublicDocsIndexRoute,
 }
 
 const PublicRouteWithChildren =
