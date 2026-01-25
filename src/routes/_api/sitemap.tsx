@@ -40,6 +40,60 @@ export const Route = createFileRoute('/_api/sitemap')({
             priority: '0.9',
             lastmod: currentDate,
           },
+          {
+            url: '/docs',
+            changefreq: 'weekly',
+            priority: '0.8',
+            lastmod: currentDate,
+          },
+          {
+            url: '/docs/getting-started',
+            changefreq: 'monthly',
+            priority: '0.7',
+            lastmod: currentDate,
+          },
+          {
+            url: '/docs/customization',
+            changefreq: 'monthly',
+            priority: '0.7',
+            lastmod: currentDate,
+          },
+          {
+            url: '/docs/analytics',
+            changefreq: 'monthly',
+            priority: '0.7',
+            lastmod: currentDate,
+          },
+          {
+            url: '/docs/api',
+            changefreq: 'monthly',
+            priority: '0.7',
+            lastmod: currentDate,
+          },
+          {
+            url: '/docs/premium',
+            changefreq: 'monthly',
+            priority: '0.7',
+            lastmod: currentDate,
+          },
+          {
+            url: '/docs/spotify-integration',
+            changefreq: 'monthly',
+            priority: '0.6',
+            lastmod: currentDate,
+          },
+          {
+            url: '/docs/security',
+            changefreq: 'monthly',
+            priority: '0.7',
+            lastmod: currentDate,
+          },
+          {
+            url: '/docs/faq',
+            changefreq: 'monthly',
+            priority: '0.7',
+            lastmod: currentDate,
+          },
         ]
 
         // Generate sitemap XML

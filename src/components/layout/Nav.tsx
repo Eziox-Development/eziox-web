@@ -38,6 +38,7 @@ import {
   Command,
   Paintbrush,
   Link2,
+  BookOpen,
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'motion/react'
 import { useAuth } from '@/hooks/use-auth'
@@ -85,6 +86,7 @@ const TIER_CONFIG: Record<
 
 const NAV_ITEMS = [
   { href: '/', label: 'Home', icon: Home },
+  { href: '/docs', label: 'Docs', icon: BookOpen },
   { href: '/pricing', label: 'Pricing', icon: CreditCard },
   { href: '/about', label: 'About', icon: Info },
 ] as const

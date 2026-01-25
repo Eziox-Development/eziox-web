@@ -24,6 +24,7 @@ import { Route as PublicPrivacyRouteImport } from './routes/_public/privacy'
 import { Route as PublicPricingRouteImport } from './routes/_public/pricing'
 import { Route as PublicPartnersRouteImport } from './routes/_public/partners'
 import { Route as PublicLeaderboardRouteImport } from './routes/_public/leaderboard'
+import { Route as PublicDocsRouteImport } from './routes/_public/docs'
 import { Route as PublicCreatorsRouteImport } from './routes/_public/creators'
 import { Route as PublicCookiesRouteImport } from './routes/_public/cookies'
 import { Route as PublicContactRouteImport } from './routes/_public/contact'
@@ -48,6 +49,7 @@ import { Route as ProtectedAdminIndexRouteImport } from './routes/_protected/adm
 import { Route as ApiWebhooksStripeRouteImport } from './routes/api/webhooks/stripe'
 import { Route as PublicSCodeRouteImport } from './routes/_public/s.$code'
 import { Route as PublicJoinCodeRouteImport } from './routes/_public/join.$code'
+import { Route as PublicDocsSlugRouteImport } from './routes/_public/docs.$slug'
 import { Route as ProtectedAdminPartnerApplicationsRouteImport } from './routes/_protected/admin/partner-applications'
 
 const PublicRoute = PublicRouteImport.update({
@@ -119,6 +121,11 @@ const PublicPartnersRoute = PublicPartnersRouteImport.update({
 const PublicLeaderboardRoute = PublicLeaderboardRouteImport.update({
   id: '/leaderboard',
   path: '/leaderboard',
+  getParentRoute: () => PublicRoute,
+} as any)
+const PublicDocsRoute = PublicDocsRouteImport.update({
+  id: '/docs',
+  path: '/docs',
   getParentRoute: () => PublicRoute,
 } as any)
 const PublicCreatorsRoute = PublicCreatorsRouteImport.update({
@@ -241,6 +248,11 @@ const PublicJoinCodeRoute = PublicJoinCodeRouteImport.update({
   path: '/join/$code',
   getParentRoute: () => PublicRoute,
 } as any)
+const PublicDocsSlugRoute = PublicDocsSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => PublicDocsRoute,
+} as any)
 const ProtectedAdminPartnerApplicationsRoute =
   ProtectedAdminPartnerApplicationsRouteImport.update({
     id: '/admin/partner-applications',
@@ -269,6 +281,7 @@ export interface FileRoutesByFullPath {
   '/contact': typeof PublicContactRoute
   '/cookies': typeof PublicCookiesRoute
   '/creators': typeof PublicCreatorsRoute
+  '/docs': typeof PublicDocsRouteWithChildren
   '/leaderboard': typeof PublicLeaderboardRoute
   '/partners': typeof PublicPartnersRoute
   '/pricing': typeof PublicPricingRoute
@@ -281,6 +294,7 @@ export interface FileRoutesByFullPath {
   '/api/spotify-callback': typeof ApiSpotifyCallbackRoute
   '/': typeof PublicIndexRoute
   '/admin/partner-applications': typeof ProtectedAdminPartnerApplicationsRoute
+  '/docs/$slug': typeof PublicDocsSlugRoute
   '/join/$code': typeof PublicJoinCodeRoute
   '/s/$code': typeof PublicSCodeRoute
   '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
@@ -307,6 +321,7 @@ export interface FileRoutesByTo {
   '/contact': typeof PublicContactRoute
   '/cookies': typeof PublicCookiesRoute
   '/creators': typeof PublicCreatorsRoute
+  '/docs': typeof PublicDocsRouteWithChildren
   '/leaderboard': typeof PublicLeaderboardRoute
   '/partners': typeof PublicPartnersRoute
   '/pricing': typeof PublicPricingRoute
@@ -319,6 +334,7 @@ export interface FileRoutesByTo {
   '/api/spotify-callback': typeof ApiSpotifyCallbackRoute
   '/': typeof PublicIndexRoute
   '/admin/partner-applications': typeof ProtectedAdminPartnerApplicationsRoute
+  '/docs/$slug': typeof PublicDocsSlugRoute
   '/join/$code': typeof PublicJoinCodeRoute
   '/s/$code': typeof PublicSCodeRoute
   '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
@@ -350,6 +366,7 @@ export interface FileRoutesById {
   '/_public/contact': typeof PublicContactRoute
   '/_public/cookies': typeof PublicCookiesRoute
   '/_public/creators': typeof PublicCreatorsRoute
+  '/_public/docs': typeof PublicDocsRouteWithChildren
   '/_public/leaderboard': typeof PublicLeaderboardRoute
   '/_public/partners': typeof PublicPartnersRoute
   '/_public/pricing': typeof PublicPricingRoute
@@ -362,6 +379,7 @@ export interface FileRoutesById {
   '/api/spotify-callback': typeof ApiSpotifyCallbackRoute
   '/_public/': typeof PublicIndexRoute
   '/_protected/admin/partner-applications': typeof ProtectedAdminPartnerApplicationsRoute
+  '/_public/docs/$slug': typeof PublicDocsSlugRoute
   '/_public/join/$code': typeof PublicJoinCodeRoute
   '/_public/s/$code': typeof PublicSCodeRoute
   '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
@@ -390,6 +408,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/cookies'
     | '/creators'
+    | '/docs'
     | '/leaderboard'
     | '/partners'
     | '/pricing'
@@ -402,6 +421,7 @@ export interface FileRouteTypes {
     | '/api/spotify-callback'
     | '/'
     | '/admin/partner-applications'
+    | '/docs/$slug'
     | '/join/$code'
     | '/s/$code'
     | '/api/webhooks/stripe'
@@ -428,6 +448,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/cookies'
     | '/creators'
+    | '/docs'
     | '/leaderboard'
     | '/partners'
     | '/pricing'
@@ -440,6 +461,7 @@ export interface FileRouteTypes {
     | '/api/spotify-callback'
     | '/'
     | '/admin/partner-applications'
+    | '/docs/$slug'
     | '/join/$code'
     | '/s/$code'
     | '/api/webhooks/stripe'
@@ -470,6 +492,7 @@ export interface FileRouteTypes {
     | '/_public/contact'
     | '/_public/cookies'
     | '/_public/creators'
+    | '/_public/docs'
     | '/_public/leaderboard'
     | '/_public/partners'
     | '/_public/pricing'
@@ -482,6 +505,7 @@ export interface FileRouteTypes {
     | '/api/spotify-callback'
     | '/_public/'
     | '/_protected/admin/partner-applications'
+    | '/_public/docs/$slug'
     | '/_public/join/$code'
     | '/_public/s/$code'
     | '/api/webhooks/stripe'
@@ -606,6 +630,13 @@ declare module '@tanstack/react-router' {
       path: '/leaderboard'
       fullPath: '/leaderboard'
       preLoaderRoute: typeof PublicLeaderboardRouteImport
+      parentRoute: typeof PublicRoute
+    }
+    '/_public/docs': {
+      id: '/_public/docs'
+      path: '/docs'
+      fullPath: '/docs'
+      preLoaderRoute: typeof PublicDocsRouteImport
       parentRoute: typeof PublicRoute
     }
     '/_public/creators': {
@@ -776,6 +807,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicJoinCodeRouteImport
       parentRoute: typeof PublicRoute
     }
+    '/_public/docs/$slug': {
+      id: '/_public/docs/$slug'
+      path: '/$slug'
+      fullPath: '/docs/$slug'
+      preLoaderRoute: typeof PublicDocsSlugRouteImport
+      parentRoute: typeof PublicDocsRoute
+    }
     '/_protected/admin/partner-applications': {
       id: '/_protected/admin/partner-applications'
       path: '/admin/partner-applications'
@@ -841,12 +879,25 @@ const ProtectedRouteWithChildren = ProtectedRoute._addFileChildren(
   ProtectedRouteChildren,
 )
 
+interface PublicDocsRouteChildren {
+  PublicDocsSlugRoute: typeof PublicDocsSlugRoute
+}
+
+const PublicDocsRouteChildren: PublicDocsRouteChildren = {
+  PublicDocsSlugRoute: PublicDocsSlugRoute,
+}
+
+const PublicDocsRouteWithChildren = PublicDocsRoute._addFileChildren(
+  PublicDocsRouteChildren,
+)
+
 interface PublicRouteChildren {
   PublicAboutRoute: typeof PublicAboutRoute
   PublicApiDocsRoute: typeof PublicApiDocsRoute
   PublicContactRoute: typeof PublicContactRoute
   PublicCookiesRoute: typeof PublicCookiesRoute
   PublicCreatorsRoute: typeof PublicCreatorsRoute
+  PublicDocsRoute: typeof PublicDocsRouteWithChildren
   PublicLeaderboardRoute: typeof PublicLeaderboardRoute
   PublicPartnersRoute: typeof PublicPartnersRoute
   PublicPricingRoute: typeof PublicPricingRoute
@@ -866,6 +917,7 @@ const PublicRouteChildren: PublicRouteChildren = {
   PublicContactRoute: PublicContactRoute,
   PublicCookiesRoute: PublicCookiesRoute,
   PublicCreatorsRoute: PublicCreatorsRoute,
+  PublicDocsRoute: PublicDocsRouteWithChildren,
   PublicLeaderboardRoute: PublicLeaderboardRoute,
   PublicPartnersRoute: PublicPartnersRoute,
   PublicPricingRoute: PublicPricingRoute,

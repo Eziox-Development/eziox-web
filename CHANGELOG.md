@@ -62,6 +62,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Removed changelog from sitemap
 - Removed changelog from reserved usernames
 
+### Added - Documentation System 📚
+
+**File-based Markdown Documentation:**
+
+- New `/docs` route with searchable documentation index
+- Individual doc pages at `/docs/[slug]` with full Markdown rendering
+- Frontmatter support (title, description, category, icon, order)
+- Server functions for reading .md files from `content/docs/`
+
+**Documentation Pages Created:**
+
+- Getting Started - Account setup and basics
+- Customization - Themes, backgrounds, layouts
+- Analytics - Profile and link tracking
+- API Access - REST API integration guide
+- Premium Features - Tier comparison and features
+- Spotify Integration - Now Playing widget setup
+- Security - 2FA, encryption, best practices
+- FAQ - Common questions and answers
+
+**Modern UI Features:**
+
+- Category-based grouping with color coding
+- Real-time search filtering
+- Full Markdown rendering with react-markdown
+- GFM support (tables, strikethrough, task lists)
+- Code blocks with syntax highlighting and copy button
+- Responsive design with theme integration
+- Previous/Next navigation between docs
+
+**Navigation Update:**
+
+- Added "Docs" to main navigation (replacing removed Changelog)
+- Updated sitemap with all documentation pages
+
 ### Fixed
 
 - Profile tab URL parameter (`?tab=api`) now works correctly
