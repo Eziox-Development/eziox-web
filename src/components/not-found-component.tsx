@@ -1,10 +1,11 @@
-import { Link } from '@tanstack/react-router'
+import { Link, useRouter } from '@tanstack/react-router'
 import { motion } from 'motion/react'
 import { Home, Search, ArrowLeft } from 'lucide-react'
 import { useTheme } from '@/components/layout/ThemeProvider'
 
 export function NotFoundComponent() {
   const { theme } = useTheme()
+  const router = useRouter()
 
   return (
     <div className="relative min-h-[calc(100vh-200px)] flex items-center justify-center px-4 sm:px-6">
@@ -110,7 +111,7 @@ export function NotFoundComponent() {
           transition={{ delay: 0.5 }}
         >
           <button
-            onClick={() => window.history.back()}
+            onClick={() => router.history.back()}
             className="inline-flex items-center gap-2 text-sm transition-colors hover:opacity-80"
             style={{ color: theme.colors.foregroundMuted }}
           >
