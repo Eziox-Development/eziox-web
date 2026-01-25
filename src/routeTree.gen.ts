@@ -27,7 +27,6 @@ import { Route as PublicLeaderboardRouteImport } from './routes/_public/leaderbo
 import { Route as PublicCreatorsRouteImport } from './routes/_public/creators'
 import { Route as PublicCookiesRouteImport } from './routes/_public/cookies'
 import { Route as PublicContactRouteImport } from './routes/_public/contact'
-import { Route as PublicChangelogRouteImport } from './routes/_public/changelog'
 import { Route as PublicApiDocsRouteImport } from './routes/_public/api-docs'
 import { Route as PublicAboutRouteImport } from './routes/_public/about'
 import { Route as ProtectedThemeBuilderRouteImport } from './routes/_protected/theme-builder'
@@ -135,11 +134,6 @@ const PublicCookiesRoute = PublicCookiesRouteImport.update({
 const PublicContactRoute = PublicContactRouteImport.update({
   id: '/contact',
   path: '/contact',
-  getParentRoute: () => PublicRoute,
-} as any)
-const PublicChangelogRoute = PublicChangelogRouteImport.update({
-  id: '/changelog',
-  path: '/changelog',
   getParentRoute: () => PublicRoute,
 } as any)
 const PublicApiDocsRoute = PublicApiDocsRouteImport.update({
@@ -272,7 +266,6 @@ export interface FileRoutesByFullPath {
   '/theme-builder': typeof ProtectedThemeBuilderRoute
   '/about': typeof PublicAboutRoute
   '/api-docs': typeof PublicApiDocsRoute
-  '/changelog': typeof PublicChangelogRoute
   '/contact': typeof PublicContactRoute
   '/cookies': typeof PublicCookiesRoute
   '/creators': typeof PublicCreatorsRoute
@@ -311,7 +304,6 @@ export interface FileRoutesByTo {
   '/theme-builder': typeof ProtectedThemeBuilderRoute
   '/about': typeof PublicAboutRoute
   '/api-docs': typeof PublicApiDocsRoute
-  '/changelog': typeof PublicChangelogRoute
   '/contact': typeof PublicContactRoute
   '/cookies': typeof PublicCookiesRoute
   '/creators': typeof PublicCreatorsRoute
@@ -355,7 +347,6 @@ export interface FileRoutesById {
   '/_protected/theme-builder': typeof ProtectedThemeBuilderRoute
   '/_public/about': typeof PublicAboutRoute
   '/_public/api-docs': typeof PublicApiDocsRoute
-  '/_public/changelog': typeof PublicChangelogRoute
   '/_public/contact': typeof PublicContactRoute
   '/_public/cookies': typeof PublicCookiesRoute
   '/_public/creators': typeof PublicCreatorsRoute
@@ -396,7 +387,6 @@ export interface FileRouteTypes {
     | '/theme-builder'
     | '/about'
     | '/api-docs'
-    | '/changelog'
     | '/contact'
     | '/cookies'
     | '/creators'
@@ -435,7 +425,6 @@ export interface FileRouteTypes {
     | '/theme-builder'
     | '/about'
     | '/api-docs'
-    | '/changelog'
     | '/contact'
     | '/cookies'
     | '/creators'
@@ -478,7 +467,6 @@ export interface FileRouteTypes {
     | '/_protected/theme-builder'
     | '/_public/about'
     | '/_public/api-docs'
-    | '/_public/changelog'
     | '/_public/contact'
     | '/_public/cookies'
     | '/_public/creators'
@@ -639,13 +627,6 @@ declare module '@tanstack/react-router' {
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof PublicContactRouteImport
-      parentRoute: typeof PublicRoute
-    }
-    '/_public/changelog': {
-      id: '/_public/changelog'
-      path: '/changelog'
-      fullPath: '/changelog'
-      preLoaderRoute: typeof PublicChangelogRouteImport
       parentRoute: typeof PublicRoute
     }
     '/_public/api-docs': {
@@ -863,7 +844,6 @@ const ProtectedRouteWithChildren = ProtectedRoute._addFileChildren(
 interface PublicRouteChildren {
   PublicAboutRoute: typeof PublicAboutRoute
   PublicApiDocsRoute: typeof PublicApiDocsRoute
-  PublicChangelogRoute: typeof PublicChangelogRoute
   PublicContactRoute: typeof PublicContactRoute
   PublicCookiesRoute: typeof PublicCookiesRoute
   PublicCreatorsRoute: typeof PublicCreatorsRoute
@@ -883,7 +863,6 @@ interface PublicRouteChildren {
 const PublicRouteChildren: PublicRouteChildren = {
   PublicAboutRoute: PublicAboutRoute,
   PublicApiDocsRoute: PublicApiDocsRoute,
-  PublicChangelogRoute: PublicChangelogRoute,
   PublicContactRoute: PublicContactRoute,
   PublicCookiesRoute: PublicCookiesRoute,
   PublicCreatorsRoute: PublicCreatorsRoute,

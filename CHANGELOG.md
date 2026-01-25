@@ -9,6 +9,66 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.6.0] - 2026-01-25
+
+### Added - API Access System 🔑
+
+**Complete API Key Management:**
+
+- New `apiKeys` database table with secure key storage
+- API key generation with `ezx_` prefix and SHA-256 hashing
+- Configurable permissions per key (profile, links, analytics, templates)
+- Rate limiting per key (1k-10k requests/hour based on tier)
+- Request tracking and usage statistics
+- Key expiration support (30d, 90d, 180d, 1y, never)
+
+**Modern ApiAccessTab Component:**
+
+- Full theme integration (cardRadius, glowOpacity, cardStyle, displayFont)
+- Animated backgrounds and glow effects matching templates.tsx
+- Stats row with animated cards (Total Keys, Active, Requests, Rate Limit)
+- Modern API key cards with glass effects and hover animations
+- Create modal with permission categories and color-coded checkboxes
+- Stats modal with endpoint usage breakdown
+- Toast notifications for all actions
+- Spring animations with consistent stiffness/damping
+
+**API Documentation Page (`/api-docs`):**
+
+- Animated hero section with quick stats
+- Quick start guide with code examples
+- Authentication section with security tips
+- Rate limits by tier (Free, Pro, Creator, Lifetime)
+- Expandable endpoint cards with method badges
+- Parameters, request body, and response examples
+- Error codes reference
+
+**Server Functions:**
+
+- `getApiKeysFn` - List user's API keys
+- `createApiKeyFn` - Generate new API key with permissions
+- `updateApiKeyFn` - Toggle active status, rename keys
+- `deleteApiKeyFn` - Remove API keys
+- `getApiKeyStatsFn` - Usage statistics per key
+
+### Removed - Changelog/Updates Page 🗑️
+
+**Per community recommendations:**
+
+- Removed `/changelog` route and page
+- Removed ChangelogModal popup component
+- Removed changelog from navigation (Nav.tsx)
+- Removed changelog from footer links (Footer.tsx)
+- Removed changelog from sitemap
+- Removed changelog from reserved usernames
+
+### Fixed
+
+- Profile tab URL parameter (`?tab=api`) now works correctly
+- Added 'api' to validTabs in profile.tsx
+
+---
+
 ## [2.5.0] - 2026-01-21
 
 ### Added - Email Verification System 📧

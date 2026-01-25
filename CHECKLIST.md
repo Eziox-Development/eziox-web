@@ -307,11 +307,17 @@
 - [x] Click heatmap (hourlyClicks aggregation by day/hour)
 - [x] Referrer tracking
 
-#### 14. API Access
+#### 14. API Access ✅ COMPLETED
 
-- [ ] Public API for profile data
-- [ ] API keys management
-- [ ] Rate limiting (internal only, no public API yet)
+- [x] API keys management (`apiKeys` table, CRUD operations)
+- [x] API key generation with `ezx_` prefix and SHA-256 hashing
+- [x] Configurable permissions per key (profile, links, analytics, templates)
+- [x] Rate limiting per key (1k-10k requests/hour based on tier)
+- [x] Request tracking and usage statistics
+- [x] Key expiration support (30d, 90d, 180d, 1y, never)
+- [x] Modern ApiAccessTab UI with full theme integration
+- [x] API Documentation page (`/api-docs`)
+- [ ] Public API endpoints (future)
 - [ ] Webhook support (Stripe webhooks only)
 
 ### Phase 6: Database Features (Schema Ready, UI Pending)
@@ -595,6 +601,7 @@
 | Admin            | `adminAuditLog`                                                | `/admin`                            | Various                      |
 | Creator Features | `profiles.*`                                                   | `/profile?tab=creator`              | `creator-features.ts`        |
 | Custom Themes    | `profiles.customThemes`                                        | `/theme-builder`                    | `profile-settings.ts`        |
+| API Access       | `apiKeys`                                                      | `/profile?tab=api`, `/api-docs`     | `api-keys.ts`                |
 
 ### Schema Ready, UI Pending
 
@@ -613,9 +620,7 @@
 | Feature                     | Priority |
 | --------------------------- | -------- |
 | Testimonials / User Reviews | MEDIUM   |
-| Public API                  | LOW      |
-| API Keys                    | LOW      |
-| QR Code for Bio Page        | LOW      |
+| Public API Endpoints        | LOW      |
 | Weekly Digest Cron          | LOW      |
 | Mobile App / PWA            | FUTURE   |
 
@@ -627,5 +632,5 @@
 
 ---
 
-**Last Updated**: 2026-01-22  
+**Last Updated**: 2026-01-25  
 **Next Review**: Before each major feature release

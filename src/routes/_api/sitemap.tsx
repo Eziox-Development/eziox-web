@@ -23,12 +23,6 @@ export const Route = createFileRoute('/_api/sitemap')({
             lastmod: currentDate,
           },
           {
-            url: '/changelog',
-            changefreq: 'weekly',
-            priority: '0.7',
-            lastmod: currentDate,
-          },
-          {
             url: '/leaderboard',
             changefreq: 'daily',
             priority: '0.8',

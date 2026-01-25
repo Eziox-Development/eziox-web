@@ -88,7 +88,6 @@ const RESERVED_PATHS = [
   'profile',
   'links',
   'leaderboard',
-  'changelog',
   'about',
   'blog',
   'category',

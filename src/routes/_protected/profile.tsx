@@ -11,6 +11,7 @@ const validTabs: TabType[] = [
   'subscription',
   'customization',
   'creator',
+  'api',
   'settings',
   'privacy',
 ]

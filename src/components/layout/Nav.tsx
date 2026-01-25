@@ -19,7 +19,6 @@ import {
   Crown,
   ExternalLink,
   Home,
-  FileText,
   Info,
   LayoutDashboard,
   Globe,
@@ -87,7 +86,6 @@ const TIER_CONFIG: Record<
 const NAV_ITEMS = [
   { href: '/', label: 'Home', icon: Home },
   { href: '/pricing', label: 'Pricing', icon: CreditCard },
-  { href: '/changelog', label: 'Updates', icon: FileText },
   { href: '/about', label: 'About', icon: Info },
 ] as const
 

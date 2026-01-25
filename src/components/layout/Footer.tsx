@@ -54,7 +54,6 @@ const footerSections: Record<string, FooterSection> = {
         description: 'Browse 31+ themes',
       },
       { label: 'Pricing', href: '/pricing', description: 'Plans for everyone' },
-      { label: 'Changelog', href: '/changelog', description: 'Latest updates' },
       {
         label: 'Playground',
         href: '/playground',
