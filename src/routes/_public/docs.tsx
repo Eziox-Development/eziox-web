@@ -1,9 +1,7 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { useQuery } from '@tanstack/react-query'
-import { useServerFn } from '@tanstack/react-start'
 import { motion } from 'motion/react'
 import { useTheme } from '@/components/layout/ThemeProvider'
-import { getDocsFn, type DocMeta } from '@/server/functions/docs'
+import { DOCS_NAV, type DocNavItem } from '@/components/docs/DocsLayout'
 import {
   BookOpen,
   Rocket,
@@ -17,7 +15,6 @@ import {
   FileText,
   ChevronRight,
   Search,
-  Loader2,
 } from 'lucide-react'
 import { useState, useMemo } from 'react'
 
@@ -58,27 +55,21 @@ const CATEGORY_COLORS: Record<string, string> = {
 
 function DocsPage() {
   const { theme } = useTheme()
-  const getDocs = useServerFn(getDocsFn)
   const [searchQuery, setSearchQuery] = useState('')
 
-  const { data: docs = [], isLoading } = useQuery({
-    queryKey: ['docs'],
-    queryFn: () => getDocs(),
-  })
-
   const filteredDocs = useMemo(() => {
-    if (!searchQuery.trim()) return docs
+    if (!searchQuery.trim()) return DOCS_NAV
     const query = searchQuery.toLowerCase()
-    return docs.filter(
+    return DOCS_NAV.filter(
       (doc) =>
         doc.title.toLowerCase().includes(query) ||
         doc.description.toLowerCase().includes(query) ||
         doc.category.toLowerCase().includes(query),
     )
-  }, [docs, searchQuery])
+  }, [searchQuery])
 
   const groupedDocs = useMemo(() => {
-    const groups: Record<string, DocMeta[]> = {}
+    const groups: Record<string, DocNavItem[]> = {}
     filteredDocs.forEach((doc) => {
       if (!groups[doc.category]) {
         groups[doc.category] = []
@@ -211,19 +202,8 @@ function DocsPage() {
           </div>
         </motion.div>
 
-        {/* Loading State */}
-        {isLoading && (
-          <div className="flex items-center justify-center py-20">
-            <Loader2
-              size={32}
-              className="animate-spin"
-              style={{ color: theme.colors.primary }}
-            />
-          </div>
-        )}
-
         {/* Docs Grid */}
-        {!isLoading && (
+        {(
           <div className="space-y-12">
             {Object.entries(groupedDocs).map(([category, categoryDocs]) => (
               <motion.section
@@ -282,8 +262,7 @@ function DocsPage() {
                         transition={{ delay: index * 0.05 }}
                       >
                         <Link
-                          to="/docs/$slug"
-                          params={{ slug: doc.slug }}
+                          to={`/docs/${doc.slug}` as '/'}
                           className="block h-full group"
                         >
                           <div
@@ -350,7 +329,7 @@ function DocsPage() {
         )}
 
         {/* Empty State */}
-        {!isLoading && filteredDocs.length === 0 && (
+        {filteredDocs.length === 0 && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
