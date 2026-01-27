@@ -51,12 +51,16 @@ function generateApiKey(): { key: string; prefix: string; hash: string } {
 
 const createApiKeySchema = z.object({
   name: z.string().min(1).max(100),
-  permissions: z.object({
-    profile: z.object({ read: z.boolean(), write: z.boolean() }).optional(),
-    links: z.object({ read: z.boolean(), write: z.boolean(), delete: z.boolean() }).optional(),
-    analytics: z.object({ read: z.boolean() }).optional(),
-    templates: z.object({ read: z.boolean(), apply: z.boolean() }).optional(),
-  }).optional(),
+  permissions: z
+    .object({
+      profile: z.object({ read: z.boolean(), write: z.boolean() }).optional(),
+      links: z
+        .object({ read: z.boolean(), write: z.boolean(), delete: z.boolean() })
+        .optional(),
+      analytics: z.object({ read: z.boolean() }).optional(),
+      templates: z.object({ read: z.boolean(), apply: z.boolean() }).optional(),
+    })
+    .optional(),
   rateLimit: z.number().optional(),
   expiresInDays: z.number().optional(),
 })
@@ -64,12 +68,16 @@ const createApiKeySchema = z.object({
 const updateApiKeySchema = z.object({
   keyId: z.string().uuid(),
   name: z.string().min(1).max(100).optional(),
-  permissions: z.object({
-    profile: z.object({ read: z.boolean(), write: z.boolean() }).optional(),
-    links: z.object({ read: z.boolean(), write: z.boolean(), delete: z.boolean() }).optional(),
-    analytics: z.object({ read: z.boolean() }).optional(),
-    templates: z.object({ read: z.boolean(), apply: z.boolean() }).optional(),
-  }).optional(),
+  permissions: z
+    .object({
+      profile: z.object({ read: z.boolean(), write: z.boolean() }).optional(),
+      links: z
+        .object({ read: z.boolean(), write: z.boolean(), delete: z.boolean() })
+        .optional(),
+      analytics: z.object({ read: z.boolean() }).optional(),
+      templates: z.object({ read: z.boolean(), apply: z.boolean() }).optional(),
+    })
+    .optional(),
   isActive: z.boolean().optional(),
 })
 
@@ -256,11 +264,13 @@ export const updateApiKeyFn = createServerFn({ method: 'POST' })
       .where(eq(apiKeys.id, data.keyId))
       .returning()
 
-    return { 
-      apiKey: updatedKey ? {
-        ...updatedKey,
-        permissions: updatedKey.permissions as ApiKeyPermissions,
-      } : undefined 
+    return {
+      apiKey: updatedKey
+        ? {
+            ...updatedKey,
+            permissions: updatedKey.permissions as ApiKeyPermissions,
+          }
+        : undefined,
     }
   })
 
@@ -374,7 +384,11 @@ export const getApiKeyStatsFn = createServerFn({ method: 'POST' })
  */
 export async function validateApiKey(
   key: string,
-): Promise<{ valid: boolean; apiKey?: typeof apiKeys.$inferSelect; error?: string }> {
+): Promise<{
+  valid: boolean
+  apiKey?: typeof apiKeys.$inferSelect
+  error?: string
+}> {
   try {
     // Extract prefix
     const prefix = key.substring(0, 12)

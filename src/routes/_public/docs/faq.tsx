@@ -176,7 +176,9 @@ function FaqDoc() {
           <DocParagraph>
             We accept all major credit cards via Stripe:
           </DocParagraph>
-          <DocList items={['Visa', 'Mastercard', 'American Express', 'And more']} />
+          <DocList
+            items={['Visa', 'Mastercard', 'American Express', 'And more']}
+          />
         </DocSubSection>
 
         <DocSubSection title="Can I cancel my subscription?">
@@ -250,8 +252,12 @@ function FaqDoc() {
         </DocSubSection>
 
         <DocSubSection title="I have a feature request">
-          <DocParagraph>We love feedback! Submit feature requests via:</DocParagraph>
-          <DocList items={['GitHub Discussions', 'Email: feedback@eziox.link']} />
+          <DocParagraph>
+            We love feedback! Submit feature requests via:
+          </DocParagraph>
+          <DocList
+            items={['GitHub Discussions', 'Email: feedback@eziox.link']}
+          />
         </DocSubSection>
       </DocSection>
 

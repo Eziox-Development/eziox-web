@@ -15,6 +15,13 @@
       "when": 1769303460782,
       "tag": "0001_conscious_expediter",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1769528786306,
+      "tag": "0002_add_site_settings",
+      "breakpoints": true
     }
   ]
 }

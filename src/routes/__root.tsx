@@ -2,6 +2,7 @@ import {
   HeadContent,
   Scripts,
   createRootRouteWithContext,
+  redirect,
 } from '@tanstack/react-router'
 import appCss from '../styles.css?url'
 
@@ -12,6 +13,11 @@ import { CookieConsent } from '@/components/CookieConsent'
 import { ThemeProvider as PortfolioThemeProvider } from '@/components/layout/ThemeProvider'
 import { siteConfig } from '@/lib/site-config'
 import { authMiddleware } from '@/server/functions/auth'
+import {
+  getMaintenanceStatusFn,
+  canBypassMaintenanceFn,
+} from '@/server/functions/maintenance'
+import { disableDevTools } from '@/lib/disable-devtools'
 
 interface MyRouterContext {
   queryClient: QueryClient
@@ -30,8 +36,34 @@ if (import.meta.env.VITE_INSTRUMENTATION_SCRIPT_SRC) {
 }
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
-  loader: async () => {
+  loader: async ({ location }) => {
     const { currentUser } = await authMiddleware()
+
+    // Skip maintenance check for maintenance page itself
+    if (location.pathname !== '/maintenance') {
+      const maintenanceStatus = await getMaintenanceStatusFn()
+
+      if (maintenanceStatus.enabled) {
+        // Check if user can bypass maintenance
+        const { canBypass } = await canBypassMaintenanceFn()
+
+        if (!canBypass) {
+          // Redirect to maintenance page with message
+          const searchParams = new URLSearchParams()
+          if (maintenanceStatus.message) {
+            searchParams.set('message', maintenanceStatus.message)
+          }
+          if (maintenanceStatus.estimatedEndTime) {
+            searchParams.set('eta', maintenanceStatus.estimatedEndTime)
+          }
+          const query = searchParams.toString()
+          throw redirect({
+            to: '/maintenance',
+            search: query ? Object.fromEntries(searchParams) : undefined,
+          })
+        }
+      }
+    }
 
     return {
       currentUser,
@@ -166,6 +198,11 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
+  // Disable DevTools in production (runs once on mount)
+  if (typeof window !== 'undefined') {
+    disableDevTools()
+  }
+
   return (
     <html lang={siteConfig.metadata.language} suppressHydrationWarning>
       <head>

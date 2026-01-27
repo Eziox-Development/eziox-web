@@ -958,6 +958,26 @@ export const apiRequestLogsRelations = relations(apiRequestLogs, ({ one }) => ({
   }),
 }))
 
+// SITE SETTINGS TABLE (Global site configuration)
+export const siteSettings = pgTable('site_settings', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  key: varchar('key', { length: 100 }).notNull().unique(),
+  value: jsonb('value').notNull(),
+  description: text('description'),
+  updatedBy: uuid('updated_by').references(() => users.id, {
+    onDelete: 'set null',
+  }),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+})
+
+export const siteSettingsRelations = relations(siteSettings, ({ one }) => ({
+  updater: one(users, {
+    fields: [siteSettings.updatedBy],
+    references: [users.id],
+  }),
+}))
+
 // CONTACT MESSAGES TABLE
 export const contactMessages = pgTable('contact_messages', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -1037,3 +1057,5 @@ export type ApiKey = typeof apiKeys.$inferSelect
 export type NewApiKey = typeof apiKeys.$inferInsert
 export type ApiRequestLog = typeof apiRequestLogs.$inferSelect
 export type NewApiRequestLog = typeof apiRequestLogs.$inferInsert
+export type SiteSetting = typeof siteSettings.$inferSelect
+export type NewSiteSetting = typeof siteSettings.$inferInsert

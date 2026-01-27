@@ -76,9 +76,7 @@ function AnalyticsDoc() {
         </DocSubSection>
 
         <DocSubSection title="Top Performing Links">
-          <DocParagraph>
-            See which links get the most engagement:
-          </DocParagraph>
+          <DocParagraph>See which links get the most engagement:</DocParagraph>
           <DocList
             items={[
               'Link title and URL',
@@ -90,9 +88,7 @@ function AnalyticsDoc() {
         </DocSubSection>
 
         <DocSubSection title="Traffic Sources">
-          <DocParagraph>
-            Understand where your visitors come from:
-          </DocParagraph>
+          <DocParagraph>Understand where your visitors come from:</DocParagraph>
           <DocList
             items={[
               'Direct traffic',
@@ -105,9 +101,7 @@ function AnalyticsDoc() {
       </DocSection>
 
       <DocSection title="Link Analytics">
-        <DocParagraph>
-          Each link has its own detailed analytics:
-        </DocParagraph>
+        <DocParagraph>Each link has its own detailed analytics:</DocParagraph>
 
         <DocSubSection title="Per-Link Metrics">
           <DocList
@@ -131,10 +125,10 @@ function AnalyticsDoc() {
       </DocSection>
 
       <DocSection title="Export Data (Pro+)">
-        <DocParagraph>
-          Export your analytics in multiple formats:
-        </DocParagraph>
-        <DocList items={['CSV - Spreadsheet-compatible', 'JSON - Developer-friendly']} />
+        <DocParagraph>Export your analytics in multiple formats:</DocParagraph>
+        <DocList
+          items={['CSV - Spreadsheet-compatible', 'JSON - Developer-friendly']}
+        />
         <DocParagraph>Export includes:</DocParagraph>
         <DocList
           items={[
@@ -169,9 +163,8 @@ function AnalyticsDoc() {
           ]}
         />
         <DocParagraph>
-          Want more insights? Upgrade to{' '}
-          <DocLink href="/pricing">Pro</DocLink> for extended data retention and
-          export features.
+          Want more insights? Upgrade to <DocLink href="/pricing">Pro</DocLink>{' '}
+          for extended data retention and export features.
         </DocParagraph>
       </DocSection>
     </DocsLayout>

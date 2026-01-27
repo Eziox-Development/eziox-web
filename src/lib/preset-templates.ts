@@ -46,7 +46,8 @@ export const EZIOX_PRESET_TEMPLATES: PresetTemplate[] = [
   {
     id: 'eziox-minimal-dark',
     name: 'Midnight Minimal',
-    description: 'Clean, dark aesthetic with subtle accents. Perfect for professionals who want a sleek look.',
+    description:
+      'Clean, dark aesthetic with subtle accents. Perfect for professionals who want a sleek look.',
     category: 'minimal',
     featured: true,
     isOfficial: true,
@@ -76,7 +77,8 @@ export const EZIOX_PRESET_TEMPLATES: PresetTemplate[] = [
   {
     id: 'eziox-minimal-light',
     name: 'Clean Slate',
-    description: 'Bright and airy design with soft shadows. Ideal for a fresh, modern presence.',
+    description:
+      'Bright and airy design with soft shadows. Ideal for a fresh, modern presence.',
     category: 'minimal',
     featured: false,
     isOfficial: true,
@@ -108,7 +110,8 @@ export const EZIOX_PRESET_TEMPLATES: PresetTemplate[] = [
   {
     id: 'eziox-neon-dreams',
     name: 'Neon Dreams',
-    description: 'Vibrant cyberpunk-inspired design with glowing neon accents and dark backgrounds.',
+    description:
+      'Vibrant cyberpunk-inspired design with glowing neon accents and dark backgrounds.',
     category: 'creative',
     featured: true,
     isOfficial: true,
@@ -148,7 +151,8 @@ export const EZIOX_PRESET_TEMPLATES: PresetTemplate[] = [
   {
     id: 'eziox-aurora',
     name: 'Aurora Borealis',
-    description: 'Mesmerizing northern lights gradient with smooth color transitions.',
+    description:
+      'Mesmerizing northern lights gradient with smooth color transitions.',
     category: 'creative',
     featured: true,
     isOfficial: true,
@@ -212,7 +216,8 @@ export const EZIOX_PRESET_TEMPLATES: PresetTemplate[] = [
   {
     id: 'eziox-gamer-rgb',
     name: 'RGB Gamer',
-    description: 'Bold gaming aesthetic with RGB-inspired colors and sharp edges.',
+    description:
+      'Bold gaming aesthetic with RGB-inspired colors and sharp edges.',
     category: 'gamer',
     featured: true,
     isOfficial: true,
@@ -285,7 +290,8 @@ export const EZIOX_PRESET_TEMPLATES: PresetTemplate[] = [
   {
     id: 'eziox-kawaii-pink',
     name: 'Kawaii Pink',
-    description: 'Adorable pink aesthetic perfect for VTubers and content creators.',
+    description:
+      'Adorable pink aesthetic perfect for VTubers and content creators.',
     category: 'vtuber',
     featured: true,
     isOfficial: true,
@@ -324,7 +330,8 @@ export const EZIOX_PRESET_TEMPLATES: PresetTemplate[] = [
   {
     id: 'eziox-galaxy-idol',
     name: 'Galaxy Idol',
-    description: 'Sparkling cosmic theme with star-studded backgrounds for idol VTubers.',
+    description:
+      'Sparkling cosmic theme with star-studded backgrounds for idol VTubers.',
     category: 'vtuber',
     featured: true,
     isOfficial: true,
@@ -357,7 +364,8 @@ export const EZIOX_PRESET_TEMPLATES: PresetTemplate[] = [
   {
     id: 'eziox-terminal',
     name: 'Terminal',
-    description: 'Hacker-style terminal aesthetic with monospace fonts and green accents.',
+    description:
+      'Hacker-style terminal aesthetic with monospace fonts and green accents.',
     category: 'developer',
     featured: true,
     isOfficial: true,
@@ -398,7 +406,8 @@ export const EZIOX_PRESET_TEMPLATES: PresetTemplate[] = [
   {
     id: 'eziox-github-dark',
     name: 'GitHub Dark',
-    description: 'Inspired by GitHub\'s dark theme. Clean and professional for developers.',
+    description:
+      "Inspired by GitHub's dark theme. Clean and professional for developers.",
     category: 'developer',
     featured: false,
     isOfficial: true,
@@ -430,7 +439,8 @@ export const EZIOX_PRESET_TEMPLATES: PresetTemplate[] = [
   {
     id: 'eziox-corporate',
     name: 'Corporate Pro',
-    description: 'Professional and trustworthy design for business profiles and entrepreneurs.',
+    description:
+      'Professional and trustworthy design for business profiles and entrepreneurs.',
     category: 'business',
     featured: false,
     isOfficial: true,
@@ -461,7 +471,8 @@ export const EZIOX_PRESET_TEMPLATES: PresetTemplate[] = [
   {
     id: 'eziox-executive',
     name: 'Executive Dark',
-    description: 'Elegant dark theme for executives and high-end professionals.',
+    description:
+      'Elegant dark theme for executives and high-end professionals.',
     category: 'business',
     featured: true,
     isOfficial: true,
@@ -557,7 +568,8 @@ export const EZIOX_PRESET_TEMPLATES: PresetTemplate[] = [
   {
     id: 'eziox-watercolor',
     name: 'Watercolor Dreams',
-    description: 'Soft, artistic watercolor-inspired gradients for artists and designers.',
+    description:
+      'Soft, artistic watercolor-inspired gradients for artists and designers.',
     category: 'art',
     featured: true,
     isOfficial: true,
@@ -588,7 +600,8 @@ export const EZIOX_PRESET_TEMPLATES: PresetTemplate[] = [
   {
     id: 'eziox-gallery',
     name: 'Art Gallery',
-    description: 'Clean gallery-style layout to showcase your artwork and portfolio.',
+    description:
+      'Clean gallery-style layout to showcase your artwork and portfolio.',
     category: 'art',
     featured: false,
     isOfficial: true,
@@ -682,23 +695,26 @@ export const EZIOX_PRESET_TEMPLATES: PresetTemplate[] = [
 ]
 
 // Helper to get templates by category
-export function getPresetTemplatesByCategory(category: string): PresetTemplate[] {
+export function getPresetTemplatesByCategory(
+  category: string,
+): PresetTemplate[] {
   if (category === 'all') return EZIOX_PRESET_TEMPLATES
-  return EZIOX_PRESET_TEMPLATES.filter(t => t.category === category)
+  return EZIOX_PRESET_TEMPLATES.filter((t) => t.category === category)
 }
 
 // Helper to get featured preset templates
 export function getFeaturedPresetTemplates(): PresetTemplate[] {
-  return EZIOX_PRESET_TEMPLATES.filter(t => t.featured)
+  return EZIOX_PRESET_TEMPLATES.filter((t) => t.featured)
 }
 
 // Helper to search preset templates
 export function searchPresetTemplates(query: string): PresetTemplate[] {
   const lowerQuery = query.toLowerCase()
-  return EZIOX_PRESET_TEMPLATES.filter(t => 
-    t.name.toLowerCase().includes(lowerQuery) ||
-    t.description.toLowerCase().includes(lowerQuery) ||
-    t.category.toLowerCase().includes(lowerQuery)
+  return EZIOX_PRESET_TEMPLATES.filter(
+    (t) =>
+      t.name.toLowerCase().includes(lowerQuery) ||
+      t.description.toLowerCase().includes(lowerQuery) ||
+      t.category.toLowerCase().includes(lowerQuery),
   )
 }
 
@@ -706,6 +722,6 @@ export function searchPresetTemplates(query: string): PresetTemplate[] {
 export function getPresetTemplateStats() {
   return {
     total: EZIOX_PRESET_TEMPLATES.length,
-    featured: EZIOX_PRESET_TEMPLATES.filter(t => t.featured).length,
+    featured: EZIOX_PRESET_TEMPLATES.filter((t) => t.featured).length,
   }
 }

@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as MaintenanceRouteImport } from './routes/maintenance'
 import { Route as PublicRouteImport } from './routes/_public'
 import { Route as ProtectedRouteImport } from './routes/_protected'
 import { Route as BioRouteImport } from './routes/_bio'
@@ -57,8 +58,14 @@ import { Route as PublicDocsFaqRouteImport } from './routes/_public/docs/faq'
 import { Route as PublicDocsCustomizationRouteImport } from './routes/_public/docs/customization'
 import { Route as PublicDocsApiRouteImport } from './routes/_public/docs/api'
 import { Route as PublicDocsAnalyticsRouteImport } from './routes/_public/docs/analytics'
+import { Route as ProtectedAdminSettingsRouteImport } from './routes/_protected/admin/settings'
 import { Route as ProtectedAdminPartnerApplicationsRouteImport } from './routes/_protected/admin/partner-applications'
 
+const MaintenanceRoute = MaintenanceRouteImport.update({
+  id: '/maintenance',
+  path: '/maintenance',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PublicRoute = PublicRouteImport.update({
   id: '/_public',
   getParentRoute: () => rootRouteImport,
@@ -297,6 +304,11 @@ const PublicDocsAnalyticsRoute = PublicDocsAnalyticsRouteImport.update({
   path: '/docs/analytics',
   getParentRoute: () => PublicRoute,
 } as any)
+const ProtectedAdminSettingsRoute = ProtectedAdminSettingsRouteImport.update({
+  id: '/admin/settings',
+  path: '/admin/settings',
+  getParentRoute: () => ProtectedRoute,
+} as any)
 const ProtectedAdminPartnerApplicationsRoute =
   ProtectedAdminPartnerApplicationsRouteImport.update({
     id: '/admin/partner-applications',
@@ -305,6 +317,7 @@ const ProtectedAdminPartnerApplicationsRoute =
   } as any)
 
 export interface FileRoutesByFullPath {
+  '/maintenance': typeof MaintenanceRoute
   '/hello': typeof ApiHelloRoute
   '/rss': typeof ApiRssRoute
   '/sitemap': typeof ApiSitemapRoute
@@ -337,6 +350,7 @@ export interface FileRoutesByFullPath {
   '/api/spotify-callback': typeof ApiSpotifyCallbackRoute
   '/': typeof PublicIndexRoute
   '/admin/partner-applications': typeof ProtectedAdminPartnerApplicationsRoute
+  '/admin/settings': typeof ProtectedAdminSettingsRoute
   '/docs/analytics': typeof PublicDocsAnalyticsRoute
   '/docs/api': typeof PublicDocsApiRoute
   '/docs/customization': typeof PublicDocsCustomizationRoute
@@ -352,6 +366,7 @@ export interface FileRoutesByFullPath {
   '/docs': typeof PublicDocsIndexRoute
 }
 export interface FileRoutesByTo {
+  '/maintenance': typeof MaintenanceRoute
   '/hello': typeof ApiHelloRoute
   '/rss': typeof ApiRssRoute
   '/sitemap': typeof ApiSitemapRoute
@@ -384,6 +399,7 @@ export interface FileRoutesByTo {
   '/api/spotify-callback': typeof ApiSpotifyCallbackRoute
   '/': typeof PublicIndexRoute
   '/admin/partner-applications': typeof ProtectedAdminPartnerApplicationsRoute
+  '/admin/settings': typeof ProtectedAdminSettingsRoute
   '/docs/analytics': typeof PublicDocsAnalyticsRoute
   '/docs/api': typeof PublicDocsApiRoute
   '/docs/customization': typeof PublicDocsCustomizationRoute
@@ -404,6 +420,7 @@ export interface FileRoutesById {
   '/_bio': typeof BioRouteWithChildren
   '/_protected': typeof ProtectedRouteWithChildren
   '/_public': typeof PublicRouteWithChildren
+  '/maintenance': typeof MaintenanceRoute
   '/_api/hello': typeof ApiHelloRoute
   '/_api/rss': typeof ApiRssRoute
   '/_api/sitemap': typeof ApiSitemapRoute
@@ -436,6 +453,7 @@ export interface FileRoutesById {
   '/api/spotify-callback': typeof ApiSpotifyCallbackRoute
   '/_public/': typeof PublicIndexRoute
   '/_protected/admin/partner-applications': typeof ProtectedAdminPartnerApplicationsRoute
+  '/_protected/admin/settings': typeof ProtectedAdminSettingsRoute
   '/_public/docs/analytics': typeof PublicDocsAnalyticsRoute
   '/_public/docs/api': typeof PublicDocsApiRoute
   '/_public/docs/customization': typeof PublicDocsCustomizationRoute
@@ -453,6 +471,7 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/maintenance'
     | '/hello'
     | '/rss'
     | '/sitemap'
@@ -485,6 +504,7 @@ export interface FileRouteTypes {
     | '/api/spotify-callback'
     | '/'
     | '/admin/partner-applications'
+    | '/admin/settings'
     | '/docs/analytics'
     | '/docs/api'
     | '/docs/customization'
@@ -500,6 +520,7 @@ export interface FileRouteTypes {
     | '/docs'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/maintenance'
     | '/hello'
     | '/rss'
     | '/sitemap'
@@ -532,6 +553,7 @@ export interface FileRouteTypes {
     | '/api/spotify-callback'
     | '/'
     | '/admin/partner-applications'
+    | '/admin/settings'
     | '/docs/analytics'
     | '/docs/api'
     | '/docs/customization'
@@ -551,6 +573,7 @@ export interface FileRouteTypes {
     | '/_bio'
     | '/_protected'
     | '/_public'
+    | '/maintenance'
     | '/_api/hello'
     | '/_api/rss'
     | '/_api/sitemap'
@@ -583,6 +606,7 @@ export interface FileRouteTypes {
     | '/api/spotify-callback'
     | '/_public/'
     | '/_protected/admin/partner-applications'
+    | '/_protected/admin/settings'
     | '/_public/docs/analytics'
     | '/_public/docs/api'
     | '/_public/docs/customization'
@@ -603,6 +627,7 @@ export interface RootRouteChildren {
   BioRoute: typeof BioRouteWithChildren
   ProtectedRoute: typeof ProtectedRouteWithChildren
   PublicRoute: typeof PublicRouteWithChildren
+  MaintenanceRoute: typeof MaintenanceRoute
   ApiHelloRoute: typeof ApiHelloRoute
   ApiRssRoute: typeof ApiRssRoute
   ApiSitemapRoute: typeof ApiSitemapRoute
@@ -613,6 +638,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/maintenance': {
+      id: '/maintenance'
+      path: '/maintenance'
+      fullPath: '/maintenance'
+      preLoaderRoute: typeof MaintenanceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_public': {
       id: '/_public'
       path: ''
@@ -949,6 +981,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicDocsAnalyticsRouteImport
       parentRoute: typeof PublicRoute
     }
+    '/_protected/admin/settings': {
+      id: '/_protected/admin/settings'
+      path: '/admin/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof ProtectedAdminSettingsRouteImport
+      parentRoute: typeof ProtectedRoute
+    }
     '/_protected/admin/partner-applications': {
       id: '/_protected/admin/partner-applications'
       path: '/admin/partner-applications'
@@ -995,6 +1034,7 @@ interface ProtectedRouteChildren {
   ProtectedShortenerRoute: typeof ProtectedShortenerRoute
   ProtectedThemeBuilderRoute: typeof ProtectedThemeBuilderRoute
   ProtectedAdminPartnerApplicationsRoute: typeof ProtectedAdminPartnerApplicationsRoute
+  ProtectedAdminSettingsRoute: typeof ProtectedAdminSettingsRoute
   ProtectedAdminIndexRoute: typeof ProtectedAdminIndexRoute
 }
 
@@ -1007,6 +1047,7 @@ const ProtectedRouteChildren: ProtectedRouteChildren = {
   ProtectedThemeBuilderRoute: ProtectedThemeBuilderRoute,
   ProtectedAdminPartnerApplicationsRoute:
     ProtectedAdminPartnerApplicationsRoute,
+  ProtectedAdminSettingsRoute: ProtectedAdminSettingsRoute,
   ProtectedAdminIndexRoute: ProtectedAdminIndexRoute,
 }
 
@@ -1078,6 +1119,7 @@ const rootRouteChildren: RootRouteChildren = {
   BioRoute: BioRouteWithChildren,
   ProtectedRoute: ProtectedRouteWithChildren,
   PublicRoute: PublicRouteWithChildren,
+  MaintenanceRoute: MaintenanceRoute,
   ApiHelloRoute: ApiHelloRoute,
   ApiRssRoute: ApiRssRoute,
   ApiSitemapRoute: ApiSitemapRoute,

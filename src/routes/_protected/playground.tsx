@@ -278,7 +278,9 @@ function PlaygroundPage() {
   const [newFontUrl, setNewFontUrl] = useState('')
   const [newFontType, setNewFontType] = useState<'display' | 'body'>('display')
   const [fontCategory, setFontCategory] = useState<string>('all')
-  const [previewDevice, setPreviewDevice] = useState<'desktop' | 'laptop' | 'tablet' | 'mobile'>('desktop')
+  const [previewDevice, setPreviewDevice] = useState<
+    'desktop' | 'laptop' | 'tablet' | 'mobile'
+  >('desktop')
   const [previewFont, setPreviewFont] = useState<string | null>(null)
 
   // Auto-detect screen size and set preview device accordingly
@@ -1197,7 +1199,11 @@ function PlaygroundPage() {
                       </div>
                       {/* Load all preset fonts for live preview */}
                       {filteredFonts.map((font) => (
-                        <link key={font.name} href={font.url} rel="stylesheet" />
+                        <link
+                          key={font.name}
+                          href={font.url}
+                          rel="stylesheet"
+                        />
                       ))}
                       <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto">
                         {filteredFonts.map((font) => (
@@ -1221,15 +1227,19 @@ function PlaygroundPage() {
                                   : theme.colors.foreground,
                             }}
                           >
-                            <span 
+                            <span
                               className="block text-base truncate"
-                              style={{ fontFamily: `'${font.name}', ${font.category}` }}
+                              style={{
+                                fontFamily: `'${font.name}', ${font.category}`,
+                              }}
                             >
                               {font.name}
                             </span>
-                            <span 
+                            <span
                               className="block text-xs mt-1 opacity-60"
-                              style={{ fontFamily: `'${font.name}', ${font.category}` }}
+                              style={{
+                                fontFamily: `'${font.name}', ${font.category}`,
+                              }}
                             >
                               Aa Bb Cc 123
                             </span>
@@ -1769,7 +1779,7 @@ function PlaygroundPage() {
             {/* Load preview font if selected */}
             {previewFont && (
               <link
-                href={PRESET_FONTS.find(f => f.name === previewFont)?.url}
+                href={PRESET_FONTS.find((f) => f.name === previewFont)?.url}
                 rel="stylesheet"
               />
             )}
@@ -1777,7 +1787,7 @@ function PlaygroundPage() {
             {creatorSettings?.customFonts?.map((font: CustomFont) => (
               <link key={font.id} href={font.url} rel="stylesheet" />
             ))}
-            
+
             <div
               className="sticky top-24 rounded-xl overflow-hidden"
               style={{
@@ -1796,20 +1806,28 @@ function PlaygroundPage() {
                   Live Preview
                 </span>
                 <div className="flex items-center gap-1">
-                  {([
-                    { id: 'desktop', icon: Monitor, label: 'Desktop' },
-                    { id: 'laptop', icon: Laptop, label: 'Laptop' },
-                    { id: 'tablet', icon: Tablet, label: 'Tablet' },
-                    { id: 'mobile', icon: Smartphone, label: 'Mobile' },
-                  ] as const).map(({ id, icon: Icon, label }) => (
+                  {(
+                    [
+                      { id: 'desktop', icon: Monitor, label: 'Desktop' },
+                      { id: 'laptop', icon: Laptop, label: 'Laptop' },
+                      { id: 'tablet', icon: Tablet, label: 'Tablet' },
+                      { id: 'mobile', icon: Smartphone, label: 'Mobile' },
+                    ] as const
+                  ).map(({ id, icon: Icon, label }) => (
                     <button
                       key={id}
                       onClick={() => setPreviewDevice(id)}
                       title={label}
                       className="p-1.5 rounded-md transition-all"
                       style={{
-                        background: previewDevice === id ? theme.colors.primary : 'transparent',
-                        color: previewDevice === id ? '#fff' : theme.colors.foregroundMuted,
+                        background:
+                          previewDevice === id
+                            ? theme.colors.primary
+                            : 'transparent',
+                        color:
+                          previewDevice === id
+                            ? '#fff'
+                            : theme.colors.foregroundMuted,
                       }}
                     >
                       <Icon size={14} />
@@ -1822,17 +1840,53 @@ function PlaygroundPage() {
                   className="rounded-lg overflow-hidden transition-all duration-300"
                   style={{
                     ...getPreviewBg(),
-                    width: previewDevice === 'desktop' ? '100%' : previewDevice === 'laptop' ? '320px' : previewDevice === 'tablet' ? '280px' : '200px',
-                    height: previewDevice === 'desktop' ? '400px' : previewDevice === 'laptop' ? '450px' : previewDevice === 'tablet' ? '500px' : '420px',
-                    fontFamily: previewFont || (creatorSettings?.customFonts?.[0] as CustomFont | undefined)?.name || 'inherit',
+                    width:
+                      previewDevice === 'desktop'
+                        ? '100%'
+                        : previewDevice === 'laptop'
+                          ? '320px'
+                          : previewDevice === 'tablet'
+                            ? '280px'
+                            : '200px',
+                    height:
+                      previewDevice === 'desktop'
+                        ? '400px'
+                        : previewDevice === 'laptop'
+                          ? '450px'
+                          : previewDevice === 'tablet'
+                            ? '500px'
+                            : '420px',
+                    fontFamily:
+                      previewFont ||
+                      (
+                        creatorSettings?.customFonts?.[0] as
+                          | CustomFont
+                          | undefined
+                      )?.name ||
+                      'inherit',
                   }}
                 >
-                  <div 
+                  <div
                     className="h-full flex flex-col items-center justify-start overflow-y-auto"
-                    style={{ 
-                      paddingLeft: previewDevice === 'desktop' ? '24px' : previewDevice === 'laptop' ? '20px' : '16px',
-                      paddingRight: previewDevice === 'desktop' ? '24px' : previewDevice === 'laptop' ? '20px' : '16px',
-                      paddingBottom: previewDevice === 'desktop' ? '24px' : previewDevice === 'laptop' ? '20px' : '16px',
+                    style={{
+                      paddingLeft:
+                        previewDevice === 'desktop'
+                          ? '24px'
+                          : previewDevice === 'laptop'
+                            ? '20px'
+                            : '16px',
+                      paddingRight:
+                        previewDevice === 'desktop'
+                          ? '24px'
+                          : previewDevice === 'laptop'
+                            ? '20px'
+                            : '16px',
+                      paddingBottom:
+                        previewDevice === 'desktop'
+                          ? '24px'
+                          : previewDevice === 'laptop'
+                            ? '20px'
+                            : '16px',
                       paddingTop: previewDevice === 'desktop' ? '32px' : '24px',
                     }}
                   >
@@ -1842,48 +1896,76 @@ function PlaygroundPage() {
                       style={{
                         background: theme.colors.primary,
                         color: '#fff',
-                        width: previewDevice === 'desktop' ? '80px' : previewDevice === 'laptop' ? '72px' : '64px',
-                        height: previewDevice === 'desktop' ? '80px' : previewDevice === 'laptop' ? '72px' : '64px',
-                        fontSize: previewDevice === 'desktop' ? '28px' : previewDevice === 'laptop' ? '24px' : '20px',
+                        width:
+                          previewDevice === 'desktop'
+                            ? '80px'
+                            : previewDevice === 'laptop'
+                              ? '72px'
+                              : '64px',
+                        height:
+                          previewDevice === 'desktop'
+                            ? '80px'
+                            : previewDevice === 'laptop'
+                              ? '72px'
+                              : '64px',
+                        fontSize:
+                          previewDevice === 'desktop'
+                            ? '28px'
+                            : previewDevice === 'laptop'
+                              ? '24px'
+                              : '20px',
                       }}
                       animate={
-                        localAnimated.enabled && localAnimated.avatarAnimation === 'pulse'
+                        localAnimated.enabled &&
+                        localAnimated.avatarAnimation === 'pulse'
                           ? { scale: [1, 1.05, 1] }
-                          : localAnimated.enabled && localAnimated.avatarAnimation === 'bounce'
-                          ? { y: [0, -8, 0] }
-                          : localAnimated.enabled && localAnimated.avatarAnimation === 'rotate'
-                          ? { rotate: [0, 5, -5, 0] }
-                          : localAnimated.enabled && localAnimated.avatarAnimation === 'shake'
-                          ? { x: [0, -3, 3, -3, 0] }
-                          : {}
+                          : localAnimated.enabled &&
+                              localAnimated.avatarAnimation === 'bounce'
+                            ? { y: [0, -8, 0] }
+                            : localAnimated.enabled &&
+                                localAnimated.avatarAnimation === 'rotate'
+                              ? { rotate: [0, 5, -5, 0] }
+                              : localAnimated.enabled &&
+                                  localAnimated.avatarAnimation === 'shake'
+                                ? { x: [0, -3, 3, -3, 0] }
+                                : {}
                       }
-                      transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        ease: 'easeInOut',
+                      }}
                     >
                       {currentUser?.name?.[0] || 'U'}
                     </motion.div>
-                    
+
                     {/* Name */}
                     <p
                       className="font-bold mb-0.5 text-center"
-                      style={{ 
+                      style={{
                         color: '#fff',
-                        fontSize: previewDevice === 'desktop' ? '18px' : previewDevice === 'laptop' ? '16px' : '14px',
+                        fontSize:
+                          previewDevice === 'desktop'
+                            ? '18px'
+                            : previewDevice === 'laptop'
+                              ? '16px'
+                              : '14px',
                       }}
                     >
                       {currentUser?.name || 'Username'}
                     </p>
-                    
+
                     {/* Username */}
                     <p
                       className="opacity-70 mb-4 text-center"
-                      style={{ 
+                      style={{
                         color: '#fff',
                         fontSize: previewDevice === 'desktop' ? '14px' : '12px',
                       }}
                     >
                       @{currentUser?.username}
                     </p>
-                    
+
                     {/* Links with layout settings and hover effects */}
                     <div
                       className="w-full flex flex-col"
@@ -1894,35 +1976,54 @@ function PlaygroundPage() {
                           key={i}
                           className="w-full text-center font-medium cursor-pointer"
                           style={{
-                            background: localLayout.linkStyle === 'glass' 
-                              ? 'rgba(255,255,255,0.15)' 
-                              : localLayout.linkStyle === 'minimal'
-                              ? 'transparent'
-                              : localLayout.linkStyle === 'bold'
-                              ? theme.colors.primary
-                              : 'rgba(255,255,255,0.1)',
+                            background:
+                              localLayout.linkStyle === 'glass'
+                                ? 'rgba(255,255,255,0.15)'
+                                : localLayout.linkStyle === 'minimal'
+                                  ? 'transparent'
+                                  : localLayout.linkStyle === 'bold'
+                                    ? theme.colors.primary
+                                    : 'rgba(255,255,255,0.1)',
                             borderRadius: `${localLayout.cardBorderRadius}px`,
                             padding: `${localLayout.cardPadding}px`,
                             color: '#fff',
-                            fontSize: previewDevice === 'desktop' ? '14px' : '12px',
-                            border: localLayout.linkStyle === 'minimal' ? '1px solid rgba(255,255,255,0.3)' : 'none',
-                            backdropFilter: localLayout.linkStyle === 'glass' ? 'blur(10px)' : 'none',
-                            boxShadow: localLayout.cardShadow === 'none' ? 'none'
-                              : localLayout.cardShadow === 'sm' ? '0 1px 2px rgba(0,0,0,0.1)'
-                              : localLayout.cardShadow === 'md' ? '0 4px 6px rgba(0,0,0,0.1)'
-                              : localLayout.cardShadow === 'lg' ? '0 10px 15px rgba(0,0,0,0.1)'
-                              : '0 20px 25px rgba(0,0,0,0.15)',
+                            fontSize:
+                              previewDevice === 'desktop' ? '14px' : '12px',
+                            border:
+                              localLayout.linkStyle === 'minimal'
+                                ? '1px solid rgba(255,255,255,0.3)'
+                                : 'none',
+                            backdropFilter:
+                              localLayout.linkStyle === 'glass'
+                                ? 'blur(10px)'
+                                : 'none',
+                            boxShadow:
+                              localLayout.cardShadow === 'none'
+                                ? 'none'
+                                : localLayout.cardShadow === 'sm'
+                                  ? '0 1px 2px rgba(0,0,0,0.1)'
+                                  : localLayout.cardShadow === 'md'
+                                    ? '0 4px 6px rgba(0,0,0,0.1)'
+                                    : localLayout.cardShadow === 'lg'
+                                      ? '0 10px 15px rgba(0,0,0,0.1)'
+                                      : '0 20px 25px rgba(0,0,0,0.15)',
                           }}
                           whileHover={
-                            localAnimated.enabled && localAnimated.linkHoverEffect === 'scale'
+                            localAnimated.enabled &&
+                            localAnimated.linkHoverEffect === 'scale'
                               ? { scale: 1.03 }
-                              : localAnimated.enabled && localAnimated.linkHoverEffect === 'glow'
-                              ? { boxShadow: '0 0 20px rgba(255,255,255,0.3)' }
-                              : localAnimated.enabled && localAnimated.linkHoverEffect === 'slide'
-                              ? { x: 4 }
-                              : localAnimated.enabled && localAnimated.linkHoverEffect === 'shake'
-                              ? { x: [0, -2, 2, -2, 0] }
-                              : {}
+                              : localAnimated.enabled &&
+                                  localAnimated.linkHoverEffect === 'glow'
+                                ? {
+                                    boxShadow: '0 0 20px rgba(255,255,255,0.3)',
+                                  }
+                                : localAnimated.enabled &&
+                                    localAnimated.linkHoverEffect === 'slide'
+                                  ? { x: 4 }
+                                  : localAnimated.enabled &&
+                                      localAnimated.linkHoverEffect === 'shake'
+                                    ? { x: [0, -2, 2, -2, 0] }
+                                    : {}
                           }
                           transition={{ duration: 0.2 }}
                         >
@@ -1930,12 +2031,12 @@ function PlaygroundPage() {
                         </motion.div>
                       ))}
                     </div>
-                    
+
                     {/* CSS Preview indicator */}
                     {cssInput && (
-                      <div 
+                      <div
                         className="mt-4 px-2 py-1 rounded text-center"
-                        style={{ 
+                        style={{
                           background: 'rgba(255,255,255,0.1)',
                           fontSize: '10px',
                           color: 'rgba(255,255,255,0.6)',
@@ -1947,17 +2048,23 @@ function PlaygroundPage() {
                   </div>
                 </div>
               </div>
-              
+
               {/* Preview info */}
-              <div 
+              <div
                 className="px-4 py-2 border-t flex items-center justify-between"
                 style={{ borderColor: theme.colors.border }}
               >
-                <span 
+                <span
                   className="text-xs"
                   style={{ color: theme.colors.foregroundMuted }}
                 >
-                  {previewDevice === 'desktop' ? '1920×1080' : previewDevice === 'laptop' ? '1366×768' : previewDevice === 'tablet' ? '768×1024' : '375×812'}
+                  {previewDevice === 'desktop'
+                    ? '1920×1080'
+                    : previewDevice === 'laptop'
+                      ? '1366×768'
+                      : previewDevice === 'tablet'
+                        ? '768×1024'
+                        : '375×812'}
                 </span>
                 <a
                   href={`/${currentUser?.username}`}

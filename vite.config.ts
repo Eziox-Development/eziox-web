@@ -42,7 +42,7 @@ const config = defineConfig({
   },
   build: {
     target: 'esnext',
-    sourcemap: isDev ? 'inline' : true,
+    sourcemap: isDev ? 'inline' : false,
     minify: isDev ? false : 'esbuild',
     cssMinify: !isDev,
     rollupOptions: {

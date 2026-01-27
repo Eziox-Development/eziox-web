@@ -540,13 +540,15 @@ function BioPage() {
       )}
 
       {/* Dark overlay for readability on light/image backgrounds */}
-      {(customBackground?.type === 'image' || customBackground?.type === 'video') && (
+      {(customBackground?.type === 'image' ||
+        customBackground?.type === 'video') && (
         <div
           className="fixed inset-0 pointer-events-none z-1"
           style={{
-            background: customBackground.imageOpacity !== undefined
-              ? `rgba(0,0,0,${1 - customBackground.imageOpacity})`
-              : 'rgba(0,0,0,0.4)',
+            background:
+              customBackground.imageOpacity !== undefined
+                ? `rgba(0,0,0,${1 - customBackground.imageOpacity})`
+                : 'rgba(0,0,0,0.4)',
           }}
         />
       )}
@@ -590,7 +592,7 @@ function BioPage() {
         >
           {/* Banner */}
           {profileData?.banner ? (
-            <div 
+            <div
               className="w-full h-28 sm:h-36 relative"
               style={{
                 borderTopLeftRadius: `${layoutSettings?.cardBorderRadius ?? 20}px`,
@@ -606,7 +608,7 @@ function BioPage() {
                   borderTopRightRadius: `${layoutSettings?.cardBorderRadius ?? 20}px`,
                 }}
               />
-              <div 
+              <div
                 className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent"
                 style={{
                   borderTopLeftRadius: `${layoutSettings?.cardBorderRadius ?? 20}px`,
@@ -615,7 +617,7 @@ function BioPage() {
               />
             </div>
           ) : (
-            <div 
+            <div
               className="w-full h-20 sm:h-24"
               style={{
                 background: `linear-gradient(135deg, ${accentColor}30, var(--accent)20)`,
@@ -626,15 +628,17 @@ function BioPage() {
           )}
 
           {/* Profile Content */}
-          <div 
+          <div
             className="relative"
-            style={{ 
+            style={{
               padding: `${layoutSettings?.cardPadding ?? 20}px`,
-              paddingTop: profileData?.banner ? '16px' : `${layoutSettings?.cardPadding ?? 20}px`,
+              paddingTop: profileData?.banner
+                ? '16px'
+                : `${layoutSettings?.cardPadding ?? 20}px`,
             }}
           >
             {/* Avatar Row */}
-            <div 
+            <div
               className="flex items-start gap-4"
               style={{ marginTop: profileData?.banner ? '-56px' : '0' }}
             >
@@ -649,7 +653,8 @@ function BioPage() {
                   className="w-20 h-20 sm:w-24 sm:h-24 overflow-hidden"
                   style={{
                     borderRadius: `${(layoutSettings?.cardBorderRadius ?? 20) - 4}px`,
-                    boxShadow: '0 0 0 3px rgba(0,0,0,0.5), 0 0 0 5px rgba(255,255,255,0.15), 0 8px 20px rgba(0,0,0,0.3)',
+                    boxShadow:
+                      '0 0 0 3px rgba(0,0,0,0.5), 0 0 0 5px rgba(255,255,255,0.15), 0 8px 20px rgba(0,0,0,0.3)',
                     background: 'var(--background-secondary)',
                   }}
                   {...getAvatarAnimation()}
@@ -730,8 +735,12 @@ function BioPage() {
                 >
                   {Object.entries(profileData.socials).map(
                     ([platform, socialUsername]) => {
-                      const Icon = socialIconMap[platform.toLowerCase()] || Globe
-                      const socialUrl = getSocialUrl(platform, socialUsername as string)
+                      const Icon =
+                        socialIconMap[platform.toLowerCase()] || Globe
+                      const socialUrl = getSocialUrl(
+                        platform,
+                        socialUsername as string,
+                      )
                       return (
                         <motion.a
                           key={platform}
@@ -745,7 +754,11 @@ function BioPage() {
                           }}
                           whileHover={{ scale: 1.08 }}
                           whileTap={{ scale: 0.95 }}
-                          transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                          transition={{
+                            type: 'spring',
+                            stiffness: 400,
+                            damping: 17,
+                          }}
                         >
                           <Icon size={18} />
                         </motion.a>
@@ -786,7 +799,10 @@ function BioPage() {
               {/* Views */}
               <div className="flex items-center gap-1.5">
                 <Eye size={14} style={{ color: 'rgba(255, 255, 255, 0.5)' }} />
-                <span className="text-sm font-medium" style={{ color: '#ffffff' }}>
+                <span
+                  className="text-sm font-medium"
+                  style={{ color: '#ffffff' }}
+                >
                   {(profile.stats?.profileViews || 0).toLocaleString()}
                 </span>
               </div>
@@ -794,8 +810,14 @@ function BioPage() {
               {/* Location */}
               {profileData?.location && (
                 <div className="flex items-center gap-1.5">
-                  <MapPin size={14} style={{ color: 'rgba(255, 255, 255, 0.5)' }} />
-                  <span className="text-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>
+                  <MapPin
+                    size={14}
+                    style={{ color: 'rgba(255, 255, 255, 0.5)' }}
+                  />
+                  <span
+                    className="text-sm"
+                    style={{ color: 'rgba(255, 255, 255, 0.7)' }}
+                  >
                     {profileData.location}
                   </span>
                 </div>
@@ -809,11 +831,24 @@ function BioPage() {
                 }}
                 className="flex items-center gap-1.5 hover:opacity-80 transition-opacity duration-100 cursor-pointer"
               >
-                <Heart size={14} style={{ color: 'rgba(255, 255, 255, 0.5)' }} />
-                <span className="text-sm font-medium" style={{ color: '#ffffff' }}>
-                  {(followerCount ?? profile.stats?.followers ?? 0).toLocaleString()}
+                <Heart
+                  size={14}
+                  style={{ color: 'rgba(255, 255, 255, 0.5)' }}
+                />
+                <span
+                  className="text-sm font-medium"
+                  style={{ color: '#ffffff' }}
+                >
+                  {(
+                    followerCount ??
+                    profile.stats?.followers ??
+                    0
+                  ).toLocaleString()}
                 </span>
-                <span className="text-sm" style={{ color: 'rgba(255, 255, 255, 0.5)' }}>
+                <span
+                  className="text-sm"
+                  style={{ color: 'rgba(255, 255, 255, 0.5)' }}
+                >
                   followers
                 </span>
               </button>
@@ -826,22 +861,40 @@ function BioPage() {
                 }}
                 className="flex items-center gap-1.5 hover:opacity-80 transition-opacity duration-100 cursor-pointer"
               >
-                <UserPlus size={14} style={{ color: 'rgba(255, 255, 255, 0.5)' }} />
-                <span className="text-sm font-medium" style={{ color: '#ffffff' }}>
+                <UserPlus
+                  size={14}
+                  style={{ color: 'rgba(255, 255, 255, 0.5)' }}
+                />
+                <span
+                  className="text-sm font-medium"
+                  style={{ color: '#ffffff' }}
+                >
                   {(profile.stats?.following || 0).toLocaleString()}
                 </span>
-                <span className="text-sm" style={{ color: 'rgba(255, 255, 255, 0.5)' }}>
+                <span
+                  className="text-sm"
+                  style={{ color: 'rgba(255, 255, 255, 0.5)' }}
+                >
                   following
                 </span>
               </button>
 
               {/* Clicks */}
               <div className="flex items-center gap-1.5">
-                <MousePointerClick size={14} style={{ color: 'rgba(255, 255, 255, 0.5)' }} />
-                <span className="text-sm font-medium" style={{ color: '#ffffff' }}>
+                <MousePointerClick
+                  size={14}
+                  style={{ color: 'rgba(255, 255, 255, 0.5)' }}
+                />
+                <span
+                  className="text-sm font-medium"
+                  style={{ color: '#ffffff' }}
+                >
                   {(profile.stats?.totalLinkClicks || 0).toLocaleString()}
                 </span>
-                <span className="text-sm" style={{ color: 'rgba(255, 255, 255, 0.5)' }}>
+                <span
+                  className="text-sm"
+                  style={{ color: 'rgba(255, 255, 255, 0.5)' }}
+                >
                   clicks
                 </span>
               </div>
@@ -875,14 +928,26 @@ function BioPage() {
                     style={{ color: accentColor }}
                   >
                     <Globe size={12} />
-                    {profileData.website.replace(/^https?:\/\//, '').replace(/\/$/, '')}
+                    {profileData.website
+                      .replace(/^https?:\/\//, '')
+                      .replace(/\/$/, '')}
                   </a>
                 )}
                 {profile.user.createdAt && (
                   <div className="flex items-center gap-1">
-                    <Calendar size={12} style={{ color: 'rgba(255, 255, 255, 0.5)' }} />
-                    <span className="text-xs" style={{ color: 'rgba(255, 255, 255, 0.5)' }}>
-                      Joined {new Date(profile.user.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                    <Calendar
+                      size={12}
+                      style={{ color: 'rgba(255, 255, 255, 0.5)' }}
+                    />
+                    <span
+                      className="text-xs"
+                      style={{ color: 'rgba(255, 255, 255, 0.5)' }}
+                    >
+                      Joined{' '}
+                      {new Date(profile.user.createdAt).toLocaleDateString(
+                        'en-US',
+                        { month: 'short', year: 'numeric' },
+                      )}
                     </span>
                   </div>
                 )}
@@ -892,7 +957,7 @@ function BioPage() {
         </motion.div>
 
         {/* Follow Button Card */}
-        {(isAuthenticated && !isSelf) && (
+        {isAuthenticated && !isSelf && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -911,7 +976,9 @@ function BioPage() {
                 backdropFilter: 'blur(20px)',
                 WebkitBackdropFilter: 'blur(20px)',
                 color: isFollowing ? 'rgba(255, 255, 255, 0.9)' : 'white',
-                border: isFollowing ? '1px solid rgba(255, 255, 255, 0.1)' : 'none',
+                border: isFollowing
+                  ? '1px solid rgba(255, 255, 255, 0.1)'
+                  : 'none',
                 boxShadow: isFollowing ? 'none' : `0 8px 24px ${accentColor}30`,
               }}
               whileHover={{ scale: 1.02 }}
@@ -974,7 +1041,14 @@ function BioPage() {
           )}
 
         {/* Links - Modern Card Style */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: `${layoutSettings?.cardSpacing ?? 12}px` }} className="mb-6">
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: `${layoutSettings?.cardSpacing ?? 12}px`,
+          }}
+          className="mb-6"
+        >
           <AnimatePresence>
             {profile.links && profile.links.length > 0 ? (
               profile.links.map((link) => {
@@ -1006,15 +1080,24 @@ function BioPage() {
                 // Detect link type for badge
                 const getLinkBadge = () => {
                   const url = link.url.toLowerCase()
-                  if (url.includes('discord.gg') || url.includes('discord.com')) return { label: 'Discord', color: '#5865F2' }
-                  if (url.includes('github.com')) return { label: 'GitHub', color: '#333' }
-                  if (url.includes('twitter.com') || url.includes('x.com')) return { label: 'X', color: '#000' }
-                  if (url.includes('youtube.com') || url.includes('youtu.be')) return { label: 'YouTube', color: '#FF0000' }
-                  if (url.includes('twitch.tv')) return { label: 'Twitch', color: '#9146FF' }
-                  if (url.includes('instagram.com')) return { label: 'Instagram', color: '#E4405F' }
-                  if (url.includes('tiktok.com')) return { label: 'TikTok', color: '#000' }
-                  if (url.includes('spotify.com')) return { label: 'Audio', color: '#1DB954' }
-                  if (url.includes('soundcloud.com')) return { label: 'Audio', color: '#FF5500' }
+                  if (url.includes('discord.gg') || url.includes('discord.com'))
+                    return { label: 'Discord', color: '#5865F2' }
+                  if (url.includes('github.com'))
+                    return { label: 'GitHub', color: '#333' }
+                  if (url.includes('twitter.com') || url.includes('x.com'))
+                    return { label: 'X', color: '#000' }
+                  if (url.includes('youtube.com') || url.includes('youtu.be'))
+                    return { label: 'YouTube', color: '#FF0000' }
+                  if (url.includes('twitch.tv'))
+                    return { label: 'Twitch', color: '#9146FF' }
+                  if (url.includes('instagram.com'))
+                    return { label: 'Instagram', color: '#E4405F' }
+                  if (url.includes('tiktok.com'))
+                    return { label: 'TikTok', color: '#000' }
+                  if (url.includes('spotify.com'))
+                    return { label: 'Audio', color: '#1DB954' }
+                  if (url.includes('soundcloud.com'))
+                    return { label: 'Audio', color: '#FF5500' }
                   return null
                 }
 
@@ -1050,12 +1133,18 @@ function BioPage() {
                 // Get shadow based on layoutSettings
                 const getLinkShadow = () => {
                   switch (layoutSettings?.cardShadow) {
-                    case 'none': return 'none'
-                    case 'sm': return '0 2px 8px rgba(0,0,0,0.15)'
-                    case 'md': return '0 4px 16px rgba(0,0,0,0.2)'
-                    case 'lg': return '0 8px 24px rgba(0,0,0,0.25)'
-                    case 'xl': return '0 12px 32px rgba(0,0,0,0.3)'
-                    default: return '0 4px 16px rgba(0,0,0,0.2)'
+                    case 'none':
+                      return 'none'
+                    case 'sm':
+                      return '0 2px 8px rgba(0,0,0,0.15)'
+                    case 'md':
+                      return '0 4px 16px rgba(0,0,0,0.2)'
+                    case 'lg':
+                      return '0 8px 24px rgba(0,0,0,0.25)'
+                    case 'xl':
+                      return '0 12px 32px rgba(0,0,0,0.3)'
+                    default:
+                      return '0 4px 16px rgba(0,0,0,0.2)'
                   }
                 }
 
@@ -1093,8 +1182,8 @@ function BioPage() {
                           color: 'rgba(255, 255, 255, 0.7)',
                         }}
                       >
-                        <div 
-                          className="w-1.5 h-1.5 rounded-full" 
+                        <div
+                          className="w-1.5 h-1.5 rounded-full"
                           style={{ background: badge.color }}
                         />
                         {badge.label}
@@ -1107,27 +1196,27 @@ function BioPage() {
                         className="w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center shrink-0 overflow-hidden"
                         style={{
                           borderRadius: `${Math.max((layoutSettings?.cardBorderRadius ?? 16) - 4, 8)}px`,
-                          background: link.backgroundColor 
-                            ? `${link.backgroundColor}40` 
+                          background: link.backgroundColor
+                            ? `${link.backgroundColor}40`
                             : `linear-gradient(135deg, ${accentColor}30, ${accentColor}10)`,
                         }}
                       >
                         {link.thumbnail ? (
-                          <img 
-                            src={link.thumbnail} 
+                          <img
+                            src={link.thumbnail}
                             alt={link.title}
                             className="w-full h-full object-cover"
                           />
                         ) : link.icon ? (
                           <span className="text-2xl">{link.icon}</span>
                         ) : (
-                          <ExternalLink 
-                            size={24} 
+                          <ExternalLink
+                            size={24}
                             style={{ color: accentColor, opacity: 0.8 }}
                           />
                         )}
                       </div>
-                      
+
                       {/* Content */}
                       <div className="flex-1 min-w-0 pr-16">
                         <p

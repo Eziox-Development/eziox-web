@@ -33,6 +33,7 @@ import {
   Gem,
   Star,
   Zap,
+  Construction,
 } from 'lucide-react'
 import * as LucideIcons from 'lucide-react'
 
@@ -473,6 +474,46 @@ function AdminPage() {
                 style={{ color: 'var(--foreground-muted)' }}
               />
             </Link>
+
+            {currentUser?.role === 'owner' && (
+              <Link
+                to="/admin/settings"
+                className="group p-4 rounded-2xl flex items-center gap-4 transition-all hover:scale-[1.02]"
+                style={{
+                  background: 'rgba(255, 255, 255, 0.03)',
+                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                }}
+              >
+                <div
+                  className="w-12 h-12 rounded-xl flex items-center justify-center"
+                  style={{
+                    background:
+                      'linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(236, 72, 153, 0.2))',
+                  }}
+                >
+                  <Construction size={24} style={{ color: '#f59e0b' }} />
+                </div>
+                <div className="flex-1">
+                  <p
+                    className="font-semibold"
+                    style={{ color: 'var(--foreground)' }}
+                  >
+                    Site Settings
+                  </p>
+                  <p
+                    className="text-xs"
+                    style={{ color: 'var(--foreground-muted)' }}
+                  >
+                    Maintenance mode & config
+                  </p>
+                </div>
+                <ChevronRight
+                  size={18}
+                  className="opacity-0 group-hover:opacity-100 transition-opacity"
+                  style={{ color: 'var(--foreground-muted)' }}
+                />
+              </Link>
+            )}
           </div>
         </motion.div>
 

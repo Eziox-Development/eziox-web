@@ -65,8 +65,7 @@ export const Route = createFileRoute('/_public/templates')({
       { property: 'og:title', content: 'Community Templates | Eziox' },
       {
         property: 'og:description',
-        content:
-          'Discover stunning profile styles created by the community.',
+        content: 'Discover stunning profile styles created by the community.',
       },
     ],
   }),
@@ -100,7 +99,8 @@ function TemplatesPage() {
   const [sort, setSort] = useState<'popular' | 'newest' | 'likes'>('popular')
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null)
-  const [selectedPresetTemplate, setSelectedPresetTemplate] = useState<PresetTemplate | null>(null)
+  const [selectedPresetTemplate, setSelectedPresetTemplate] =
+    useState<PresetTemplate | null>(null)
 
   const cardRadius =
     theme.effects.borderRadius === 'pill'
@@ -181,23 +181,39 @@ function TemplatesPage() {
   // Handle applying preset templates
   const handleApplyPreset = async (template: PresetTemplate) => {
     if (!canApply) {
-      toast.error('Pro tier required', { description: 'Upgrade to apply templates.' })
+      toast.error('Pro tier required', {
+        description: 'Upgrade to apply templates.',
+      })
       return
     }
     try {
       if (template.settings.customBackground) {
-        await updateBackground({ data: template.settings.customBackground as Parameters<typeof updateBackground>[0]['data'] })
+        await updateBackground({
+          data: template.settings.customBackground as Parameters<
+            typeof updateBackground
+          >[0]['data'],
+        })
       }
       if (template.settings.layoutSettings) {
-        await updateLayout({ data: template.settings.layoutSettings as Parameters<typeof updateLayout>[0]['data'] })
+        await updateLayout({
+          data: template.settings.layoutSettings as Parameters<
+            typeof updateLayout
+          >[0]['data'],
+        })
       }
       if (template.settings.animatedProfile) {
-        await updateAnimated({ data: template.settings.animatedProfile as Parameters<typeof updateAnimated>[0]['data'] })
+        await updateAnimated({
+          data: template.settings.animatedProfile as Parameters<
+            typeof updateAnimated
+          >[0]['data'],
+        })
       }
       if (template.settings.customCSS) {
         await updateCSS({ data: { css: template.settings.customCSS } })
       }
-      toast.success('Template applied!', { description: `"${template.name}" has been applied.` })
+      toast.success('Template applied!', {
+        description: `"${template.name}" has been applied.`,
+      })
       void queryClient.invalidateQueries({ queryKey: ['profileSettings'] })
       void queryClient.invalidateQueries({ queryKey: ['creatorSettings'] })
     } catch {
@@ -207,18 +223,23 @@ function TemplatesPage() {
 
   // Get filtered preset templates
   const filteredPresetTemplates = useMemo(() => {
-    let presets = category === 'all' ? EZIOX_PRESET_TEMPLATES : getPresetTemplatesByCategory(category)
+    let presets =
+      category === 'all'
+        ? EZIOX_PRESET_TEMPLATES
+        : getPresetTemplatesByCategory(category)
     if (search) {
       const results = searchPresetTemplates(search)
-      presets = presets.filter(p => results.some(r => r.id === p.id))
+      presets = presets.filter((p) => results.some((r) => r.id === p.id))
     }
     return presets
   }, [category, search])
 
   // Stats
   const presetStats = useMemo(() => getPresetTemplateStats(), [])
-  const totalUses = templatesData?.templates?.reduce((acc, t) => acc + (t.uses || 0), 0) || 0
-  const totalLikes = templatesData?.templates?.reduce((acc, t) => acc + (t.likes || 0), 0) || 0
+  const totalUses =
+    templatesData?.templates?.reduce((acc, t) => acc + (t.uses || 0), 0) || 0
+  const totalLikes =
+    templatesData?.templates?.reduce((acc, t) => acc + (t.likes || 0), 0) || 0
   const totalTemplates = (templatesData?.total || 0) + presetStats.total
   const totalFeatured = (featuredTemplates?.length || 0) + presetStats.featured
 
@@ -310,8 +331,8 @@ function TemplatesPage() {
               className="text-lg lg:text-xl max-w-2xl mx-auto mb-10"
               style={{ color: theme.colors.foregroundMuted }}
             >
-              Discover stunning profile templates created by the community.
-              One click to transform your bio page.
+              Discover stunning profile templates created by the community. One
+              click to transform your bio page.
             </motion.p>
 
             {/* Stats Row */}
@@ -328,8 +349,18 @@ function TemplatesPage() {
                   icon: Layers,
                   color: theme.colors.primary,
                 },
-                { value: totalUses, label: 'Uses', icon: Download, color: '#22c55e' },
-                { value: totalLikes, label: 'Likes', icon: Heart, color: '#ef4444' },
+                {
+                  value: totalUses,
+                  label: 'Uses',
+                  icon: Download,
+                  color: '#22c55e',
+                },
+                {
+                  value: totalLikes,
+                  label: 'Likes',
+                  icon: Heart,
+                  color: '#ef4444',
+                },
                 {
                   value: totalFeatured,
                   label: 'Featured',
@@ -448,7 +479,11 @@ function TemplatesPage() {
                       }}
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                      transition={{
+                        type: 'spring',
+                        stiffness: 400,
+                        damping: 25,
+                      }}
                     >
                       <option.icon size={12} />
                       {option.label}
@@ -482,7 +517,11 @@ function TemplatesPage() {
                             : theme.colors.foregroundMuted,
                       }}
                       whileTap={{ scale: 0.95 }}
-                      transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                      transition={{
+                        type: 'spring',
+                        stiffness: 400,
+                        damping: 25,
+                      }}
                     >
                       <Icon size={16} />
                     </motion.button>
@@ -538,14 +577,21 @@ function TemplatesPage() {
                 Loading templates...
               </p>
             </div>
-          ) : (filteredPresetTemplates.length > 0 || (templatesData?.templates && templatesData.templates.length > 0)) ? (
+          ) : filteredPresetTemplates.length > 0 ||
+            (templatesData?.templates && templatesData.templates.length > 0) ? (
             <motion.div
               className="p-5 mt-4"
               style={{
-                background: theme.effects.cardStyle === 'glass' ? `${theme.colors.card}90` : theme.colors.card,
+                background:
+                  theme.effects.cardStyle === 'glass'
+                    ? `${theme.colors.card}90`
+                    : theme.colors.card,
                 border: `1px solid ${theme.colors.border}`,
                 borderRadius: cardRadius,
-                backdropFilter: theme.effects.cardStyle === 'glass' ? 'blur(20px)' : undefined,
+                backdropFilter:
+                  theme.effects.cardStyle === 'glass'
+                    ? 'blur(20px)'
+                    : undefined,
               }}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -558,7 +604,9 @@ function TemplatesPage() {
                 }
                 initial="hidden"
                 animate="visible"
-                variants={{ visible: { transition: { staggerChildren: 0.03 } } }}
+                variants={{
+                  visible: { transition: { staggerChildren: 0.03 } },
+                }}
               >
                 {/* Eziox Official Templates */}
                 {filteredPresetTemplates.map((template) => (
@@ -636,7 +684,9 @@ function TemplatesPage() {
                 border: `1px solid ${theme.colors.border}`,
                 borderRadius: cardRadius,
                 backdropFilter:
-                  theme.effects.cardStyle === 'glass' ? 'blur(20px)' : undefined,
+                  theme.effects.cardStyle === 'glass'
+                    ? 'blur(20px)'
+                    : undefined,
               }}
             >
               <div
@@ -693,7 +743,11 @@ function TemplatesPage() {
                       }}
                       whileHover={{ scale: 1.03 }}
                       whileTap={{ scale: 0.98 }}
-                      transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                      transition={{
+                        type: 'spring',
+                        stiffness: 400,
+                        damping: 25,
+                      }}
                     >
                       <Crown size={16} />
                       Sign up to create
@@ -798,8 +852,16 @@ function TemplateCard({
   const hasCreatorFeatures = !!(
     settings?.customCSS || settings?.animatedProfile?.enabled
   )
-  const requiredTier = isOfficial ? 'Official' : hasCreatorFeatures ? 'Creator' : 'Pro'
-  const tierColor = isOfficial ? theme.colors.primary : hasCreatorFeatures ? '#f59e0b' : '#3b82f6'
+  const requiredTier = isOfficial
+    ? 'Official'
+    : hasCreatorFeatures
+      ? 'Creator'
+      : 'Pro'
+  const tierColor = isOfficial
+    ? theme.colors.primary
+    : hasCreatorFeatures
+      ? '#f59e0b'
+      : '#3b82f6'
   const categoryData = CATEGORIES.find((c) => c.id === template.category)
 
   if (listView) {
@@ -822,14 +884,21 @@ function TemplateCard({
       >
         <div
           className="w-20 h-20 shrink-0 relative overflow-hidden"
-          style={{ background: bgPreview, borderRadius: `calc(${cardRadius} - 8px)` }}
+          style={{
+            background: bgPreview,
+            borderRadius: `calc(${cardRadius} - 8px)`,
+          }}
         >
           <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all bg-black/40 backdrop-blur-sm">
             <Eye size={20} className="text-white" />
           </div>
           <div
             className="absolute top-1.5 left-1.5 px-2 py-0.5 text-[9px] font-bold flex items-center gap-1 backdrop-blur-md"
-            style={{ background: `${tierColor}dd`, color: '#fff', borderRadius: '6px' }}
+            style={{
+              background: `${tierColor}dd`,
+              color: '#fff',
+              borderRadius: '6px',
+            }}
           >
             <Crown size={9} />
             {requiredTier[0]}
@@ -887,7 +956,10 @@ function TemplateCard({
               onLike()
             }}
             className="p-2.5"
-            style={{ background: theme.colors.backgroundSecondary, borderRadius: cardRadius }}
+            style={{
+              background: theme.colors.backgroundSecondary,
+              borderRadius: cardRadius,
+            }}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
             transition={{ type: 'spring', stiffness: 400, damping: 25 }}
@@ -906,7 +978,9 @@ function TemplateCard({
               color: '#fff',
               borderRadius: cardRadius,
               boxShadow:
-                glowOpacity > 0 ? `0 8px 20px ${theme.colors.primary}30` : undefined,
+                glowOpacity > 0
+                  ? `0 8px 20px ${theme.colors.primary}30`
+                  : undefined,
             }}
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.98 }}
@@ -952,7 +1026,11 @@ function TemplateCard({
         <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
           <div
             className="px-2 py-1 text-[10px] font-bold flex items-center gap-1 backdrop-blur-md"
-            style={{ background: `${tierColor}dd`, color: '#fff', borderRadius: '8px' }}
+            style={{
+              background: `${tierColor}dd`,
+              color: '#fff',
+              borderRadius: '8px',
+            }}
           >
             <Crown size={10} />
             {requiredTier}+
@@ -960,7 +1038,11 @@ function TemplateCard({
           {featured && (
             <div
               className="px-2 py-1 text-[10px] font-bold flex items-center gap-1 backdrop-blur-md"
-              style={{ background: 'rgba(251, 191, 36, 0.9)', color: '#fff', borderRadius: '8px' }}
+              style={{
+                background: 'rgba(251, 191, 36, 0.9)',
+                color: '#fff',
+                borderRadius: '8px',
+              }}
             >
               <Sparkles size={10} />
               Featured
@@ -1047,7 +1129,9 @@ function TemplateCard({
               color: '#fff',
               borderRadius: `calc(${cardRadius} - 6px)`,
               boxShadow:
-                glowOpacity > 0 ? `0 4px 12px ${theme.colors.primary}30` : undefined,
+                glowOpacity > 0
+                  ? `0 4px 12px ${theme.colors.primary}30`
+                  : undefined,
             }}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -1217,9 +1301,25 @@ function TemplatePreviewModal({
               {/* Stats Grid */}
               <div className="grid grid-cols-3 gap-3 mb-6">
                 {[
-                  { value: template.uses || 0, label: 'Uses', icon: Download, color: '#22c55e' },
-                  { value: template.likes || 0, label: 'Likes', icon: Heart, color: '#ef4444' },
-                  { value: template.category, label: 'Category', icon: Layers, color: theme.colors.primary, capitalize: true },
+                  {
+                    value: template.uses || 0,
+                    label: 'Uses',
+                    icon: Download,
+                    color: '#22c55e',
+                  },
+                  {
+                    value: template.likes || 0,
+                    label: 'Likes',
+                    icon: Heart,
+                    color: '#ef4444',
+                  },
+                  {
+                    value: template.category,
+                    label: 'Category',
+                    icon: Layers,
+                    color: theme.colors.primary,
+                    capitalize: true,
+                  },
                 ].map((stat) => (
                   <div
                     key={stat.label}
@@ -1325,9 +1425,11 @@ function PresetTemplatePreviewModal({
   const settings = template.settings
   const accentColor = settings?.accentColor || theme.colors.primary
   const bgPreview =
-    settings?.customBackground?.type === 'image' && settings.customBackground.imageUrl
+    settings?.customBackground?.type === 'image' &&
+    settings.customBackground.imageUrl
       ? `url(${settings.customBackground.imageUrl}) center/cover`
-      : settings?.customBackground?.type === 'gradient' && settings.customBackground.gradientColors
+      : settings?.customBackground?.type === 'gradient' &&
+          settings.customBackground.gradientColors
         ? `linear-gradient(${settings.customBackground.gradientAngle || 135}deg, ${settings.customBackground.gradientColors.join(', ')})`
         : settings?.customBackground?.type === 'solid'
           ? settings.customBackground.value
@@ -1354,12 +1456,18 @@ function PresetTemplatePreviewModal({
           background: theme.colors.card,
           border: `1px solid ${theme.colors.border}`,
           borderRadius: cardRadius,
-          boxShadow: glowOpacity > 0 ? `0 25px 60px ${theme.colors.primary}30` : '0 25px 50px rgba(0,0,0,0.3)',
+          boxShadow:
+            glowOpacity > 0
+              ? `0 25px 60px ${theme.colors.primary}30`
+              : '0 25px 50px rgba(0,0,0,0.3)',
         }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Preview Header */}
-        <div className="h-44 relative overflow-hidden" style={{ background: bgPreview }}>
+        <div
+          className="h-44 relative overflow-hidden"
+          style={{ background: bgPreview }}
+        >
           <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-transparent" />
           <motion.button
             onClick={onClose}
@@ -1374,14 +1482,21 @@ function PresetTemplatePreviewModal({
           <div className="absolute top-4 left-4">
             <div
               className="px-3 py-1.5 text-xs font-bold flex items-center gap-1.5 backdrop-blur-md"
-              style={{ background: `${theme.colors.primary}dd`, color: '#fff', borderRadius: '8px' }}
+              style={{
+                background: `${theme.colors.primary}dd`,
+                color: '#fff',
+                borderRadius: '8px',
+              }}
             >
               <Crown size={12} />
               Eziox Official
             </div>
           </div>
           <div className="absolute bottom-4 left-5 right-5">
-            <h2 className="text-2xl font-bold text-white mb-1" style={{ fontFamily: theme.typography.displayFont }}>
+            <h2
+              className="text-2xl font-bold text-white mb-1"
+              style={{ fontFamily: theme.typography.displayFont }}
+            >
               {template.name}
             </h2>
             <div className="flex items-center gap-3">
@@ -1392,7 +1507,11 @@ function PresetTemplatePreviewModal({
               {categoryData && (
                 <span
                   className="px-2.5 py-0.5 text-xs font-medium flex items-center gap-1 backdrop-blur-md"
-                  style={{ background: `${categoryData.color}90`, color: '#fff', borderRadius: '8px' }}
+                  style={{
+                    background: `${categoryData.color}90`,
+                    color: '#fff',
+                    borderRadius: '8px',
+                  }}
                 >
                   <categoryData.icon size={12} />
                   {categoryData.label}
@@ -1404,7 +1523,10 @@ function PresetTemplatePreviewModal({
 
         {/* Modal Content */}
         <div className="p-6">
-          <p className="text-sm mb-5" style={{ color: theme.colors.foregroundMuted }}>
+          <p
+            className="text-sm mb-5"
+            style={{ color: theme.colors.foregroundMuted }}
+          >
             {template.description}
           </p>
 
@@ -1413,35 +1535,83 @@ function PresetTemplatePreviewModal({
             {template.settings.animatedProfile?.enabled && (
               <div
                 className="text-center p-3"
-                style={{ background: theme.colors.backgroundSecondary, borderRadius: `calc(${cardRadius} - 6px)` }}
+                style={{
+                  background: theme.colors.backgroundSecondary,
+                  borderRadius: `calc(${cardRadius} - 6px)`,
+                }}
               >
-                <Sparkles size={16} className="mx-auto mb-1" style={{ color: theme.colors.primary }} />
-                <p className="text-xs" style={{ color: theme.colors.foreground }}>Animations</p>
+                <Sparkles
+                  size={16}
+                  className="mx-auto mb-1"
+                  style={{ color: theme.colors.primary }}
+                />
+                <p
+                  className="text-xs"
+                  style={{ color: theme.colors.foreground }}
+                >
+                  Animations
+                </p>
               </div>
             )}
             {template.settings.customCSS && (
               <div
                 className="text-center p-3"
-                style={{ background: theme.colors.backgroundSecondary, borderRadius: `calc(${cardRadius} - 6px)` }}
+                style={{
+                  background: theme.colors.backgroundSecondary,
+                  borderRadius: `calc(${cardRadius} - 6px)`,
+                }}
               >
-                <Palette size={16} className="mx-auto mb-1" style={{ color: theme.colors.accent }} />
-                <p className="text-xs" style={{ color: theme.colors.foreground }}>Custom CSS</p>
+                <Palette
+                  size={16}
+                  className="mx-auto mb-1"
+                  style={{ color: theme.colors.accent }}
+                />
+                <p
+                  className="text-xs"
+                  style={{ color: theme.colors.foreground }}
+                >
+                  Custom CSS
+                </p>
               </div>
             )}
             <div
               className="text-center p-3"
-              style={{ background: theme.colors.backgroundSecondary, borderRadius: `calc(${cardRadius} - 6px)` }}
+              style={{
+                background: theme.colors.backgroundSecondary,
+                borderRadius: `calc(${cardRadius} - 6px)`,
+              }}
             >
-              <Layers size={16} className="mx-auto mb-1" style={{ color: '#22c55e' }} />
-              <p className="text-xs capitalize" style={{ color: theme.colors.foreground }}>{template.category}</p>
+              <Layers
+                size={16}
+                className="mx-auto mb-1"
+                style={{ color: '#22c55e' }}
+              />
+              <p
+                className="text-xs capitalize"
+                style={{ color: theme.colors.foreground }}
+              >
+                {template.category}
+              </p>
             </div>
             {template.featured && (
               <div
                 className="text-center p-3"
-                style={{ background: theme.colors.backgroundSecondary, borderRadius: `calc(${cardRadius} - 6px)` }}
+                style={{
+                  background: theme.colors.backgroundSecondary,
+                  borderRadius: `calc(${cardRadius} - 6px)`,
+                }}
               >
-                <Star size={16} className="mx-auto mb-1" style={{ color: '#fbbf24' }} />
-                <p className="text-xs" style={{ color: theme.colors.foreground }}>Featured</p>
+                <Star
+                  size={16}
+                  className="mx-auto mb-1"
+                  style={{ color: '#fbbf24' }}
+                />
+                <p
+                  className="text-xs"
+                  style={{ color: theme.colors.foreground }}
+                >
+                  Featured
+                </p>
               </div>
             )}
           </div>
@@ -1451,7 +1621,11 @@ function PresetTemplatePreviewModal({
             <motion.button
               onClick={onClose}
               className="flex-1 py-3.5 font-medium text-sm"
-              style={{ background: theme.colors.backgroundSecondary, color: theme.colors.foreground, borderRadius: cardRadius }}
+              style={{
+                background: theme.colors.backgroundSecondary,
+                color: theme.colors.foreground,
+                borderRadius: cardRadius,
+              }}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               transition={{ duration: 0.1 }}
@@ -1466,7 +1640,10 @@ function PresetTemplatePreviewModal({
                 background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
                 color: '#fff',
                 borderRadius: cardRadius,
-                boxShadow: glowOpacity > 0 ? `0 10px 30px ${theme.colors.primary}40` : undefined,
+                boxShadow:
+                  glowOpacity > 0
+                    ? `0 10px 30px ${theme.colors.primary}40`
+                    : undefined,
               }}
               whileHover={{ scale: canApply ? 1.02 : 1 }}
               whileTap={{ scale: canApply ? 0.98 : 1 }}

@@ -56,7 +56,8 @@ function ApiDoc() {
 
         <DocSubSection title="Using Your Key">
           <DocParagraph>
-            Include your API key in the <DocInlineCode>Authorization</DocInlineCode> header:
+            Include your API key in the{' '}
+            <DocInlineCode>Authorization</DocInlineCode> header:
           </DocParagraph>
           <DocCode>
             {`curl -X GET "https://api.eziox.link/v1/profile" \\

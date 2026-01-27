@@ -203,7 +203,7 @@ function DocsPage() {
         </motion.div>
 
         {/* Docs Grid */}
-        {(
+        {
           <div className="space-y-12">
             {Object.entries(groupedDocs).map(([category, categoryDocs]) => (
               <motion.section
@@ -311,7 +311,9 @@ function DocsPage() {
                                 </div>
                                 <p
                                   className="text-sm mt-1 line-clamp-2"
-                                  style={{ color: theme.colors.foregroundMuted }}
+                                  style={{
+                                    color: theme.colors.foregroundMuted,
+                                  }}
                                 >
                                   {doc.description}
                                 </p>
@@ -326,7 +328,7 @@ function DocsPage() {
               </motion.section>
             ))}
           </div>
-        )}
+        }
 
         {/* Empty State */}
         {filteredDocs.length === 0 && (

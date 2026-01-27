@@ -106,8 +106,11 @@ export function ApiAccessTab() {
   })
 
   const createMutation = useMutation({
-    mutationFn: (input: { name: string; permissions?: Partial<ApiKeyPermissions>; expiresInDays?: number }) =>
-      createApiKey({ data: input }),
+    mutationFn: (input: {
+      name: string
+      permissions?: Partial<ApiKeyPermissions>
+      expiresInDays?: number
+    }) => createApiKey({ data: input }),
     onSuccess: (result) => {
       void queryClient.invalidateQueries({ queryKey: ['apiKeys'] })
       if (result && typeof result === 'object' && 'apiKey' in result) {
@@ -136,8 +139,7 @@ export function ApiAccessTab() {
   })
 
   const deleteMutation = useMutation({
-    mutationFn: (input: { keyId: string }) =>
-      deleteApiKey({ data: input }),
+    mutationFn: (input: { keyId: string }) => deleteApiKey({ data: input }),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['apiKeys'] })
       toast.success('API Key deleted')
@@ -151,7 +153,8 @@ export function ApiAccessTab() {
     setTimeout(() => setCopiedKey(null), 2000)
   }
 
-  const totalRequests = data?.keys?.reduce((acc, k) => acc + (k.requestCount || 0), 0) || 0
+  const totalRequests =
+    data?.keys?.reduce((acc, k) => acc + (k.requestCount || 0), 0) || 0
   const activeKeys = data?.keys?.filter((k) => k.isActive).length || 0
 
   return (
@@ -178,7 +181,10 @@ export function ApiAccessTab() {
             >
               <Key size={16} style={{ color: theme.colors.primary }} />
             </motion.div>
-            <span className="text-sm font-medium" style={{ color: theme.colors.foreground }}>
+            <span
+              className="text-sm font-medium"
+              style={{ color: theme.colors.foreground }}
+            >
               API Access
             </span>
             <Sparkles size={12} style={{ color: theme.colors.accent }} />
@@ -213,7 +219,10 @@ export function ApiAccessTab() {
             background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
             color: '#fff',
             borderRadius: cardRadius,
-            boxShadow: glowOpacity > 0 ? `0 8px 32px ${theme.colors.primary}40` : undefined,
+            boxShadow:
+              glowOpacity > 0
+                ? `0 8px 32px ${theme.colors.primary}40`
+                : undefined,
           }}
           whileHover={{ scale: 1.02, y: -2 }}
           whileTap={{ scale: 0.98 }}
@@ -232,10 +241,30 @@ export function ApiAccessTab() {
         className="grid grid-cols-2 md:grid-cols-4 gap-4"
       >
         {[
-          { label: 'Total Keys', value: data?.keys?.length || 0, icon: Key, color: theme.colors.primary },
-          { label: 'Active', value: activeKeys, icon: Shield, color: '#22c55e' },
-          { label: 'Total Requests', value: totalRequests.toLocaleString(), icon: TrendingUp, color: '#3b82f6' },
-          { label: 'Rate Limit', value: '1k-10k/hr', icon: Zap, color: '#f59e0b' },
+          {
+            label: 'Total Keys',
+            value: data?.keys?.length || 0,
+            icon: Key,
+            color: theme.colors.primary,
+          },
+          {
+            label: 'Active',
+            value: activeKeys,
+            icon: Shield,
+            color: '#22c55e',
+          },
+          {
+            label: 'Total Requests',
+            value: totalRequests.toLocaleString(),
+            icon: TrendingUp,
+            color: '#3b82f6',
+          },
+          {
+            label: 'Rate Limit',
+            value: '1k-10k/hr',
+            icon: Zap,
+            color: '#f59e0b',
+          },
         ].map((stat, i) => (
           <motion.div
             key={stat.label}
@@ -245,21 +274,29 @@ export function ApiAccessTab() {
             whileHover={{ scale: 1.02, y: -4 }}
             className="p-4 text-center"
             style={{
-              background: theme.effects.cardStyle === 'glass'
-                ? `${theme.colors.card}90`
-                : theme.colors.card,
+              background:
+                theme.effects.cardStyle === 'glass'
+                  ? `${theme.colors.card}90`
+                  : theme.colors.card,
               border: `1px solid ${theme.colors.border}`,
               borderRadius: cardRadius,
-              backdropFilter: theme.effects.cardStyle === 'glass' ? 'blur(20px)' : undefined,
+              backdropFilter:
+                theme.effects.cardStyle === 'glass' ? 'blur(20px)' : undefined,
             }}
           >
             <div className="flex items-center justify-center gap-2 mb-2">
               <stat.icon size={18} style={{ color: stat.color }} />
-              <span className="text-2xl font-bold" style={{ color: theme.colors.foreground }}>
+              <span
+                className="text-2xl font-bold"
+                style={{ color: theme.colors.foreground }}
+              >
                 {stat.value}
               </span>
             </div>
-            <p className="text-xs" style={{ color: theme.colors.foregroundMuted }}>
+            <p
+              className="text-xs"
+              style={{ color: theme.colors.foregroundMuted }}
+            >
               {stat.label}
             </p>
           </motion.div>
@@ -297,18 +334,28 @@ export function ApiAccessTab() {
                 animate={{ rotate: [0, 5, -5, 0] }}
                 transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
               >
-                <AlertCircle size={24} style={{ color: theme.colors.primary }} />
+                <AlertCircle
+                  size={24}
+                  style={{ color: theme.colors.primary }}
+                />
               </motion.div>
 
               <div className="flex-1 min-w-0">
                 <h3
                   className="font-bold text-lg mb-1"
-                  style={{ color: theme.colors.foreground, fontFamily: theme.typography.displayFont }}
+                  style={{
+                    color: theme.colors.foreground,
+                    fontFamily: theme.typography.displayFont,
+                  }}
                 >
                   🎉 API Key Created Successfully!
                 </h3>
-                <p className="text-sm mb-4" style={{ color: theme.colors.foregroundMuted }}>
-                  This is the only time you'll see this key. Copy it now and store it securely.
+                <p
+                  className="text-sm mb-4"
+                  style={{ color: theme.colors.foregroundMuted }}
+                >
+                  This is the only time you'll see this key. Copy it now and
+                  store it securely.
                 </p>
 
                 <div className="flex items-center gap-3">
@@ -334,7 +381,11 @@ export function ApiAccessTab() {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    {copiedKey === 'new' ? <Check size={18} /> : <Copy size={18} />}
+                    {copiedKey === 'new' ? (
+                      <Check size={18} />
+                    ) : (
+                      <Copy size={18} />
+                    )}
                     {copiedKey === 'new' ? 'Copied!' : 'Copy'}
                   </motion.button>
                 </div>
@@ -344,7 +395,10 @@ export function ApiAccessTab() {
                 onClick={() => setNewlyCreatedKey(null)}
                 className="p-2 rounded-lg"
                 style={{ color: theme.colors.foregroundMuted }}
-                whileHover={{ scale: 1.1, background: `${theme.colors.foregroundMuted}20` }}
+                whileHover={{
+                  scale: 1.1,
+                  background: `${theme.colors.foregroundMuted}20`,
+                }}
                 whileTap={{ scale: 0.9 }}
               >
                 <X size={18} />
@@ -373,10 +427,16 @@ export function ApiAccessTab() {
             whileTap={{ scale: 0.98 }}
           >
             <Code2 size={16} style={{ color: theme.colors.primary }} />
-            <span className="text-sm font-medium" style={{ color: theme.colors.foreground }}>
+            <span
+              className="text-sm font-medium"
+              style={{ color: theme.colors.foreground }}
+            >
               API Documentation
             </span>
-            <ExternalLink size={14} style={{ color: theme.colors.foregroundMuted }} />
+            <ExternalLink
+              size={14}
+              style={{ color: theme.colors.foregroundMuted }}
+            />
           </motion.div>
         </Link>
       </motion.div>
@@ -386,12 +446,18 @@ export function ApiAccessTab() {
         <div className="flex items-center justify-between">
           <h3
             className="text-lg font-semibold"
-            style={{ color: theme.colors.foreground, fontFamily: theme.typography.displayFont }}
+            style={{
+              color: theme.colors.foreground,
+              fontFamily: theme.typography.displayFont,
+            }}
           >
             Your API Keys
           </h3>
           {data?.keys && data.keys.length > 0 && (
-            <span className="text-sm" style={{ color: theme.colors.foregroundMuted }}>
+            <span
+              className="text-sm"
+              style={{ color: theme.colors.foregroundMuted }}
+            >
               {data.keys.length} key{data.keys.length !== 1 ? 's' : ''}
             </span>
           )}
@@ -418,7 +484,9 @@ export function ApiAccessTab() {
                 cardRadius={cardRadius}
                 glowOpacity={glowOpacity}
                 index={index}
-                onToggleActive={(isActive) => updateMutation.mutate({ keyId: key.id, isActive })}
+                onToggleActive={(isActive) =>
+                  updateMutation.mutate({ keyId: key.id, isActive })
+                }
                 onDelete={() => deleteMutation.mutate({ keyId: key.id })}
                 onViewStats={() => {
                   setSelectedKeyId(key.id)
@@ -435,12 +503,14 @@ export function ApiAccessTab() {
             animate={{ opacity: 1, y: 0 }}
             className="text-center py-16 relative overflow-hidden"
             style={{
-              background: theme.effects.cardStyle === 'glass'
-                ? `${theme.colors.card}90`
-                : theme.colors.card,
+              background:
+                theme.effects.cardStyle === 'glass'
+                  ? `${theme.colors.card}90`
+                  : theme.colors.card,
               border: `1px solid ${theme.colors.border}`,
               borderRadius: cardRadius,
-              backdropFilter: theme.effects.cardStyle === 'glass' ? 'blur(20px)' : undefined,
+              backdropFilter:
+                theme.effects.cardStyle === 'glass' ? 'blur(20px)' : undefined,
             }}
           >
             {/* Decorative background */}
@@ -468,12 +538,19 @@ export function ApiAccessTab() {
 
               <h3
                 className="text-xl font-bold mb-2"
-                style={{ color: theme.colors.foreground, fontFamily: theme.typography.displayFont }}
+                style={{
+                  color: theme.colors.foreground,
+                  fontFamily: theme.typography.displayFont,
+                }}
               >
                 No API Keys Yet
               </h3>
-              <p className="text-sm mb-6 max-w-sm mx-auto" style={{ color: theme.colors.foregroundMuted }}>
-                Create your first API key to start building integrations with Eziox
+              <p
+                className="text-sm mb-6 max-w-sm mx-auto"
+                style={{ color: theme.colors.foregroundMuted }}
+              >
+                Create your first API key to start building integrations with
+                Eziox
               </p>
 
               <motion.button
@@ -571,19 +648,27 @@ function ApiKeyCard({
       animate={{ opacity: 1, y: 0 }}
       className="p-5 relative overflow-hidden group"
       style={{
-        background: theme.effects.cardStyle === 'glass'
-          ? `${theme.colors.card}90`
-          : theme.colors.card,
+        background:
+          theme.effects.cardStyle === 'glass'
+            ? `${theme.colors.card}90`
+            : theme.colors.card,
         border: `1px solid ${apiKey.isActive ? theme.colors.border : `${theme.colors.foregroundMuted}30`}`,
         borderRadius: cardRadius,
-        backdropFilter: theme.effects.cardStyle === 'glass' ? 'blur(20px)' : undefined,
+        backdropFilter:
+          theme.effects.cardStyle === 'glass' ? 'blur(20px)' : undefined,
       }}
       whileHover={{
         scale: 1.01,
         borderColor: theme.colors.primary,
-        boxShadow: glowOpacity > 0 ? `0 8px 32px ${theme.colors.primary}20` : undefined,
+        boxShadow:
+          glowOpacity > 0 ? `0 8px 32px ${theme.colors.primary}20` : undefined,
       }}
-      transition={{ type: 'spring', stiffness: 400, damping: 25, delay: index * 0.05 }}
+      transition={{
+        type: 'spring',
+        stiffness: 400,
+        damping: 25,
+        delay: index * 0.05,
+      }}
       onMouseEnter={() => setShowActions(true)}
       onMouseLeave={() => setShowActions(false)}
     >
@@ -604,22 +689,38 @@ function ApiKeyCard({
             <motion.div
               className="p-2 rounded-lg"
               style={{
-                background: apiKey.isActive ? `${theme.colors.primary}15` : `${theme.colors.foregroundMuted}15`,
+                background: apiKey.isActive
+                  ? `${theme.colors.primary}15`
+                  : `${theme.colors.foregroundMuted}15`,
               }}
             >
-              <Key size={18} style={{ color: apiKey.isActive ? theme.colors.primary : theme.colors.foregroundMuted }} />
+              <Key
+                size={18}
+                style={{
+                  color: apiKey.isActive
+                    ? theme.colors.primary
+                    : theme.colors.foregroundMuted,
+                }}
+              />
             </motion.div>
 
             <div>
-              <h3 className="font-semibold" style={{ color: theme.colors.foreground }}>
+              <h3
+                className="font-semibold"
+                style={{ color: theme.colors.foreground }}
+              >
                 {apiKey.name}
               </h3>
               <div className="flex items-center gap-2 mt-0.5">
                 <span
                   className="px-2 py-0.5 text-xs font-medium rounded-full"
                   style={{
-                    background: apiKey.isActive ? `${theme.colors.primary}20` : `${theme.colors.foregroundMuted}20`,
-                    color: apiKey.isActive ? theme.colors.primary : theme.colors.foregroundMuted,
+                    background: apiKey.isActive
+                      ? `${theme.colors.primary}20`
+                      : `${theme.colors.foregroundMuted}20`,
+                    color: apiKey.isActive
+                      ? theme.colors.primary
+                      : theme.colors.foregroundMuted,
                   }}
                 >
                   {apiKey.isActive ? '● Active' : '○ Inactive'}
@@ -649,25 +750,58 @@ function ApiKeyCard({
               whileHover={{ scale: 1.1, color: theme.colors.primary }}
               whileTap={{ scale: 0.9 }}
             >
-              {copiedKey === apiKey.id ? <Check size={14} /> : <Copy size={14} />}
+              {copiedKey === apiKey.id ? (
+                <Check size={14} />
+              ) : (
+                <Copy size={14} />
+              )}
             </motion.button>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
             {[
-              { label: 'Rate Limit', value: `${(apiKey.rateLimit || 1000).toLocaleString()}/hr`, icon: Zap },
-              { label: 'Requests', value: (apiKey.requestCount || 0).toLocaleString(), icon: TrendingUp },
-              { label: 'Last Used', value: apiKey.lastUsedAt ? new Date(apiKey.lastUsedAt).toLocaleDateString() : 'Never', icon: Clock },
-              { label: 'Expires', value: apiKey.expiresAt ? new Date(apiKey.expiresAt).toLocaleDateString() : 'Never', icon: Shield },
+              {
+                label: 'Rate Limit',
+                value: `${(apiKey.rateLimit || 1000).toLocaleString()}/hr`,
+                icon: Zap,
+              },
+              {
+                label: 'Requests',
+                value: (apiKey.requestCount || 0).toLocaleString(),
+                icon: TrendingUp,
+              },
+              {
+                label: 'Last Used',
+                value: apiKey.lastUsedAt
+                  ? new Date(apiKey.lastUsedAt).toLocaleDateString()
+                  : 'Never',
+                icon: Clock,
+              },
+              {
+                label: 'Expires',
+                value: apiKey.expiresAt
+                  ? new Date(apiKey.expiresAt).toLocaleDateString()
+                  : 'Never',
+                icon: Shield,
+              },
             ].map((item) => (
               <div key={item.label}>
                 <div className="flex items-center gap-1.5 mb-1">
-                  <item.icon size={12} style={{ color: theme.colors.foregroundMuted }} />
-                  <p className="text-xs" style={{ color: theme.colors.foregroundMuted }}>
+                  <item.icon
+                    size={12}
+                    style={{ color: theme.colors.foregroundMuted }}
+                  />
+                  <p
+                    className="text-xs"
+                    style={{ color: theme.colors.foregroundMuted }}
+                  >
                     {item.label}
                   </p>
                 </div>
-                <p className="font-medium" style={{ color: theme.colors.foreground }}>
+                <p
+                  className="font-medium"
+                  style={{ color: theme.colors.foreground }}
+                >
                   {item.value}
                 </p>
               </div>
@@ -690,7 +824,10 @@ function ApiKeyCard({
                   background: theme.colors.backgroundSecondary,
                   color: theme.colors.foreground,
                 }}
-                whileHover={{ scale: 1.1, background: `${theme.colors.primary}20` }}
+                whileHover={{
+                  scale: 1.1,
+                  background: `${theme.colors.primary}20`,
+                }}
                 whileTap={{ scale: 0.9 }}
                 title="View Statistics"
               >
@@ -701,7 +838,9 @@ function ApiKeyCard({
                 className="p-2.5 rounded-xl"
                 style={{
                   background: theme.colors.backgroundSecondary,
-                  color: apiKey.isActive ? theme.colors.primary : theme.colors.foregroundMuted,
+                  color: apiKey.isActive
+                    ? theme.colors.primary
+                    : theme.colors.foregroundMuted,
                 }}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
@@ -752,7 +891,9 @@ function CreateApiKeyModal({
   isCreating,
 }: CreateApiKeyModalProps) {
   const [name, setName] = useState('')
-  const [expiresInDays, setExpiresInDays] = useState<number | undefined>(undefined)
+  const [expiresInDays, setExpiresInDays] = useState<number | undefined>(
+    undefined,
+  )
   const [permissions, setPermissions] = useState<Partial<ApiKeyPermissions>>({
     profile: { read: true, write: false },
     links: { read: true, write: false, delete: false },
@@ -784,7 +925,10 @@ function CreateApiKeyModal({
           background: theme.colors.card,
           border: `1px solid ${theme.colors.border}`,
           borderRadius: cardRadius,
-          boxShadow: glowOpacity > 0 ? `0 24px 64px ${theme.colors.primary}30` : undefined,
+          boxShadow:
+            glowOpacity > 0
+              ? `0 24px 64px ${theme.colors.primary}30`
+              : undefined,
         }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -811,11 +955,17 @@ function CreateApiKeyModal({
             <div>
               <h2
                 className="text-xl font-bold"
-                style={{ color: theme.colors.foreground, fontFamily: theme.typography.displayFont }}
+                style={{
+                  color: theme.colors.foreground,
+                  fontFamily: theme.typography.displayFont,
+                }}
               >
                 Create API Key
               </h2>
-              <p className="text-sm" style={{ color: theme.colors.foregroundMuted }}>
+              <p
+                className="text-sm"
+                style={{ color: theme.colors.foregroundMuted }}
+              >
                 Configure your new API key
               </p>
             </div>
@@ -823,7 +973,10 @@ function CreateApiKeyModal({
 
           <div className="space-y-5">
             <div>
-              <label className="block text-sm font-medium mb-2" style={{ color: theme.colors.foreground }}>
+              <label
+                className="block text-sm font-medium mb-2"
+                style={{ color: theme.colors.foreground }}
+              >
                 Key Name
               </label>
               <input
@@ -838,18 +991,29 @@ function CreateApiKeyModal({
                   border: `1px solid ${theme.colors.border}`,
                   borderRadius: cardRadius,
                 }}
-                onFocus={(e) => (e.target.style.borderColor = theme.colors.primary)}
-                onBlur={(e) => (e.target.style.borderColor = theme.colors.border)}
+                onFocus={(e) =>
+                  (e.target.style.borderColor = theme.colors.primary)
+                }
+                onBlur={(e) =>
+                  (e.target.style.borderColor = theme.colors.border)
+                }
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2" style={{ color: theme.colors.foreground }}>
+              <label
+                className="block text-sm font-medium mb-2"
+                style={{ color: theme.colors.foreground }}
+              >
                 Expiration
               </label>
               <select
                 value={expiresInDays || ''}
-                onChange={(e) => setExpiresInDays(e.target.value ? Number(e.target.value) : undefined)}
+                onChange={(e) =>
+                  setExpiresInDays(
+                    e.target.value ? Number(e.target.value) : undefined,
+                  )
+                }
                 className="w-full px-4 py-3 outline-none"
                 style={{
                   background: theme.colors.backgroundSecondary,
@@ -867,7 +1031,10 @@ function CreateApiKeyModal({
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-3" style={{ color: theme.colors.foreground }}>
+              <label
+                className="block text-sm font-medium mb-3"
+                style={{ color: theme.colors.foreground }}
+              >
                 Permissions
               </label>
               <div className="space-y-3">
@@ -883,14 +1050,22 @@ function CreateApiKeyModal({
                     whileHover={{ borderColor: category.color }}
                   >
                     <div className="flex items-center gap-2 mb-3">
-                      <category.icon size={16} style={{ color: category.color }} />
-                      <span className="text-sm font-medium" style={{ color: theme.colors.foreground }}>
+                      <category.icon
+                        size={16}
+                        style={{ color: category.color }}
+                      />
+                      <span
+                        className="text-sm font-medium"
+                        style={{ color: theme.colors.foreground }}
+                      >
                         {category.label}
                       </span>
                     </div>
                     <div className="flex flex-wrap gap-3">
                       {category.permissions.map((perm) => {
-                        const categoryPerms = permissions[category.key as keyof ApiKeyPermissions] as Record<string, boolean> | undefined
+                        const categoryPerms = permissions[
+                          category.key as keyof ApiKeyPermissions
+                        ] as Record<string, boolean> | undefined
                         const isChecked = categoryPerms?.[perm] || false
 
                         return (
@@ -898,7 +1073,9 @@ function CreateApiKeyModal({
                             key={perm}
                             className="flex items-center gap-2 cursor-pointer px-3 py-1.5 rounded-lg transition-all"
                             style={{
-                              background: isChecked ? `${category.color}20` : 'transparent',
+                              background: isChecked
+                                ? `${category.color}20`
+                                : 'transparent',
                               border: `1px solid ${isChecked ? category.color : theme.colors.border}`,
                             }}
                           >
@@ -909,7 +1086,9 @@ function CreateApiKeyModal({
                                 setPermissions({
                                   ...permissions,
                                   [category.key]: {
-                                    ...(permissions[category.key as keyof ApiKeyPermissions] as Record<string, boolean>),
+                                    ...(permissions[
+                                      category.key as keyof ApiKeyPermissions
+                                    ] as Record<string, boolean>),
                                     [perm]: e.target.checked,
                                   },
                                 })
@@ -919,7 +1098,9 @@ function CreateApiKeyModal({
                             <div
                               className="w-4 h-4 rounded flex items-center justify-center"
                               style={{
-                                background: isChecked ? category.color : 'transparent',
+                                background: isChecked
+                                  ? category.color
+                                  : 'transparent',
                                 border: `2px solid ${isChecked ? category.color : theme.colors.foregroundMuted}`,
                               }}
                             >
@@ -927,7 +1108,11 @@ function CreateApiKeyModal({
                             </div>
                             <span
                               className="text-xs capitalize"
-                              style={{ color: isChecked ? theme.colors.foreground : theme.colors.foregroundMuted }}
+                              style={{
+                                color: isChecked
+                                  ? theme.colors.foreground
+                                  : theme.colors.foregroundMuted,
+                              }}
                             >
                               {perm}
                             </span>
@@ -971,7 +1156,11 @@ function CreateApiKeyModal({
                 <>
                   <motion.div
                     animate={{ rotate: 360 }}
-                    transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                    transition={{
+                      duration: 1,
+                      repeat: Infinity,
+                      ease: 'linear',
+                    }}
                   >
                     <Key size={16} />
                   </motion.div>
@@ -1040,7 +1229,10 @@ function ApiKeyStatsModal({
           background: theme.colors.card,
           border: `1px solid ${theme.colors.border}`,
           borderRadius: cardRadius,
-          boxShadow: glowOpacity > 0 ? `0 24px 64px ${theme.colors.primary}30` : undefined,
+          boxShadow:
+            glowOpacity > 0
+              ? `0 24px 64px ${theme.colors.primary}30`
+              : undefined,
         }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -1065,11 +1257,17 @@ function ApiKeyStatsModal({
             <div>
               <h2
                 className="text-xl font-bold"
-                style={{ color: theme.colors.foreground, fontFamily: theme.typography.displayFont }}
+                style={{
+                  color: theme.colors.foreground,
+                  fontFamily: theme.typography.displayFont,
+                }}
               >
                 API Key Statistics
               </h2>
-              <p className="text-sm" style={{ color: theme.colors.foregroundMuted }}>
+              <p
+                className="text-sm"
+                style={{ color: theme.colors.foregroundMuted }}
+              >
                 Last 7 days of activity
               </p>
             </div>
@@ -1090,10 +1288,30 @@ function ApiKeyStatsModal({
             <div className="space-y-6">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {[
-                  { label: 'Total Requests', value: data.stats.totalRequests, icon: TrendingUp, color: '#3b82f6' },
-                  { label: 'Successful', value: data.stats.successfulRequests, icon: Check, color: '#22c55e' },
-                  { label: 'Failed', value: data.stats.failedRequests, icon: AlertCircle, color: '#ef4444' },
-                  { label: 'Avg Response', value: `${data.stats.avgResponseTime}ms`, icon: Zap, color: '#f59e0b' },
+                  {
+                    label: 'Total Requests',
+                    value: data.stats.totalRequests,
+                    icon: TrendingUp,
+                    color: '#3b82f6',
+                  },
+                  {
+                    label: 'Successful',
+                    value: data.stats.successfulRequests,
+                    icon: Check,
+                    color: '#22c55e',
+                  },
+                  {
+                    label: 'Failed',
+                    value: data.stats.failedRequests,
+                    icon: AlertCircle,
+                    color: '#ef4444',
+                  },
+                  {
+                    label: 'Avg Response',
+                    value: `${data.stats.avgResponseTime}ms`,
+                    icon: Zap,
+                    color: '#f59e0b',
+                  },
                 ].map((stat, i) => (
                   <motion.div
                     key={stat.label}
@@ -1108,58 +1326,85 @@ function ApiKeyStatsModal({
                   >
                     <div className="flex items-center justify-center gap-2 mb-2">
                       <stat.icon size={18} style={{ color: stat.color }} />
-                      <span className="text-2xl font-bold" style={{ color: theme.colors.foreground }}>
+                      <span
+                        className="text-2xl font-bold"
+                        style={{ color: theme.colors.foreground }}
+                      >
                         {stat.value}
                       </span>
                     </div>
-                    <p className="text-xs" style={{ color: theme.colors.foregroundMuted }}>
+                    <p
+                      className="text-xs"
+                      style={{ color: theme.colors.foregroundMuted }}
+                    >
                       {stat.label}
                     </p>
                   </motion.div>
                 ))}
               </div>
 
-              {data.stats.endpointStats && Object.keys(data.stats.endpointStats).length > 0 && (
-                <div>
-                  <h3
-                    className="text-lg font-semibold mb-4"
-                    style={{ color: theme.colors.foreground, fontFamily: theme.typography.displayFont }}
-                  >
-                    Endpoint Usage
-                  </h3>
-                  <div className="space-y-2">
-                    {Object.entries(data.stats.endpointStats).map(([endpoint, stats]) => (
-                      <motion.div
-                        key={endpoint}
-                        className="p-4 flex items-center justify-between"
-                        style={{
-                          background: theme.colors.backgroundSecondary,
-                          borderRadius: `calc(${cardRadius} - 4px)`,
-                        }}
-                        whileHover={{ scale: 1.01 }}
-                      >
-                        <code className="text-sm font-mono" style={{ color: theme.colors.foreground }}>
-                          {endpoint}
-                        </code>
-                        <div className="flex items-center gap-4 text-sm">
-                          <span style={{ color: theme.colors.foregroundMuted }}>
-                            {stats.count} requests
-                          </span>
-                          {stats.errors > 0 && (
-                            <span className="px-2 py-0.5 rounded-full text-xs" style={{ background: '#ef444420', color: '#ef4444' }}>
-                              {stats.errors} errors
-                            </span>
-                          )}
-                        </div>
-                      </motion.div>
-                    ))}
+              {data.stats.endpointStats &&
+                Object.keys(data.stats.endpointStats).length > 0 && (
+                  <div>
+                    <h3
+                      className="text-lg font-semibold mb-4"
+                      style={{
+                        color: theme.colors.foreground,
+                        fontFamily: theme.typography.displayFont,
+                      }}
+                    >
+                      Endpoint Usage
+                    </h3>
+                    <div className="space-y-2">
+                      {Object.entries(data.stats.endpointStats).map(
+                        ([endpoint, stats]) => (
+                          <motion.div
+                            key={endpoint}
+                            className="p-4 flex items-center justify-between"
+                            style={{
+                              background: theme.colors.backgroundSecondary,
+                              borderRadius: `calc(${cardRadius} - 4px)`,
+                            }}
+                            whileHover={{ scale: 1.01 }}
+                          >
+                            <code
+                              className="text-sm font-mono"
+                              style={{ color: theme.colors.foreground }}
+                            >
+                              {endpoint}
+                            </code>
+                            <div className="flex items-center gap-4 text-sm">
+                              <span
+                                style={{ color: theme.colors.foregroundMuted }}
+                              >
+                                {stats.count} requests
+                              </span>
+                              {stats.errors > 0 && (
+                                <span
+                                  className="px-2 py-0.5 rounded-full text-xs"
+                                  style={{
+                                    background: '#ef444420',
+                                    color: '#ef4444',
+                                  }}
+                                >
+                                  {stats.errors} errors
+                                </span>
+                              )}
+                            </div>
+                          </motion.div>
+                        ),
+                      )}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
             </div>
           ) : (
             <div className="text-center py-12">
-              <Activity size={48} style={{ color: theme.colors.foregroundMuted }} className="mx-auto mb-4 opacity-50" />
+              <Activity
+                size={48}
+                style={{ color: theme.colors.foregroundMuted }}
+                className="mx-auto mb-4 opacity-50"
+              />
               <p style={{ color: theme.colors.foregroundMuted }}>
                 No statistics available yet
               </p>
