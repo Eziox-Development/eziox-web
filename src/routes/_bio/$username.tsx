@@ -27,12 +27,13 @@ import {
   MapPin,
   Globe,
   Sparkles,
-  MousePointerClick,
   Share2,
   Check,
   UserPlus,
   UserMinus,
   Heart,
+  Calendar,
+  MousePointerClick,
 } from 'lucide-react'
 import { BadgeDisplay } from '@/components/ui/badge-display'
 import {
@@ -409,22 +410,6 @@ function BioPage() {
     profileData?.animatedProfile as AnimatedProfileSettings | null
   const customFonts = profileData?.customFonts as CustomFont[] | null
 
-  // Get layout values with defaults
-  const cardSpacing = layoutSettings?.cardSpacing ?? 12
-  const cardBorderRadius = layoutSettings?.cardBorderRadius ?? 16
-  const cardPadding = layoutSettings?.cardPadding ?? 16
-  const cardShadow = layoutSettings?.cardShadow ?? 'md'
-  const linkStyle = layoutSettings?.linkStyle ?? 'default'
-
-  // Shadow map
-  const shadowMap: Record<string, string> = {
-    none: 'none',
-    sm: '0 1px 2px rgba(0,0,0,0.05)',
-    md: '0 4px 6px rgba(0,0,0,0.1)',
-    lg: '0 10px 15px rgba(0,0,0,0.15)',
-    xl: '0 20px 25px rgba(0,0,0,0.2)',
-  }
-
   // Animation classes based on settings
   const getAvatarAnimation = () => {
     if (!animatedProfile?.enabled) return {}
@@ -462,48 +447,6 @@ function BioPage() {
         }
       default:
         return {}
-    }
-  }
-
-  const getLinkHoverEffect = () => {
-    if (!animatedProfile?.enabled) return { scale: 1.02, y: -2 }
-    switch (animatedProfile.linkHoverEffect) {
-      case 'scale':
-        return { scale: 1.05 }
-      case 'glow':
-        return { scale: 1.02, boxShadow: `0 0 30px ${accentColor}40` }
-      case 'slide':
-        return { x: 5 }
-      case 'shake':
-        return { x: [0, -2, 2, -2, 0] }
-      case 'flip':
-        return { rotateY: 5 }
-      default:
-        return { scale: 1.02, y: -2 }
-    }
-  }
-
-  // Link style variants
-  const getLinkStyle = () => {
-    switch (linkStyle) {
-      case 'minimal':
-        return {
-          background: 'transparent',
-          border: `1px solid ${accentColor}30`,
-        }
-      case 'bold':
-        return { background: `${accentColor}20`, border: 'none' }
-      case 'glass':
-        return {
-          background: 'rgba(255,255,255,0.05)',
-          backdropFilter: 'blur(20px)',
-          border: '1px solid rgba(255,255,255,0.1)',
-        }
-      default:
-        return {
-          background: 'rgba(255,255,255,0.03)',
-          border: '1px solid rgba(255,255,255,0.08)',
-        }
     }
   }
 
@@ -596,16 +539,17 @@ function BioPage() {
         </>
       )}
 
-      {customBackground?.type === 'image' &&
-        customBackground.imageOpacity !== undefined &&
-        customBackground.imageOpacity < 1 && (
-          <div
-            className="fixed inset-0 pointer-events-none"
-            style={{
-              background: `rgba(0,0,0,${1 - customBackground.imageOpacity})`,
-            }}
-          />
-        )}
+      {/* Dark overlay for readability on light/image backgrounds */}
+      {(customBackground?.type === 'image' || customBackground?.type === 'video') && (
+        <div
+          className="fixed inset-0 pointer-events-none z-1"
+          style={{
+            background: customBackground.imageOpacity !== undefined
+              ? `rgba(0,0,0,${1 - customBackground.imageOpacity})`
+              : 'rgba(0,0,0,0.4)',
+          }}
+        />
+      )}
 
       {/* Decorative blobs - only show when no animated/video background */}
       {(!customBackground ||
@@ -628,482 +572,594 @@ function BioPage() {
       )}
 
       {/* Main Content */}
-      <div className="relative z-10 max-w-lg mx-auto px-4 py-8">
-        {/* Share Button */}
+      <div className="relative z-10 max-w-xl mx-auto px-4 py-8 sm:py-12">
+        {/* Header Card with Banner */}
         <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex justify-end mb-4"
+          initial={{ opacity: 0, y: 20, scale: 0.98 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
+          className="relative overflow-hidden mb-4"
+          style={{
+            background: 'rgba(0, 0, 0, 0.45)',
+            backdropFilter: 'blur(24px)',
+            WebkitBackdropFilter: 'blur(24px)',
+            borderRadius: `${layoutSettings?.cardBorderRadius ?? 20}px`,
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
+          }}
         >
-          <button
-            onClick={handleShare}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-full text-sm transition-all hover:scale-105"
-            style={{
-              background: 'var(--background-secondary)',
-              color: 'var(--foreground-muted)',
-            }}
-          >
-            {copied ? (
-              <Check size={14} style={{ color: '#22c55e' }} />
-            ) : (
-              <Share2 size={14} />
-            )}
-            {copied ? 'Copied!' : 'Share'}
-          </button>
-        </motion.div>
-
-        {/* Banner */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="relative mb-16"
-        >
-          <div
-            className="w-full h-40 sm:h-48 rounded-3xl overflow-hidden"
-            style={{
-              background: profileData?.banner
-                ? `url(${profileData.banner}) center/cover`
-                : `linear-gradient(135deg, ${accentColor}, var(--accent))`,
-            }}
-          >
-            {!profileData?.banner && (
-              <motion.div
-                className="absolute inset-0"
-                animate={{ backgroundPosition: ['0% 0%', '100% 100%'] }}
-                transition={{
-                  duration: 20,
-                  repeat: Infinity,
-                  repeatType: 'reverse',
-                }}
-                style={{
-                  backgroundImage: `radial-gradient(circle at 20% 50%, rgba(255,255,255,0.2) 2px, transparent 2px),
-                                   radial-gradient(circle at 80% 30%, rgba(255,255,255,0.15) 2px, transparent 2px)`,
-                  backgroundSize: '60px 60px',
-                }}
-              />
-            )}
-          </div>
-
-          {/* Avatar */}
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.1 }}
-            className="absolute -bottom-12 left-1/2 -translate-x-1/2"
-          >
-            <motion.div
-              className="w-28 h-28 overflow-hidden"
+          {/* Banner */}
+          {profileData?.banner ? (
+            <div 
+              className="w-full h-28 sm:h-36 relative"
               style={{
-                borderRadius: cardBorderRadius,
-                boxShadow: `0 0 0 4px var(--background), 0 0 30px ${accentColor}40`,
-                background: 'var(--background-secondary)',
+                borderTopLeftRadius: `${layoutSettings?.cardBorderRadius ?? 20}px`,
+                borderTopRightRadius: `${layoutSettings?.cardBorderRadius ?? 20}px`,
               }}
-              {...getAvatarAnimation()}
             >
-              {profileData?.avatar ? (
-                <img
-                  src={profileData.avatar}
-                  alt={profile.user.name || username}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div
-                  className="w-full h-full flex items-center justify-center text-4xl font-bold display-font"
-                  style={{
-                    background: `linear-gradient(135deg, ${accentColor}, var(--accent))`,
-                    color: 'white',
-                  }}
-                >
-                  {(
-                    profile.user.name?.[0] ||
-                    username?.[0] ||
-                    'U'
-                  ).toUpperCase()}
-                </div>
-              )}
-            </motion.div>
-          </motion.div>
-        </motion.div>
-
-        {/* Profile Info */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="text-center mb-8"
-        >
-          <div className="flex items-center justify-center gap-2 mb-1">
-            <h1
-              className="text-2xl sm:text-3xl font-bold"
-              style={{ color: 'var(--foreground)' }}
-            >
-              {profile.user.name || profile.user.username}
-            </h1>
-            {profileData?.badges && profileData.badges.length > 0 && (
-              <BadgeDisplay
-                badges={profileData.badges as string[]}
-                size="md"
-                maxDisplay={3}
+              <img
+                src={profileData.banner}
+                alt="Banner"
+                className="w-full h-full object-cover"
+                style={{
+                  borderTopLeftRadius: `${layoutSettings?.cardBorderRadius ?? 20}px`,
+                  borderTopRightRadius: `${layoutSettings?.cardBorderRadius ?? 20}px`,
+                }}
               />
-            )}
-          </div>
-          <p
-            className="text-sm mb-4"
-            style={{ color: 'var(--foreground-muted)' }}
-          >
-            @{profile.user.username}
-            {profileData?.pronouns && ` · ${profileData.pronouns}`}
-          </p>
-
-          {/* Bio */}
-          {profileData?.bio && (
-            <p
-              className="text-sm leading-relaxed max-w-sm mx-auto mb-4"
-              style={{ color: 'var(--foreground-muted)' }}
-            >
-              {profileData.bio}
-            </p>
+              <div 
+                className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent"
+                style={{
+                  borderTopLeftRadius: `${layoutSettings?.cardBorderRadius ?? 20}px`,
+                  borderTopRightRadius: `${layoutSettings?.cardBorderRadius ?? 20}px`,
+                }}
+              />
+            </div>
+          ) : (
+            <div 
+              className="w-full h-20 sm:h-24"
+              style={{
+                background: `linear-gradient(135deg, ${accentColor}30, var(--accent)20)`,
+                borderTopLeftRadius: `${layoutSettings?.cardBorderRadius ?? 20}px`,
+                borderTopRightRadius: `${layoutSettings?.cardBorderRadius ?? 20}px`,
+              }}
+            />
           )}
 
-          {/* Location & Website */}
-          <div className="flex items-center justify-center gap-4 text-sm flex-wrap mb-6">
-            {profileData?.location && (
-              <span
-                className="flex items-center gap-1"
-                style={{ color: 'var(--foreground-muted)' }}
+          {/* Profile Content */}
+          <div 
+            className="relative"
+            style={{ 
+              padding: `${layoutSettings?.cardPadding ?? 20}px`,
+              paddingTop: profileData?.banner ? '16px' : `${layoutSettings?.cardPadding ?? 20}px`,
+            }}
+          >
+            {/* Avatar Row */}
+            <div 
+              className="flex items-start gap-4"
+              style={{ marginTop: profileData?.banner ? '-56px' : '0' }}
+            >
+              {/* Avatar - positioned to overlap banner */}
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.2 }}
+                className="relative shrink-0"
               >
-                <MapPin size={14} />
-                {profileData.location}
-              </span>
-            )}
-            {profileData?.website && (
-              <a
-                href={profileData.website}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1 transition-colors hover:underline"
-                style={{ color: accentColor }}
-              >
-                <Globe size={14} />
-                {profileData.website
-                  .replace(/^https?:\/\//, '')
-                  .replace(/\/$/, '')}
-              </a>
-            )}
-          </div>
-
-          {/* Stats */}
-          <div className="flex items-center justify-center gap-4 sm:gap-6 mb-6">
-            <div className="text-center">
-              <div className="flex items-center justify-center gap-1 mb-0.5">
-                <Eye size={14} style={{ color: accentColor }} />
-                <span
-                  className="font-bold"
-                  style={{ color: 'var(--foreground)' }}
+                <motion.div
+                  className="w-20 h-20 sm:w-24 sm:h-24 overflow-hidden"
+                  style={{
+                    borderRadius: `${(layoutSettings?.cardBorderRadius ?? 20) - 4}px`,
+                    boxShadow: '0 0 0 3px rgba(0,0,0,0.5), 0 0 0 5px rgba(255,255,255,0.15), 0 8px 20px rgba(0,0,0,0.3)',
+                    background: 'var(--background-secondary)',
+                  }}
+                  {...getAvatarAnimation()}
                 >
+                  {profileData?.avatar ? (
+                    <img
+                      src={profileData.avatar}
+                      alt={profile.user.name || username}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div
+                      className="w-full h-full flex items-center justify-center text-3xl sm:text-4xl font-bold display-font"
+                      style={{
+                        background: `linear-gradient(135deg, ${accentColor}, var(--accent))`,
+                        color: 'white',
+                      }}
+                    >
+                      {(
+                        profile.user.name?.[0] ||
+                        username?.[0] ||
+                        'U'
+                      ).toUpperCase()}
+                    </div>
+                  )}
+                </motion.div>
+              </motion.div>
+
+              {/* Name & Badges - Next to Avatar */}
+              <div className="flex-1 min-w-0 pt-8 sm:pt-10">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <motion.h1
+                    initial={{ opacity: 0, x: -5 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.15 }}
+                    className="text-xl sm:text-2xl font-bold tracking-tight"
+                    style={{
+                      color: '#ffffff',
+                      textShadow: '0 2px 8px rgba(0,0,0,0.5)',
+                    }}
+                  >
+                    {profile.user.name || profile.user.username}
+                  </motion.h1>
+                  {profileData?.badges && profileData.badges.length > 0 && (
+                    <BadgeDisplay
+                      badges={profileData.badges as string[]}
+                      size="md"
+                      maxDisplay={3}
+                    />
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Bio - Below Avatar Row */}
+            {profileData?.bio && (
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.15 }}
+                className="text-sm italic mt-4 line-clamp-2"
+                style={{
+                  color: 'rgba(255, 255, 255, 0.7)',
+                }}
+              >
+                "{profileData.bio}"
+              </motion.p>
+            )}
+
+            {/* Social Icons Row - Below Bio */}
+            {profileData?.socials &&
+              Object.keys(profileData.socials).length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.15 }}
+                  className="flex items-center gap-1.5 flex-wrap mt-3"
+                >
+                  {Object.entries(profileData.socials).map(
+                    ([platform, socialUsername]) => {
+                      const Icon = socialIconMap[platform.toLowerCase()] || Globe
+                      const socialUrl = getSocialUrl(platform, socialUsername as string)
+                      return (
+                        <motion.a
+                          key={platform}
+                          href={socialUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="p-2 rounded-lg"
+                          style={{
+                            background: 'rgba(255, 255, 255, 0.08)',
+                            color: 'rgba(255, 255, 255, 0.9)',
+                          }}
+                          whileHover={{ scale: 1.08 }}
+                          whileTap={{ scale: 0.95 }}
+                          transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                        >
+                          <Icon size={18} />
+                        </motion.a>
+                      )
+                    },
+                  )}
+                  {/* Share Button */}
+                  <motion.button
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    onClick={handleShare}
+                    className="p-2 rounded-lg ml-2 hover:bg-white/15 transition-colors duration-100"
+                    style={{
+                      background: 'rgba(255, 255, 255, 0.08)',
+                      color: 'rgba(255, 255, 255, 0.7)',
+                    }}
+                    whileHover={{ scale: 1.08 }}
+                    whileTap={{ scale: 0.95 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                  >
+                    {copied ? (
+                      <Check size={18} style={{ color: '#22c55e' }} />
+                    ) : (
+                      <Share2 size={18} />
+                    )}
+                  </motion.button>
+                </motion.div>
+              )}
+
+            {/* Stats Row - All stats */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.15 }}
+              className="flex items-center gap-3 sm:gap-4 mt-4 pt-4 flex-wrap"
+              style={{ borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}
+            >
+              {/* Views */}
+              <div className="flex items-center gap-1.5">
+                <Eye size={14} style={{ color: 'rgba(255, 255, 255, 0.5)' }} />
+                <span className="text-sm font-medium" style={{ color: '#ffffff' }}>
                   {(profile.stats?.profileViews || 0).toLocaleString()}
                 </span>
               </div>
-              <span
-                className="text-xs"
-                style={{ color: 'var(--foreground-muted)' }}
+
+              {/* Location */}
+              {profileData?.location && (
+                <div className="flex items-center gap-1.5">
+                  <MapPin size={14} style={{ color: 'rgba(255, 255, 255, 0.5)' }} />
+                  <span className="text-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>
+                    {profileData.location}
+                  </span>
+                </div>
+              )}
+
+              {/* Followers */}
+              <button
+                onClick={() => {
+                  setModalTab('followers')
+                  setIsModalOpen(true)
+                }}
+                className="flex items-center gap-1.5 hover:opacity-80 transition-opacity duration-100 cursor-pointer"
               >
-                views
-              </span>
-            </div>
-            <div className="text-center">
-              <div className="flex items-center justify-center gap-1 mb-0.5">
-                <MousePointerClick size={14} style={{ color: accentColor }} />
-                <span
-                  className="font-bold"
-                  style={{ color: 'var(--foreground)' }}
-                >
-                  {(profile.stats?.totalLinkClicks || 0).toLocaleString()}
+                <Heart size={14} style={{ color: 'rgba(255, 255, 255, 0.5)' }} />
+                <span className="text-sm font-medium" style={{ color: '#ffffff' }}>
+                  {(followerCount ?? profile.stats?.followers ?? 0).toLocaleString()}
                 </span>
-              </div>
-              <span
-                className="text-xs"
-                style={{ color: 'var(--foreground-muted)' }}
-              >
-                clicks
-              </span>
-            </div>
-            <button
-              onClick={() => {
-                setModalTab('followers')
-                setIsModalOpen(true)
-              }}
-              className="text-center hover:opacity-80 transition-opacity cursor-pointer"
-            >
-              <div className="flex items-center justify-center gap-1 mb-0.5">
-                <Heart size={14} style={{ color: accentColor }} />
-                <span
-                  className="font-bold"
-                  style={{ color: 'var(--foreground)' }}
-                >
-                  {(
-                    followerCount ??
-                    profile.stats?.followers ??
-                    0
-                  ).toLocaleString()}
+                <span className="text-sm" style={{ color: 'rgba(255, 255, 255, 0.5)' }}>
+                  followers
                 </span>
-              </div>
-              <span
-                className="text-xs"
-                style={{ color: 'var(--foreground-muted)' }}
+              </button>
+
+              {/* Following */}
+              <button
+                onClick={() => {
+                  setModalTab('following')
+                  setIsModalOpen(true)
+                }}
+                className="flex items-center gap-1.5 hover:opacity-80 transition-opacity duration-100 cursor-pointer"
               >
-                followers
-              </span>
-            </button>
-            <button
-              onClick={() => {
-                setModalTab('following')
-                setIsModalOpen(true)
-              }}
-              className="text-center hover:opacity-80 transition-opacity cursor-pointer"
-            >
-              <div className="flex items-center justify-center gap-1 mb-0.5">
-                <UserPlus size={14} style={{ color: accentColor }} />
-                <span
-                  className="font-bold"
-                  style={{ color: 'var(--foreground)' }}
-                >
+                <UserPlus size={14} style={{ color: 'rgba(255, 255, 255, 0.5)' }} />
+                <span className="text-sm font-medium" style={{ color: '#ffffff' }}>
                   {(profile.stats?.following || 0).toLocaleString()}
                 </span>
-              </div>
-              <span
-                className="text-xs"
-                style={{ color: 'var(--foreground-muted)' }}
-              >
-                following
-              </span>
-            </button>
-          </div>
+                <span className="text-sm" style={{ color: 'rgba(255, 255, 255, 0.5)' }}>
+                  following
+                </span>
+              </button>
 
-          {/* Follow Button - for authenticated users viewing other profiles */}
-          {isAuthenticated && !isSelf && (
+              {/* Clicks */}
+              <div className="flex items-center gap-1.5">
+                <MousePointerClick size={14} style={{ color: 'rgba(255, 255, 255, 0.5)' }} />
+                <span className="text-sm font-medium" style={{ color: '#ffffff' }}>
+                  {(profile.stats?.totalLinkClicks || 0).toLocaleString()}
+                </span>
+                <span className="text-sm" style={{ color: 'rgba(255, 255, 255, 0.5)' }}>
+                  clicks
+                </span>
+              </div>
+            </motion.div>
+
+            {/* Website & Pronouns Row */}
+            {(profileData?.website || profileData?.pronouns) && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.15 }}
+                className="flex items-center gap-3 mt-3 flex-wrap"
+              >
+                {profileData?.pronouns && (
+                  <span
+                    className="text-xs px-2 py-1 rounded-md"
+                    style={{
+                      background: 'rgba(255, 255, 255, 0.08)',
+                      color: 'rgba(255, 255, 255, 0.7)',
+                    }}
+                  >
+                    {profileData.pronouns}
+                  </span>
+                )}
+                {profileData?.website && (
+                  <a
+                    href={profileData.website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1 text-sm hover:underline transition-all duration-100"
+                    style={{ color: accentColor }}
+                  >
+                    <Globe size={12} />
+                    {profileData.website.replace(/^https?:\/\//, '').replace(/\/$/, '')}
+                  </a>
+                )}
+                {profile.user.createdAt && (
+                  <div className="flex items-center gap-1">
+                    <Calendar size={12} style={{ color: 'rgba(255, 255, 255, 0.5)' }} />
+                    <span className="text-xs" style={{ color: 'rgba(255, 255, 255, 0.5)' }}>
+                      Joined {new Date(profile.user.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                    </span>
+                  </div>
+                )}
+              </motion.div>
+            )}
+          </div>
+        </motion.div>
+
+        {/* Follow Button Card */}
+        {(isAuthenticated && !isSelf) && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2 }}
+            className="mb-4"
+          >
             <motion.button
               onClick={handleFollowToggle}
               disabled={isFollowLoading}
-              className="flex items-center justify-center gap-2 px-6 py-2.5 rounded-full font-medium transition-all mx-auto"
+              className="w-full flex items-center justify-center gap-2 py-3.5 font-semibold"
               style={{
+                borderRadius: `${layoutSettings?.cardBorderRadius ?? 16}px`,
                 background: isFollowing
-                  ? 'var(--background-secondary)'
+                  ? 'rgba(0, 0, 0, 0.4)'
                   : `linear-gradient(135deg, ${accentColor}, var(--accent))`,
-                color: isFollowing ? 'var(--foreground)' : 'white',
-                border: isFollowing ? '1px solid var(--border)' : 'none',
-                boxShadow: isFollowing ? 'none' : `0 4px 20px ${accentColor}40`,
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                color: isFollowing ? 'rgba(255, 255, 255, 0.9)' : 'white',
+                border: isFollowing ? '1px solid rgba(255, 255, 255, 0.1)' : 'none',
+                boxShadow: isFollowing ? 'none' : `0 8px 24px ${accentColor}30`,
               }}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 20 }}
             >
               {isFollowLoading ? (
-                <Loader2 size={18} className="animate-spin" />
+                <Loader2 size={20} className="animate-spin" />
               ) : isFollowing ? (
                 <>
-                  <UserMinus size={18} />
+                  <UserMinus size={20} />
                   Following
                 </>
               ) : (
                 <>
-                  <UserPlus size={18} />
+                  <UserPlus size={20} />
                   Follow
                 </>
               )}
             </motion.button>
-          )}
+          </motion.div>
+        )}
 
-          {/* Sign in prompt for non-authenticated users */}
-          {!isAuthenticated && !isSelf && (
+        {/* Sign in prompt */}
+        {!isAuthenticated && !isSelf && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2 }}
+            className="mb-4"
+          >
             <Link
               to="/sign-in"
-              className="flex items-center justify-center gap-2 px-6 py-2.5 rounded-full font-medium transition-all mx-auto hover:scale-102"
+              className="w-full flex items-center justify-center gap-2 py-3.5 font-semibold transition-all duration-100 hover:scale-[1.02]"
               style={{
+                borderRadius: `${layoutSettings?.cardBorderRadius ?? 16}px`,
                 background: `linear-gradient(135deg, ${accentColor}, var(--accent))`,
                 color: 'white',
-                boxShadow: `0 4px 20px ${accentColor}40`,
+                boxShadow: `0 8px 24px ${accentColor}30`,
               }}
             >
-              <UserPlus size={18} />
+              <UserPlus size={20} />
               Sign in to Follow
             </Link>
-          )}
-        </motion.div>
-
-        {/* Social Links */}
-        {profileData?.socials &&
-          Object.keys(profileData.socials).length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="flex justify-center gap-3 mb-8"
-            >
-              {Object.entries(profileData.socials).map(
-                ([platform, username]) => {
-                  const Icon = socialIconMap[platform.toLowerCase()] || Globe
-                  const socialUrl = getSocialUrl(platform, username as string)
-                  return (
-                    <motion.a
-                      key={platform}
-                      href={socialUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="p-3 rounded-xl transition-all"
-                      style={{
-                        background: 'var(--card)',
-                        border: '1px solid var(--border)',
-                      }}
-                      whileHover={{ scale: 1.1, y: -2 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      <Icon size={20} />
-                    </motion.a>
-                  )
-                },
-              )}
-            </motion.div>
-          )}
+          </motion.div>
+        )}
 
         {/* Spotify Now Playing */}
         {spotifyStatus?.connected &&
           spotifyStatus.showOnProfile &&
           profile?.user?.id && (
-            <div className="mb-8">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.2 }}
+              className="mb-4"
+            >
               <SpotifyWidget userId={profile.user.id} theme={theme} />
-            </div>
+            </motion.div>
           )}
 
-        {/* Links */}
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: `${cardSpacing}px`,
-          }}
-          className="mb-12"
-        >
+        {/* Links - Modern Card Style */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: `${layoutSettings?.cardSpacing ?? 12}px` }} className="mb-6">
           <AnimatePresence>
             {profile.links && profile.links.length > 0 ? (
-              profile.links.map((link, index) => {
+              profile.links.map((link) => {
                 const isFeatured = link.isFeatured
                 const featuredStyle = link.featuredStyle || 'default'
+                const linkBorderRadius = layoutSettings?.cardBorderRadius ?? 16
 
                 // Featured link styles
                 const getFeaturedBorder = () => {
                   if (!isFeatured) return {}
                   switch (featuredStyle) {
                     case 'glow':
-                      return { boxShadow: `0 0 20px ${accentColor}60` }
+                      return { boxShadow: `0 0 20px ${accentColor}40` }
                     case 'gradient':
                       return {
-                        background: `linear-gradient(135deg, ${accentColor}40, var(--accent)40)`,
+                        background: `linear-gradient(135deg, ${accentColor}20, var(--accent)20)`,
                       }
                     case 'outline':
-                      return { border: `2px dashed ${accentColor}` }
+                      return { border: `2px dashed ${accentColor}60` }
                     case 'neon':
                       return {
-                        boxShadow: `0 0 10px ${accentColor}, 0 0 20px ${accentColor}60, 0 0 30px ${accentColor}40`,
+                        boxShadow: `0 0 10px ${accentColor}80, 0 0 20px ${accentColor}40`,
                       }
                     default:
-                      return { border: `2px solid ${accentColor}` }
+                      return { border: `1px solid ${accentColor}40` }
+                  }
+                }
+
+                // Detect link type for badge
+                const getLinkBadge = () => {
+                  const url = link.url.toLowerCase()
+                  if (url.includes('discord.gg') || url.includes('discord.com')) return { label: 'Discord', color: '#5865F2' }
+                  if (url.includes('github.com')) return { label: 'GitHub', color: '#333' }
+                  if (url.includes('twitter.com') || url.includes('x.com')) return { label: 'X', color: '#000' }
+                  if (url.includes('youtube.com') || url.includes('youtu.be')) return { label: 'YouTube', color: '#FF0000' }
+                  if (url.includes('twitch.tv')) return { label: 'Twitch', color: '#9146FF' }
+                  if (url.includes('instagram.com')) return { label: 'Instagram', color: '#E4405F' }
+                  if (url.includes('tiktok.com')) return { label: 'TikTok', color: '#000' }
+                  if (url.includes('spotify.com')) return { label: 'Audio', color: '#1DB954' }
+                  if (url.includes('soundcloud.com')) return { label: 'Audio', color: '#FF5500' }
+                  return null
+                }
+
+                const badge = getLinkBadge()
+
+                // Get link style based on layoutSettings from Playground
+                const getLinkStyle = () => {
+                  switch (layoutSettings?.linkStyle) {
+                    case 'minimal':
+                      return {
+                        background: 'transparent',
+                        border: '1px solid rgba(255, 255, 255, 0.15)',
+                      }
+                    case 'bold':
+                      return {
+                        background: 'rgba(0, 0, 0, 0.7)',
+                        border: 'none',
+                      }
+                    case 'glass':
+                      return {
+                        background: 'rgba(255, 255, 255, 0.06)',
+                        backdropFilter: 'blur(24px)',
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                      }
+                    default:
+                      return {
+                        background: 'rgba(30, 30, 35, 0.85)',
+                        border: '1px solid rgba(255, 255, 255, 0.06)',
+                      }
+                  }
+                }
+
+                // Get shadow based on layoutSettings
+                const getLinkShadow = () => {
+                  switch (layoutSettings?.cardShadow) {
+                    case 'none': return 'none'
+                    case 'sm': return '0 2px 8px rgba(0,0,0,0.15)'
+                    case 'md': return '0 4px 16px rgba(0,0,0,0.2)'
+                    case 'lg': return '0 8px 24px rgba(0,0,0,0.25)'
+                    case 'xl': return '0 12px 32px rgba(0,0,0,0.3)'
+                    default: return '0 4px 16px rgba(0,0,0,0.2)'
                   }
                 }
 
                 return (
                   <motion.button
                     key={link.id}
-                    initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                    transition={{
-                      delay: 0.3 + index * 0.05,
-                      type: 'spring',
-                      stiffness: 300,
-                      damping: 25,
-                    }}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -5 }}
                     onClick={() => handleLinkClick(link.id, link.url)}
                     disabled={clickedLink === link.id}
-                    className="w-full text-left transition-all disabled:opacity-50 group relative overflow-hidden"
+                    className="w-full text-left disabled:opacity-50 group relative overflow-hidden"
                     style={{
-                      padding: cardPadding,
-                      borderRadius: cardBorderRadius,
-                      boxShadow: shadowMap[cardShadow],
+                      padding: `${layoutSettings?.cardPadding ?? 16}px`,
+                      borderRadius: `${linkBorderRadius}px`,
+                      backdropFilter: 'blur(20px)',
+                      WebkitBackdropFilter: 'blur(20px)',
+                      boxShadow: getLinkShadow(),
                       ...getLinkStyle(),
                       ...(link.backgroundColor
                         ? { background: link.backgroundColor, border: 'none' }
                         : {}),
                       ...getFeaturedBorder(),
                     }}
-                    whileHover={getLinkHoverEffect()}
-                    whileTap={{ scale: 0.98 }}
+                    whileHover={{ scale: 1.015 }}
+                    whileTap={{ scale: 0.99 }}
+                    transition={{ type: 'spring', stiffness: 500, damping: 30 }}
                   >
-                    {/* Hover glow effect */}
-                    <motion.div
-                      className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-                      style={{
-                        background: `linear-gradient(135deg, ${accentColor}10, transparent)`,
-                      }}
-                    />
-                    <div className="flex items-center justify-between relative z-10">
-                      <div className="flex items-center gap-3 flex-1 min-w-0">
-                        {link.icon && (
-                          <motion.span
-                            className="text-2xl shrink-0"
-                            whileHover={{ scale: 1.2, rotate: 5 }}
-                          >
-                            {link.icon}
-                          </motion.span>
-                        )}
-                        <div className="min-w-0">
-                          <p
-                            className="font-semibold truncate"
-                            style={{
-                              color: link.textColor || 'var(--foreground)',
-                            }}
-                          >
-                            {link.title}
-                          </p>
-                          {link.description && (
-                            <p
-                              className="text-sm truncate"
-                              style={{
-                                color: link.textColor
-                                  ? `${link.textColor}99`
-                                  : 'var(--foreground-muted)',
-                              }}
-                            >
-                              {link.description}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                      <motion.div
-                        className="shrink-0 ml-3"
-                        animate={{
-                          x: clickedLink === link.id ? 0 : [0, 4, 0],
-                          rotate: clickedLink === link.id ? 0 : [0, 5, 0],
-                        }}
-                        transition={{
-                          duration: 2,
-                          repeat: Infinity,
-                          ease: 'easeInOut',
+                    {/* Badge in top right */}
+                    {badge && (
+                      <div
+                        className="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wide"
+                        style={{
+                          background: 'rgba(255, 255, 255, 0.08)',
+                          color: 'rgba(255, 255, 255, 0.7)',
                         }}
                       >
-                        {clickedLink === link.id ? (
-                          <Loader2
-                            size={18}
-                            className="animate-spin"
-                            style={{ color: link.textColor || accentColor }}
+                        <div 
+                          className="w-1.5 h-1.5 rounded-full" 
+                          style={{ background: badge.color }}
+                        />
+                        {badge.label}
+                      </div>
+                    )}
+
+                    <div className="flex items-center gap-4">
+                      {/* Large Thumbnail/Icon */}
+                      <div
+                        className="w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center shrink-0 overflow-hidden"
+                        style={{
+                          borderRadius: `${Math.max((layoutSettings?.cardBorderRadius ?? 16) - 4, 8)}px`,
+                          background: link.backgroundColor 
+                            ? `${link.backgroundColor}40` 
+                            : `linear-gradient(135deg, ${accentColor}30, ${accentColor}10)`,
+                        }}
+                      >
+                        {link.thumbnail ? (
+                          <img 
+                            src={link.thumbnail} 
+                            alt={link.title}
+                            className="w-full h-full object-cover"
                           />
+                        ) : link.icon ? (
+                          <span className="text-2xl">{link.icon}</span>
                         ) : (
-                          <ExternalLink
-                            size={18}
-                            className="opacity-40 group-hover:opacity-100 transition-opacity"
-                            style={{ color: link.textColor || accentColor }}
+                          <ExternalLink 
+                            size={24} 
+                            style={{ color: accentColor, opacity: 0.8 }}
                           />
                         )}
-                      </motion.div>
+                      </div>
+                      
+                      {/* Content */}
+                      <div className="flex-1 min-w-0 pr-16">
+                        <p
+                          className="font-bold text-base truncate"
+                          style={{
+                            color: link.textColor || '#ffffff',
+                          }}
+                        >
+                          {link.title}
+                        </p>
+                        {link.description && (
+                          <p
+                            className="text-sm truncate mt-1 opacity-60"
+                            style={{
+                              color: link.textColor || '#ffffff',
+                            }}
+                          >
+                            {link.description}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Loading indicator */}
+                      {clickedLink === link.id && (
+                        <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                          <Loader2
+                            size={20}
+                            className="animate-spin"
+                            style={{ color: 'rgba(255, 255, 255, 0.6)' }}
+                          />
+                        </div>
+                      )}
                     </div>
                   </motion.button>
                 )
@@ -1112,26 +1168,26 @@ function BioPage() {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="text-center py-16 rounded-2xl"
+                transition={{ delay: 0.45 }}
+                className="text-center py-12 rounded-2xl"
                 style={{
-                  background: 'rgba(255,255,255,0.02)',
-                  border: '1px solid rgba(255,255,255,0.05)',
+                  background: 'rgba(255, 255, 255, 0.02)',
+                  border: '1px solid rgba(255, 255, 255, 0.06)',
                   backdropFilter: 'blur(12px)',
                 }}
               >
                 <LinkIcon
-                  className="w-12 h-12 mx-auto mb-4 opacity-20"
+                  className="w-10 h-10 mx-auto mb-3 opacity-30"
                   style={{ color: 'var(--foreground-muted)' }}
                 />
                 <p
-                  className="font-medium mb-1"
+                  className="font-medium text-sm"
                   style={{ color: 'var(--foreground)' }}
                 >
                   No links yet
                 </p>
                 <p
-                  className="text-sm"
+                  className="text-xs mt-1"
                   style={{ color: 'var(--foreground-muted)' }}
                 >
                   This creator hasn't added any links
@@ -1141,6 +1197,7 @@ function BioPage() {
           </AnimatePresence>
         </div>
 
+        {/* Eziox Branding */}
         {(() => {
           const userTier = (profile.user.tier || 'free') as TierType
           const showBranding = !['pro', 'creator', 'lifetime'].includes(
@@ -1153,18 +1210,19 @@ function BioPage() {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.6 }}
-              className="text-center pb-8"
+              transition={{ delay: 0.7 }}
+              className="text-center pb-6"
             >
               <Link
                 to="/sign-up"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm transition-all hover:scale-105"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium transition-all hover:scale-105"
                 style={{
-                  background: 'var(--background-secondary)',
+                  background: 'rgba(255, 255, 255, 0.04)',
                   color: 'var(--foreground-muted)',
+                  border: '1px solid rgba(255, 255, 255, 0.08)',
                 }}
               >
-                <Sparkles size={14} style={{ color: 'var(--primary)' }} />
+                <Sparkles size={14} style={{ color: accentColor }} />
                 Create your own Eziox page
               </Link>
             </motion.div>

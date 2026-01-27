@@ -18,8 +18,6 @@ import { SettingsTab } from './tabs/SettingsTab'
 import { PrivacyTab } from './tabs/PrivacyTab'
 import { BadgesTab } from './tabs/BadgesTab'
 import { SubscriptionTab } from './tabs/SubscriptionTab'
-import { CustomizationTab } from './tabs/CustomizationTab'
-import { CreatorTab } from './tabs/CreatorTab'
 import { ApiAccessTab } from './tabs/ApiAccessTab'
 import { siteConfig } from '@/lib/site-config'
 import type { TabType, ProfileFormData, ProfileUser } from './types'
@@ -287,10 +285,6 @@ export function ProfileDashboard({
               {activeTab === 'subscription' && (
                 <SubscriptionTab key="subscription" />
               )}
-              {activeTab === 'customization' && (
-                <CustomizationTab key="customization" />
-              )}
-              {activeTab === 'creator' && <CreatorTab key="creator" />}
               {activeTab === 'api' && <ApiAccessTab key="api" />}
               {activeTab === 'settings' && (
                 <SettingsTab

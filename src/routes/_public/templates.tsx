@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { motion, AnimatePresence } from 'motion/react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
@@ -12,6 +12,21 @@ import {
   applyTemplateFn,
   likeTemplateFn,
 } from '@/server/functions/templates'
+import {
+  updateCustomBackgroundFn,
+  updateLayoutSettingsFn,
+} from '@/server/functions/profile-settings'
+import {
+  updateAnimatedProfileFn,
+  updateCustomCSSFn,
+} from '@/server/functions/creator-features'
+import {
+  EZIOX_PRESET_TEMPLATES,
+  getPresetTemplatesByCategory,
+  searchPresetTemplates,
+  getPresetTemplateStats,
+  type PresetTemplate,
+} from '@/lib/preset-templates'
 import {
   Search,
   Heart,
@@ -85,6 +100,7 @@ function TemplatesPage() {
   const [sort, setSort] = useState<'popular' | 'newest' | 'likes'>('popular')
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null)
+  const [selectedPresetTemplate, setSelectedPresetTemplate] = useState<PresetTemplate | null>(null)
 
   const cardRadius =
     theme.effects.borderRadius === 'pill'
@@ -151,14 +167,60 @@ function TemplatesPage() {
     },
   })
 
+  // Server functions for applying preset templates
+  const updateBackground = useServerFn(updateCustomBackgroundFn)
+  const updateLayout = useServerFn(updateLayoutSettingsFn)
+  const updateAnimated = useServerFn(updateAnimatedProfileFn)
+  const updateCSS = useServerFn(updateCustomCSSFn)
+
   const canApply = !!(
     currentUser &&
     ['pro', 'creator', 'lifetime'].includes(currentUser.tier || 'free')
   )
-  const totalUses =
-    templatesData?.templates?.reduce((acc, t) => acc + (t.uses || 0), 0) || 0
-  const totalLikes =
-    templatesData?.templates?.reduce((acc, t) => acc + (t.likes || 0), 0) || 0
+
+  // Handle applying preset templates
+  const handleApplyPreset = async (template: PresetTemplate) => {
+    if (!canApply) {
+      toast.error('Pro tier required', { description: 'Upgrade to apply templates.' })
+      return
+    }
+    try {
+      if (template.settings.customBackground) {
+        await updateBackground({ data: template.settings.customBackground as Parameters<typeof updateBackground>[0]['data'] })
+      }
+      if (template.settings.layoutSettings) {
+        await updateLayout({ data: template.settings.layoutSettings as Parameters<typeof updateLayout>[0]['data'] })
+      }
+      if (template.settings.animatedProfile) {
+        await updateAnimated({ data: template.settings.animatedProfile as Parameters<typeof updateAnimated>[0]['data'] })
+      }
+      if (template.settings.customCSS) {
+        await updateCSS({ data: { css: template.settings.customCSS } })
+      }
+      toast.success('Template applied!', { description: `"${template.name}" has been applied.` })
+      void queryClient.invalidateQueries({ queryKey: ['profileSettings'] })
+      void queryClient.invalidateQueries({ queryKey: ['creatorSettings'] })
+    } catch {
+      toast.error('Failed to apply template')
+    }
+  }
+
+  // Get filtered preset templates
+  const filteredPresetTemplates = useMemo(() => {
+    let presets = category === 'all' ? EZIOX_PRESET_TEMPLATES : getPresetTemplatesByCategory(category)
+    if (search) {
+      const results = searchPresetTemplates(search)
+      presets = presets.filter(p => results.some(r => r.id === p.id))
+    }
+    return presets
+  }, [category, search])
+
+  // Stats
+  const presetStats = useMemo(() => getPresetTemplateStats(), [])
+  const totalUses = templatesData?.templates?.reduce((acc, t) => acc + (t.uses || 0), 0) || 0
+  const totalLikes = templatesData?.templates?.reduce((acc, t) => acc + (t.likes || 0), 0) || 0
+  const totalTemplates = (templatesData?.total || 0) + presetStats.total
+  const totalFeatured = (featuredTemplates?.length || 0) + presetStats.featured
 
   return (
     <div
@@ -261,7 +323,7 @@ function TemplatesPage() {
             >
               {[
                 {
-                  value: templatesData?.total || 0,
+                  value: totalTemplates,
                   label: 'Templates',
                   icon: Layers,
                   color: theme.colors.primary,
@@ -269,7 +331,7 @@ function TemplatesPage() {
                 { value: totalUses, label: 'Uses', icon: Download, color: '#22c55e' },
                 { value: totalLikes, label: 'Likes', icon: Heart, color: '#ef4444' },
                 {
-                  value: featuredTemplates?.length || 0,
+                  value: totalFeatured,
                   label: 'Featured',
                   icon: Star,
                   color: '#fbbf24',
@@ -476,40 +538,90 @@ function TemplatesPage() {
                 Loading templates...
               </p>
             </div>
-          ) : templatesData?.templates && templatesData.templates.length > 0 ? (
+          ) : (filteredPresetTemplates.length > 0 || (templatesData?.templates && templatesData.templates.length > 0)) ? (
             <motion.div
-              className={
-                viewMode === 'grid'
-                  ? 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5'
-                  : 'space-y-4'
-              }
-              initial="hidden"
-              animate="visible"
-              variants={{ visible: { transition: { staggerChildren: 0.03 } } }}
+              className="p-5 mt-4"
+              style={{
+                background: theme.effects.cardStyle === 'glass' ? `${theme.colors.card}90` : theme.colors.card,
+                border: `1px solid ${theme.colors.border}`,
+                borderRadius: cardRadius,
+                backdropFilter: theme.effects.cardStyle === 'glass' ? 'blur(20px)' : undefined,
+              }}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
             >
-              {templatesData.templates.map((template) => (
-                <motion.div
-                  key={template.id}
-                  variants={{
-                    hidden: { opacity: 0, y: 20 },
-                    visible: { opacity: 1, y: 0 },
-                  }}
-                  transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                >
-                  <TemplateCard
-                    template={template}
-                    theme={theme}
-                    onApply={() => applyMutation.mutate(template.id)}
-                    onLike={() => likeMutation.mutate(template.id)}
-                    onPreview={() => setSelectedTemplate(template.id)}
-                    canApply={canApply}
-                    isApplying={applyMutation.isPending}
-                    listView={viewMode === 'list'}
-                    cardRadius={cardRadius}
-                    glowOpacity={glowOpacity}
-                  />
-                </motion.div>
-              ))}
+              <motion.div
+                className={
+                  viewMode === 'grid'
+                    ? 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5'
+                    : 'space-y-4'
+                }
+                initial="hidden"
+                animate="visible"
+                variants={{ visible: { transition: { staggerChildren: 0.03 } } }}
+              >
+                {/* Eziox Official Templates */}
+                {filteredPresetTemplates.map((template) => (
+                  <motion.div
+                    key={template.id}
+                    variants={{
+                      hidden: { opacity: 0, y: 20 },
+                      visible: { opacity: 1, y: 0 },
+                    }}
+                    transition={{ duration: 0.15 }}
+                  >
+                    <TemplateCard
+                      template={{
+                        id: template.id,
+                        name: template.name,
+                        description: template.description,
+                        category: template.category,
+                        settings: template.settings,
+                        previewImage: template.previewImage,
+                        uses: null,
+                        likes: null,
+                        userName: 'Eziox',
+                        userUsername: 'eziox',
+                      }}
+                      theme={theme}
+                      onApply={() => handleApplyPreset(template)}
+                      onLike={() => {}}
+                      onPreview={() => setSelectedPresetTemplate(template)}
+                      canApply={canApply}
+                      isApplying={applyMutation.isPending}
+                      featured={template.featured}
+                      listView={viewMode === 'list'}
+                      cardRadius={cardRadius}
+                      glowOpacity={glowOpacity}
+                      isOfficial
+                    />
+                  </motion.div>
+                ))}
+                {/* Community Templates */}
+                {templatesData?.templates?.map((template) => (
+                  <motion.div
+                    key={template.id}
+                    variants={{
+                      hidden: { opacity: 0, y: 20 },
+                      visible: { opacity: 1, y: 0 },
+                    }}
+                    transition={{ duration: 0.15 }}
+                  >
+                    <TemplateCard
+                      template={template}
+                      theme={theme}
+                      onApply={() => applyMutation.mutate(template.id)}
+                      onLike={() => likeMutation.mutate(template.id)}
+                      onPreview={() => setSelectedTemplate(template.id)}
+                      canApply={canApply}
+                      isApplying={applyMutation.isPending}
+                      listView={viewMode === 'list'}
+                      cardRadius={cardRadius}
+                      glowOpacity={glowOpacity}
+                    />
+                  </motion.div>
+                ))}
+              </motion.div>
             </motion.div>
           ) : (
             <motion.div
@@ -607,6 +719,20 @@ function TemplatesPage() {
             canApply={canApply}
           />
         )}
+        {selectedPresetTemplate && (
+          <PresetTemplatePreviewModal
+            template={selectedPresetTemplate}
+            theme={theme}
+            onClose={() => setSelectedPresetTemplate(null)}
+            onApply={() => {
+              void handleApplyPreset(selectedPresetTemplate)
+              setSelectedPresetTemplate(null)
+            }}
+            canApply={canApply}
+            cardRadius={cardRadius}
+            glowOpacity={glowOpacity}
+          />
+        )}
       </AnimatePresence>
     </div>
   )
@@ -635,6 +761,7 @@ interface TemplateCardProps {
   listView?: boolean
   cardRadius: string
   glowOpacity: number
+  isOfficial?: boolean
 }
 
 function TemplateCard({
@@ -649,6 +776,7 @@ function TemplateCard({
   listView,
   cardRadius,
   glowOpacity,
+  isOfficial,
 }: TemplateCardProps) {
   const settings = template.settings as {
     accentColor?: string
@@ -670,8 +798,8 @@ function TemplateCard({
   const hasCreatorFeatures = !!(
     settings?.customCSS || settings?.animatedProfile?.enabled
   )
-  const requiredTier = hasCreatorFeatures ? 'Creator' : 'Pro'
-  const tierColor = hasCreatorFeatures ? '#f59e0b' : '#3b82f6'
+  const requiredTier = isOfficial ? 'Official' : hasCreatorFeatures ? 'Creator' : 'Pro'
+  const tierColor = isOfficial ? theme.colors.primary : hasCreatorFeatures ? '#f59e0b' : '#3b82f6'
   const categoryData = CATEGORIES.find((c) => c.id === template.category)
 
   if (listView) {
@@ -1169,6 +1297,195 @@ function TemplatePreviewModal({
             </div>
           </>
         )}
+      </motion.div>
+    </motion.div>
+  )
+}
+
+// Preview Modal for Preset Templates (no DB query needed)
+interface PresetTemplatePreviewModalProps {
+  template: PresetTemplate
+  theme: ReturnType<typeof useTheme>['theme']
+  onClose: () => void
+  onApply: () => void
+  canApply: boolean
+  cardRadius: string
+  glowOpacity: number
+}
+
+function PresetTemplatePreviewModal({
+  template,
+  theme,
+  onClose,
+  onApply,
+  canApply,
+  cardRadius,
+  glowOpacity,
+}: PresetTemplatePreviewModalProps) {
+  const settings = template.settings
+  const accentColor = settings?.accentColor || theme.colors.primary
+  const bgPreview =
+    settings?.customBackground?.type === 'image' && settings.customBackground.imageUrl
+      ? `url(${settings.customBackground.imageUrl}) center/cover`
+      : settings?.customBackground?.type === 'gradient' && settings.customBackground.gradientColors
+        ? `linear-gradient(${settings.customBackground.gradientAngle || 135}deg, ${settings.customBackground.gradientColors.join(', ')})`
+        : settings?.customBackground?.type === 'solid'
+          ? settings.customBackground.value
+          : `linear-gradient(135deg, ${accentColor}, ${theme.colors.accent})`
+
+  const categoryData = CATEGORIES.find((c) => c.id === template.category)
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-md"
+      style={{ background: 'rgba(0,0,0,0.8)' }}
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ scale: 0.95, opacity: 0, y: 20 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.95, opacity: 0, y: 20 }}
+        transition={{ duration: 0.2 }}
+        className="w-full max-w-lg overflow-hidden shadow-2xl"
+        style={{
+          background: theme.colors.card,
+          border: `1px solid ${theme.colors.border}`,
+          borderRadius: cardRadius,
+          boxShadow: glowOpacity > 0 ? `0 25px 60px ${theme.colors.primary}30` : '0 25px 50px rgba(0,0,0,0.3)',
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Preview Header */}
+        <div className="h-44 relative overflow-hidden" style={{ background: bgPreview }}>
+          <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-transparent" />
+          <motion.button
+            onClick={onClose}
+            className="absolute top-4 right-4 p-2.5 rounded-full backdrop-blur-md"
+            style={{ background: 'rgba(0,0,0,0.4)' }}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            transition={{ duration: 0.1 }}
+          >
+            <X size={18} className="text-white" />
+          </motion.button>
+          <div className="absolute top-4 left-4">
+            <div
+              className="px-3 py-1.5 text-xs font-bold flex items-center gap-1.5 backdrop-blur-md"
+              style={{ background: `${theme.colors.primary}dd`, color: '#fff', borderRadius: '8px' }}
+            >
+              <Crown size={12} />
+              Eziox Official
+            </div>
+          </div>
+          <div className="absolute bottom-4 left-5 right-5">
+            <h2 className="text-2xl font-bold text-white mb-1" style={{ fontFamily: theme.typography.displayFont }}>
+              {template.name}
+            </h2>
+            <div className="flex items-center gap-3">
+              <p className="text-white/80 text-sm flex items-center gap-1.5">
+                <User size={14} />
+                Eziox
+              </p>
+              {categoryData && (
+                <span
+                  className="px-2.5 py-0.5 text-xs font-medium flex items-center gap-1 backdrop-blur-md"
+                  style={{ background: `${categoryData.color}90`, color: '#fff', borderRadius: '8px' }}
+                >
+                  <categoryData.icon size={12} />
+                  {categoryData.label}
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Modal Content */}
+        <div className="p-6">
+          <p className="text-sm mb-5" style={{ color: theme.colors.foregroundMuted }}>
+            {template.description}
+          </p>
+
+          {/* Features */}
+          <div className="grid grid-cols-2 gap-3 mb-6">
+            {template.settings.animatedProfile?.enabled && (
+              <div
+                className="text-center p-3"
+                style={{ background: theme.colors.backgroundSecondary, borderRadius: `calc(${cardRadius} - 6px)` }}
+              >
+                <Sparkles size={16} className="mx-auto mb-1" style={{ color: theme.colors.primary }} />
+                <p className="text-xs" style={{ color: theme.colors.foreground }}>Animations</p>
+              </div>
+            )}
+            {template.settings.customCSS && (
+              <div
+                className="text-center p-3"
+                style={{ background: theme.colors.backgroundSecondary, borderRadius: `calc(${cardRadius} - 6px)` }}
+              >
+                <Palette size={16} className="mx-auto mb-1" style={{ color: theme.colors.accent }} />
+                <p className="text-xs" style={{ color: theme.colors.foreground }}>Custom CSS</p>
+              </div>
+            )}
+            <div
+              className="text-center p-3"
+              style={{ background: theme.colors.backgroundSecondary, borderRadius: `calc(${cardRadius} - 6px)` }}
+            >
+              <Layers size={16} className="mx-auto mb-1" style={{ color: '#22c55e' }} />
+              <p className="text-xs capitalize" style={{ color: theme.colors.foreground }}>{template.category}</p>
+            </div>
+            {template.featured && (
+              <div
+                className="text-center p-3"
+                style={{ background: theme.colors.backgroundSecondary, borderRadius: `calc(${cardRadius} - 6px)` }}
+              >
+                <Star size={16} className="mx-auto mb-1" style={{ color: '#fbbf24' }} />
+                <p className="text-xs" style={{ color: theme.colors.foreground }}>Featured</p>
+              </div>
+            )}
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex gap-3">
+            <motion.button
+              onClick={onClose}
+              className="flex-1 py-3.5 font-medium text-sm"
+              style={{ background: theme.colors.backgroundSecondary, color: theme.colors.foreground, borderRadius: cardRadius }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ duration: 0.1 }}
+            >
+              Cancel
+            </motion.button>
+            <motion.button
+              onClick={onApply}
+              disabled={!canApply}
+              className="flex-1 py-3.5 font-semibold text-sm disabled:opacity-50 flex items-center justify-center gap-2"
+              style={{
+                background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
+                color: '#fff',
+                borderRadius: cardRadius,
+                boxShadow: glowOpacity > 0 ? `0 10px 30px ${theme.colors.primary}40` : undefined,
+              }}
+              whileHover={{ scale: canApply ? 1.02 : 1 }}
+              whileTap={{ scale: canApply ? 0.98 : 1 }}
+              transition={{ duration: 0.1 }}
+            >
+              {canApply ? (
+                <>
+                  <Download size={16} />
+                  Apply Template
+                </>
+              ) : (
+                <>
+                  <Crown size={16} />
+                  Pro Required
+                </>
+              )}
+            </motion.button>
+          </div>
+        </div>
       </motion.div>
     </motion.div>
   )

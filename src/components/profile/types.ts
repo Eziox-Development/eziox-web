@@ -4,8 +4,6 @@ export type TabType =
   | 'referrals'
   | 'badges'
   | 'subscription'
-  | 'customization'
-  | 'creator'
   | 'api'
   | 'settings'
   | 'privacy'
