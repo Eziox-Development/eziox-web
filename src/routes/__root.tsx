@@ -39,8 +39,10 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
   loader: async ({ location }) => {
     const { currentUser } = await authMiddleware()
 
+    console.log("test", location.pathname)
     // Skip maintenance check for maintenance page itself
     if (location.pathname !== '/maintenance') {
+      debugger;
       const maintenanceStatus = await getMaintenanceStatusFn()
 
       if (maintenanceStatus.enabled) {
