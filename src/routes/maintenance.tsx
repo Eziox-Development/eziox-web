@@ -14,15 +14,8 @@ export const Route = createFileRoute('/maintenance')({
 })
 
 function MaintenancePage() {
-  const searchParams = Route.useSearch() as {
-    message?: string
-    eta?: string
-  }
-
-  const message =
-    searchParams.message ||
-    'We are currently performing maintenance to improve your experience. Please check back soon.'
-  const eta = searchParams.eta
+  const message = 'We are currently performing maintenance to improve your experience. Please check back soon.'
+  const eta = null
 
   return (
     <div
