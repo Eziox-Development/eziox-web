@@ -39,10 +39,8 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
   loader: async ({ location }) => {
     const { currentUser } = await authMiddleware()
 
-    console.log("test", location.pathname)
     // Skip maintenance check for maintenance page itself
-    if (location.pathname !== '/maintenance') {
-      debugger;
+    if (!location.pathname.startsWith('/maintenance')) {
       const maintenanceStatus = await getMaintenanceStatusFn()
 
       if (maintenanceStatus.enabled) {
@@ -50,19 +48,8 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
         const { canBypass } = await canBypassMaintenanceFn()
 
         if (!canBypass) {
-          // Redirect to maintenance page with message
-          const searchParams = new URLSearchParams()
-          if (maintenanceStatus.message) {
-            searchParams.set('message', maintenanceStatus.message)
-          }
-          if (maintenanceStatus.estimatedEndTime) {
-            searchParams.set('eta', maintenanceStatus.estimatedEndTime)
-          }
-          const query = searchParams.toString()
-          throw redirect({
-            to: '/maintenance',
-            search: query ? Object.fromEntries(searchParams) : undefined,
-          })
+          // Redirect to maintenance page
+          throw redirect({ to: '/maintenance' })
         }
       }
     }
