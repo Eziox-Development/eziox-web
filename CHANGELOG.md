@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed - License Update 📄
+
+**New License: PolyForm Noncommercial 1.0.0**
+
+- Updated from MIT License to PolyForm Noncommercial 1.0.0
+- Source code remains visible for learning and contribution
+- Commercial use now requires explicit license
+- Updated all documentation (README, CONTRIBUTING, COMMUNITY)
+- Added license validation system (`license-guard.ts`)
+- Console warnings for unlicensed domains
+
+**Updated Files:**
+- `LICENSE` - PolyForm Noncommercial 1.0.0 with custom Eziox terms
+- `README.md` - License badge and usage guidelines
+- `package.json` - License field updated
+- `CONTRIBUTING.md` - License context for contributors
+- `COMMUNITY.md` - Community guidelines with license info
+- `src/lib/license-guard.ts` - License validation and warnings
+- `src/router.tsx` - License check on app load
+
+**What this means:**
+- ✅ Personal use, education, research allowed
+- ✅ Contributing via Issues and PRs allowed
+- ❌ Commercial use requires license
+- ❌ SaaS hosting requires license
+- 📧 business@eziox.link for commercial licensing
+
 ---
 
 ## [2.6.0] - 2026-01-25
@@ -180,7 +207,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Full analytics dashboard (30 days retention)
   - Mobile-optimized design
 
-- **Pro Tier ($2.99/month)** - Advanced customization tools:
+- **Pro Tier (€2.99/month)** - Advanced customization tools:
   - Custom CSS styling
   - Upload custom fonts
   - Remove Eziox branding
@@ -188,7 +215,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Export analytics (CSV/JSON)
   - Pro badge on profile
 
-- **Creator Tier ($5.99/month)** - Professional features:
+- **Creator Tier (€5.99/month)** - Professional features:
   - Everything in Pro
   - Custom domain (yourdomain.com)
   - Password protected links
@@ -199,7 +226,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Early access to new features
   - Creator badge on profile
 
-- **Lifetime ($29 one-time)** - Forever access:
+- **Lifetime (€29 one-time)** - Forever access:
   - Everything in Creator
   - All future features included
   - Exclusive Lifetime badge

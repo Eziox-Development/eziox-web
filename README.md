@@ -8,7 +8,7 @@
 
 [![Live Site](https://img.shields.io/badge/🌐_Live-eziox.link-6366f1?style=for-the-badge&labelColor=1e293b)](https://eziox.link)
 [![GitHub](https://img.shields.io/badge/GitHub-Eziox--Development-181717?style=for-the-badge&logo=github)](https://github.com/Eziox-Development)
-[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
+[![License](https://img.shields.io/badge/License-PolyForm_Noncommercial-orange?style=for-the-badge)](LICENSE)
 
 <p>
   <img src="https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react&logoColor=black" alt="React"/>
@@ -51,9 +51,9 @@
 | Tier           | Price    | Highlights                                                        |
 | -------------- | -------- | ----------------------------------------------------------------- |
 | **Eziox Core** | Free     | Unlimited links, all themes, full analytics, media embeds         |
-| **Pro**        | $2.99/mo | Custom CSS, fonts, remove branding, profile backups               |
-| **Creator**    | $5.99/mo | Custom domain, password links, email collection, priority support |
-| **Lifetime**   | $29 once | All Creator features forever, exclusive badge                     |
+| **Pro**        | €2.99/mo | Custom CSS, fonts, remove branding, profile backups               |
+| **Creator**    | €5.99/mo | Custom domain, password links, email collection, priority support |
+| **Lifetime**   | €29 once | All Creator features forever, exclusive badge                     |
 
 ## 🛠️ Tech Stack
 
@@ -142,15 +142,31 @@ See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed instructions.
 
 ## 🤝 Contributing
 
-1. Fork the repository
-2. Create feature branch (`git checkout -b feature/amazing`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing`)
-5. Open a Pull Request
+Contributions are welcome! You can contribute by:
+
+- 🐛 **Reporting Issues** - Found a bug? [Create an issue](https://github.com/Eziox-Development/eziox-web/issues)
+- 💡 **Suggesting Features** - Have an idea? [Open a feature request](https://github.com/Eziox-Development/eziox-web/issues)
+- 🔧 **Code Contributions** - Submit Pull Requests to fix bugs or improve features
+
+**Note**: This is a **Source Available** project. You can view and contribute to the code, but redistribution and commercial use require permission.
 
 ## 📄 License
 
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the **PolyForm Noncommercial License 1.0.0** - see the [LICENSE](LICENSE) file for details.
+
+### What you CAN do:
+- ✅ View and study the source code
+- ✅ Use for personal, non-commercial projects
+- ✅ Contribute via Issues and Pull Requests
+- ✅ Use for educational purposes
+
+### What you CANNOT do:
+- ❌ Use commercially without a license
+- ❌ Sell or monetize the software
+- ❌ Offer as a hosted service (SaaS)
+- ❌ Remove copyright notices
+
+For commercial licensing, contact: 📧 business@eziox.link
 
 ---
 
