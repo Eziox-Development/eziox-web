@@ -255,55 +255,71 @@ export const FOLLOWER_RANGES: FollowerRange[] = [
 // ============================================================================
 
 export const TOP_GAMES = [
+  // === Competitive / Esports ===
   'League of Legends',
   'Valorant',
   'Counter-Strike 2',
-  'Fortnite',
-  'Minecraft',
-  'Grand Theft Auto V',
-  'Apex Legends',
-  'Call of Duty: Warzone',
-  'Call of Duty: Modern Warfare III',
-  'Overwatch 2',
   'Dota 2',
-  'Rocket League',
+  'Overwatch 2',
   'Rainbow Six Siege',
-  'FIFA / EA FC',
-  'NBA 2K',
-  'Roblox',
+  'Rocket League',
+  'Fortnite',
+  'Apex Legends',
+  'PUBG',
+  'Call of Duty: Warzone',
+
+  // === Riot / Blizzard / MMO-ish ===
   'World of Warcraft',
   'Final Fantasy XIV',
-  'Genshin Impact',
-  'Honkai: Star Rail',
-  'Elden Ring',
-  'Dark Souls Series',
-  'The Legend of Zelda',
-  'Super Smash Bros.',
-  'Mario Kart',
-  'Pokémon',
-  'Hearthstone',
-  'Magic: The Gathering Arena',
-  'Dead by Daylight',
-  'Phasmophobia',
-  'Among Us',
-  'Fall Guys',
-  'Rust',
-  'ARK: Survival',
-  'Escape from Tarkov',
-  'PUBG',
-  'Destiny 2',
+  'Lost Ark',
   'Diablo IV',
   'Path of Exile',
-  'Lost Ark',
-  "Baldur's Gate 3",
-  'Cyberpunk 2077',
-  'Red Dead Redemption 2',
-  'The Witcher 3',
-  'Hogwarts Legacy',
-  'Starfield',
+  'Hearthstone',
+
+  // === Survival / Sandbox ===
+  'Minecraft',
+  'Rust',
+  'ARK: Survival Ascended',
+  'Valheim',
+  'DayZ',
+  'Palworld',
+
+  // === Social / Party / Indie ===
+  'Phasmophobia',
+  'Lethal Company',
+  'Among Us',
+  'Fall Guys',
+  'Content Warning',
+
+  // === Shooter / Co-op ===
+  'Escape from Tarkov',
+  'Destiny 2',
+  'The Finals',
+  'Battlefield 2042',
+  'Payday 3',
+
+  // === Gacha / Anime ===
+  'Genshin Impact',
+  'Honkai: Star Rail',
+  'Zenless Zone Zero',
+  'Wuthering Waves',
+  'Arknight: Endfield',
+
+  // === Casual / Platform / Crossplay ===
+  'Roblox',
+  'Brawlhalla',
+  'Multiversus',
+
+  // === Fighting (relevant, aber reduziert) ===
   'Street Fighter 6',
   'Tekken 8',
-  'Mortal Kombat',
+
+  // === Nintendo / Console-relevant ===
+  'Mario Kart 8 Deluxe',
+  'Super Smash Bros. Ultimate',
+  'Pokémon Scarlet & Violet',
+
+  // === Other / Custom ===
   'Other',
 ] as const
 
@@ -324,11 +340,21 @@ export const GAME_PLATFORMS: GamePlatform[] = [
   {
     id: 'steam',
     label: 'Steam',
-    urlPrefix: 'https://steamcommunity.com/id/',
+    urlPrefix: 'https://steamcommunity.com/profiles/',
     placeholder: 'profile_id',
   },
-  { id: 'riot', label: 'Riot Games', urlPrefix: '', placeholder: 'Name#TAG' },
-  { id: 'epic', label: 'Epic Games', urlPrefix: '', placeholder: 'username' },
+  {
+    id: 'riot',
+    label: 'Riot Games',
+    urlPrefix: '',
+    placeholder: 'Name#TAG',
+  },
+  {
+    id: 'epic',
+    label: 'Epic Games',
+    urlPrefix: '',
+    placeholder: 'username',
+  },
   {
     id: 'xbox',
     label: 'Xbox',
@@ -338,8 +364,8 @@ export const GAME_PLATFORMS: GamePlatform[] = [
   {
     id: 'playstation',
     label: 'PlayStation',
-    urlPrefix: '',
-    placeholder: 'PSN ID',
+    urlPrefix: 'https://psnprofiles.com/',
+    placeholder: 'PSN ID / Username',
   },
   {
     id: 'nintendo',
@@ -359,7 +385,72 @@ export const GAME_PLATFORMS: GamePlatform[] = [
     urlPrefix: '',
     placeholder: 'username',
   },
-  { id: 'ea', label: 'EA / Origin', urlPrefix: '', placeholder: 'EA ID' },
+  {
+    id: 'ea',
+    label: 'EA / Origin',
+    urlPrefix: '',
+    placeholder: 'EA ID',
+  },
+  {
+    id: 'gog',
+    label: 'GOG',
+    urlPrefix: 'https://www.gog.com/u/',
+    placeholder: 'username',
+  },
+  {
+    id: 'itch',
+    label: 'itch.io',
+    urlPrefix: 'https://itch.io/profile/',
+    placeholder: 'username',
+  },
+  {
+    id: 'humble',
+    label: 'Humble Bundle',
+    urlPrefix: '',
+    placeholder: 'username',
+  },
+  {
+    id: 'rockstar',
+    label: 'Rockstar Social Club',
+    urlPrefix: 'https://socialclub.rockstargames.com/member/',
+    placeholder: 'username',
+  },
+  {
+    id: 'bethesda',
+    label: 'Bethesda.net',
+    urlPrefix: '',
+    placeholder: 'username',
+  },
+  {
+    id: 'mihoyo',
+    label: 'HoYoverse',
+    urlPrefix: '',
+    placeholder: 'UID',
+  },
+  {
+    id: 'squareenix',
+    label: 'Square Enix',
+    urlPrefix: '',
+    placeholder: 'username',
+  },
+  {
+    id: 'opgg',
+    label: 'OP.GG',
+    urlPrefix: 'https://www.op.gg/summoners/',
+    placeholder: 'region/username',
+  },
+  {
+    id: 'faceit',
+    label: 'FACEIT',
+    urlPrefix: 'https://www.faceit.com/en/players/',
+    placeholder: 'username',
+  },
+  {
+    id: 'esea',
+    label: 'ESEA',
+    urlPrefix: 'https://play.esea.net/users/',
+    placeholder: 'username',
+  },
 ]
 
 // ============================================================================
@@ -496,14 +587,48 @@ export type GameEngine = (typeof GAME_ENGINES)[number]
 // ============================================================================
 
 export type ArtistTypeId =
-  | 'digital'
-  | 'traditional'
-  | '3d'
-  | 'animation'
+  // === Core Art ===
+  | 'digital_art'
+  | 'traditional_art'
+  | 'illustration'
+  | 'concept_art'
+  | 'fan_art'
+
+  // === Design ===
   | 'graphic_design'
-  | 'ui_ux'
-  | 'concept'
+  | 'ui_design'
+  | 'ux_design'
+  | 'branding'
+  | 'motion_design'
+
+  // === 3D / Animation ===
+  | '3d_modeling'
+  | '3d_sculpting'
+  | '3d_rendering'
+  | 'animation_2d'
+  | 'animation_3d'
+  | 'rigging'
+
+  // === Game / Media ===
+  | 'game_art'
+  | 'environment_art'
+  | 'character_design'
+  | 'prop_design'
+
+  // === VTuber / Anime Scene ===
   | 'vtuber_art'
+  | 'vtuber_rigging'
+  | 'live2d'
+  | 'anime_art'
+  | 'manga_art'
+
+  // === Illustration / Specialty ===
+  | 'pixel_art'
+  | 'isometric_art'
+  | 'line_art'
+  | 'chibi_art'
+
+  // === Other ===
   | 'other'
 
 export interface ArtistType {
@@ -512,14 +637,48 @@ export interface ArtistType {
 }
 
 export const ARTIST_TYPES: ArtistType[] = [
-  { id: 'digital', label: 'Digital Art' },
-  { id: 'traditional', label: 'Traditional Art' },
-  { id: '3d', label: '3D Modeling / Sculpting' },
-  { id: 'animation', label: 'Animation' },
+  // Core Art
+  { id: 'digital_art', label: 'Digital Art' },
+  { id: 'traditional_art', label: 'Traditional Art' },
+  { id: 'illustration', label: 'Illustration' },
+  { id: 'concept_art', label: 'Concept Art' },
+  { id: 'fan_art', label: 'Fan Art' },
+
+  // Design
   { id: 'graphic_design', label: 'Graphic Design' },
-  { id: 'ui_ux', label: 'UI/UX Design' },
-  { id: 'concept', label: 'Concept Art' },
-  { id: 'vtuber_art', label: 'VTuber Art / Rigging' },
+  { id: 'ui_design', label: 'UI Design' },
+  { id: 'ux_design', label: 'UX Design' },
+  { id: 'branding', label: 'Branding / Visual Identity' },
+  { id: 'motion_design', label: 'Motion Design' },
+
+  // 3D / Animation
+  { id: '3d_modeling', label: '3D Modeling' },
+  { id: '3d_sculpting', label: '3D Sculpting' },
+  { id: '3d_rendering', label: '3D Rendering' },
+  { id: 'animation_2d', label: '2D Animation' },
+  { id: 'animation_3d', label: '3D Animation' },
+  { id: 'rigging', label: 'Rigging' },
+
+  // Game / Media
+  { id: 'game_art', label: 'Game Art' },
+  { id: 'environment_art', label: 'Environment Art' },
+  { id: 'character_design', label: 'Character Design' },
+  { id: 'prop_design', label: 'Prop / Asset Design' },
+
+  // VTuber / Anime
+  { id: 'vtuber_art', label: 'VTuber Art' },
+  { id: 'vtuber_rigging', label: 'VTuber Rigging' },
+  { id: 'live2d', label: 'Live2D' },
+  { id: 'anime_art', label: 'Anime Art' },
+  { id: 'manga_art', label: 'Manga Art' },
+
+  // Illustration / Specialty
+  { id: 'pixel_art', label: 'Pixel Art' },
+  { id: 'isometric_art', label: 'Isometric Art' },
+  { id: 'line_art', label: 'Line Art' },
+  { id: 'chibi_art', label: 'Chibi Art' },
+
+  // Other
   { id: 'other', label: 'Other' },
 ]
 
@@ -528,12 +687,46 @@ export const ARTIST_TYPES: ArtistType[] = [
 // ============================================================================
 
 export type MusicianTypeId =
-  | 'producer'
+  // === Core Roles ===
+  | 'music_producer'
   | 'dj'
-  | 'vocalist'
-  | 'instrumentalist'
   | 'composer'
-  | 'sound_design'
+  | 'songwriter'
+  | 'arranger'
+
+  // === Vocals ===
+  | 'vocalist'
+  | 'singer'
+  | 'rapper'
+  | 'voice_actor'
+  | 'choir_singer'
+
+  // === Instrumental ===
+  | 'instrumentalist'
+  | 'guitarist'
+  | 'bassist'
+  | 'pianist'
+  | 'keyboardist'
+  | 'drummer'
+  | 'violinist'
+  | 'cellist'
+  | 'wind_instrumentalist'
+
+  // === Electronic / Production ===
+  | 'beatmaker'
+  | 'sound_designer'
+  | 'mix_engineer'
+  | 'mastering_engineer'
+  | 'audio_engineer'
+
+  // === Modern / Internet Music ===
+  | 'bedroom_producer'
+  | 'live_performer'
+  | 'loop_artist'
+  | 'cover_artist'
+  | 'remix_artist'
+
+  // === Other ===
   | 'other'
 
 export interface MusicianType {
@@ -542,12 +735,46 @@ export interface MusicianType {
 }
 
 export const MUSICIAN_TYPES: MusicianType[] = [
-  { id: 'producer', label: 'Music Producer' },
+  // Core Roles
+  { id: 'music_producer', label: 'Music Producer' },
   { id: 'dj', label: 'DJ' },
-  { id: 'vocalist', label: 'Vocalist / Singer' },
-  { id: 'instrumentalist', label: 'Instrumentalist' },
   { id: 'composer', label: 'Composer' },
-  { id: 'sound_design', label: 'Sound Design' },
+  { id: 'songwriter', label: 'Songwriter' },
+  { id: 'arranger', label: 'Arranger' },
+
+  // Vocals
+  { id: 'vocalist', label: 'Vocalist' },
+  { id: 'singer', label: 'Singer' },
+  { id: 'rapper', label: 'Rapper' },
+  { id: 'voice_actor', label: 'Voice Actor / Voice Artist' },
+  { id: 'choir_singer', label: 'Choir Singer' },
+
+  // Instrumental
+  { id: 'instrumentalist', label: 'Instrumentalist' },
+  { id: 'guitarist', label: 'Guitarist' },
+  { id: 'bassist', label: 'Bassist' },
+  { id: 'pianist', label: 'Pianist' },
+  { id: 'keyboardist', label: 'Keyboardist / Synth' },
+  { id: 'drummer', label: 'Drummer' },
+  { id: 'violinist', label: 'Violinist' },
+  { id: 'cellist', label: 'Cellist' },
+  { id: 'wind_instrumentalist', label: 'Wind Instrumentalist' },
+
+  // Electronic / Production
+  { id: 'beatmaker', label: 'Beatmaker' },
+  { id: 'sound_designer', label: 'Sound Designer' },
+  { id: 'mix_engineer', label: 'Mix Engineer' },
+  { id: 'mastering_engineer', label: 'Mastering Engineer' },
+  { id: 'audio_engineer', label: 'Audio Engineer' },
+
+  // Modern / Internet Music
+  { id: 'bedroom_producer', label: 'Bedroom Producer' },
+  { id: 'live_performer', label: 'Live Performer' },
+  { id: 'loop_artist', label: 'Loop Artist' },
+  { id: 'cover_artist', label: 'Cover Artist' },
+  { id: 'remix_artist', label: 'Remix Artist' },
+
+  // Other
   { id: 'other', label: 'Other' },
 ]
 
@@ -556,12 +783,33 @@ export const MUSICIAN_TYPES: MusicianType[] = [
 // ============================================================================
 
 export const MUSIC_PLATFORMS = [
+  // === Streaming ===
   {
     id: 'spotify',
     label: 'Spotify',
     urlPrefix: 'https://open.spotify.com/artist/',
     placeholder: 'artist_id',
   },
+  {
+    id: 'apple_music',
+    label: 'Apple Music',
+    urlPrefix: 'https://music.apple.com/artist/',
+    placeholder: 'artist_id',
+  },
+  {
+    id: 'amazon_music',
+    label: 'Amazon Music',
+    urlPrefix: 'https://music.amazon.com/artists/',
+    placeholder: 'artist_id',
+  },
+  {
+    id: 'youtube_music',
+    label: 'YouTube Music',
+    urlPrefix: 'https://music.youtube.com/channel/',
+    placeholder: 'channel_id',
+  },
+
+  // === Creator / Upload Platforms ===
   {
     id: 'soundcloud',
     label: 'SoundCloud',
@@ -575,16 +823,68 @@ export const MUSIC_PLATFORMS = [
     placeholder: 'artist.bandcamp.com',
   },
   {
-    id: 'apple_music',
-    label: 'Apple Music',
-    urlPrefix: 'https://music.apple.com/artist/',
-    placeholder: 'artist_id',
+    id: 'audiomack',
+    label: 'Audiomack',
+    urlPrefix: 'https://audiomack.com/',
+    placeholder: 'username',
+  },
+
+  // === Video / Social ===
+  {
+    id: 'youtube',
+    label: 'YouTube',
+    urlPrefix: 'https://youtube.com/@',
+    placeholder: 'handle',
   },
   {
-    id: 'youtube_music',
-    label: 'YouTube Music',
-    urlPrefix: 'https://music.youtube.com/channel/',
-    placeholder: 'channel_id',
+    id: 'tiktok_music',
+    label: 'TikTok',
+    urlPrefix: 'https://www.tiktok.com/@',
+    placeholder: 'username',
+  },
+
+  // === Artist Hubs / Meta ===
+  {
+    id: 'spotify_for_artists',
+    label: 'Spotify for Artists',
+    urlPrefix: '',
+    placeholder: 'artist_name',
+  },
+  {
+    id: 'apple_music_artists',
+    label: 'Apple Music for Artists',
+    urlPrefix: '',
+    placeholder: 'artist_name',
+  },
+
+  // === Sales / Distribution ===
+  {
+    id: 'beatport',
+    label: 'Beatport',
+    urlPrefix: 'https://www.beatport.com/artist/',
+    placeholder: 'artist-name/id',
+  },
+  {
+    id: 'traxsource',
+    label: 'Traxsource',
+    urlPrefix: 'https://www.traxsource.com/artist/',
+    placeholder: 'artist-name/id',
+  },
+
+  // === Community / Portfolio ===
+  {
+    id: 'reverbnation',
+    label: 'ReverbNation',
+    urlPrefix: 'https://www.reverbnation.com/',
+    placeholder: 'artistname',
+  },
+
+  // === Other ===
+  {
+    id: 'other',
+    label: 'Other',
+    urlPrefix: '',
+    placeholder: 'link or name',
   },
 ] as const
 
@@ -593,15 +893,60 @@ export const MUSIC_PLATFORMS = [
 // ============================================================================
 
 export type ContentTypeId =
+  // === Gaming ===
   | 'gaming'
+  | 'lets_play'
+  | 'competitive'
+  | 'speedrun'
+  | 'variety_gaming'
+
+  // === Streaming / Live ===
+  | 'livestreaming'
+  | 'vtuber'
+  | 'irl_stream'
+  | 'just_chatting'
+
+  // === Video Formats ===
   | 'vlogs'
+  | 'shorts'
+  | 'highlights'
+  | 'montage'
+
+  // === Education / Knowledge ===
   | 'educational'
-  | 'entertainment'
+  | 'tutorials'
+  | 'how_to'
+  | 'commentary'
+  | 'documentary'
+
+  // === Tech / Creative ===
   | 'tech'
-  | 'lifestyle'
+  | 'coding'
+  | 'reviews'
+  | 'creative_process'
+
+  // === Entertainment ===
+  | 'entertainment'
   | 'comedy'
+  | 'skits'
+  | 'parody'
   | 'reaction'
+  | 'challenge'
+
+  // === Lifestyle / IRL ===
+  | 'lifestyle'
+  | 'daily_life'
+  | 'travel'
+  | 'fitness'
+  | 'food'
+
+  // === Audio / Niche ===
   | 'asmr'
+  | 'podcast'
+  | 'storytelling'
+  | 'music_content'
+
+  // === Other ===
   | 'other'
 
 export interface ContentType {
@@ -610,15 +955,60 @@ export interface ContentType {
 }
 
 export const CONTENT_TYPES: ContentType[] = [
+  // Gaming
   { id: 'gaming', label: 'Gaming' },
+  { id: 'lets_play', label: "Let's Play" },
+  { id: 'competitive', label: 'Competitive / Esports' },
+  { id: 'speedrun', label: 'Speedrunning' },
+  { id: 'variety_gaming', label: 'Variety Gaming' },
+
+  // Streaming / Live
+  { id: 'livestreaming', label: 'Livestreaming' },
+  { id: 'vtuber', label: 'VTuber Content' },
+  { id: 'irl_stream', label: 'IRL Streaming' },
+  { id: 'just_chatting', label: 'Just Chatting' },
+
+  // Video Formats
   { id: 'vlogs', label: 'Vlogs' },
+  { id: 'shorts', label: 'Short-Form Content' },
+  { id: 'highlights', label: 'Highlights / Clips' },
+  { id: 'montage', label: 'Montages / Edits' },
+
+  // Education
   { id: 'educational', label: 'Educational' },
-  { id: 'entertainment', label: 'Entertainment' },
+  { id: 'tutorials', label: 'Tutorials' },
+  { id: 'how_to', label: 'How-To Guides' },
+  { id: 'commentary', label: 'Commentary / Analysis' },
+  { id: 'documentary', label: 'Documentary-Style' },
+
+  // Tech / Creative
   { id: 'tech', label: 'Tech / Reviews' },
-  { id: 'lifestyle', label: 'Lifestyle' },
-  { id: 'comedy', label: 'Comedy / Skits' },
+  { id: 'coding', label: 'Coding / Programming' },
+  { id: 'reviews', label: 'Reviews' },
+  { id: 'creative_process', label: 'Creative Process' },
+
+  // Entertainment
+  { id: 'entertainment', label: 'Entertainment' },
+  { id: 'comedy', label: 'Comedy' },
+  { id: 'skits', label: 'Skits' },
+  { id: 'parody', label: 'Parody' },
   { id: 'reaction', label: 'Reaction Content' },
+  { id: 'challenge', label: 'Challenges' },
+
+  // Lifestyle
+  { id: 'lifestyle', label: 'Lifestyle' },
+  { id: 'daily_life', label: 'Daily Life' },
+  { id: 'travel', label: 'Travel' },
+  { id: 'fitness', label: 'Fitness' },
+  { id: 'food', label: 'Food / Cooking' },
+
+  // Audio / Niche
   { id: 'asmr', label: 'ASMR' },
+  { id: 'podcast', label: 'Podcast' },
+  { id: 'storytelling', label: 'Storytelling' },
+  { id: 'music_content', label: 'Music Content' },
+
+  // Other
   { id: 'other', label: 'Other' },
 ]
 
@@ -626,13 +1016,19 @@ export const CONTENT_TYPES: ContentType[] = [
 // VTUBER MODELS
 // ============================================================================
 
-export type VTuberModelType = '2d' | '3d' | 'both' | 'png'
+export type VTuberModelType = 
+  | 'live2d'
+  | '3d'
+  | 'both'
+  | 'png'
+  | 'hybrid'
 
 export const VTUBER_MODEL_TYPES = [
-  { id: '2d', label: '2D (Live2D)' },
+  { id: 'live2d', label: '2D (Live2D)' },
   { id: '3d', label: '3D Model' },
-  { id: 'both', label: 'Both 2D & 3D' },
+  { id: 'both', label: '2D & 3D' },
   { id: 'png', label: 'PNG Tuber' },
+  { id: 'hybrid', label: 'Hybrid (PNG + Rig)' },
 ] as const
 
 // ============================================================================

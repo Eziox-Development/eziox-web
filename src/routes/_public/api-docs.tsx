@@ -1,5 +1,7 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
+import { useMemo, useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
+import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/components/layout/ThemeProvider'
 import {
   Code2,
@@ -7,16 +9,20 @@ import {
   Shield,
   Zap,
   CheckCircle,
-  AlertCircle,
   Copy,
-  ChevronDown,
-  ExternalLink,
-  Sparkles,
+  ChevronRight,
+  Terminal,
   Lock,
-  Clock,
-  TrendingUp,
+  Rocket,
+  ArrowRight,
+  BookOpen,
+  Layers,
+  BarChart3,
+  Link2,
+  User,
+  AlertTriangle,
 } from 'lucide-react'
-import { useState } from 'react'
+import { SiTypescript, SiPython, SiGo } from 'react-icons/si'
 
 export const Route = createFileRoute('/_public/api-docs')({
   component: ApiDocsPage,
@@ -28,74 +34,101 @@ export const Route = createFileRoute('/_public/api-docs')({
         content:
           'Complete API documentation for Eziox. Learn how to integrate with our platform.',
       },
-      { property: 'og:title', content: 'API Documentation | Eziox' },
-      {
-        property: 'og:description',
-        content: 'Complete API documentation for Eziox platform integration.',
-      },
     ],
   }),
 })
 
-const ENDPOINTS = [
-  {
-    method: 'GET',
-    path: '/api/v1/profile/:username',
-    description: 'Get public profile information for any user',
-    auth: false,
-    params: [
-      { name: 'username', type: 'string', description: 'Username to fetch' },
-    ],
-    response: `{
-  "id": "uuid",
+export function ApiDocsPage() {
+  const { t } = useTranslation()
+  const { theme } = useTheme()
+  const [copiedId, setCopiedId] = useState<string | null>(null)
+  const [activeSection, setActiveSection] = useState('profile')
+
+  const cardRadius = useMemo(
+    () =>
+      theme.effects.borderRadius === 'pill'
+        ? '20px'
+        : theme.effects.borderRadius === 'sharp'
+          ? '8px'
+          : '16px',
+    [theme.effects.borderRadius],
+  )
+
+  const glowOpacity = useMemo(
+    () =>
+      theme.effects.glowIntensity === 'strong'
+        ? 0.4
+        : theme.effects.glowIntensity === 'medium'
+          ? 0.25
+          : theme.effects.glowIntensity === 'subtle'
+            ? 0.15
+            : 0,
+    [theme.effects.glowIntensity],
+  )
+
+  const copyToClipboard = useCallback((text: string, id: string) => {
+    void navigator.clipboard.writeText(text)
+    setCopiedId(id)
+    setTimeout(() => setCopiedId(null), 2000)
+  }, [])
+
+  const endpoints = useMemo(
+    () => ({
+      profile: [
+        {
+          method: 'GET',
+          path: '/v1/profile/:username',
+          title: t('apiDocs.endpoints.profile.getPublic.title'),
+          description: t('apiDocs.endpoints.profile.getPublic.description'),
+          auth: false,
+          response: `{
   "username": "string",
   "name": "string",
   "bio": "string",
   "avatar": "string",
-  "banner": "string",
-  "socials": {},
-  "links": []
+  "links": [...]
 }`,
-  },
-  {
-    method: 'GET',
-    path: '/api/v1/profile/me',
-    description: 'Get your authenticated profile with full details',
-    auth: true,
-    params: [],
-    response: `{
+        },
+        {
+          method: 'GET',
+          path: '/v1/profile/me',
+          title: t('apiDocs.endpoints.profile.getMe.title'),
+          description: t('apiDocs.endpoints.profile.getMe.description'),
+          auth: true,
+          response: `{
   "id": "uuid",
   "username": "string",
   "email": "string",
-  "tier": "string",
-  "profile": {},
-  "stats": {}
+  "tier": "free|pro|creator",
+  "profile": {...},
+  "stats": {...}
 }`,
-  },
-  {
-    method: 'PATCH',
-    path: '/api/v1/profile/me',
-    description: 'Update your profile information',
-    auth: true,
-    params: [],
-    body: `{
+        },
+        {
+          method: 'PATCH',
+          path: '/v1/profile/me',
+          title: t('apiDocs.endpoints.profile.update.title'),
+          description: t('apiDocs.endpoints.profile.update.description'),
+          auth: true,
+          body: `{
   "name": "string",
   "bio": "string",
-  "website": "string",
   "location": "string"
 }`,
-    response: `{
+          response: `{
   "success": true,
-  "profile": {}
+  "profile": {...}
 }`,
-  },
-  {
-    method: 'GET',
-    path: '/api/v1/links',
-    description: 'Get all your bio links',
-    auth: true,
-    params: [],
-    response: `{
+        },
+      ],
+      links: [
+        {
+          method: 'GET',
+          path: '/v1/links',
+          title: t('apiDocs.endpoints.links.getAll.title'),
+          description: t('apiDocs.endpoints.links.getAll.description'),
+          auth: true,
+          response: `{
   "links": [
     {
       "id": "uuid",
@@ -106,489 +139,227 @@ const ENDPOINTS = [
     }
   ]
 }`,
-  },
-  {
-    method: 'POST',
-    path: '/api/v1/links',
-    description: 'Create a new bio link',
-    auth: true,
-    params: [],
-    body: `{
+        },
+        {
+          method: 'POST',
+          path: '/v1/links',
+          title: t('apiDocs.endpoints.links.create.title'),
+          description: t('apiDocs.endpoints.links.create.description'),
+          auth: true,
+          body: `{
   "title": "string",
   "url": "string",
-  "description": "string",
   "icon": "string"
 }`,
-    response: `{
+          response: `{
   "success": true,
-  "link": {}
+  "link": {...}
 }`,
-  },
-  {
-    method: 'GET',
-    path: '/api/v1/analytics',
-    description: 'Get your profile and link analytics',
-    auth: true,
-    params: [
-      {
-        name: 'days',
-        type: 'number',
-        description: 'Number of days (default: 30)',
-      },
-    ],
-    response: `{
+        },
+        {
+          method: 'PATCH',
+          path: '/v1/links/:id',
+          title: t('apiDocs.endpoints.links.update.title'),
+          description: t('apiDocs.endpoints.links.update.description'),
+          auth: true,
+          body: `{
+  "title": "string",
+  "url": "string"
+}`,
+          response: `{
+  "success": true,
+  "link": {...}
+}`,
+        },
+        {
+          method: 'DELETE',
+          path: '/v1/links/:id',
+          title: t('apiDocs.endpoints.links.delete.title'),
+          description: t('apiDocs.endpoints.links.delete.description'),
+          auth: true,
+          response: `{
+  "success": true
+}`,
+        },
+      ],
+      analytics: [
+        {
+          method: 'GET',
+          path: '/v1/analytics',
+          title: t('apiDocs.endpoints.analytics.get.title'),
+          description: t('apiDocs.endpoints.analytics.get.description'),
+          auth: true,
+          params: [{ name: 'days', type: 'number', optional: true }],
+          response: `{
   "profileViews": 0,
   "linkClicks": 0,
-  "topLinks": [],
-  "dailyStats": []
+  "topLinks": [...],
+  "dailyStats": [...]
 }`,
-  },
-]
+        },
+      ],
+    }),
+    [t],
+  )
 
-const RATE_LIMITS = [
-  { tier: 'Free', limit: '1,000', window: 'per hour', color: '#6b7280' },
-  { tier: 'Pro', limit: '5,000', window: 'per hour', color: '#3b82f6' },
-  { tier: 'Creator', limit: '10,000', window: 'per hour', color: '#f59e0b' },
-  { tier: 'Lifetime', limit: '10,000', window: 'per hour', color: '#ec4899' },
-]
+  const rateLimits = useMemo(
+    () => [
+      { tier: 'Free', limit: '1,000', color: '#6b7280' },
+      { tier: 'Pro', limit: '5,000', color: theme.colors.primary },
+      { tier: 'Creator', limit: '10,000', color: '#f59e0b' },
+    ],
+    [theme.colors.primary],
+  )
 
-const ERROR_CODES = [
-  {
-    code: '400',
-    message: 'Bad Request - Invalid parameters',
-    color: '#f59e0b',
-  },
-  {
-    code: '401',
-    message: 'Unauthorized - Invalid or missing API key',
-    color: '#ef4444',
-  },
-  {
-    code: '403',
-    message: 'Forbidden - Insufficient permissions',
-    color: '#ef4444',
-  },
-  {
-    code: '404',
-    message: 'Not Found - Resource does not exist',
-    color: '#6b7280',
-  },
-  {
-    code: '429',
-    message: 'Too Many Requests - Rate limit exceeded',
-    color: '#f59e0b',
-  },
-  {
-    code: '500',
-    message: 'Internal Server Error - Something went wrong',
-    color: '#ef4444',
-  },
-]
+  const errorCodes = useMemo(
+    () => [
+      { code: '400', color: '#f59e0b' },
+      { code: '401', color: '#ef4444' },
+      { code: '403', color: '#ef4444' },
+      { code: '404', color: '#6b7280' },
+      { code: '429', color: '#f59e0b' },
+      { code: '500', color: '#ef4444' },
+    ],
+    [],
+  )
 
-function ApiDocsPage() {
-  const { theme } = useTheme()
-  const [copiedCode, setCopiedCode] = useState<string | null>(null)
-
-  const cardRadius =
-    theme.effects.borderRadius === 'pill'
-      ? '24px'
-      : theme.effects.borderRadius === 'sharp'
-        ? '8px'
-        : '16px'
-
-  const glowOpacity =
-    theme.effects.glowIntensity === 'strong'
-      ? 0.5
-      : theme.effects.glowIntensity === 'medium'
-        ? 0.35
-        : theme.effects.glowIntensity === 'subtle'
-          ? 0.2
-          : 0
-
-  const copyToClipboard = (text: string, id: string) => {
-    void navigator.clipboard.writeText(text)
-    setCopiedCode(id)
-    setTimeout(() => setCopiedCode(null), 2000)
-  }
+  const sectionIcons = useMemo(
+    () => ({
+      profile: User,
+      links: Link2,
+      analytics: BarChart3,
+    }),
+    [],
+  )
 
   return (
     <div
       className="min-h-screen"
-      style={{ background: theme.colors.background }}
+      style={{
+        background: theme.colors.background,
+        fontFamily: theme.typography.bodyFont,
+      }}
     >
-      {/* Animated Background */}
-      <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
-        <motion.div
-          className="absolute -top-40 -right-40 w-[700px] h-[700px] rounded-full blur-[200px]"
+      {/* Background */}
+      <div className="fixed inset-0 pointer-events-none -z-10">
+        <div
+          className="absolute top-0 right-0 w-[600px] h-[600px] rounded-full blur-[200px]"
           style={{
             background: theme.colors.primary,
-            opacity: glowOpacity * 0.3,
+            opacity: glowOpacity * 0.2,
           }}
-          animate={{ scale: [1, 1.2, 1], x: [0, -50, 0] }}
-          transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
         />
-        <motion.div
-          className="absolute bottom-20 left-1/4 w-[500px] h-[500px] rounded-full blur-[180px]"
+        <div
+          className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full blur-[150px]"
           style={{
             background: theme.colors.accent,
-            opacity: glowOpacity * 0.25,
+            opacity: glowOpacity * 0.15,
           }}
-          animate={{ scale: [1.2, 1, 1.2], y: [0, -40, 0] }}
-          transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut' }}
         />
       </div>
 
-      <div className="relative max-w-6xl mx-auto px-4 py-24">
-        {/* Hero Section */}
+      <div className="max-w-6xl mx-auto px-4 py-24">
+        {/* Hero */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-16"
+          className="text-center mb-20"
         >
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.1 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-8"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6"
             style={{
-              background: `linear-gradient(135deg, ${theme.colors.primary}20, ${theme.colors.accent}15)`,
+              background: `${theme.colors.primary}15`,
               border: `1px solid ${theme.colors.primary}30`,
             }}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
           >
-            <motion.div
-              animate={{ rotate: [0, 10, -10, 0] }}
-              transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
-            >
-              <Code2 size={18} style={{ color: theme.colors.primary }} />
-            </motion.div>
+            <Terminal size={16} style={{ color: theme.colors.primary }} />
             <span
               className="text-sm font-medium"
               style={{ color: theme.colors.foreground }}
             >
-              API Documentation
+              {t('apiDocs.badge')}
             </span>
-            <Sparkles size={14} style={{ color: theme.colors.accent }} />
           </motion.div>
 
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6"
+          <h1
+            className="text-4xl md:text-6xl font-bold mb-6"
             style={{
               color: theme.colors.foreground,
               fontFamily: theme.typography.displayFont,
             }}
           >
-            Build with{' '}
+            {t('apiDocs.hero.title')}{' '}
             <span
-              className="bg-clip-text text-transparent"
               style={{
-                backgroundImage: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
+                color: theme.colors.primary,
+                textShadow:
+                  glowOpacity > 0
+                    ? `0 0 40px ${theme.colors.primary}60`
+                    : undefined,
               }}
             >
-              Eziox API
+              {t('apiDocs.hero.titleHighlight')}
             </span>
-          </motion.h1>
+          </h1>
 
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="text-lg lg:text-xl max-w-2xl mx-auto mb-10"
+          <p
+            className="text-lg md:text-xl max-w-2xl mx-auto mb-10"
             style={{ color: theme.colors.foregroundMuted }}
           >
-            Integrate Eziox into your applications with our powerful REST API.
-            Full access to profiles, links, and analytics.
-          </motion.p>
+            {t('apiDocs.hero.subtitle')}
+          </p>
 
           {/* Quick Stats */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="flex flex-wrap justify-center gap-4"
-          >
+          <div className="flex flex-wrap justify-center gap-6">
             {[
               {
-                label: 'Endpoints',
-                value: ENDPOINTS.length,
                 icon: Code2,
+                label: '8 Endpoints',
                 color: theme.colors.primary,
               },
-              {
-                label: 'Rate Limits',
-                value: '1k-10k/hr',
-                icon: Zap,
-                color: '#f59e0b',
-              },
-              {
-                label: 'Auth Methods',
-                value: 'Bearer',
-                icon: Key,
-                color: '#22c55e',
-              },
+              { icon: Zap, label: '< 50ms', color: '#22c55e' },
+              { icon: Shield, label: 'TLS 1.3', color: '#6366f1' },
             ].map((stat, i) => (
               <motion.div
                 key={stat.label}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.45 + i * 0.05 }}
-                whileHover={{ scale: 1.05, y: -4 }}
-                className="px-6 py-4 text-center"
+                transition={{ delay: 0.2 + i * 0.1 }}
+                className="flex items-center gap-2 px-4 py-2"
                 style={{
-                  background:
-                    theme.effects.cardStyle === 'glass'
-                      ? `${theme.colors.card}90`
-                      : theme.colors.card,
+                  background: theme.colors.card,
                   border: `1px solid ${theme.colors.border}`,
                   borderRadius: cardRadius,
-                  backdropFilter:
-                    theme.effects.cardStyle === 'glass'
-                      ? 'blur(20px)'
-                      : undefined,
                 }}
               >
-                <div className="flex items-center justify-center gap-2 mb-1">
-                  <stat.icon size={18} style={{ color: stat.color }} />
-                  <span
-                    className="text-2xl font-bold"
-                    style={{ color: theme.colors.foreground }}
-                  >
-                    {stat.value}
-                  </span>
-                </div>
-                <p
-                  className="text-xs"
-                  style={{ color: theme.colors.foregroundMuted }}
+                <stat.icon size={18} style={{ color: stat.color }} />
+                <span
+                  className="font-medium"
+                  style={{ color: theme.colors.foreground }}
                 >
                   {stat.label}
-                </p>
+                </span>
               </motion.div>
             ))}
-          </motion.div>
+          </div>
         </motion.div>
 
         {/* Quick Start */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="mb-12"
-        >
-          <SectionCard
-            title="Quick Start"
-            icon={Zap}
-            iconColor="#f59e0b"
-            theme={theme}
-            cardRadius={cardRadius}
-          >
-            <div className="space-y-6">
-              <div>
-                <h3
-                  className="font-semibold mb-2 flex items-center gap-2"
-                  style={{ color: theme.colors.foreground }}
-                >
-                  <span
-                    className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold"
-                    style={{ background: theme.colors.primary, color: '#fff' }}
-                  >
-                    1
-                  </span>
-                  Get your API Key
-                </h3>
-                <p
-                  className="text-sm mb-3"
-                  style={{ color: theme.colors.foregroundMuted }}
-                >
-                  Navigate to your{' '}
-                  <Link
-                    to="/profile"
-                    search={{ tab: 'api' }}
-                    className="font-medium hover:underline"
-                    style={{ color: theme.colors.primary }}
-                  >
-                    Profile Dashboard → API Access
-                  </Link>{' '}
-                  to create an API key.
-                </p>
-              </div>
-
-              <div>
-                <h3
-                  className="font-semibold mb-3 flex items-center gap-2"
-                  style={{ color: theme.colors.foreground }}
-                >
-                  <span
-                    className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold"
-                    style={{ background: theme.colors.primary, color: '#fff' }}
-                  >
-                    2
-                  </span>
-                  Make your first request
-                </h3>
-                <CodeBlock
-                  code={`curl -X GET https://api.eziox.link/v1/profile/me \\
-  -H "Authorization: Bearer YOUR_API_KEY" \\
-  -H "Content-Type: application/json"`}
-                  theme={theme}
-                  cardRadius={cardRadius}
-                  onCopy={() =>
-                    copyToClipboard(
-                      'curl -X GET https://api.eziox.link/v1/profile/me -H "Authorization: Bearer YOUR_API_KEY"',
-                      'quick-start',
-                    )
-                  }
-                  copied={copiedCode === 'quick-start'}
-                />
-              </div>
-            </div>
-          </SectionCard>
-        </motion.section>
-
-        {/* Authentication */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-          className="mb-12"
-        >
-          <SectionCard
-            title="Authentication"
-            icon={Key}
-            iconColor={theme.colors.primary}
-            theme={theme}
-            cardRadius={cardRadius}
-          >
-            <p className="mb-4" style={{ color: theme.colors.foregroundMuted }}>
-              All authenticated API requests require an API key. Include your
-              key in the{' '}
-              <code
-                className="px-2 py-1 rounded text-sm font-mono"
-                style={{
-                  background: theme.colors.backgroundSecondary,
-                  color: theme.colors.primary,
-                }}
-              >
-                Authorization
-              </code>{' '}
-              header:
-            </p>
-
-            <CodeBlock
-              code="Authorization: Bearer ezx_your_api_key_here"
-              theme={theme}
-              cardRadius={cardRadius}
-              onCopy={() =>
-                copyToClipboard('Authorization: Bearer YOUR_API_KEY', 'auth')
-              }
-              copied={copiedCode === 'auth'}
-            />
-
-            <motion.div
-              className="mt-6 p-4 rounded-xl flex items-start gap-3"
-              style={{
-                background: `linear-gradient(135deg, ${theme.colors.primary}10, ${theme.colors.accent}05)`,
-                border: `1px solid ${theme.colors.primary}30`,
-              }}
-            >
-              <Shield
-                size={20}
-                style={{ color: theme.colors.primary }}
-                className="mt-0.5 shrink-0"
-              />
-              <div>
-                <p
-                  className="font-semibold mb-1"
-                  style={{ color: theme.colors.foreground }}
-                >
-                  Keep your API key secure
-                </p>
-                <p
-                  className="text-sm"
-                  style={{ color: theme.colors.foregroundMuted }}
-                >
-                  Never expose your API key in client-side code or public
-                  repositories. Store it securely in environment variables.
-                </p>
-              </div>
-            </motion.div>
-          </SectionCard>
-        </motion.section>
-
-        {/* Rate Limits */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7 }}
-          className="mb-12"
-        >
-          <SectionCard
-            title="Rate Limits"
-            icon={Clock}
-            iconColor="#22c55e"
-            theme={theme}
-            cardRadius={cardRadius}
-          >
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {RATE_LIMITS.map((item, i) => (
-                <motion.div
-                  key={item.tier}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 * i }}
-                  whileHover={{ scale: 1.02, y: -4 }}
-                  className="p-4 text-center relative overflow-hidden"
-                  style={{
-                    background: theme.colors.backgroundSecondary,
-                    borderRadius: `calc(${cardRadius} - 6px)`,
-                    border: `1px solid ${theme.colors.border}`,
-                  }}
-                >
-                  <div
-                    className="absolute top-0 left-0 right-0 h-1"
-                    style={{ background: item.color }}
-                  />
-                  <p
-                    className="text-sm font-medium mb-1"
-                    style={{ color: item.color }}
-                  >
-                    {item.tier}
-                  </p>
-                  <p
-                    className="text-2xl font-bold mb-1"
-                    style={{ color: theme.colors.foreground }}
-                  >
-                    {item.limit}
-                  </p>
-                  <p
-                    className="text-xs"
-                    style={{ color: theme.colors.foregroundMuted }}
-                  >
-                    {item.window}
-                  </p>
-                </motion.div>
-              ))}
-            </div>
-          </SectionCard>
-        </motion.section>
-
-        {/* Endpoints */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8 }}
-          className="mb-12"
+          transition={{ delay: 0.3 }}
+          className="mb-16"
         >
           <div className="flex items-center gap-3 mb-6">
-            <motion.div
-              className="p-3 rounded-xl"
-              style={{
-                background: `linear-gradient(135deg, ${theme.colors.primary}20, ${theme.colors.accent}15)`,
-              }}
+            <div
+              className="p-2.5 rounded-xl"
+              style={{ background: `${theme.colors.primary}15` }}
             >
-              <TrendingUp size={24} style={{ color: theme.colors.primary }} />
-            </motion.div>
+              <Rocket size={22} style={{ color: theme.colors.primary }} />
+            </div>
             <h2
               className="text-2xl font-bold"
               style={{
@@ -596,53 +367,363 @@ function ApiDocsPage() {
                 fontFamily: theme.typography.displayFont,
               }}
             >
-              API Endpoints
+              {t('apiDocs.quickStart.title')}
             </h2>
           </div>
 
-          <div className="space-y-4">
-            {ENDPOINTS.map((endpoint, index) => (
-              <EndpointCard
-                key={index}
-                endpoint={endpoint}
-                theme={theme}
-                cardRadius={cardRadius}
-                onCopy={copyToClipboard}
-                copiedCode={copiedCode}
-                index={index}
-              />
+          <div className="grid md:grid-cols-3 gap-4">
+            {[
+              {
+                step: 1,
+                title: t('apiDocs.quickStart.step1.title'),
+                desc: t('apiDocs.quickStart.step1.description'),
+                icon: Key,
+              },
+              {
+                step: 2,
+                title: t('apiDocs.quickStart.step2.title'),
+                desc: t('apiDocs.quickStart.step2.description'),
+                icon: Terminal,
+              },
+              {
+                step: 3,
+                title: t('apiDocs.quickStart.step3.title'),
+                desc: t('apiDocs.quickStart.step3.description'),
+                icon: Layers,
+              },
+            ].map((item, i) => (
+              <motion.div
+                key={item.step}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 + i * 0.1 }}
+                className="p-6 relative"
+                style={{
+                  background: theme.colors.card,
+                  border: `1px solid ${theme.colors.border}`,
+                  borderRadius: cardRadius,
+                }}
+              >
+                <div
+                  className="absolute -top-3 -left-3 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white"
+                  style={{
+                    background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
+                  }}
+                >
+                  {item.step}
+                </div>
+                <item.icon
+                  size={28}
+                  style={{ color: theme.colors.primary }}
+                  className="mb-4"
+                />
+                <h3
+                  className="font-semibold mb-2"
+                  style={{ color: theme.colors.foreground }}
+                >
+                  {item.title}
+                </h3>
+                <p
+                  className="text-sm"
+                  style={{ color: theme.colors.foregroundMuted }}
+                >
+                  {item.desc}
+                </p>
+              </motion.div>
             ))}
           </div>
         </motion.section>
 
-        {/* Error Codes */}
+        {/* Base URL & Auth */}
+        <div className="grid lg:grid-cols-2 gap-6 mb-16">
+          {/* Base URL */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.5 }}
+            className="p-6"
+            style={{
+              background: theme.colors.card,
+              border: `1px solid ${theme.colors.border}`,
+              borderRadius: cardRadius,
+            }}
+          >
+            <div className="flex items-center gap-3 mb-4">
+              <BookOpen size={20} style={{ color: theme.colors.primary }} />
+              <h3
+                className="font-semibold"
+                style={{ color: theme.colors.foreground }}
+              >
+                {t('apiDocs.baseUrl.title')}
+              </h3>
+            </div>
+            <p
+              className="text-sm mb-4"
+              style={{ color: theme.colors.foregroundMuted }}
+            >
+              {t('apiDocs.baseUrl.description')}
+            </p>
+            <CodeBlock
+              code="https://api.eziox.link"
+              theme={theme}
+              cardRadius={cardRadius}
+              onCopy={() =>
+                copyToClipboard('https://api.eziox.link', 'baseurl')
+              }
+              copied={copiedId === 'baseurl'}
+              language="text"
+            />
+          </motion.div>
+
+          {/* Auth */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.5 }}
+            className="p-6"
+            style={{
+              background: theme.colors.card,
+              border: `1px solid ${theme.colors.border}`,
+              borderRadius: cardRadius,
+            }}
+          >
+            <div className="flex items-center gap-3 mb-4">
+              <Key size={20} style={{ color: theme.colors.primary }} />
+              <h3
+                className="font-semibold"
+                style={{ color: theme.colors.foreground }}
+              >
+                {t('apiDocs.auth.title')}
+              </h3>
+            </div>
+            <p
+              className="text-sm mb-4"
+              style={{ color: theme.colors.foregroundMuted }}
+            >
+              {t('apiDocs.auth.description')}
+            </p>
+            <CodeBlock
+              code="Authorization: Bearer ezx_your_api_key"
+              theme={theme}
+              cardRadius={cardRadius}
+              onCopy={() =>
+                copyToClipboard('Authorization: Bearer YOUR_API_KEY', 'auth')
+              }
+              copied={copiedId === 'auth'}
+              language="http"
+            />
+          </motion.div>
+        </div>
+
+        {/* Security Warning */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+          className="mb-16 p-5 flex items-start gap-4"
+          style={{
+            background: `linear-gradient(135deg, ${theme.colors.primary}10, ${theme.colors.accent}05)`,
+            border: `1px solid ${theme.colors.primary}30`,
+            borderRadius: cardRadius,
+          }}
+        >
+          <Shield
+            size={24}
+            style={{ color: theme.colors.primary }}
+            className="shrink-0 mt-0.5"
+          />
+          <div>
+            <h4
+              className="font-semibold mb-1"
+              style={{ color: theme.colors.foreground }}
+            >
+              {t('apiDocs.auth.warning.title')}
+            </h4>
+            <p
+              className="text-sm"
+              style={{ color: theme.colors.foregroundMuted }}
+            >
+              {t('apiDocs.auth.warning.description')}
+            </p>
+          </div>
+        </motion.div>
+
+        {/* Endpoints */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.9 }}
+          transition={{ delay: 0.7 }}
+          className="mb-16"
         >
-          <SectionCard
-            title="Error Codes"
-            icon={AlertCircle}
-            iconColor="#ef4444"
-            theme={theme}
-            cardRadius={cardRadius}
+          <div className="flex items-center gap-3 mb-6">
+            <div
+              className="p-2.5 rounded-xl"
+              style={{ background: `${theme.colors.primary}15` }}
+            >
+              <Code2 size={22} style={{ color: theme.colors.primary }} />
+            </div>
+            <h2
+              className="text-2xl font-bold"
+              style={{
+                color: theme.colors.foreground,
+                fontFamily: theme.typography.displayFont,
+              }}
+            >
+              {t('apiDocs.endpoints.title')}
+            </h2>
+          </div>
+
+          {/* Section Tabs */}
+          <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
+            {Object.keys(endpoints).map((section) => {
+              const Icon = sectionIcons[section as keyof typeof sectionIcons]
+              return (
+                <button
+                  key={section}
+                  onClick={() => setActiveSection(section)}
+                  className="flex items-center gap-2 px-4 py-2.5 font-medium transition-all whitespace-nowrap"
+                  style={{
+                    background:
+                      activeSection === section
+                        ? `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`
+                        : theme.colors.backgroundSecondary,
+                    color:
+                      activeSection === section
+                        ? '#fff'
+                        : theme.colors.foreground,
+                    borderRadius: cardRadius,
+                    border:
+                      activeSection === section
+                        ? 'none'
+                        : `1px solid ${theme.colors.border}`,
+                  }}
+                >
+                  <Icon size={16} />
+                  {t(`apiDocs.endpoints.${section}.title`)}
+                </button>
+              )
+            })}
+          </div>
+
+          {/* Endpoint Cards */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeSection}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="space-y-4"
+            >
+              {endpoints[activeSection as keyof typeof endpoints].map(
+                (endpoint, i) => (
+                  <EndpointCard
+                    key={endpoint.path}
+                    endpoint={endpoint}
+                    theme={theme}
+                    cardRadius={cardRadius}
+                    onCopy={copyToClipboard}
+                    copiedId={copiedId}
+                    index={i}
+                    t={t}
+                  />
+                ),
+              )}
+            </motion.div>
+          </AnimatePresence>
+        </motion.section>
+
+        {/* Rate Limits & Errors */}
+        <div className="grid lg:grid-cols-2 gap-6 mb-16">
+          {/* Rate Limits */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8 }}
+            className="p-6"
+            style={{
+              background: theme.colors.card,
+              border: `1px solid ${theme.colors.border}`,
+              borderRadius: cardRadius,
+            }}
           >
+            <div className="flex items-center gap-3 mb-4">
+              <Zap size={20} style={{ color: '#f59e0b' }} />
+              <h3
+                className="font-semibold"
+                style={{ color: theme.colors.foreground }}
+              >
+                {t('apiDocs.rateLimits.title')}
+              </h3>
+            </div>
+            <p
+              className="text-sm mb-5"
+              style={{ color: theme.colors.foregroundMuted }}
+            >
+              {t('apiDocs.rateLimits.description')}
+            </p>
             <div className="space-y-3">
-              {ERROR_CODES.map((error, i) => (
-                <motion.div
-                  key={error.code}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.05 * i }}
-                  className="flex items-center gap-4 p-3"
+              {rateLimits.map((item) => (
+                <div
+                  key={item.tier}
+                  className="flex items-center justify-between p-3"
                   style={{
                     background: theme.colors.backgroundSecondary,
-                    borderRadius: `calc(${cardRadius} - 6px)`,
+                    borderRadius: '12px',
+                  }}
+                >
+                  <span className="font-medium" style={{ color: item.color }}>
+                    {item.tier}
+                  </span>
+                  <span style={{ color: theme.colors.foreground }}>
+                    <strong>{item.limit}</strong>{' '}
+                    <span style={{ color: theme.colors.foregroundMuted }}>
+                      {t('apiDocs.rateLimits.perHour')}
+                    </span>
+                  </span>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Error Codes */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.9 }}
+            className="p-6"
+            style={{
+              background: theme.colors.card,
+              border: `1px solid ${theme.colors.border}`,
+              borderRadius: cardRadius,
+            }}
+          >
+            <div className="flex items-center gap-3 mb-4">
+              <AlertTriangle size={20} style={{ color: '#ef4444' }} />
+              <h3
+                className="font-semibold"
+                style={{ color: theme.colors.foreground }}
+              >
+                {t('apiDocs.errors.title')}
+              </h3>
+            </div>
+            <p
+              className="text-sm mb-5"
+              style={{ color: theme.colors.foregroundMuted }}
+            >
+              {t('apiDocs.errors.description')}
+            </p>
+            <div className="space-y-2">
+              {errorCodes.map((error) => (
+                <div
+                  key={error.code}
+                  className="flex items-center gap-3 p-2.5"
+                  style={{
+                    background: theme.colors.backgroundSecondary,
+                    borderRadius: '10px',
                   }}
                 >
                   <code
-                    className="px-3 py-1.5 rounded-lg font-mono text-sm font-bold"
+                    className="px-2 py-1 rounded font-mono text-sm font-bold"
                     style={{
                       background: `${error.color}20`,
                       color: error.color,
@@ -650,99 +731,150 @@ function ApiDocsPage() {
                   >
                     {error.code}
                   </code>
-                  <span style={{ color: theme.colors.foreground }}>
-                    {error.message}
+                  <span
+                    className="text-sm"
+                    style={{ color: theme.colors.foregroundMuted }}
+                  >
+                    {t(`apiDocs.errors.${error.code}`)}
                   </span>
-                </motion.div>
+                </div>
               ))}
             </div>
-          </SectionCard>
+          </motion.div>
+        </div>
+
+        {/* SDKs */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1 }}
+          className="mb-16"
+        >
+          <div className="flex items-center gap-3 mb-6">
+            <div
+              className="p-2.5 rounded-xl"
+              style={{ background: `${theme.colors.primary}15` }}
+            >
+              <Layers size={22} style={{ color: theme.colors.primary }} />
+            </div>
+            <h2
+              className="text-2xl font-bold"
+              style={{
+                color: theme.colors.foreground,
+                fontFamily: theme.typography.displayFont,
+              }}
+            >
+              {t('apiDocs.sdks.title')}
+            </h2>
+          </div>
+          <p className="mb-6" style={{ color: theme.colors.foregroundMuted }}>
+            {t('apiDocs.sdks.description')}
+          </p>
+
+          <div className="grid sm:grid-cols-3 gap-4">
+            {[
+              { name: 'TypeScript', icon: SiTypescript, color: '#3178c6' },
+              { name: 'Python', icon: SiPython, color: '#3776ab' },
+              { name: 'Go', icon: SiGo, color: '#00add8' },
+            ].map((sdk) => (
+              <div
+                key={sdk.name}
+                className="p-5 flex items-center gap-4 opacity-60"
+                style={{
+                  background: theme.colors.card,
+                  border: `1px solid ${theme.colors.border}`,
+                  borderRadius: cardRadius,
+                }}
+              >
+                <sdk.icon size={32} style={{ color: sdk.color }} />
+                <div>
+                  <p
+                    className="font-medium"
+                    style={{ color: theme.colors.foreground }}
+                  >
+                    {sdk.name}
+                  </p>
+                  <p
+                    className="text-xs"
+                    style={{ color: theme.colors.foregroundMuted }}
+                  >
+                    {t('apiDocs.sdks.comingSoon')}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
         </motion.section>
 
         {/* CTA */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1 }}
-          className="mt-16 text-center"
+          transition={{ delay: 1.1 }}
+          className="text-center py-16 px-6 relative overflow-hidden"
+          style={{
+            background: theme.colors.card,
+            border: `1px solid ${theme.colors.border}`,
+            borderRadius: cardRadius,
+          }}
         >
-          <Link to="/profile" search={{ tab: 'api' }}>
-            <motion.button
-              className="px-8 py-4 font-semibold text-lg inline-flex items-center gap-3"
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background: `radial-gradient(ellipse at 50% 100%, ${theme.colors.primary}15 0%, transparent 60%)`,
+            }}
+          />
+
+          <div className="relative">
+            <motion.div
+              className="w-16 h-16 mx-auto mb-6 rounded-2xl flex items-center justify-center"
               style={{
                 background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
-                color: '#fff',
-                borderRadius: cardRadius,
-                boxShadow:
-                  glowOpacity > 0
-                    ? `0 8px 32px ${theme.colors.primary}40`
-                    : undefined,
               }}
-              whileHover={{ scale: 1.02, y: -4 }}
-              whileTap={{ scale: 0.98 }}
+              animate={{ rotate: [0, 5, -5, 0] }}
+              transition={{ duration: 4, repeat: Infinity }}
             >
-              <Key size={20} />
-              Get Your API Key
-              <ExternalLink size={16} />
-            </motion.button>
-          </Link>
+              <Key size={32} className="text-white" />
+            </motion.div>
+
+            <h2
+              className="text-3xl font-bold mb-4"
+              style={{
+                color: theme.colors.foreground,
+                fontFamily: theme.typography.displayFont,
+              }}
+            >
+              {t('apiDocs.cta.title')}
+            </h2>
+            <p
+              className="mb-8 max-w-md mx-auto"
+              style={{ color: theme.colors.foregroundMuted }}
+            >
+              {t('apiDocs.cta.subtitle')}
+            </p>
+
+            <Link to="/profile" search={{ tab: 'api' }}>
+              <motion.button
+                className="inline-flex items-center gap-3 px-8 py-4 font-semibold text-white"
+                style={{
+                  background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
+                  borderRadius: cardRadius,
+                  boxShadow:
+                    glowOpacity > 0
+                      ? `0 15px 40px ${theme.colors.primary}40`
+                      : undefined,
+                }}
+                whileHover={{ scale: 1.03, y: -2 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <Key size={20} />
+                {t('apiDocs.cta.button')}
+                <ArrowRight size={20} />
+              </motion.button>
+            </Link>
+          </div>
         </motion.div>
       </div>
-    </div>
-  )
-}
-
-interface SectionCardProps {
-  title: string
-  icon: React.ElementType
-  iconColor: string
-  theme: ReturnType<typeof useTheme>['theme']
-  cardRadius: string
-  children: React.ReactNode
-}
-
-function SectionCard({
-  title,
-  icon: Icon,
-  iconColor,
-  theme,
-  cardRadius,
-  children,
-}: SectionCardProps) {
-  return (
-    <div
-      className="p-6 relative overflow-hidden"
-      style={{
-        background:
-          theme.effects.cardStyle === 'glass'
-            ? `${theme.colors.card}90`
-            : theme.colors.card,
-        border: `1px solid ${theme.colors.border}`,
-        borderRadius: cardRadius,
-        backdropFilter:
-          theme.effects.cardStyle === 'glass' ? 'blur(20px)' : undefined,
-      }}
-    >
-      <div className="flex items-center gap-3 mb-6">
-        <motion.div
-          className="p-3 rounded-xl"
-          style={{
-            background: `linear-gradient(135deg, ${iconColor}20, ${iconColor}10)`,
-          }}
-        >
-          <Icon size={24} style={{ color: iconColor }} />
-        </motion.div>
-        <h2
-          className="text-xl font-bold"
-          style={{
-            color: theme.colors.foreground,
-            fontFamily: theme.typography.displayFont,
-          }}
-        >
-          {title}
-        </h2>
-      </div>
-      {children}
     </div>
   )
 }
@@ -753,6 +885,7 @@ interface CodeBlockProps {
   cardRadius: string
   onCopy: () => void
   copied: boolean
+  language?: string
 }
 
 function CodeBlock({
@@ -777,45 +910,39 @@ function CodeBlock({
       </pre>
       <motion.button
         onClick={onCopy}
-        className="absolute top-3 right-3 p-2 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+        className="absolute top-2 right-2 p-2 opacity-0 group-hover:opacity-100 transition-opacity"
         style={{
           background: theme.colors.card,
-          color: copied ? '#22c55e' : theme.colors.foreground,
+          color: copied ? '#22c55e' : theme.colors.foregroundMuted,
           borderRadius: '8px',
           border: `1px solid ${theme.colors.border}`,
         }}
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
       >
-        {copied ? <CheckCircle size={16} /> : <Copy size={16} />}
+        {copied ? <CheckCircle size={14} /> : <Copy size={14} />}
       </motion.button>
     </div>
   )
 }
 
-interface EndpointParam {
-  name: string
-  type: string
-  description: string
-}
-
-interface Endpoint {
-  method: string
-  path: string
-  description: string
-  auth: boolean
-  params: EndpointParam[]
-  body?: string
-  response: string
-}
-
 interface EndpointCardProps {
-  endpoint: Endpoint
+  endpoint: {
+    method: string
+    path: string
+    title: string
+    description: string
+    auth: boolean
+    params?: { name: string; type: string; optional?: boolean }[]
+    body?: string
+    response: string
+  }
   theme: ReturnType<typeof useTheme>['theme']
   cardRadius: string
   onCopy: (text: string, id: string) => void
-  copiedCode: string | null
+  copiedId: string | null
   index: number
+  t: (key: string) => string
 }
 
 function EndpointCard({
@@ -823,8 +950,9 @@ function EndpointCard({
   theme,
   cardRadius,
   onCopy,
-  copiedCode,
+  copiedId,
   index,
+  t,
 }: EndpointCardProps) {
   const [expanded, setExpanded] = useState(false)
 
@@ -836,76 +964,64 @@ function EndpointCard({
     DELETE: { bg: '#ef444420', text: '#ef4444' },
   }
 
-  const colors = methodColors[endpoint.method] || methodColors.GET
+  const colors = (methodColors[endpoint.method as keyof typeof methodColors] ??
+    methodColors.GET) as { bg: string; text: string }
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05 }}
       className="overflow-hidden"
       style={{
-        background:
-          theme.effects.cardStyle === 'glass'
-            ? `${theme.colors.card}90`
-            : theme.colors.card,
+        background: theme.colors.card,
         border: `1px solid ${theme.colors.border}`,
         borderRadius: cardRadius,
-        backdropFilter:
-          theme.effects.cardStyle === 'glass' ? 'blur(20px)' : undefined,
       }}
     >
-      <motion.div
-        className="p-4 cursor-pointer"
+      <button
+        className="w-full p-4 text-left"
         onClick={() => setExpanded(!expanded)}
-        whileHover={{ background: `${theme.colors.primary}05` }}
       >
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3 flex-1 min-w-0">
+        <div className="flex items-center gap-3">
+          <span
+            className="px-2.5 py-1 rounded-lg text-xs font-bold font-mono"
+            style={{ background: colors.bg, color: colors.text }}
+          >
+            {endpoint.method}
+          </span>
+          <code
+            className="font-mono text-sm flex-1"
+            style={{ color: theme.colors.foreground }}
+          >
+            {endpoint.path}
+          </code>
+          {endpoint.auth && (
             <span
-              className="px-3 py-1.5 rounded-lg text-xs font-bold shrink-0"
+              className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs"
               style={{
-                background: colors?.bg || '#22c55e20',
-                color: colors?.text || '#22c55e',
+                background: `${theme.colors.primary}15`,
+                color: theme.colors.primary,
               }}
             >
-              {endpoint.method}
+              <Lock size={10} />
+              Auth
             </span>
-            <code
-              className="font-mono text-sm truncate"
-              style={{ color: theme.colors.foreground }}
-            >
-              {endpoint.path}
-            </code>
-            {endpoint.auth && (
-              <span
-                className="px-2 py-1 rounded-lg text-xs flex items-center gap-1 shrink-0"
-                style={{
-                  background: `${theme.colors.primary}15`,
-                  color: theme.colors.primary,
-                }}
-              >
-                <Lock size={10} />
-                Auth
-              </span>
-            )}
-          </div>
+          )}
           <motion.div
-            animate={{ rotate: expanded ? 180 : 0 }}
-            transition={{ duration: 0.2 }}
+            animate={{ rotate: expanded ? 90 : 0 }}
             style={{ color: theme.colors.foregroundMuted }}
           >
-            <ChevronDown size={18} />
+            <ChevronRight size={18} />
           </motion.div>
         </div>
-
         <p
-          className="text-sm mt-2"
+          className="text-sm mt-2 ml-16"
           style={{ color: theme.colors.foregroundMuted }}
         >
           {endpoint.description}
         </p>
-      </motion.div>
+      </button>
 
       <AnimatePresence>
         {expanded && (
@@ -913,7 +1029,6 @@ function EndpointCard({
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2 }}
             className="border-t overflow-hidden"
             style={{ borderColor: theme.colors.border }}
           >
@@ -921,29 +1036,29 @@ function EndpointCard({
               {endpoint.params && endpoint.params.length > 0 && (
                 <div>
                   <h4
-                    className="font-semibold mb-3 text-sm"
+                    className="text-sm font-semibold mb-2"
                     style={{ color: theme.colors.foreground }}
                   >
-                    Parameters
+                    {t('apiDocs.params')}
                   </h4>
                   <div className="space-y-2">
                     {endpoint.params.map((param) => (
                       <div
                         key={param.name}
-                        className="p-3 text-sm flex items-center gap-3"
+                        className="flex items-center gap-2 p-2 text-sm"
                         style={{
                           background: theme.colors.backgroundSecondary,
                           borderRadius: '8px',
                         }}
                       >
                         <code
-                          className="font-mono font-medium"
+                          className="font-mono"
                           style={{ color: theme.colors.primary }}
                         >
                           {param.name}
                         </code>
                         <span
-                          className="text-xs px-2 py-0.5 rounded"
+                          className="text-xs px-1.5 py-0.5 rounded"
                           style={{
                             background: theme.colors.card,
                             color: theme.colors.foregroundMuted,
@@ -951,9 +1066,14 @@ function EndpointCard({
                         >
                           {param.type}
                         </span>
-                        <span style={{ color: theme.colors.foregroundMuted }}>
-                          {param.description}
-                        </span>
+                        {param.optional && (
+                          <span
+                            className="text-xs"
+                            style={{ color: theme.colors.foregroundMuted }}
+                          >
+                            ({t('apiDocs.optional')})
+                          </span>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -963,38 +1083,38 @@ function EndpointCard({
               {endpoint.body && (
                 <div>
                   <h4
-                    className="font-semibold mb-3 text-sm"
+                    className="text-sm font-semibold mb-2"
                     style={{ color: theme.colors.foreground }}
                   >
-                    Request Body
+                    {t('apiDocs.requestBody')}
                   </h4>
                   <CodeBlock
                     code={endpoint.body}
                     theme={theme}
-                    cardRadius={`calc(${cardRadius} - 8px)`}
+                    cardRadius="12px"
                     onCopy={() =>
                       onCopy(endpoint.body!, `body-${endpoint.path}`)
                     }
-                    copied={copiedCode === `body-${endpoint.path}`}
+                    copied={copiedId === `body-${endpoint.path}`}
                   />
                 </div>
               )}
 
               <div>
                 <h4
-                  className="font-semibold mb-3 text-sm"
+                  className="text-sm font-semibold mb-2"
                   style={{ color: theme.colors.foreground }}
                 >
-                  Response
+                  {t('apiDocs.response')}
                 </h4>
                 <CodeBlock
                   code={endpoint.response}
                   theme={theme}
-                  cardRadius={`calc(${cardRadius} - 8px)`}
+                  cardRadius="12px"
                   onCopy={() =>
                     onCopy(endpoint.response, `response-${endpoint.path}`)
                   }
-                  copied={copiedCode === `response-${endpoint.path}`}
+                  copied={copiedId === `response-${endpoint.path}`}
                 />
               </div>
             </div>

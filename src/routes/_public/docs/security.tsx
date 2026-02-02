@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
 import {
   DocsLayout,
   DocSection,
@@ -7,6 +8,7 @@ import {
   DocList,
   DocTable,
   DocLink,
+  DocBlockquote,
 } from '@/components/docs/DocsLayout'
 
 export const Route = createFileRoute('/_public/docs/security')({
@@ -22,207 +24,226 @@ export const Route = createFileRoute('/_public/docs/security')({
   component: SecurityDoc,
 })
 
-function SecurityDoc() {
+export function SecurityDoc() {
+  const { t } = useTranslation()
+  const s = 'docs.pages.security.sections'
+
   return (
     <DocsLayout
-      title="Security"
-      description="Learn about Eziox's security features and best practices."
+      title={t('docs.pages.security.title')}
+      description={t('docs.pages.security.description')}
       category="Account"
       icon="Shield"
     >
-      <DocSection title="Account Security">
-        <DocSubSection title="Strong Passwords">
-          <DocParagraph>We enforce password requirements:</DocParagraph>
+      {/* Account Security */}
+      <DocSection title={t(`${s}.accountSecurity.title`)}>
+        <DocSubSection title={t(`${s}.accountSecurity.passwords.title`)}>
+          <DocParagraph>{t(`${s}.accountSecurity.passwords.intro`)}</DocParagraph>
           <DocList
-            items={[
-              'Minimum 8 characters',
-              'At least one uppercase letter',
-              'At least one lowercase letter',
-              'At least one number',
-            ]}
+            items={t(`${s}.accountSecurity.passwords.requirements`, {
+              returnObjects: true,
+            }) as string[]}
+          />
+          <DocParagraph>{t(`${s}.accountSecurity.passwords.advanced`)}</DocParagraph>
+          <DocList
+            items={t(`${s}.accountSecurity.passwords.advancedList`, {
+              returnObjects: true,
+            }) as string[]}
           />
         </DocSubSection>
 
-        <DocSubSection title="Two-Factor Authentication (2FA)">
-          <DocParagraph>
-            Add an extra layer of security with TOTP-based 2FA:
-          </DocParagraph>
+        <DocSubSection title={t(`${s}.accountSecurity.twoFactor.title`)}>
+          <DocParagraph>{t(`${s}.accountSecurity.twoFactor.intro`)}</DocParagraph>
           <DocList
-            items={[
-              'Go to Dashboard → Settings → Security',
-              'Click Enable 2FA',
-              'Scan the QR code with your authenticator app',
-              'Enter the 6-digit code to confirm',
-            ]}
+            items={t(`${s}.accountSecurity.twoFactor.steps`, {
+              returnObjects: true,
+            }) as string[]}
           />
-          <DocParagraph>Supported Apps:</DocParagraph>
+          <DocParagraph>{t(`${s}.accountSecurity.twoFactor.appsTitle`)}</DocParagraph>
           <DocList
-            items={['Google Authenticator', 'Authy', '1Password', 'Bitwarden']}
+            items={t(`${s}.accountSecurity.twoFactor.apps`, {
+              returnObjects: true,
+            }) as string[]}
           />
         </DocSubSection>
 
-        <DocSubSection title="Recovery Codes">
-          <DocParagraph>
-            When you enable 2FA, you'll receive 10 recovery codes:
-          </DocParagraph>
+        <DocSubSection title={t(`${s}.accountSecurity.recoveryCodes.title`)}>
+          <DocParagraph>{t(`${s}.accountSecurity.recoveryCodes.intro`)}</DocParagraph>
           <DocList
-            items={[
-              'Each code can only be used once',
-              'Store them in a safe place',
-              'Use them if you lose access to your authenticator',
-              'Regenerate codes anytime from Settings',
-            ]}
-          />
-        </DocSubSection>
-      </DocSection>
-
-      <DocSection title="Data Protection">
-        <DocSubSection title="Encryption">
-          <DocList
-            items={[
-              'Passwords - Hashed with bcrypt (cost factor 12)',
-              'Sessions - 64-character cryptographically secure tokens',
-              'OAuth Tokens - Encrypted with AES-256-GCM',
-              '2FA Secrets - Encrypted at rest',
-            ]}
+            items={t(`${s}.accountSecurity.recoveryCodes.features`, {
+              returnObjects: true,
+            }) as string[]}
           />
         </DocSubSection>
 
-        <DocSubSection title="Secure Cookies">
+        <DocSubSection title={t(`${s}.accountSecurity.loginProtection.title`)}>
+          <DocParagraph>{t(`${s}.accountSecurity.loginProtection.intro`)}</DocParagraph>
           <DocList
-            items={[
-              'HTTP-Only - Prevents JavaScript access (XSS protection)',
-              'Secure Flag - Only sent over HTTPS',
-              'SameSite=Lax - CSRF protection',
-            ]}
-          />
-        </DocSubSection>
-
-        <DocSubSection title="IP Anonymization">
-          <DocParagraph>
-            We anonymize IP addresses for GDPR compliance:
-          </DocParagraph>
-          <DocList
-            items={[
-              'Last octet zeroed (e.g., 192.168.1.x)',
-              'Full IPs never stored in analytics',
-              'Hashed IPs used for session security',
-            ]}
+            items={t(`${s}.accountSecurity.loginProtection.features`, {
+              returnObjects: true,
+            }) as string[]}
           />
         </DocSubSection>
       </DocSection>
 
-      <DocSection title="Bot Protection">
-        <DocSubSection title="Cloudflare Turnstile">
-          <DocParagraph>
-            We use Cloudflare Turnstile for invisible bot protection:
-          </DocParagraph>
+      {/* Data Protection */}
+      <DocSection title={t(`${s}.dataProtection.title`)}>
+        <DocSubSection title={t(`${s}.dataProtection.encryption.title`)}>
           <DocList
-            items={[
-              'No annoying CAPTCHAs',
-              'Protects sign-up, sign-in, and password reset',
-              'Privacy-preserving verification',
-            ]}
+            items={t(`${s}.dataProtection.encryption.items`, {
+              returnObjects: true,
+            }) as string[]}
           />
         </DocSubSection>
 
-        <DocSubSection title="Rate Limiting">
-          <DocParagraph>We limit requests to prevent abuse:</DocParagraph>
+        <DocSubSection title={t(`${s}.dataProtection.cookies.title`)}>
+          <DocList
+            items={t(`${s}.dataProtection.cookies.items`, {
+              returnObjects: true,
+            }) as string[]}
+          />
+        </DocSubSection>
+
+        <DocSubSection title={t(`${s}.dataProtection.ipAnonymization.title`)}>
+          <DocParagraph>{t(`${s}.dataProtection.ipAnonymization.intro`)}</DocParagraph>
+          <DocList
+            items={t(`${s}.dataProtection.ipAnonymization.items`, {
+              returnObjects: true,
+            }) as string[]}
+          />
+        </DocSubSection>
+      </DocSection>
+
+      {/* Bot Protection & Rate Limiting */}
+      <DocSection title={t(`${s}.botProtection.title`)}>
+        <DocSubSection title={t(`${s}.botProtection.turnstile.title`)}>
+          <DocParagraph>{t(`${s}.botProtection.turnstile.intro`)}</DocParagraph>
+          <DocList
+            items={t(`${s}.botProtection.turnstile.features`, {
+              returnObjects: true,
+            }) as string[]}
+          />
+        </DocSubSection>
+
+        <DocSubSection title={t(`${s}.botProtection.rateLimiting.title`)}>
+          <DocParagraph>{t(`${s}.botProtection.rateLimiting.intro`)}</DocParagraph>
           <DocTable
-            headers={['Endpoint', 'Limit']}
-            rows={[
-              ['Login attempts', '5 per 30 minutes'],
-              ['Password reset', '3 per hour'],
-              ['API requests', '1,000-10,000 per hour'],
-              ['File uploads', '10 per minute'],
-            ]}
+            headers={t(`${s}.botProtection.rateLimiting.headers`, {
+              returnObjects: true,
+            }) as string[]}
+            rows={t(`${s}.botProtection.rateLimiting.rows`, {
+              returnObjects: true,
+            }) as string[][]}
+          />
+        </DocSubSection>
+
+        <DocSubSection title={t(`${s}.botProtection.ddos.title`)}>
+          <DocParagraph>{t(`${s}.botProtection.ddos.intro`)}</DocParagraph>
+          <DocList
+            items={t(`${s}.botProtection.ddos.features`, {
+              returnObjects: true,
+            }) as string[]}
           />
         </DocSubSection>
       </DocSection>
 
-      <DocSection title="Privacy Controls">
-        <DocSubSection title="Data Export">
-          <DocParagraph>Download all your data anytime:</DocParagraph>
-          <DocList
-            items={[
-              'Go to Dashboard → Settings → Privacy & Data',
-              'Click Export My Data',
-              'Receive a JSON file with all your information',
-            ]}
-          />
-        </DocSubSection>
-
-        <DocSubSection title="Account Deletion">
-          <DocParagraph>Permanently delete your account:</DocParagraph>
-          <DocList
-            items={[
-              'Go to Dashboard → Settings → Danger Zone',
-              'Click Delete Account',
-              'Confirm with your password',
-              'All data deleted within 30 days',
-            ]}
-          />
-        </DocSubSection>
-      </DocSection>
-
-      <DocSection title="Best Practices">
-        <DocSubSection title="Do's">
-          <DocList
-            items={[
-              '✅ Use a unique, strong password',
-              '✅ Enable two-factor authentication',
-              '✅ Keep recovery codes in a safe place',
-              '✅ Review login notifications',
-              '✅ Sign out on shared devices',
-            ]}
-          />
-        </DocSubSection>
-
-        <DocSubSection title="Don'ts">
-          <DocList
-            items={[
-              '❌ Share your password with anyone',
-              '❌ Use the same password on multiple sites',
-              '❌ Click suspicious links in emails',
-              '❌ Ignore login notifications',
-              '❌ Store passwords in plain text',
-            ]}
-          />
-        </DocSubSection>
-      </DocSection>
-
-      <DocSection title="Reporting Security Issues">
-        <DocParagraph>Found a vulnerability? Contact us:</DocParagraph>
+      {/* Input Validation */}
+      <DocSection title={t(`${s}.inputValidation.title`)}>
+        <DocParagraph>{t(`${s}.inputValidation.intro`)}</DocParagraph>
         <DocList
-          items={[
-            'Email: security@eziox.link',
-            'Response Time: Within 48 hours',
-          ]}
+          items={t(`${s}.inputValidation.items`, {
+            returnObjects: true,
+          }) as string[]}
         />
-        <DocParagraph>
-          We appreciate responsible disclosure and may offer recognition for
-          valid reports.
-        </DocParagraph>
       </DocSection>
 
-      <DocSection title="Compliance">
-        <DocSubSection title="GDPR">
+      {/* Privacy Controls */}
+      <DocSection title={t(`${s}.privacyControls.title`)}>
+        <DocSubSection title={t(`${s}.privacyControls.dataExport.title`)}>
+          <DocParagraph>{t(`${s}.privacyControls.dataExport.intro`)}</DocParagraph>
           <DocList
-            items={[
-              'Data minimization',
-              'Right to access and deletion',
-              'IP anonymization',
-              'Consent-based processing',
-            ]}
+            items={t(`${s}.privacyControls.dataExport.steps`, {
+              returnObjects: true,
+            }) as string[]}
+          />
+        </DocSubSection>
+
+        <DocSubSection title={t(`${s}.privacyControls.accountDeletion.title`)}>
+          <DocParagraph>{t(`${s}.privacyControls.accountDeletion.intro`)}</DocParagraph>
+          <DocList
+            items={t(`${s}.privacyControls.accountDeletion.steps`, {
+              returnObjects: true,
+            }) as string[]}
+          />
+        </DocSubSection>
+
+        <DocSubSection title={t(`${s}.privacyControls.cookieConsent.title`)}>
+          <DocParagraph>{t(`${s}.privacyControls.cookieConsent.intro`)}</DocParagraph>
+          <DocList
+            items={t(`${s}.privacyControls.cookieConsent.features`, {
+              returnObjects: true,
+            }) as string[]}
+          />
+        </DocSubSection>
+      </DocSection>
+
+      {/* Best Practices */}
+      <DocSection title={t(`${s}.bestPractices.title`)}>
+        <DocSubSection title={t(`${s}.bestPractices.dos.title`)}>
+          <DocList
+            items={t(`${s}.bestPractices.dos.items`, {
+              returnObjects: true,
+            }) as string[]}
+          />
+        </DocSubSection>
+
+        <DocSubSection title={t(`${s}.bestPractices.donts.title`)}>
+          <DocList
+            items={t(`${s}.bestPractices.donts.items`, {
+              returnObjects: true,
+            }) as string[]}
+          />
+        </DocSubSection>
+      </DocSection>
+
+      {/* Reporting */}
+      <DocSection title={t(`${s}.reporting.title`)}>
+        <DocParagraph>{t(`${s}.reporting.intro`)}</DocParagraph>
+        <DocList
+          items={t(`${s}.reporting.contact`, {
+            returnObjects: true,
+          }) as string[]}
+        />
+        <DocParagraph>{t(`${s}.reporting.note`)}</DocParagraph>
+      </DocSection>
+
+      {/* Compliance */}
+      <DocSection title={t(`${s}.compliance.title`)}>
+        <DocSubSection title={t(`${s}.compliance.gdpr.title`)}>
+          <DocList
+            items={t(`${s}.compliance.gdpr.items`, {
+              returnObjects: true,
+            }) as string[]}
           />
         </DocSubSection>
         <DocParagraph>
-          Questions about security? Contact us at{' '}
+          {t(`${s}.compliance.contact`)}{' '}
           <DocLink href="mailto:security@eziox.link">
-            security@eziox.link
+            {t(`${s}.compliance.email`)}
           </DocLink>
           .
         </DocParagraph>
+      </DocSection>
+
+      {/* Planned Features */}
+      <DocSection title={t(`${s}.planned.title`)}>
+        <DocBlockquote type="info">{t(`${s}.planned.note`)}</DocBlockquote>
+        <DocParagraph>{t(`${s}.planned.intro`)}</DocParagraph>
+        <DocList
+          items={t(`${s}.planned.items`, {
+            returnObjects: true,
+          }) as string[]}
+        />
       </DocSection>
     </DocsLayout>
   )

@@ -12,6 +12,7 @@ import type {
 import { eq } from 'drizzle-orm'
 import { validateSession } from '../lib/auth'
 import type { TierType } from '../lib/stripe'
+import { checkRateLimit, RATE_LIMITS } from '@/lib/security'
 
 async function getAuthenticatedUser() {
   const token = getCookie('session-token')
@@ -134,9 +135,9 @@ export const updateCustomCSSFn = createServerFn({ method: 'POST' })
   })
 
 const customFontSchema = z.object({
-  id: z.string(),
+  id: z.string().max(50),
   name: z.string().min(1).max(100),
-  url: z.string().url(),
+  url: z.url().max(2048),
   type: z.enum(['display', 'body']),
 })
 
@@ -145,6 +146,21 @@ export const addCustomFontFn = createServerFn({ method: 'POST' })
   .handler(async ({ data }) => {
     const user = await getAuthenticatedUser()
     const tier = await getUserTier(user.id)
+
+    // Rate limit creator feature updates (30 per minute per user)
+    const rateLimitResult = checkRateLimit(
+      `creator-features:${user.id}`,
+      RATE_LIMITS.API_SPOTIFY.maxRequests,
+      RATE_LIMITS.API_SPOTIFY.windowMs,
+    )
+    if (!rateLimitResult.allowed) {
+      setResponseStatus(429)
+      throw {
+        message: 'Too many requests. Please wait before trying again.',
+        status: 429,
+        code: 'RATE_LIMITED',
+      }
+    }
 
     if (!isCreatorTier(tier)) {
       setResponseStatus(403)
@@ -220,10 +236,29 @@ const animatedProfileSchema = z.object({
     'bounce',
     'rotate',
     'shake',
+    'float',
   ]),
-  bannerAnimation: z.enum(['none', 'parallax', 'gradient-shift', 'particles']),
-  linkHoverEffect: z.enum(['none', 'scale', 'glow', 'slide', 'shake', 'flip']),
-  pageTransition: z.enum(['none', 'fade', 'slide', 'zoom']),
+  bannerAnimation: z.enum([
+    'none',
+    'parallax',
+    'gradient-shift',
+    'particles',
+    'wave',
+    'aurora',
+  ]),
+  linkHoverEffect: z.enum([
+    'none',
+    'scale',
+    'glow',
+    'slide',
+    'shake',
+    'flip',
+    'tilt',
+    'lift',
+  ]),
+  pageTransition: z.enum(['none', 'fade', 'slide', 'zoom', 'blur']),
+  particleColor: z.string().max(20).optional(),
+  glowColor: z.string().max(20).optional(),
 })
 
 export const updateAnimatedProfileFn = createServerFn({ method: 'POST' })
@@ -255,7 +290,7 @@ export const updateAnimatedProfileFn = createServerFn({ method: 'POST' })
 const openGraphSchema = z.object({
   title: z.string().max(100).optional(),
   description: z.string().max(300).optional(),
-  image: z.string().url().optional().or(z.literal('')),
+  image: z.url().optional().or(z.literal('')),
   useCustom: z.boolean(),
 })
 

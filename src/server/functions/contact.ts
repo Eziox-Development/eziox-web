@@ -11,7 +11,8 @@ const contactFormSchema = z.object({
   category: z.enum([
     'general',
     'support',
-    'partnership',
+    'billing',
+    'account',
     'feature',
     'security',
   ]),

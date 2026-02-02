@@ -1,14 +1,14 @@
 import { useState, useEffect, useCallback, lazy, Suspense } from 'react'
 import { Link, useLocation, useRouter } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
 import { siteConfig } from '@/lib/site-config'
 import { ThemeSwitcher } from './ThemeSwitcher'
 import { useTheme } from './ThemeProvider'
-
-const NotificationBell = lazy(() =>
-  import('@/components/notifications/NotificationBell').then((m) => ({
-    default: m.NotificationBell,
-  })),
-)
+import { LanguageSwitcher } from '@/components/LanguageSwitcher'
+import { EmailVerificationIndicator } from '@/components/auth/EmailVerificationIndicator'
+import { motion, AnimatePresence } from 'motion/react'
+import { useAuth } from '@/hooks/use-auth'
+import type { TierType } from '@/server/lib/stripe'
 import {
   Menu,
   X,
@@ -35,14 +35,16 @@ import {
   Gift,
   Palette,
   ArrowRight,
-  Command,
   Paintbrush,
   Link2,
   BookOpen,
 } from 'lucide-react'
-import { motion, AnimatePresence } from 'motion/react'
-import { useAuth } from '@/hooks/use-auth'
-import type { TierType } from '@/server/lib/stripe'
+
+const NotificationBell = lazy(() =>
+  import('@/components/notifications/NotificationBell').then((m) => ({
+    default: m.NotificationBell,
+  })),
+)
 
 const TIER_CONFIG: Record<
   TierType,
@@ -84,58 +86,8 @@ const TIER_CONFIG: Record<
   },
 }
 
-const NAV_ITEMS = [
-  { href: '/', label: 'Home', icon: Home },
-  { href: '/docs', label: 'Docs', icon: BookOpen },
-  { href: '/pricing', label: 'Pricing', icon: CreditCard },
-  { href: '/about', label: 'About', icon: Info },
-] as const
-
-const COMMUNITY_ITEMS = [
-  {
-    href: '/creators',
-    label: 'Creators',
-    icon: Sparkles,
-    description: 'Discover amazing creators',
-    color: '#8b5cf6',
-  },
-  {
-    href: '/templates',
-    label: 'Templates',
-    icon: Gift,
-    description: 'Community style presets',
-    color: '#ec4899',
-  },
-  {
-    href: '/partners',
-    label: 'Partners',
-    icon: Handshake,
-    description: 'Official platform partners',
-    color: '#14b8a6',
-  },
-  {
-    href: '/leaderboard',
-    label: 'Leaderboard',
-    icon: Trophy,
-    description: 'Top performing users',
-    color: '#f59e0b',
-  },
-] as const
-
-const QUICK_ACTIONS = [
-  { to: '/profile', icon: LayoutDashboard, label: 'Dashboard', shortcut: 'D' },
-  { to: '/playground', icon: Palette, label: 'Playground', shortcut: 'P' },
-  {
-    to: '/theme-builder',
-    icon: Paintbrush,
-    label: 'Theme Builder',
-    shortcut: 'T',
-  },
-  { to: '/shortener', icon: Link2, label: 'URL Shortener', shortcut: 'S' },
-  { to: '/analytics', icon: BarChart3, label: 'Analytics', shortcut: 'A' },
-]
-
 export function Nav() {
+  const { t } = useTranslation()
   const location = useLocation()
   const router = useRouter()
   const { theme } = useTheme()
@@ -144,6 +96,52 @@ export function Nav() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
   const [isCommunityMenuOpen, setIsCommunityMenuOpen] = useState(false)
+
+  const NAV_ITEMS = [
+    { href: '/', label: t('nav.home'), icon: Home },
+    { href: '/docs', label: t('nav.docs'), icon: BookOpen },
+    { href: '/pricing', label: t('nav.pricing'), icon: CreditCard },
+    { href: '/about', label: t('nav.about'), icon: Info },
+  ]
+
+  const COMMUNITY_ITEMS = [
+    {
+      href: '/creators',
+      label: t('nav.community.creators'),
+      icon: Sparkles,
+      description: t('nav.community.creatorsDesc'),
+      color: '#8b5cf6',
+    },
+    {
+      href: '/templates',
+      label: t('nav.community.templates'),
+      icon: Gift,
+      description: t('nav.community.templatesDesc'),
+      color: '#ec4899',
+    },
+    {
+      href: '/partners',
+      label: t('nav.community.partners'),
+      icon: Handshake,
+      description: t('nav.community.partnersDesc'),
+      color: '#14b8a6',
+    },
+    {
+      href: '/leaderboard',
+      label: t('nav.community.leaderboard'),
+      icon: Trophy,
+      description: t('nav.community.leaderboardDesc'),
+      color: '#f59e0b',
+    },
+  ]
+
+  const QUICK_ACTIONS = [
+    { to: '/profile', icon: LayoutDashboard, label: t('nav.dashboard') },
+    { to: '/playground', icon: Palette, label: t('nav.playground') },
+    { to: '/theme-builder', icon: Paintbrush, label: t('nav.themeBuilder') },
+    { to: '/shortener', icon: Link2, label: t('nav.urlShortener') },
+    { to: '/analytics', icon: BarChart3, label: t('nav.analytics') },
+  ]
 
   useEffect(() => {
     const onScroll = () => setIsScrolled(window.scrollY > 20)
@@ -190,53 +188,47 @@ export function Nav() {
   const TierIcon = tierConfig.icon
 
   return (
-    <header
-      className="fixed top-0 left-0 right-0 z-50 transition-all duration-500"
-      style={{
-        padding: isScrolled ? '0.5rem 0' : '1rem 0',
-      }}
-    >
-      {/* Glassmorphism Background */}
+    <header className="fixed top-0 left-0 right-0 z-50">
+      {/* Background */}
       <motion.div
-        className="absolute inset-0 transition-all duration-500"
-        initial={false}
-        animate={{
-          opacity: isScrolled ? 1 : 0,
-          backdropFilter: isScrolled
-            ? 'blur(20px) saturate(180%)'
-            : 'blur(0px)',
-        }}
+        className="absolute inset-0 transition-all duration-300"
         style={{
-          background: isScrolled
-            ? `${theme.colors.background}cc`
-            : 'transparent',
-          borderBottom: isScrolled
-            ? `1px solid ${theme.colors.border}40`
-            : 'none',
+          background: isScrolled ? `${theme.colors.background}f0` : 'transparent',
+          backdropFilter: isScrolled ? 'blur(20px) saturate(180%)' : 'none',
+          borderBottom: isScrolled ? `1px solid ${theme.colors.border}30` : 'none',
         }}
       />
 
-      {/* Animated Top Line */}
-      <motion.div
-        className="absolute top-0 left-0 right-0 h-[2px]"
-        initial={{ scaleX: 0, opacity: 0 }}
-        animate={{ scaleX: isScrolled ? 1 : 0, opacity: isScrolled ? 1 : 0 }}
-        style={{
-          background: `linear-gradient(90deg, transparent, ${theme.colors.primary}, ${theme.colors.accent}, ${theme.colors.primary}, transparent)`,
-          transformOrigin: 'center',
-        }}
-        transition={{ duration: 0.4 }}
-      />
+      {/* Gradient line when scrolled */}
+      <AnimatePresence>
+        {isScrolled && (
+          <motion.div
+            initial={{ scaleX: 0, opacity: 0 }}
+            animate={{ scaleX: 1, opacity: 1 }}
+            exit={{ scaleX: 0, opacity: 0 }}
+            className="absolute bottom-0 left-0 right-0 h-px"
+            style={{
+              background: `linear-gradient(90deg, transparent, ${theme.colors.primary}50, ${theme.colors.accent}50, transparent)`,
+              transformOrigin: 'center',
+            }}
+          />
+        )}
+      </AnimatePresence>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <nav className="flex items-center justify-between h-14">
+        <nav
+          className="flex items-center justify-between transition-all duration-300"
+          style={{ height: isScrolled ? '64px' : '72px' }}
+        >
           {/* Logo */}
           <Link to="/" className="group flex items-center gap-3">
             <motion.div
-              className="relative w-11 h-11 rounded-xl overflow-hidden"
-              whileHover={{ scale: 1.08, rotate: 3 }}
+              className="relative w-10 h-10 rounded-xl overflow-hidden"
+              whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              style={{ boxShadow: `0 0 30px ${theme.colors.primary}50` }}
+              style={{
+                boxShadow: `0 4px 20px ${theme.colors.primary}30`,
+              }}
             >
               <img
                 src="/icon.png"
@@ -244,206 +236,155 @@ export function Nav() {
                 className="w-full h-full object-cover"
                 loading="eager"
               />
-              <motion.div
-                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                style={{
-                  background:
-                    'linear-gradient(135deg, transparent 30%, rgba(255,255,255,0.4) 50%, transparent 70%)',
-                }}
-                animate={{ x: ['-100%', '200%'] }}
-                transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 3 }}
-              />
             </motion.div>
             <div className="hidden sm:block">
-              <motion.span
-                className="text-xl font-bold tracking-tight block"
+              <span
+                className="text-lg font-bold block"
                 style={{ color: theme.colors.foreground }}
-                whileHover={{ color: theme.colors.primary }}
               >
                 {siteConfig.metadata.title}
-              </motion.span>
-              <div className="flex items-center gap-2">
-                <span
-                  className="text-[11px] font-medium"
-                  style={{ color: theme.colors.foregroundMuted }}
-                >
-                  Bio Links
-                </span>
-              </div>
+              </span>
+              <span
+                className="text-[10px] font-medium"
+                style={{ color: theme.colors.foregroundMuted }}
+              >
+                {t('nav.bioLinks')}
+              </span>
             </div>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center">
-            <motion.div
-              className="flex items-center gap-1 p-1.5 rounded-2xl"
+          <div className="hidden lg:flex items-center gap-1">
+            {/* Main Nav Items */}
+            <div
+              className="flex items-center gap-1 px-2 py-1.5 rounded-full"
               style={{
-                background: `${theme.colors.card}90`,
-                backdropFilter: 'blur(12px)',
-                border: `1px solid ${theme.colors.border}50`,
-                boxShadow: `0 4px 30px ${theme.colors.primary}10`,
+                background: `${theme.colors.card}80`,
+                border: `1px solid ${theme.colors.border}40`,
               }}
             >
-              {/* Home Link */}
               {NAV_ITEMS.slice(0, 1).map((item) => {
                 const isActive = location.pathname === item.href
                 return (
                   <Link
                     key={item.href}
                     to={item.href}
-                    className="relative flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200"
+                    className="relative px-4 py-2 rounded-full text-sm font-medium transition-colors"
                     style={{
                       color: isActive ? 'white' : theme.colors.foregroundMuted,
                     }}
                   >
-                    <item.icon size={16} />
-                    <span>{item.label}</span>
                     {isActive && (
                       <motion.div
-                        layoutId="nav-active-pill"
-                        className="absolute inset-0 rounded-xl -z-10"
+                        layoutId="nav-pill"
+                        className="absolute inset-0 rounded-full"
                         style={{
                           background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
-                          boxShadow: `0 4px 20px ${theme.colors.primary}60`,
                         }}
-                        transition={{
-                          type: 'spring',
-                          stiffness: 400,
-                          damping: 30,
-                        }}
+                        transition={{ type: 'spring', stiffness: 500, damping: 35 }}
                       />
                     )}
+                    <span className="relative flex items-center gap-2">
+                      <item.icon size={16} />
+                      {item.label}
+                    </span>
                   </Link>
                 )
               })}
 
               {/* Community Dropdown */}
               <div className="relative" onClick={(e) => e.stopPropagation()}>
-                <motion.button
+                <button
                   onClick={() => setIsCommunityMenuOpen(!isCommunityMenuOpen)}
-                  className="relative flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200"
+                  className="relative px-4 py-2 rounded-full text-sm font-medium transition-colors flex items-center gap-2"
                   style={{
-                    color:
-                      isCommunityMenuOpen || isCommunityActive
-                        ? 'white'
-                        : theme.colors.foregroundMuted,
+                    color: isCommunityMenuOpen || isCommunityActive
+                      ? 'white'
+                      : theme.colors.foregroundMuted,
                   }}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
                 >
-                  <Users size={16} />
-                  <span>Community</span>
-                  <motion.div
-                    animate={{ rotate: isCommunityMenuOpen ? 180 : 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <ChevronDown size={14} />
-                  </motion.div>
                   {(isCommunityMenuOpen || isCommunityActive) && (
                     <motion.div
-                      layoutId="nav-active-pill"
-                      className="absolute inset-0 rounded-xl -z-10"
+                      layoutId="nav-pill"
+                      className="absolute inset-0 rounded-full"
                       style={{
                         background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
-                        boxShadow: `0 4px 20px ${theme.colors.primary}60`,
                       }}
-                      transition={{
-                        type: 'spring',
-                        stiffness: 400,
-                        damping: 30,
-                      }}
+                      transition={{ type: 'spring', stiffness: 500, damping: 35 }}
                     />
                   )}
-                </motion.button>
+                  <span className="relative flex items-center gap-2">
+                    <Users size={16} />
+                    {t('nav.community.title')}
+                    <motion.span
+                      animate={{ rotate: isCommunityMenuOpen ? 180 : 0 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <ChevronDown size={14} />
+                    </motion.span>
+                  </span>
+                </button>
 
                 <AnimatePresence>
                   {isCommunityMenuOpen && (
                     <motion.div
-                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      initial={{ opacity: 0, y: 8, scale: 0.96 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                      transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }}
-                      className="absolute left-0 top-full mt-3 w-80 rounded-2xl overflow-hidden"
+                      exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                      transition={{ duration: 0.15 }}
+                      className="absolute left-0 top-full mt-2 w-72 rounded-2xl overflow-hidden"
                       style={{
                         background: theme.colors.card,
                         border: `1px solid ${theme.colors.border}`,
-                        boxShadow: `0 25px 60px -12px rgba(0,0,0,0.5), 0 0 40px ${theme.colors.primary}15`,
+                        boxShadow: `0 20px 50px -10px rgba(0,0,0,0.4)`,
                       }}
                     >
                       <div className="p-2">
-                        <div className="px-3 py-2 mb-1">
-                          <p
-                            className="text-[10px] font-bold uppercase tracking-wider"
-                            style={{ color: theme.colors.foregroundMuted }}
-                          >
-                            Explore Community
-                          </p>
-                        </div>
-                        {COMMUNITY_ITEMS.map((item, index) => {
+                        <p
+                          className="px-3 py-2 text-[10px] font-bold uppercase tracking-wider"
+                          style={{ color: theme.colors.foregroundMuted }}
+                        >
+                          {t('nav.community.explore')}
+                        </p>
+                        {COMMUNITY_ITEMS.map((item) => {
                           const isActive = location.pathname === item.href
                           return (
-                            <motion.div
+                            <Link
                               key={item.href}
-                              initial={{ opacity: 0, x: -10 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{ delay: index * 0.05 }}
+                              to={item.href}
+                              className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors"
+                              style={{
+                                background: isActive ? `${item.color}15` : 'transparent',
+                              }}
                             >
-                              <Link
-                                to={item.href}
-                                className="flex items-center gap-3 px-3 py-3 rounded-xl transition-all group"
-                                style={{
-                                  background: isActive
-                                    ? `${item.color}15`
-                                    : 'transparent',
-                                }}
+                              <div
+                                className="w-9 h-9 rounded-lg flex items-center justify-center"
+                                style={{ background: `${item.color}20` }}
                               >
-                                <motion.div
-                                  className="w-11 h-11 rounded-xl flex items-center justify-center"
+                                <item.icon size={18} style={{ color: item.color }} />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p
+                                  className="text-sm font-medium"
                                   style={{
-                                    background: `${item.color}20`,
-                                    boxShadow: isActive
-                                      ? `0 0 20px ${item.color}30`
-                                      : 'none',
+                                    color: isActive ? item.color : theme.colors.foreground,
                                   }}
-                                  whileHover={{ scale: 1.1, rotate: 5 }}
                                 >
-                                  <item.icon
-                                    size={20}
-                                    style={{ color: item.color }}
-                                  />
-                                </motion.div>
-                                <div className="flex-1">
-                                  <p
-                                    className="text-sm font-semibold"
-                                    style={{
-                                      color: isActive
-                                        ? item.color
-                                        : theme.colors.foreground,
-                                    }}
-                                  >
-                                    {item.label}
-                                  </p>
-                                  <p
-                                    className="text-xs"
-                                    style={{
-                                      color: theme.colors.foregroundMuted,
-                                    }}
-                                  >
-                                    {item.description}
-                                  </p>
-                                </div>
-                                <motion.div
-                                  className="opacity-0 group-hover:opacity-100 transition-opacity"
-                                  animate={{ x: [0, 4, 0] }}
-                                  transition={{ duration: 1, repeat: Infinity }}
+                                  {item.label}
+                                </p>
+                                <p
+                                  className="text-xs truncate"
+                                  style={{ color: theme.colors.foregroundMuted }}
                                 >
-                                  <ArrowRight
-                                    size={14}
-                                    style={{ color: item.color }}
-                                  />
-                                </motion.div>
-                              </Link>
-                            </motion.div>
+                                  {item.description}
+                                </p>
+                              </div>
+                              <ArrowRight
+                                size={14}
+                                className="opacity-0 group-hover:opacity-100"
+                                style={{ color: item.color }}
+                              />
+                            </Link>
                           )
                         })}
                       </div>
@@ -459,54 +400,49 @@ export function Nav() {
                   <Link
                     key={item.href}
                     to={item.href}
-                    className="relative flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200"
+                    className="relative px-4 py-2 rounded-full text-sm font-medium transition-colors"
                     style={{
                       color: isActive ? 'white' : theme.colors.foregroundMuted,
                     }}
                   >
-                    <item.icon size={16} />
-                    <span>{item.label}</span>
                     {isActive && (
                       <motion.div
-                        layoutId="nav-active-pill-2"
-                        className="absolute inset-0 rounded-xl -z-10"
+                        layoutId="nav-pill-2"
+                        className="absolute inset-0 rounded-full"
                         style={{
                           background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
-                          boxShadow: `0 4px 20px ${theme.colors.primary}60`,
                         }}
-                        transition={{
-                          type: 'spring',
-                          stiffness: 400,
-                          damping: 30,
-                        }}
+                        transition={{ type: 'spring', stiffness: 500, damping: 35 }}
                       />
                     )}
+                    <span className="relative flex items-center gap-2">
+                      <item.icon size={16} />
+                      {item.label}
+                    </span>
                   </Link>
                 )
               })}
-            </motion.div>
+            </div>
           </div>
 
-          {/* Right Side Actions */}
+          {/* Right Side */}
           <div className="flex items-center gap-2">
+            {/* Desktop User Menu */}
             <div className="hidden lg:flex items-center gap-2">
               {currentUser ? (
                 <div className="relative" onClick={(e) => e.stopPropagation()}>
                   <motion.button
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all"
+                    className="flex items-center gap-2 px-2 py-1.5 rounded-xl transition-all"
                     style={{
-                      background: isUserMenuOpen
-                        ? tierConfig.gradient
-                        : theme.colors.card,
+                      background: isUserMenuOpen ? tierConfig.gradient : theme.colors.card,
                       border: `1px solid ${isUserMenuOpen ? 'transparent' : theme.colors.border}`,
                       color: isUserMenuOpen ? 'white' : theme.colors.foreground,
-                      boxShadow: isUserMenuOpen ? tierConfig.glow : 'none',
                     }}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    <div className="relative w-8 h-8 rounded-lg overflow-hidden">
+                    <div className="relative w-7 h-7 rounded-lg overflow-hidden">
                       {currentUser.profile?.avatar ? (
                         <img
                           src={currentUser.profile.avatar}
@@ -521,51 +457,41 @@ export function Nav() {
                           {userInitial}
                         </div>
                       )}
-                      <motion.div
-                        className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2"
-                        style={{
-                          background: '#22c55e',
-                          borderColor: theme.colors.card,
-                        }}
-                        animate={{ scale: [1, 1.2, 1] }}
-                        transition={{ duration: 2, repeat: Infinity }}
-                      />
                     </div>
-                    <div className="hidden xl:block text-left">
-                      <p className="text-sm font-semibold leading-tight max-w-[80px] truncate">
+                    <div className="hidden xl:block text-left max-w-[100px]">
+                      <p className="text-sm font-medium truncate leading-tight">
                         {displayName}
                       </p>
                       <p
                         className="text-[10px] leading-tight"
                         style={{
-                          color: isUserMenuOpen
-                            ? 'rgba(255,255,255,0.7)'
-                            : theme.colors.foregroundMuted,
+                          color: isUserMenuOpen ? 'rgba(255,255,255,0.7)' : theme.colors.foregroundMuted,
                         }}
                       >
                         {tierConfig.name}
                       </p>
                     </div>
-                    <motion.div
-                      animate={{ rotate: isUserMenuOpen ? 180 : 0 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <ChevronDown size={14} />
-                    </motion.div>
+                    <ChevronDown
+                      size={14}
+                      className="transition-transform"
+                      style={{
+                        transform: isUserMenuOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                      }}
+                    />
                   </motion.button>
 
                   <AnimatePresence>
                     {isUserMenuOpen && (
                       <motion.div
-                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        initial={{ opacity: 0, y: 8, scale: 0.96 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                        transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }}
-                        className="absolute right-0 top-full mt-3 w-80 rounded-2xl overflow-hidden"
+                        exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                        transition={{ duration: 0.15 }}
+                        className="absolute right-0 top-full mt-2 w-80 rounded-2xl overflow-hidden"
                         style={{
                           background: theme.colors.card,
                           border: `1px solid ${theme.colors.border}`,
-                          boxShadow: `0 25px 60px -12px rgba(0,0,0,0.5), 0 0 40px ${theme.colors.primary}15`,
+                          boxShadow: `0 20px 50px -10px rgba(0,0,0,0.4)`,
                         }}
                       >
                         {/* User Header */}
@@ -575,11 +501,10 @@ export function Nav() {
                             background: `linear-gradient(135deg, ${tierConfig.color}10, transparent)`,
                           }}
                         >
-                          <div className="flex items-center gap-4">
-                            <motion.div
-                              className="relative w-16 h-16 rounded-xl overflow-hidden"
+                          <div className="flex items-center gap-3">
+                            <div
+                              className="w-14 h-14 rounded-xl overflow-hidden"
                               style={{ boxShadow: tierConfig.glow }}
-                              whileHover={{ scale: 1.05 }}
                             >
                               {currentUser.profile?.avatar ? (
                                 <img
@@ -589,16 +514,16 @@ export function Nav() {
                                 />
                               ) : (
                                 <div
-                                  className="w-full h-full flex items-center justify-center text-2xl font-bold text-white"
+                                  className="w-full h-full flex items-center justify-center text-xl font-bold text-white"
                                   style={{ background: tierConfig.gradient }}
                                 >
                                   {userInitial}
                                 </div>
                               )}
-                            </motion.div>
+                            </div>
                             <div className="flex-1 min-w-0">
                               <p
-                                className="font-bold text-lg truncate"
+                                className="font-bold truncate"
                                 style={{ color: theme.colors.foreground }}
                               >
                                 {displayName}
@@ -609,48 +534,34 @@ export function Nav() {
                               >
                                 @{currentUser.username}
                               </p>
-                              <motion.div
-                                className="inline-flex items-center gap-1.5 mt-2 px-2.5 py-1 rounded-full"
-                                style={{
-                                  background: `${tierConfig.color}20`,
-                                  boxShadow: `0 0 15px ${tierConfig.color}20`,
-                                }}
-                                whileHover={{ scale: 1.05 }}
+                              <div
+                                className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-full"
+                                style={{ background: `${tierConfig.color}20` }}
                               >
-                                <TierIcon
-                                  size={12}
-                                  style={{ color: tierConfig.color }}
-                                />
+                                <TierIcon size={10} style={{ color: tierConfig.color }} />
                                 <span
-                                  className="text-[11px] font-bold"
+                                  className="text-[10px] font-bold"
                                   style={{ color: tierConfig.color }}
                                 >
                                   {tierConfig.name}
                                 </span>
-                              </motion.div>
+                              </div>
                             </div>
                           </div>
 
                           {/* Bio Link */}
-                          <motion.a
+                          <a
                             href={`https://${bioLink}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="mt-4 p-3 rounded-xl flex items-center justify-between group"
+                            className="mt-3 p-2.5 rounded-lg flex items-center justify-between group"
                             style={{
                               background: theme.colors.backgroundSecondary,
                               border: `1px solid ${theme.colors.border}`,
                             }}
-                            whileHover={{
-                              scale: 1.02,
-                              borderColor: theme.colors.primary,
-                            }}
                           >
                             <div className="flex items-center gap-2">
-                              <Globe
-                                size={14}
-                                style={{ color: theme.colors.primary }}
-                              />
+                              <Globe size={14} style={{ color: theme.colors.primary }} />
                               <span
                                 className="text-sm font-mono"
                                 style={{ color: theme.colors.foreground }}
@@ -660,77 +571,45 @@ export function Nav() {
                             </div>
                             <ExternalLink
                               size={12}
-                              className="opacity-50 group-hover:opacity-100 transition-opacity"
+                              className="opacity-50 group-hover:opacity-100"
                               style={{ color: theme.colors.foregroundMuted }}
                             />
-                          </motion.a>
+                          </a>
                         </div>
 
                         {/* Quick Actions */}
                         <div
-                          className="p-2"
-                          style={{
-                            borderTop: `1px solid ${theme.colors.border}`,
-                          }}
+                          className="p-3"
+                          style={{ borderTop: `1px solid ${theme.colors.border}` }}
                         >
-                          <div className="px-3 py-2">
-                            <p
-                              className="text-[10px] font-bold uppercase tracking-wider"
-                              style={{ color: theme.colors.foregroundMuted }}
-                            >
-                              Quick Actions
-                            </p>
-                          </div>
-                          <div className="grid grid-cols-3 gap-2 px-2">
-                            {QUICK_ACTIONS.map((action, i) => (
-                              <motion.div
+                          <p
+                            className="px-2 pb-2 text-[10px] font-bold uppercase tracking-wider"
+                            style={{ color: theme.colors.foregroundMuted }}
+                          >
+                            {t('nav.user.quickActions')}
+                          </p>
+                          <div className="grid grid-cols-3 gap-2">
+                            {QUICK_ACTIONS.slice(0, 3).map((action) => (
+                              <Link
                                 key={action.to}
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: i * 0.05 }}
+                                to={action.to}
+                                onClick={() => setIsUserMenuOpen(false)}
+                                className="flex flex-col items-center gap-1.5 p-2.5 rounded-xl text-center transition-colors"
+                                style={{ background: theme.colors.backgroundSecondary }}
                               >
-                                <Link
-                                  to={action.to}
-                                  onClick={() => setIsUserMenuOpen(false)}
-                                  className="flex flex-col items-center gap-2 p-3 rounded-xl text-center group"
-                                  style={{
-                                    background:
-                                      theme.colors.backgroundSecondary,
-                                  }}
+                                <div
+                                  className="w-8 h-8 rounded-lg flex items-center justify-center"
+                                  style={{ background: `${theme.colors.primary}20` }}
                                 >
-                                  <motion.div
-                                    className="w-10 h-10 rounded-lg flex items-center justify-center"
-                                    style={{
-                                      background: `${theme.colors.primary}20`,
-                                    }}
-                                    whileHover={{ scale: 1.1, rotate: 5 }}
-                                  >
-                                    <action.icon
-                                      size={18}
-                                      style={{ color: theme.colors.primary }}
-                                    />
-                                  </motion.div>
-                                  <span
-                                    className="text-xs font-medium"
-                                    style={{ color: theme.colors.foreground }}
-                                  >
-                                    {action.label}
-                                  </span>
-                                  <span
-                                    className="text-[9px] px-1.5 py-0.5 rounded"
-                                    style={{
-                                      background: theme.colors.card,
-                                      color: theme.colors.foregroundMuted,
-                                    }}
-                                  >
-                                    <Command
-                                      size={8}
-                                      className="inline mr-0.5"
-                                    />
-                                    {action.shortcut}
-                                  </span>
-                                </Link>
-                              </motion.div>
+                                  <action.icon size={16} style={{ color: theme.colors.primary }} />
+                                </div>
+                                <span
+                                  className="text-[11px] font-medium"
+                                  style={{ color: theme.colors.foreground }}
+                                >
+                                  {action.label}
+                                </span>
+                              </Link>
                             ))}
                           </div>
                         </div>
@@ -738,138 +617,75 @@ export function Nav() {
                         {/* Additional Links */}
                         <div
                           className="p-2"
-                          style={{
-                            borderTop: `1px solid ${theme.colors.border}`,
-                          }}
+                          style={{ borderTop: `1px solid ${theme.colors.border}` }}
                         >
-                          {[
-                            {
-                              href: `https://${bioLink}`,
-                              icon: Globe,
-                              label: 'View Bio Page',
-                              external: true,
-                            },
-                            ...(currentUser.role === 'owner' ||
-                            currentUser.role === 'admin'
-                              ? [
-                                  {
-                                    to: '/admin',
-                                    icon: Shield,
-                                    label: 'Admin Panel',
-                                    color: '#ef4444',
-                                  },
-                                ]
-                              : []),
-                          ].map((item, i) => (
-                            <motion.div
-                              key={i}
-                              initial={{ opacity: 0, x: -10 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{ delay: i * 0.03 }}
+                          <a
+                            href={`https://${bioLink}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={() => setIsUserMenuOpen(false)}
+                            className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors hover:bg-white/5"
+                            style={{ color: theme.colors.foreground }}
+                          >
+                            <Globe size={16} style={{ color: theme.colors.foregroundMuted }} />
+                            <span>{t('nav.user.viewBioPage')}</span>
+                            <ExternalLink
+                              size={12}
+                              className="ml-auto"
+                              style={{ color: theme.colors.foregroundMuted }}
+                            />
+                          </a>
+                          {(currentUser.role === 'owner' || currentUser.role === 'admin') && (
+                            <Link
+                              to="/admin"
+                              onClick={() => setIsUserMenuOpen(false)}
+                              className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors hover:bg-white/5"
+                              style={{ color: '#ef4444' }}
                             >
-                              {'to' in item ? (
-                                <Link
-                                  to={item.to}
-                                  onClick={() => setIsUserMenuOpen(false)}
-                                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all hover:bg-white/5"
-                                  style={{
-                                    color:
-                                      item.color || theme.colors.foreground,
-                                  }}
-                                >
-                                  <item.icon
-                                    size={18}
-                                    style={{
-                                      color:
-                                        item.color ||
-                                        theme.colors.foregroundMuted,
-                                    }}
-                                  />
-                                  <span>{item.label}</span>
-                                </Link>
-                              ) : (
-                                <a
-                                  href={item.href}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  onClick={() => setIsUserMenuOpen(false)}
-                                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all hover:bg-white/5"
-                                  style={{ color: theme.colors.foreground }}
-                                >
-                                  <item.icon
-                                    size={18}
-                                    style={{
-                                      color: theme.colors.foregroundMuted,
-                                    }}
-                                  />
-                                  <span>{item.label}</span>
-                                  <ExternalLink
-                                    size={12}
-                                    className="ml-auto"
-                                    style={{
-                                      color: theme.colors.foregroundMuted,
-                                    }}
-                                  />
-                                </a>
-                              )}
-                            </motion.div>
-                          ))}
+                              <Shield size={16} />
+                              <span>{t('nav.user.adminPanel')}</span>
+                            </Link>
+                          )}
                         </div>
 
                         {/* Upgrade CTA */}
                         {userTier !== 'lifetime' && userTier !== 'creator' && (
                           <div
                             className="p-3"
-                            style={{
-                              borderTop: `1px solid ${theme.colors.border}`,
-                            }}
+                            style={{ borderTop: `1px solid ${theme.colors.border}` }}
                           >
                             <Link
                               to="/pricing"
                               onClick={() => setIsUserMenuOpen(false)}
+                              className="flex items-center gap-3 p-3 rounded-xl"
+                              style={{
+                                background: `linear-gradient(135deg, ${theme.colors.primary}15, ${theme.colors.accent}15)`,
+                                border: `1px solid ${theme.colors.primary}30`,
+                              }}
                             >
-                              <motion.div
-                                className="p-4 rounded-xl flex items-center gap-4"
+                              <div
+                                className="w-10 h-10 rounded-lg flex items-center justify-center"
                                 style={{
-                                  background: `linear-gradient(135deg, ${theme.colors.primary}15, ${theme.colors.accent}15)`,
-                                  border: `1px solid ${theme.colors.primary}30`,
+                                  background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
                                 }}
-                                whileHover={{
-                                  scale: 1.02,
-                                  background: `linear-gradient(135deg, ${theme.colors.primary}25, ${theme.colors.accent}25)`,
-                                }}
-                                whileTap={{ scale: 0.98 }}
                               >
-                                <motion.div
-                                  className="w-12 h-12 rounded-xl flex items-center justify-center"
-                                  style={{
-                                    background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
-                                  }}
-                                  whileHover={{ rotate: 10 }}
+                                <Rocket size={18} className="text-white" />
+                              </div>
+                              <div className="flex-1">
+                                <p
+                                  className="text-sm font-bold"
+                                  style={{ color: theme.colors.foreground }}
                                 >
-                                  <Rocket size={20} className="text-white" />
-                                </motion.div>
-                                <div className="flex-1">
-                                  <p
-                                    className="font-bold"
-                                    style={{ color: theme.colors.foreground }}
-                                  >
-                                    Upgrade to Pro
-                                  </p>
-                                  <p
-                                    className="text-xs"
-                                    style={{
-                                      color: theme.colors.foregroundMuted,
-                                    }}
-                                  >
-                                    Unlock all premium features
-                                  </p>
-                                </div>
-                                <ArrowRight
-                                  size={16}
-                                  style={{ color: theme.colors.primary }}
-                                />
-                              </motion.div>
+                                  {t('nav.user.upgradeToPro')}
+                                </p>
+                                <p
+                                  className="text-xs"
+                                  style={{ color: theme.colors.foregroundMuted }}
+                                >
+                                  {t('nav.user.unlockFeatures')}
+                                </p>
+                              </div>
+                              <ArrowRight size={16} style={{ color: theme.colors.primary }} />
                             </Link>
                           </div>
                         )}
@@ -877,70 +693,63 @@ export function Nav() {
                         {/* Sign Out */}
                         <div
                           className="p-2"
-                          style={{
-                            borderTop: `1px solid ${theme.colors.border}`,
-                          }}
+                          style={{ borderTop: `1px solid ${theme.colors.border}` }}
                         >
-                          <motion.button
+                          <button
                             onClick={handleSignOut}
-                            className="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium transition-all"
+                            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors hover:bg-red-500/10"
                             style={{ color: '#ef4444' }}
-                            whileHover={{
-                              background: 'rgba(239, 68, 68, 0.1)',
-                            }}
                           >
-                            <LogOut size={18} />
-                            <span>Sign Out</span>
-                          </motion.button>
+                            <LogOut size={16} />
+                            <span>{t('nav.signOut')}</span>
+                          </button>
                         </div>
                       </motion.div>
                     )}
                   </AnimatePresence>
                 </div>
               ) : (
-                <>
+                <div className="flex items-center gap-2">
                   <Link
                     to="/sign-in"
-                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all"
+                    className="px-4 py-2 rounded-full text-sm font-medium transition-colors"
                     style={{ color: theme.colors.foreground }}
                   >
-                    <LogIn size={16} />
-                    Sign In
+                    {t('nav.signIn')}
                   </Link>
-                  <motion.div
-                    whileHover={{ scale: 1.03 }}
-                    whileTap={{ scale: 0.97 }}
+                  <Link
+                    to="/sign-up"
+                    className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold text-white"
+                    style={{
+                      background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
+                      boxShadow: `0 4px 20px ${theme.colors.primary}40`,
+                    }}
                   >
-                    <Link
-                      to="/sign-up"
-                      className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white"
-                      style={{
-                        background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
-                        boxShadow: `0 4px 25px ${theme.colors.primary}50`,
-                      }}
-                    >
-                      <Sparkles size={16} />
-                      Get Started
-                    </Link>
-                  </motion.div>
-                </>
+                    <Sparkles size={14} />
+                    {t('nav.getStarted')}
+                  </Link>
+                </div>
               )}
             </div>
 
-            {/* Notification Bell */}
+            {/* Email Verification */}
+            {currentUser && <EmailVerificationIndicator />}
+
+            {/* Notifications */}
             {currentUser && (
               <Suspense fallback={null}>
                 <NotificationBell />
               </Suspense>
             )}
 
-            {/* Theme Switcher */}
+            {/* Language & Theme */}
+            <LanguageSwitcher />
             <ThemeSwitcher />
 
             {/* Mobile Menu Button */}
-            <motion.button
+            <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="lg:hidden p-2.5 rounded-xl"
+              className="lg:hidden p-2 rounded-xl transition-colors"
               style={{
                 background: isMobileMenuOpen
                   ? `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`
@@ -948,21 +757,9 @@ export function Nav() {
                 border: `1px solid ${isMobileMenuOpen ? 'transparent' : theme.colors.border}`,
                 color: isMobileMenuOpen ? 'white' : theme.colors.foreground,
               }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
             >
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={isMobileMenuOpen ? 'close' : 'menu'}
-                  initial={{ rotate: -90, opacity: 0 }}
-                  animate={{ rotate: 0, opacity: 1 }}
-                  exit={{ rotate: 90, opacity: 0 }}
-                  transition={{ duration: 0.15 }}
-                >
-                  {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
-                </motion.div>
-              </AnimatePresence>
-            </motion.button>
+              {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
           </div>
         </nav>
       </div>
@@ -974,145 +771,80 @@ export function Nav() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
+            transition={{ duration: 0.2 }}
             className="lg:hidden overflow-hidden"
             style={{
               background: theme.colors.background,
               borderTop: `1px solid ${theme.colors.border}`,
             }}
           >
-            <div className="px-4 py-6 space-y-2 max-h-[80vh] overflow-y-auto">
-              {/* Main Nav Items */}
-              {NAV_ITEMS.slice(0, 1).map((item, i) => {
+            <div className="px-4 py-4 space-y-2 max-h-[75vh] overflow-y-auto">
+              {/* Main Nav */}
+              {NAV_ITEMS.map((item) => {
                 const isActive = location.pathname === item.href
                 return (
-                  <motion.div
+                  <Link
                     key={item.href}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.05 }}
+                    to={item.href}
+                    className="flex items-center gap-3 px-4 py-3 rounded-xl font-medium"
+                    style={{
+                      background: isActive
+                        ? `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`
+                        : theme.colors.card,
+                      color: isActive ? 'white' : theme.colors.foreground,
+                    }}
                   >
-                    <Link
-                      to={item.href}
-                      className="flex items-center gap-3 px-4 py-4 rounded-xl font-medium"
-                      style={{
-                        background: isActive
-                          ? `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`
-                          : theme.colors.card,
-                        color: isActive ? 'white' : theme.colors.foreground,
-                        boxShadow: isActive
-                          ? `0 4px 20px ${theme.colors.primary}40`
-                          : 'none',
-                      }}
-                    >
-                      <item.icon size={20} />
-                      {item.label}
-                    </Link>
-                  </motion.div>
+                    <item.icon size={18} />
+                    {item.label}
+                  </Link>
                 )
               })}
 
-              {/* Community Section */}
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.1 }}
-                className="pt-4"
-              >
+              {/* Community */}
+              <div className="pt-2">
                 <p
                   className="px-4 py-2 text-xs font-bold uppercase tracking-wider"
                   style={{ color: theme.colors.foregroundMuted }}
                 >
-                  Community
+                  {t('nav.community.title')}
                 </p>
-                <div className="space-y-1">
-                  {COMMUNITY_ITEMS.map((item) => {
-                    const isActive = location.pathname === item.href
-                    return (
-                      <Link
-                        key={item.href}
-                        to={item.href}
-                        className="flex items-center gap-3 px-4 py-3 rounded-xl"
-                        style={{
-                          background: isActive
-                            ? `${item.color}15`
-                            : theme.colors.card,
-                          color: isActive
-                            ? item.color
-                            : theme.colors.foreground,
-                        }}
-                      >
-                        <div
-                          className="w-10 h-10 rounded-lg flex items-center justify-center"
-                          style={{ background: `${item.color}20` }}
-                        >
-                          <item.icon size={18} style={{ color: item.color }} />
-                        </div>
-                        <div>
-                          <span className="block text-sm font-medium">
-                            {item.label}
-                          </span>
-                          <span
-                            className="text-xs"
-                            style={{ color: theme.colors.foregroundMuted }}
-                          >
-                            {item.description}
-                          </span>
-                        </div>
-                      </Link>
-                    )
-                  })}
-                </div>
-              </motion.div>
-
-              {/* Other Nav Items */}
-              {NAV_ITEMS.slice(1).map((item, i) => {
-                const isActive = location.pathname === item.href
-                return (
-                  <motion.div
-                    key={item.href}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{
-                      delay: (i + COMMUNITY_ITEMS.length + 2) * 0.05,
-                    }}
-                  >
+                {COMMUNITY_ITEMS.map((item) => {
+                  const isActive = location.pathname === item.href
+                  return (
                     <Link
+                      key={item.href}
                       to={item.href}
-                      className="flex items-center gap-3 px-4 py-4 rounded-xl font-medium"
+                      className="flex items-center gap-3 px-4 py-3 rounded-xl"
                       style={{
-                        background: isActive
-                          ? `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`
-                          : theme.colors.card,
-                        color: isActive ? 'white' : theme.colors.foreground,
-                        boxShadow: isActive
-                          ? `0 4px 20px ${theme.colors.primary}40`
-                          : 'none',
+                        background: isActive ? `${item.color}15` : theme.colors.card,
+                        color: isActive ? item.color : theme.colors.foreground,
                       }}
                     >
-                      <item.icon size={20} />
-                      {item.label}
+                      <div
+                        className="w-8 h-8 rounded-lg flex items-center justify-center"
+                        style={{ background: `${item.color}20` }}
+                      >
+                        <item.icon size={16} style={{ color: item.color }} />
+                      </div>
+                      <span className="text-sm font-medium">{item.label}</span>
                     </Link>
-                  </motion.div>
-                )
-              })}
+                  )
+                })}
+              </div>
 
               {/* User Section */}
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.3 }}
-                className="pt-6 mt-4 space-y-3"
+              <div
+                className="pt-4 mt-2 space-y-2"
                 style={{ borderTop: `1px solid ${theme.colors.border}` }}
               >
                 {currentUser ? (
                   <>
                     <div
-                      className="flex items-center gap-4 p-4 rounded-xl"
+                      className="flex items-center gap-3 p-3 rounded-xl"
                       style={{ background: theme.colors.card }}
                     >
                       <div
-                        className="w-14 h-14 rounded-xl overflow-hidden"
+                        className="w-12 h-12 rounded-xl overflow-hidden"
                         style={{ boxShadow: tierConfig.glow }}
                       >
                         {currentUser.profile?.avatar ? (
@@ -1123,7 +855,7 @@ export function Nav() {
                           />
                         ) : (
                           <div
-                            className="w-full h-full flex items-center justify-center text-xl font-bold text-white"
+                            className="w-full h-full flex items-center justify-center text-lg font-bold text-white"
                             style={{ background: tierConfig.gradient }}
                           >
                             {userInitial}
@@ -1137,20 +869,11 @@ export function Nav() {
                         >
                           {displayName}
                         </p>
-                        <p
-                          className="text-sm"
-                          style={{ color: theme.colors.foregroundMuted }}
-                        >
-                          @{currentUser.username}
-                        </p>
                         <div
-                          className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-full"
+                          className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full"
                           style={{ background: `${tierConfig.color}20` }}
                         >
-                          <TierIcon
-                            size={10}
-                            style={{ color: tierConfig.color }}
-                          />
+                          <TierIcon size={10} style={{ color: tierConfig.color }} />
                           <span
                             className="text-[10px] font-bold"
                             style={{ color: tierConfig.color }}
@@ -1163,55 +886,54 @@ export function Nav() {
 
                     <Link
                       to="/profile"
-                      className="flex items-center gap-3 px-4 py-4 rounded-xl font-medium"
+                      className="flex items-center gap-3 px-4 py-3 rounded-xl font-medium"
                       style={{
                         background: theme.colors.card,
                         color: theme.colors.foreground,
                       }}
                     >
-                      <LayoutDashboard size={20} />
-                      Dashboard
+                      <LayoutDashboard size={18} />
+                      {t('nav.dashboard')}
                     </Link>
 
                     <button
                       onClick={handleSignOut}
-                      className="w-full flex items-center gap-3 px-4 py-4 rounded-xl font-medium"
+                      className="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-medium"
                       style={{
                         background: 'rgba(239, 68, 68, 0.1)',
                         color: '#ef4444',
                       }}
                     >
-                      <LogOut size={20} />
-                      Sign Out
+                      <LogOut size={18} />
+                      {t('nav.signOut')}
                     </button>
                   </>
                 ) : (
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-2 gap-2">
                     <Link
                       to="/sign-in"
-                      className="flex items-center justify-center gap-2 px-4 py-4 rounded-xl font-medium"
+                      className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-medium"
                       style={{
                         background: theme.colors.card,
                         color: theme.colors.foreground,
                       }}
                     >
-                      <LogIn size={18} />
-                      Sign In
+                      <LogIn size={16} />
+                      {t('nav.signIn')}
                     </Link>
                     <Link
                       to="/sign-up"
-                      className="flex items-center justify-center gap-2 px-4 py-4 rounded-xl font-semibold text-white"
+                      className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold text-white"
                       style={{
                         background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
-                        boxShadow: `0 4px 20px ${theme.colors.primary}40`,
                       }}
                     >
-                      <Sparkles size={18} />
-                      Sign Up
+                      <Sparkles size={16} />
+                      {t('nav.signUp')}
                     </Link>
                   </div>
                 )}
-              </motion.div>
+              </div>
             </div>
           </motion.div>
         )}

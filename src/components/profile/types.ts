@@ -34,6 +34,7 @@ export interface ProfileUser {
   name: string | null
   username: string
   email: string
+  emailVerified?: boolean
   role: 'user' | 'admin' | 'owner'
   tier: string
   createdAt: string
@@ -50,6 +51,24 @@ export interface ProfileUser {
     avatar?: string | null
     banner?: string | null
     badges?: string[] | null
+    isFeatured?: boolean | null
+    referralCode?: string | null
   } | null
   stats?: UserStats | null
+}
+
+export interface UserLink {
+  id: string
+  title: string
+  url: string
+  description?: string | null
+  icon?: string | null
+  thumbnail?: string | null
+  clicks: number
+  isActive: boolean
+  position: number
+  backgroundColor?: string | null
+  textColor?: string | null
+  createdAt: string
+  updatedAt: string
 }

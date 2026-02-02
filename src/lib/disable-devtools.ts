@@ -1,6 +1,21 @@
 /**
- * Security: Disable React DevTools and other debugging tools in production
- * This prevents users from inspecting component state and structure
+ * Security: Disable React DevTools in production
+ *
+ * This prevents users from inspecting React component state and structure.
+ * Browser DevTools (F12, Console, Network) remain accessible - this is intentional:
+ * - Blocking F12 is easily bypassed and annoys legitimate users
+ * - Network requests are always visible regardless
+ * - Real security comes from server-side validation, not client-side hiding
+ *
+ * What this DOES protect:
+ * - React component tree inspection
+ * - Component state/props viewing
+ * - React-specific debugging
+ *
+ * What this does NOT protect (and shouldn't try to):
+ * - Network requests (use HTTPS, proper auth)
+ * - Source code (it's minified in production anyway)
+ * - DOM structure (visible to anyone)
  */
 
 export function disableDevTools() {
@@ -9,7 +24,7 @@ export function disableDevTools() {
   // Only disable in production
   if (import.meta.env.DEV) return
 
-  // Disable React DevTools
+  // Disable React DevTools only
   const disableReactDevTools = () => {
     const noop = () => undefined
 
@@ -50,77 +65,9 @@ export function disableDevTools() {
     })
   }
 
-  // Disable right-click context menu (optional - can be annoying for users)
-  // Uncomment if you want to prevent right-click
-  // document.addEventListener('contextmenu', (e) => e.preventDefault())
-
-  // Disable keyboard shortcuts for DevTools
-  const disableDevToolsShortcuts = () => {
-    document.addEventListener('keydown', (e) => {
-      // F12
-      if (e.key === 'F12') {
-        e.preventDefault()
-        return false
-      }
-
-      // Ctrl+Shift+I (DevTools)
-      if (e.ctrlKey && e.shiftKey && e.key === 'I') {
-        e.preventDefault()
-        return false
-      }
-
-      // Ctrl+Shift+J (Console)
-      if (e.ctrlKey && e.shiftKey && e.key === 'J') {
-        e.preventDefault()
-        return false
-      }
-
-      // Ctrl+Shift+C (Inspect Element)
-      if (e.ctrlKey && e.shiftKey && e.key === 'C') {
-        e.preventDefault()
-        return false
-      }
-
-      // Ctrl+U (View Source)
-      if (e.ctrlKey && e.key === 'u') {
-        e.preventDefault()
-        return false
-      }
-
-      return true
-    })
-  }
-
-  // Detect DevTools opening (basic detection)
-  const detectDevTools = () => {
-    const threshold = 160
-    let devtoolsOpen = false
-
-    const checkDevTools = () => {
-      const widthThreshold = window.outerWidth - window.innerWidth > threshold
-      const heightThreshold =
-        window.outerHeight - window.innerHeight > threshold
-
-      if (widthThreshold || heightThreshold) {
-        if (!devtoolsOpen) {
-          devtoolsOpen = true
-          // Optional: You can add actions here when DevTools is detected
-          // For example, redirect or show a warning
-        }
-      } else {
-        devtoolsOpen = false
-      }
-    }
-
-    // Check periodically
-    setInterval(checkDevTools, 1000)
-  }
-
-  // Execute all protections
+  // Execute protection
   try {
     disableReactDevTools()
-    disableDevToolsShortcuts()
-    detectDevTools()
   } catch {
     // Silently fail - don't break the app if protection fails
   }

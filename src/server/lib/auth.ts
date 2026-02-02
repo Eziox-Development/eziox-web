@@ -17,6 +17,11 @@ const MAX_FAILED_ATTEMPTS = 5
 const LOCKOUT_DURATION_MINUTES = 30
 const APP_NAME = 'Eziox'
 
+// Hash tokens before storing in database for security
+function hashToken(token: string): string {
+  return crypto.createHash('sha256').update(token).digest('hex')
+}
+
 export async function hashPassword(password: string): Promise<string> {
   return bcrypt.hash(password, 12)
 }
@@ -261,47 +266,50 @@ export async function generatePasswordResetToken(
   userId: string,
 ): Promise<string> {
   const token = generateToken(32)
+  const tokenHash = hashToken(token)
   const expires = new Date()
   expires.setHours(expires.getHours() + 1)
 
   await db
     .update(users)
     .set({
-      passwordResetToken: token,
+      passwordResetToken: tokenHash,
       passwordResetExpires: expires,
       updatedAt: new Date(),
     })
     .where(eq(users.id, userId))
 
-  return token
+  return token // Return plain token to send via email
 }
 
 export async function generateEmailVerificationToken(
   userId: string,
 ): Promise<string> {
   const token = generateToken(32)
+  const tokenHash = hashToken(token)
   const expires = new Date()
   expires.setHours(expires.getHours() + 24)
 
   await db
     .update(users)
     .set({
-      emailVerificationToken: token,
+      emailVerificationToken: tokenHash,
       emailVerificationExpires: expires,
       updatedAt: new Date(),
     })
     .where(eq(users.id, userId))
 
-  return token
+  return token // Return plain token to send via email
 }
 
 export async function validateEmailVerificationToken(token: string) {
+  const tokenHash = hashToken(token)
   const [user] = await db
     .select()
     .from(users)
     .where(
       and(
-        eq(users.emailVerificationToken, token),
+        eq(users.emailVerificationToken, tokenHash),
         gt(users.emailVerificationExpires, new Date()),
       ),
     )
@@ -323,18 +331,40 @@ export async function verifyUserEmail(userId: string) {
 }
 
 export async function validatePasswordResetToken(token: string) {
+  const tokenHash = hashToken(token)
   const [user] = await db
     .select()
     .from(users)
     .where(
       and(
-        eq(users.passwordResetToken, token),
+        eq(users.passwordResetToken, tokenHash),
         gt(users.passwordResetExpires, new Date()),
       ),
     )
     .limit(1)
 
   return user || null
+}
+
+// Helper to check if user's email is verified
+export async function isEmailVerified(userId: string): Promise<boolean> {
+  const user = await findUserById(userId)
+  return user?.emailVerified ?? false
+}
+
+// Helper to require email verification - throws if not verified
+export async function requireEmailVerification(userId: string): Promise<void> {
+  const user = await findUserById(userId)
+  if (!user) {
+    throw { message: 'User not found', status: 404, code: 'USER_NOT_FOUND' }
+  }
+  if (!user.emailVerified) {
+    throw {
+      message: 'Please verify your email address before continuing',
+      status: 403,
+      code: 'EMAIL_NOT_VERIFIED',
+    }
+  }
 }
 
 export async function resetPassword(userId: string, newPassword: string) {
@@ -633,4 +663,143 @@ export async function updateLastActive(userId: string) {
       updatedAt: new Date(),
     })
     .where(eq(userStats.userId, userId))
+}
+
+// Email Change Functions
+
+// Check if user can change email (rate limiting - max 3 per 24 hours)
+export async function canChangeEmail(userId: string): Promise<boolean> {
+  const user = await findUserById(userId)
+  if (!user) return false
+
+  // If no previous email change, allow
+  if (!user.lastEmailChangeAt) return true
+
+  // Allow if last change was more than 8 hours ago (3 changes per 24h = 1 per 8h)
+  const hoursSinceLastChange =
+    (Date.now() - user.lastEmailChangeAt.getTime()) / (1000 * 60 * 60)
+  return hoursSinceLastChange >= 8
+}
+
+// Generate email change verification token
+export async function generateEmailChangeToken(
+  userId: string,
+  newEmail: string,
+): Promise<string> {
+  const token = generateToken(32)
+  const tokenHash = hashToken(token)
+  const expires = new Date()
+  expires.setHours(expires.getHours() + 24) // 24 hour expiry
+
+  await db
+    .update(users)
+    .set({
+      pendingEmail: newEmail.toLowerCase(),
+      pendingEmailToken: tokenHash,
+      pendingEmailExpires: expires,
+      updatedAt: new Date(),
+    })
+    .where(eq(users.id, userId))
+
+  return token // Return plain token to send via email
+}
+
+// Validate email change token
+export async function validateEmailChangeToken(token: string) {
+  const tokenHash = hashToken(token)
+  const [user] = await db
+    .select()
+    .from(users)
+    .where(
+      and(
+        eq(users.pendingEmailToken, tokenHash),
+        gt(users.pendingEmailExpires, new Date()),
+      ),
+    )
+    .limit(1)
+
+  return user || null
+}
+
+// Complete email change after verification
+export async function completeEmailChange(userId: string): Promise<{
+  success: boolean
+  newEmail?: string
+  error?: string
+}> {
+  const user = await findUserById(userId)
+  if (!user) {
+    return { success: false, error: 'User not found' }
+  }
+
+  if (!user.pendingEmail) {
+    return { success: false, error: 'No pending email change' }
+  }
+
+  // Check if new email is already taken
+  const existingUser = await findUserByEmail(user.pendingEmail)
+  if (existingUser && existingUser.id !== userId) {
+    // Clear pending email since it's taken
+    await db
+      .update(users)
+      .set({
+        pendingEmail: null,
+        pendingEmailToken: null,
+        pendingEmailExpires: null,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, userId))
+    return { success: false, error: 'Email address is already in use' }
+  }
+
+  const newEmail = user.pendingEmail
+
+  // Update email and clear pending fields
+  await db
+    .update(users)
+    .set({
+      email: newEmail,
+      emailVerified: true, // New email is verified since they clicked the link
+      pendingEmail: null,
+      pendingEmailToken: null,
+      pendingEmailExpires: null,
+      lastEmailChangeAt: new Date(),
+      updatedAt: new Date(),
+    })
+    .where(eq(users.id, userId))
+
+  return { success: true, newEmail }
+}
+
+// Cancel pending email change
+export async function cancelEmailChange(userId: string): Promise<void> {
+  await db
+    .update(users)
+    .set({
+      pendingEmail: null,
+      pendingEmailToken: null,
+      pendingEmailExpires: null,
+      updatedAt: new Date(),
+    })
+    .where(eq(users.id, userId))
+}
+
+// Get pending email change info
+export async function getPendingEmailChange(
+  userId: string,
+): Promise<{ pendingEmail: string; expires: Date } | null> {
+  const user = await findUserById(userId)
+  if (!user?.pendingEmail || !user.pendingEmailExpires) return null
+
+  // Check if expired
+  if (user.pendingEmailExpires < new Date()) {
+    // Clean up expired pending change
+    await cancelEmailChange(userId)
+    return null
+  }
+
+  return {
+    pendingEmail: user.pendingEmail,
+    expires: user.pendingEmailExpires,
+  }
 }

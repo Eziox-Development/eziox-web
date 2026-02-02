@@ -36,6 +36,13 @@ import {
   generateEmailVerificationToken,
   validateEmailVerificationToken,
   verifyUserEmail,
+  requireEmailVerification,
+  canChangeEmail,
+  generateEmailChangeToken,
+  validateEmailChangeToken,
+  completeEmailChange,
+  cancelEmailChange,
+  getPendingEmailChange,
 } from '../lib/auth'
 import {
   checkRateLimit,
@@ -56,11 +63,21 @@ import {
   send2FADisabledEmail,
   sendPasswordChangedEmail,
   sendEmailVerificationEmail,
+  sendEmailChangeVerificationEmail,
+  sendEmailChangedNotificationEmail,
 } from '../lib/email'
 import { parseUserAgent, formatUserAgent } from '../lib/user-agent'
 import { anonymizeIP } from '../lib/ip-utils'
 import { verifyTurnstileToken } from '../lib/turnstile'
 import { logSecurityEvent } from '../lib/security-logger'
+import {
+  validatePassword,
+  checkPasswordBreach,
+  containsUserInfo,
+} from '@/lib/password-security'
+import { db } from '../db'
+import { sessions, profiles } from '../db/schema'
+import { eq, and, ne, desc } from 'drizzle-orm'
 
 const emailSchema = z
   .string()
@@ -171,6 +188,53 @@ export const signUpFn = createServerFn({ method: 'POST' })
         throw { message: 'This username is already taken', status: 409 }
       }
 
+      // Comprehensive password validation with all security features
+      const passwordValidation = validatePassword(password, {
+        minLength: 8,
+        maxLength: 128,
+        requireUppercase: true,
+        requireLowercase: true,
+        requireNumbers: true,
+        requireSpecialChars: false,
+        checkCommonPasswords: true,
+        checkKeyboardPatterns: true,
+        checkSequentialChars: true,
+        checkRepeatedChars: true,
+        minEntropy: 40,
+        userInfo: { email, username, name },
+      })
+
+      if (!passwordValidation.isValid) {
+        setResponseStatus(400)
+        throw {
+          message: passwordValidation.errors[0] || 'Password is too weak',
+          status: 400,
+        }
+      }
+
+      // Check if password contains user info (redundant check for extra security)
+      if (containsUserInfo(password, { email, username, name })) {
+        setResponseStatus(400)
+        throw {
+          message: 'Password should not contain your personal information',
+          status: 400,
+        }
+      }
+
+      // Check for breached passwords using HaveIBeenPwned API (k-anonymity)
+      try {
+        const breachResult = await checkPasswordBreach(password)
+        if (breachResult.breached) {
+          setResponseStatus(400)
+          throw {
+            message: `This password has been exposed in ${breachResult.count.toLocaleString()} data breach${breachResult.count > 1 ? 'es' : ''}. Please choose a different password for your security.`,
+            status: 400,
+          }
+        }
+      } catch {
+        // If breach check fails, don't block user
+      }
+
       const user = await createUser({ email, password, username, name })
 
       if (referralCode && isValidReferralCode(referralCode)) {
@@ -180,7 +244,7 @@ export const signUpFn = createServerFn({ method: 'POST' })
             data: { newUserId: user.id, referralCode },
           })
         } catch {
-          console.error('Failed to process referral')
+          // Failed to process referral
         }
       }
 
@@ -188,7 +252,7 @@ export const signUpFn = createServerFn({ method: 'POST' })
         const { checkAndAwardBadgesFn } = await import('./badges')
         await checkAndAwardBadgesFn({ data: { userId: user.id } })
       } catch {
-        console.error('Failed to check badges')
+        // Failed to check badges
       }
 
       const session = await createSession(user.id, userAgentFormatted, ip)
@@ -198,7 +262,7 @@ export const signUpFn = createServerFn({ method: 'POST' })
       }
       setCookie('session-token', session.token, COOKIE_OPTIONS)
 
-      // Send verification email
+      // Send verification email (async)
       const verificationToken = await generateEmailVerificationToken(user.id)
       void sendEmailVerificationEmail(
         user.email,
@@ -206,7 +270,7 @@ export const signUpFn = createServerFn({ method: 'POST' })
         verificationToken,
       )
 
-      // Also send welcome email
+      // Also send welcome email (async)
       void sendWelcomeEmail(user.email, user.username)
 
       logSecurityEvent('auth.signup', {
@@ -460,7 +524,12 @@ export const updateProfileFn = createServerFn({ method: 'POST' })
       showActivity: z.boolean().optional(),
       birthday: z.string().optional(), // ISO date string
       creatorTypes: z.array(z.string().max(50)).max(5).optional(),
-      socials: z.record(z.string(), z.string()).optional(), // { twitter: "@handle", instagram: "handle", etc. }
+      socials: z
+        .record(z.string().max(50), z.string().max(200))
+        .refine((obj) => Object.keys(obj).length <= 30, {
+          message: 'Maximum 30 social links allowed',
+        })
+        .optional(), // { twitter: "@handle", instagram: "handle", etc. }
     }),
   )
   .handler(async ({ data }) => {
@@ -475,6 +544,21 @@ export const updateProfileFn = createServerFn({ method: 'POST' })
     if (!user) {
       setResponseStatus(401)
       throw { message: 'Not authenticated', status: 401 }
+    }
+
+    // Rate limit profile updates (30 per minute per user)
+    const rateLimitResult = checkRateLimit(
+      `profile-update:${user.id}`,
+      RATE_LIMITS.API_SPOTIFY.maxRequests,
+      RATE_LIMITS.API_SPOTIFY.windowMs,
+    )
+    if (!rateLimitResult.allowed) {
+      setResponseStatus(429)
+      throw {
+        message: 'Too many profile updates. Please wait before trying again.',
+        status: 429,
+        code: 'RATE_LIMITED',
+      }
     }
 
     try {
@@ -583,9 +667,7 @@ export const requestPasswordResetFn = createServerFn({ method: 'POST' })
       user.username,
     )
     if (!emailResult.success) {
-      console.error(
-        `[Auth] Failed to send password reset email to ${user.email}`,
-      )
+      // Failed to send password reset email
     }
 
     return {
@@ -606,6 +688,61 @@ export const resetPasswordFn = createServerFn({ method: 'POST' })
     if (!user) {
       setResponseStatus(400)
       throw { message: 'Invalid or expired reset token', status: 400 }
+    }
+
+    // Comprehensive password validation for reset with all security features
+    const passwordValidation = validatePassword(data.password, {
+      minLength: 8,
+      maxLength: 128,
+      requireUppercase: true,
+      requireLowercase: true,
+      requireNumbers: true,
+      requireSpecialChars: false,
+      checkCommonPasswords: true,
+      checkKeyboardPatterns: true,
+      checkSequentialChars: true,
+      checkRepeatedChars: true,
+      minEntropy: 40,
+      userInfo: {
+        email: user.email ?? undefined,
+        username: user.username ?? undefined,
+      },
+    })
+
+    if (!passwordValidation.isValid) {
+      setResponseStatus(400)
+      throw {
+        message: passwordValidation.errors[0] || 'Password is too weak',
+        status: 400,
+      }
+    }
+
+    // Check if password contains user info
+    if (
+      containsUserInfo(data.password, {
+        email: user.email ?? undefined,
+        username: user.username ?? undefined,
+      })
+    ) {
+      setResponseStatus(400)
+      throw {
+        message: 'Password should not contain your personal information',
+        status: 400,
+      }
+    }
+
+    // Check for breached passwords using HaveIBeenPwned API
+    try {
+      const breachResult = await checkPasswordBreach(data.password)
+      if (breachResult.breached) {
+        setResponseStatus(400)
+        throw {
+          message: `This password has been exposed in ${breachResult.count.toLocaleString()} data breach${breachResult.count > 1 ? 'es' : ''}. Please choose a different password for your security.`,
+          status: 400,
+        }
+      }
+    } catch {
+      // Breach check failed, but don't block user
     }
 
     await resetPassword(user.id, data.password)
@@ -1102,6 +1239,385 @@ export const resendVerificationEmailFn = createServerFn({
 
   return { success: true, message: 'Verification email sent' }
 })
+
+// Email Change Functions
+
+export const getEmailVerificationStatusFn = createServerFn({
+  method: 'GET',
+}).handler(async () => {
+  const { currentUser } = await authMiddleware()
+  if (!currentUser) {
+    return { verified: false, email: null, pendingEmail: null }
+  }
+
+  const pendingChange = await getPendingEmailChange(currentUser.id)
+
+  return {
+    verified: currentUser.emailVerified,
+    email: currentUser.email,
+    pendingEmail: pendingChange?.pendingEmail || null,
+    pendingEmailExpires: pendingChange?.expires?.toISOString() || null,
+  }
+})
+
+export const requestEmailChangeFn = createServerFn({ method: 'POST' })
+  .inputValidator(
+    z.object({
+      newEmail: z
+        .string()
+        .email('Please enter a valid email address')
+        .min(5)
+        .max(255),
+      password: z.string().min(1, 'Password is required'),
+    }),
+  )
+  .handler(async ({ data }) => {
+    const { currentUser } = await authMiddleware()
+    if (!currentUser) {
+      setResponseStatus(401)
+      throw { message: 'Not authenticated', status: 401 }
+    }
+
+    const { newEmail, password } = data
+    const normalizedEmail = newEmail.toLowerCase().trim()
+
+    // Check if same as current email
+    if (normalizedEmail === currentUser.email.toLowerCase()) {
+      setResponseStatus(400)
+      throw { message: 'New email is the same as current email', status: 400 }
+    }
+
+    // Verify password
+    const user = await findUserByEmail(currentUser.email)
+    if (!user) {
+      setResponseStatus(404)
+      throw { message: 'User not found', status: 404 }
+    }
+
+    const validPassword = await verifyPassword(password, user.passwordHash)
+    if (!validPassword) {
+      setResponseStatus(401)
+      throw { message: 'Invalid password', status: 401 }
+    }
+
+    // Check rate limiting
+    const canChange = await canChangeEmail(currentUser.id)
+    if (!canChange) {
+      setResponseStatus(429)
+      throw {
+        message:
+          'You can only change your email 3 times per 24 hours. Please try again later.',
+        status: 429,
+      }
+    }
+
+    // Check if new email is already taken
+    const existingUser = await findUserByEmail(normalizedEmail)
+    if (existingUser) {
+      setResponseStatus(409)
+      throw { message: 'This email address is already in use', status: 409 }
+    }
+
+    // Generate verification token and send email
+    const token = await generateEmailChangeToken(
+      currentUser.id,
+      normalizedEmail,
+    )
+    await sendEmailChangeVerificationEmail(
+      normalizedEmail,
+      currentUser.username,
+      token,
+    )
+
+    logSecurityEvent('auth.email_change_requested', {
+      userId: currentUser.id,
+      details: { newEmail: normalizedEmail },
+    })
+
+    return {
+      success: true,
+      message: `Verification email sent to ${normalizedEmail}. Please check your inbox.`,
+    }
+  })
+
+export const verifyEmailChangeFn = createServerFn({ method: 'POST' })
+  .inputValidator(z.object({ token: z.string().min(1) }))
+  .handler(async ({ data }) => {
+    const { token } = data
+
+    const user = await validateEmailChangeToken(token)
+    if (!user) {
+      setResponseStatus(400)
+      throw { message: 'Invalid or expired verification link', status: 400 }
+    }
+
+    const oldEmail = user.email
+    const result = await completeEmailChange(user.id)
+
+    if (!result.success) {
+      setResponseStatus(400)
+      throw { message: result.error || 'Failed to change email', status: 400 }
+    }
+
+    // Send notification to old email
+    await sendEmailChangedNotificationEmail(
+      oldEmail,
+      user.username,
+      result.newEmail!,
+    )
+
+    logSecurityEvent('auth.email_changed', {
+      userId: user.id,
+      details: { oldEmail, newEmail: result.newEmail },
+    })
+
+    return {
+      success: true,
+      message: 'Email address changed successfully',
+      newEmail: result.newEmail,
+    }
+  })
+
+export const cancelEmailChangeFn = createServerFn({ method: 'POST' }).handler(
+  async () => {
+    const { currentUser } = await authMiddleware()
+    if (!currentUser) {
+      setResponseStatus(401)
+      throw { message: 'Not authenticated', status: 401 }
+    }
+
+    await cancelEmailChange(currentUser.id)
+
+    return { success: true, message: 'Email change cancelled' }
+  },
+)
+
+// Helper to check email verification status (for use in other functions)
+export const requireEmailVerificationFn = createServerFn({
+  method: 'GET',
+}).handler(async () => {
+  const { currentUser } = await authMiddleware()
+  if (!currentUser) {
+    setResponseStatus(401)
+    throw { message: 'Not authenticated', status: 401 }
+  }
+
+  await requireEmailVerification(currentUser.id)
+  return { verified: true }
+})
+
+// Get user's active sessions
+export const getUserSessionsFn = createServerFn({ method: 'GET' }).handler(
+  async () => {
+    const { currentUser } = await authMiddleware()
+    if (!currentUser) {
+      setResponseStatus(401)
+      throw { message: 'Not authenticated', status: 401 }
+    }
+
+    const currentToken = getCookie('session-token')
+
+    const userSessions = await db
+      .select({
+        id: sessions.id,
+        userAgent: sessions.userAgent,
+        ipAddress: sessions.ipAddress,
+        lastActivityAt: sessions.lastActivityAt,
+        createdAt: sessions.createdAt,
+        token: sessions.token,
+      })
+      .from(sessions)
+      .where(eq(sessions.userId, currentUser.id))
+      .orderBy(desc(sessions.lastActivityAt))
+
+    return {
+      sessions: userSessions.map((s) => ({
+        id: s.id,
+        userAgent: s.userAgent,
+        ipAddress: s.ipAddress ? s.ipAddress.replace(/\.\d+$/, '.xxx') : null, // Mask last octet
+        lastActivityAt: s.lastActivityAt,
+        createdAt: s.createdAt,
+        isCurrent: s.token === currentToken,
+      })),
+    }
+  },
+)
+
+// Delete a specific session
+export const deleteSessionFn = createServerFn({ method: 'POST' })
+  .inputValidator(z.object({ sessionId: z.string().uuid() }))
+  .handler(async ({ data }) => {
+    const { currentUser } = await authMiddleware()
+    if (!currentUser) {
+      setResponseStatus(401)
+      throw { message: 'Not authenticated', status: 401 }
+    }
+
+    // Verify session belongs to user
+    const [session] = await db
+      .select()
+      .from(sessions)
+      .where(and(eq(sessions.id, data.sessionId), eq(sessions.userId, currentUser.id)))
+      .limit(1)
+
+    if (!session) {
+      setResponseStatus(404)
+      throw { message: 'Session not found', status: 404 }
+    }
+
+    await db.delete(sessions).where(eq(sessions.id, data.sessionId))
+
+    return { success: true }
+  })
+
+// Delete all sessions except current
+export const deleteAllOtherSessionsFn = createServerFn({ method: 'POST' }).handler(
+  async () => {
+    const { currentUser } = await authMiddleware()
+    if (!currentUser) {
+      setResponseStatus(401)
+      throw { message: 'Not authenticated', status: 401 }
+    }
+
+    const currentToken = getCookie('session-token')
+    if (!currentToken) {
+      setResponseStatus(401)
+      throw { message: 'No active session', status: 401 }
+    }
+
+    await db
+      .delete(sessions)
+      .where(
+        and(
+          eq(sessions.userId, currentUser.id),
+          ne(sessions.token, currentToken)
+        )
+      )
+
+    return { success: true }
+  },
+)
+
+// Update notification settings
+export const updateNotificationSettingsFn = createServerFn({ method: 'POST' })
+  .inputValidator(
+    z.object({
+      notifyNewFollower: z.boolean().optional(),
+      notifyMilestones: z.boolean().optional(),
+      notifySystemUpdates: z.boolean().optional(),
+      emailLoginAlerts: z.boolean().optional(),
+      emailSecurityAlerts: z.boolean().optional(),
+      emailWeeklyDigest: z.boolean().optional(),
+      emailProductUpdates: z.boolean().optional(),
+    }),
+  )
+  .handler(async ({ data }) => {
+    const { currentUser } = await authMiddleware()
+    if (!currentUser) {
+      setResponseStatus(401)
+      throw { message: 'Not authenticated', status: 401 }
+    }
+
+    await db
+      .update(profiles)
+      .set({
+        ...data,
+        updatedAt: new Date(),
+      })
+      .where(eq(profiles.userId, currentUser.id))
+
+    return { success: true }
+  })
+
+// Get notification settings
+export const getNotificationSettingsFn = createServerFn({ method: 'GET' }).handler(
+  async () => {
+    const { currentUser } = await authMiddleware()
+    if (!currentUser) {
+      setResponseStatus(401)
+      throw { message: 'Not authenticated', status: 401 }
+    }
+
+    const [profile] = await db
+      .select({
+        notifyNewFollower: profiles.notifyNewFollower,
+        notifyMilestones: profiles.notifyMilestones,
+        notifySystemUpdates: profiles.notifySystemUpdates,
+        emailLoginAlerts: profiles.emailLoginAlerts,
+        emailSecurityAlerts: profiles.emailSecurityAlerts,
+        emailWeeklyDigest: profiles.emailWeeklyDigest,
+        emailProductUpdates: profiles.emailProductUpdates,
+      })
+      .from(profiles)
+      .where(eq(profiles.userId, currentUser.id))
+      .limit(1)
+
+    return {
+      settings: profile || {
+        notifyNewFollower: true,
+        notifyMilestones: true,
+        notifySystemUpdates: true,
+        emailLoginAlerts: true,
+        emailSecurityAlerts: true,
+        emailWeeklyDigest: true,
+        emailProductUpdates: true,
+      },
+    }
+  },
+)
+
+// Update privacy settings
+export const updatePrivacySettingsFn = createServerFn({ method: 'POST' })
+  .inputValidator(
+    z.object({
+      isPublic: z.boolean().optional(),
+      showActivity: z.boolean().optional(),
+    }),
+  )
+  .handler(async ({ data }) => {
+    const { currentUser } = await authMiddleware()
+    if (!currentUser) {
+      setResponseStatus(401)
+      throw { message: 'Not authenticated', status: 401 }
+    }
+
+    await db
+      .update(profiles)
+      .set({
+        ...data,
+        updatedAt: new Date(),
+      })
+      .where(eq(profiles.userId, currentUser.id))
+
+    return { success: true }
+  })
+
+// Get privacy settings
+export const getPrivacySettingsFn = createServerFn({ method: 'GET' }).handler(
+  async () => {
+    const { currentUser } = await authMiddleware()
+    if (!currentUser) {
+      setResponseStatus(401)
+      throw { message: 'Not authenticated', status: 401 }
+    }
+
+    const [profile] = await db
+      .select({
+        isPublic: profiles.isPublic,
+        showActivity: profiles.showActivity,
+      })
+      .from(profiles)
+      .where(eq(profiles.userId, currentUser.id))
+      .limit(1)
+
+    return {
+      settings: profile || {
+        isPublic: true,
+        showActivity: true,
+      },
+    }
+  },
+)
 
 export type SignUpInput = z.infer<typeof signUpSchema>
 export type SignInInput = z.infer<typeof signInSchema>

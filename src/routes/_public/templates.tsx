@@ -3,6 +3,7 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 import { motion, AnimatePresence } from 'motion/react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
+import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/components/layout/ThemeProvider'
 import { useAuth } from '@/hooks/use-auth'
 import { toast } from 'sonner'
@@ -26,6 +27,7 @@ import {
   searchPresetTemplates,
   getPresetTemplateStats,
   type PresetTemplate,
+  type CardLayout,
 } from '@/lib/preset-templates'
 import {
   Search,
@@ -50,47 +52,96 @@ import {
   X,
   TrendingUp,
   Zap,
+  Check,
+  Wand2,
+  Globe,
 } from 'lucide-react'
+import { SiX, SiYoutube, SiDiscord } from 'react-icons/si'
 
 export const Route = createFileRoute('/_public/templates')({
   component: TemplatesPage,
   head: () => ({
     meta: [
-      { title: 'Community Templates | Eziox' },
+      { title: 'Templates | Eziox' },
       {
         name: 'description',
-        content:
-          'Browse and apply community-created profile templates. Find the perfect style for your bio page.',
-      },
-      { property: 'og:title', content: 'Community Templates | Eziox' },
-      {
-        property: 'og:description',
-        content: 'Discover stunning profile styles created by the community.',
+        content: 'Browse and apply community-created profile templates.',
       },
     ],
   }),
 })
 
 const CATEGORIES = [
-  { id: 'all', label: 'All', icon: LayoutGrid, color: '#6366f1' },
-  { id: 'vtuber', label: 'VTuber', icon: Sparkles, color: '#ec4899' },
-  { id: 'gamer', label: 'Gamer', icon: Gamepad2, color: '#22c55e' },
-  { id: 'developer', label: 'Developer', icon: Code2, color: '#3b82f6' },
-  { id: 'minimal', label: 'Minimal', icon: Monitor, color: '#6b7280' },
-  { id: 'creative', label: 'Creative', icon: Paintbrush, color: '#f59e0b' },
-  { id: 'business', label: 'Business', icon: Briefcase, color: '#14b8a6' },
-  { id: 'music', label: 'Music', icon: Music4, color: '#8b5cf6' },
-  { id: 'art', label: 'Art', icon: Palette, color: '#ef4444' },
-  { id: 'anime', label: 'Anime', icon: Star, color: '#f472b6' },
+  {
+    id: 'all',
+    labelKey: 'templates.categories.all',
+    icon: LayoutGrid,
+    color: '#6366f1',
+  },
+  {
+    id: 'vtuber',
+    labelKey: 'templates.categories.vtuber',
+    icon: Sparkles,
+    color: '#ec4899',
+  },
+  {
+    id: 'gamer',
+    labelKey: 'templates.categories.gamer',
+    icon: Gamepad2,
+    color: '#22c55e',
+  },
+  {
+    id: 'developer',
+    labelKey: 'templates.categories.developer',
+    icon: Code2,
+    color: '#3b82f6',
+  },
+  {
+    id: 'minimal',
+    labelKey: 'templates.categories.minimal',
+    icon: Monitor,
+    color: '#6b7280',
+  },
+  {
+    id: 'creative',
+    labelKey: 'templates.categories.creative',
+    icon: Paintbrush,
+    color: '#f59e0b',
+  },
+  {
+    id: 'business',
+    labelKey: 'templates.categories.business',
+    icon: Briefcase,
+    color: '#14b8a6',
+  },
+  {
+    id: 'music',
+    labelKey: 'templates.categories.music',
+    icon: Music4,
+    color: '#8b5cf6',
+  },
+  {
+    id: 'art',
+    labelKey: 'templates.categories.art',
+    icon: Palette,
+    color: '#ef4444',
+  },
+  {
+    id: 'anime',
+    labelKey: 'templates.categories.anime',
+    icon: Star,
+    color: '#f472b6',
+  },
 ]
 
 const SORT_OPTIONS = [
-  { value: 'popular', label: 'Popular', icon: TrendingUp },
-  { value: 'likes', label: 'Liked', icon: Heart },
-  { value: 'newest', label: 'New', icon: Zap },
+  { value: 'popular', labelKey: 'templates.sort.popular', icon: TrendingUp },
+  { value: 'likes', labelKey: 'templates.sort.likes', icon: Heart },
+  { value: 'newest', labelKey: 'templates.sort.newest', icon: Zap },
 ]
 
-function TemplatesPage() {
+export function TemplatesPage() {
+  const { t } = useTranslation()
   const { theme } = useTheme()
   const { currentUser } = useAuth()
   const queryClient = useQueryClient()
@@ -143,31 +194,29 @@ function TemplatesPage() {
   const applyMutation = useMutation({
     mutationFn: (templateId: string) => applyTemplate({ data: { templateId } }),
     onSuccess: () => {
-      toast.success('Template applied!', {
-        description: 'Your profile has been updated with the new style.',
+      toast.success(t('templates.toast.applied'), {
+        description: t('templates.toast.appliedDescription'),
       })
       void queryClient.invalidateQueries({ queryKey: ['profileSettings'] })
       void queryClient.invalidateQueries({ queryKey: ['creatorSettings'] })
     },
     onError: (error: { message?: string }) => {
       if (error.message?.includes('Pro tier')) {
-        toast.error('Pro tier required', {
-          description: 'Upgrade to apply community templates.',
+        toast.error(t('templates.toast.proRequired'), {
+          description: t('templates.toast.proRequiredDescription'),
         })
       } else {
-        toast.error('Failed to apply template')
+        toast.error(t('templates.toast.failed'))
       }
     },
   })
 
   const likeMutation = useMutation({
     mutationFn: (templateId: string) => likeTemplate({ data: { templateId } }),
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ['templates'] })
-    },
+    onSuccess: () =>
+      void queryClient.invalidateQueries({ queryKey: ['templates'] }),
   })
 
-  // Server functions for applying preset templates
   const updateBackground = useServerFn(updateCustomBackgroundFn)
   const updateLayout = useServerFn(updateLayoutSettingsFn)
   const updateAnimated = useServerFn(updateAnimatedProfileFn)
@@ -178,50 +227,46 @@ function TemplatesPage() {
     ['pro', 'creator', 'lifetime'].includes(currentUser.tier || 'free')
   )
 
-  // Handle applying preset templates
   const handleApplyPreset = async (template: PresetTemplate) => {
     if (!canApply) {
-      toast.error('Pro tier required', {
-        description: 'Upgrade to apply templates.',
+      toast.error(t('templates.toast.proRequired'), {
+        description: t('templates.toast.proRequiredDescription'),
       })
       return
     }
     try {
-      if (template.settings.customBackground) {
+      if (template.settings.customBackground)
         await updateBackground({
           data: template.settings.customBackground as Parameters<
             typeof updateBackground
           >[0]['data'],
         })
-      }
-      if (template.settings.layoutSettings) {
+      if (template.settings.layoutSettings)
         await updateLayout({
           data: template.settings.layoutSettings as Parameters<
             typeof updateLayout
           >[0]['data'],
         })
-      }
-      if (template.settings.animatedProfile) {
+      if (template.settings.animatedProfile)
         await updateAnimated({
           data: template.settings.animatedProfile as Parameters<
             typeof updateAnimated
           >[0]['data'],
         })
-      }
-      if (template.settings.customCSS) {
+      if (template.settings.customCSS)
         await updateCSS({ data: { css: template.settings.customCSS } })
-      }
-      toast.success('Template applied!', {
-        description: `"${template.name}" has been applied.`,
+      toast.success(t('templates.toast.applied'), {
+        description: t('templates.toast.appliedPreset', {
+          name: template.name,
+        }),
       })
       void queryClient.invalidateQueries({ queryKey: ['profileSettings'] })
       void queryClient.invalidateQueries({ queryKey: ['creatorSettings'] })
     } catch {
-      toast.error('Failed to apply template')
+      toast.error(t('templates.toast.failed'))
     }
   }
 
-  // Get filtered preset templates
   const filteredPresetTemplates = useMemo(() => {
     let presets =
       category === 'all'
@@ -234,19 +279,27 @@ function TemplatesPage() {
     return presets
   }, [category, search])
 
-  // Stats
   const presetStats = useMemo(() => getPresetTemplateStats(), [])
   const totalUses =
-    templatesData?.templates?.reduce((acc, t) => acc + (t.uses || 0), 0) || 0
+    (templatesData?.templates?.reduce(
+      (acc, tmpl) => acc + (tmpl.uses || 0),
+      0,
+    ) || 0) + presetStats.totalPopularity
   const totalLikes =
-    templatesData?.templates?.reduce((acc, t) => acc + (t.likes || 0), 0) || 0
+    templatesData?.templates?.reduce(
+      (acc, tmpl) => acc + (tmpl.likes || 0),
+      0,
+    ) || 0
   const totalTemplates = (templatesData?.total || 0) + presetStats.total
   const totalFeatured = (featuredTemplates?.length || 0) + presetStats.featured
 
   return (
     <div
       className="min-h-screen"
-      style={{ background: theme.colors.background }}
+      style={{
+        background: theme.colors.background,
+        fontFamily: theme.typography.bodyFont,
+      }}
     >
       {/* Animated Background */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
@@ -254,7 +307,7 @@ function TemplatesPage() {
           className="absolute -top-40 -right-40 w-[700px] h-[700px] rounded-full blur-[200px]"
           style={{
             background: theme.colors.primary,
-            opacity: glowOpacity * 0.3,
+            opacity: glowOpacity * 0.25,
           }}
           animate={{ scale: [1, 1.2, 1], x: [0, -50, 0] }}
           transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
@@ -263,7 +316,7 @@ function TemplatesPage() {
           className="absolute bottom-20 left-1/4 w-[500px] h-[500px] rounded-full blur-[180px]"
           style={{
             background: theme.colors.accent,
-            opacity: glowOpacity * 0.25,
+            opacity: glowOpacity * 0.2,
           }}
           animate={{ scale: [1.2, 1, 1.2], y: [0, -40, 0] }}
           transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut' }}
@@ -288,17 +341,12 @@ function TemplatesPage() {
                 border: `1px solid ${theme.colors.primary}30`,
               }}
             >
-              <motion.div
-                animate={{ rotate: [0, 10, -10, 0] }}
-                transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
-              >
-                <Palette size={18} style={{ color: theme.colors.primary }} />
-              </motion.div>
+              <Wand2 size={18} style={{ color: theme.colors.primary }} />
               <span
                 className="text-sm font-medium"
                 style={{ color: theme.colors.foreground }}
               >
-                Community Templates
+                {t('templates.badge')}
               </span>
               <Sparkles size={14} style={{ color: theme.colors.accent }} />
             </motion.div>
@@ -313,14 +361,14 @@ function TemplatesPage() {
                 fontFamily: theme.typography.displayFont,
               }}
             >
-              Find Your Perfect{' '}
+              {t('templates.hero.title')}{' '}
               <span
                 className="bg-clip-text text-transparent"
                 style={{
                   backgroundImage: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
                 }}
               >
-                Style
+                {t('templates.hero.titleHighlight')}
               </span>
             </motion.h1>
 
@@ -331,45 +379,44 @@ function TemplatesPage() {
               className="text-lg lg:text-xl max-w-2xl mx-auto mb-10"
               style={{ color: theme.colors.foregroundMuted }}
             >
-              Discover stunning profile templates created by the community. One
-              click to transform your bio page.
+              {t('templates.hero.subtitle')}
             </motion.p>
 
-            {/* Stats Row */}
+            {/* Stats */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="flex flex-wrap justify-center gap-4 mb-8"
+              className="flex flex-wrap justify-center gap-4"
             >
               {[
                 {
                   value: totalTemplates,
-                  label: 'Templates',
+                  labelKey: 'templates.stats.templates',
                   icon: Layers,
                   color: theme.colors.primary,
                 },
                 {
                   value: totalUses,
-                  label: 'Uses',
+                  labelKey: 'templates.stats.uses',
                   icon: Download,
                   color: '#22c55e',
                 },
                 {
                   value: totalLikes,
-                  label: 'Likes',
+                  labelKey: 'templates.stats.likes',
                   icon: Heart,
                   color: '#ef4444',
                 },
                 {
                   value: totalFeatured,
-                  label: 'Featured',
+                  labelKey: 'templates.stats.featured',
                   icon: Star,
                   color: '#fbbf24',
                 },
               ].map((stat, i) => (
                 <motion.div
-                  key={stat.label}
+                  key={stat.labelKey}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.45 + i * 0.05 }}
@@ -382,10 +429,6 @@ function TemplatesPage() {
                         : theme.colors.card,
                     border: `1px solid ${theme.colors.border}`,
                     borderRadius: cardRadius,
-                    backdropFilter:
-                      theme.effects.cardStyle === 'glass'
-                        ? 'blur(20px)'
-                        : undefined,
                   }}
                 >
                   <div className="flex items-center justify-center gap-2 mb-1">
@@ -401,7 +444,7 @@ function TemplatesPage() {
                     className="text-xs font-medium"
                     style={{ color: theme.colors.foregroundMuted }}
                   >
-                    {stat.label}
+                    {t(stat.labelKey)}
                   </p>
                 </motion.div>
               ))}
@@ -410,7 +453,7 @@ function TemplatesPage() {
         </div>
       </section>
 
-      {/* Search & Filters Section */}
+      {/* Search & Filters */}
       <section className="py-6 px-4">
         <div className="max-w-7xl mx-auto">
           <motion.div
@@ -425,12 +468,9 @@ function TemplatesPage() {
                   : theme.colors.card,
               border: `1px solid ${theme.colors.border}`,
               borderRadius: cardRadius,
-              backdropFilter:
-                theme.effects.cardStyle === 'glass' ? 'blur(20px)' : undefined,
             }}
           >
             <div className="flex flex-col lg:flex-row gap-4">
-              {/* Search Input */}
               <div className="flex-1 relative">
                 <Search
                   size={18}
@@ -439,10 +479,10 @@ function TemplatesPage() {
                 />
                 <input
                   type="text"
-                  placeholder="Search templates by name, creator, or style..."
+                  placeholder={t('templates.search.placeholder')}
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3.5 text-sm outline-none transition-all"
+                  className="w-full pl-12 pr-4 py-3.5 text-sm outline-none"
                   style={{
                     background: theme.colors.backgroundSecondary,
                     color: theme.colors.foreground,
@@ -451,8 +491,6 @@ function TemplatesPage() {
                   }}
                 />
               </div>
-
-              {/* Sort & View Controls */}
               <div className="flex items-center gap-3">
                 <div
                   className="hidden lg:flex items-center gap-1 p-1.5"
@@ -479,18 +517,12 @@ function TemplatesPage() {
                       }}
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      transition={{
-                        type: 'spring',
-                        stiffness: 400,
-                        damping: 25,
-                      }}
                     >
                       <option.icon size={12} />
-                      {option.label}
+                      {t(option.labelKey)}
                     </motion.button>
                   ))}
                 </div>
-
                 <div
                   className="flex overflow-hidden"
                   style={{
@@ -517,11 +549,6 @@ function TemplatesPage() {
                             : theme.colors.foregroundMuted,
                       }}
                       whileTap={{ scale: 0.95 }}
-                      transition={{
-                        type: 'spring',
-                        stiffness: 400,
-                        damping: 25,
-                      }}
                     >
                       <Icon size={16} />
                     </motion.button>
@@ -529,13 +556,11 @@ function TemplatesPage() {
                 </div>
               </div>
             </div>
-
-            {/* Category Filters */}
             <div
               className="mt-5 pt-5 flex flex-wrap gap-2"
               style={{ borderTop: `1px solid ${theme.colors.border}` }}
             >
-              {CATEGORIES.map(({ id, label, icon: Icon, color }) => (
+              {CATEGORIES.map(({ id, labelKey, icon: Icon, color }) => (
                 <motion.button
                   key={id}
                   onClick={() => setCategory(id)}
@@ -549,7 +574,6 @@ function TemplatesPage() {
                   }}
                   whileHover={{ scale: 1.03, y: -2 }}
                   whileTap={{ scale: 0.98 }}
-                  transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                 >
                   <Icon
                     size={14}
@@ -558,12 +582,13 @@ function TemplatesPage() {
                         category === id ? color : theme.colors.foregroundMuted,
                     }}
                   />
-                  {label}
+                  {t(labelKey)}
                 </motion.button>
               ))}
             </div>
           </motion.div>
 
+          {/* Templates Grid */}
           {isLoading ? (
             <div className="flex flex-col items-center justify-center py-24">
               <motion.div
@@ -574,7 +599,7 @@ function TemplatesPage() {
                 <Loader2 size={40} style={{ color: theme.colors.primary }} />
               </motion.div>
               <p style={{ color: theme.colors.foregroundMuted }}>
-                Loading templates...
+                {t('templates.loading')}
               </p>
             </div>
           ) : filteredPresetTemplates.length > 0 ||
@@ -588,10 +613,6 @@ function TemplatesPage() {
                     : theme.colors.card,
                 border: `1px solid ${theme.colors.border}`,
                 borderRadius: cardRadius,
-                backdropFilter:
-                  theme.effects.cardStyle === 'glass'
-                    ? 'blur(20px)'
-                    : undefined,
               }}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -608,7 +629,6 @@ function TemplatesPage() {
                   visible: { transition: { staggerChildren: 0.03 } },
                 }}
               >
-                {/* Eziox Official Templates */}
                 {filteredPresetTemplates.map((template) => (
                   <motion.div
                     key={template.id}
@@ -632,6 +652,7 @@ function TemplatesPage() {
                         userUsername: 'eziox',
                       }}
                       theme={theme}
+                      t={t}
                       onApply={() => handleApplyPreset(template)}
                       onLike={() => {}}
                       onPreview={() => setSelectedPresetTemplate(template)}
@@ -645,7 +666,6 @@ function TemplatesPage() {
                     />
                   </motion.div>
                 ))}
-                {/* Community Templates */}
                 {templatesData?.templates?.map((template) => (
                   <motion.div
                     key={template.id}
@@ -658,6 +678,7 @@ function TemplatesPage() {
                     <TemplateCard
                       template={template}
                       theme={theme}
+                      t={t}
                       onApply={() => applyMutation.mutate(template.id)}
                       onLike={() => likeMutation.mutate(template.id)}
                       onPreview={() => setSelectedTemplate(template.id)}
@@ -675,7 +696,7 @@ function TemplatesPage() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex flex-col items-center justify-center py-24"
+              className="flex flex-col items-center justify-center py-24 mt-4"
               style={{
                 background:
                   theme.effects.cardStyle === 'glass'
@@ -683,10 +704,6 @@ function TemplatesPage() {
                     : theme.colors.card,
                 border: `1px solid ${theme.colors.border}`,
                 borderRadius: cardRadius,
-                backdropFilter:
-                  theme.effects.cardStyle === 'glass'
-                    ? 'blur(20px)'
-                    : undefined,
               }}
             >
               <div
@@ -702,14 +719,13 @@ function TemplatesPage() {
                 className="text-2xl font-bold mb-3"
                 style={{ color: theme.colors.foreground }}
               >
-                No templates found
+                {t('templates.empty.title')}
               </h3>
               <p
                 className="text-sm mb-8 text-center max-w-md"
                 style={{ color: theme.colors.foregroundMuted }}
               >
-                Try adjusting your filters or search terms to find what you're
-                looking for
+                {t('templates.empty.description')}
               </p>
               <div className="flex gap-4">
                 <motion.button
@@ -725,9 +741,8 @@ function TemplatesPage() {
                   }}
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.98 }}
-                  transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                 >
-                  Clear Filters
+                  {t('templates.empty.clearFilters')}
                 </motion.button>
                 {!currentUser && (
                   <Link to="/sign-up">
@@ -736,21 +751,12 @@ function TemplatesPage() {
                       style={{
                         background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
                         borderRadius: cardRadius,
-                        boxShadow:
-                          glowOpacity > 0
-                            ? `0 10px 30px ${theme.colors.primary}40`
-                            : undefined,
                       }}
                       whileHover={{ scale: 1.03 }}
                       whileTap={{ scale: 0.98 }}
-                      transition={{
-                        type: 'spring',
-                        stiffness: 400,
-                        damping: 25,
-                      }}
                     >
                       <Crown size={16} />
-                      Sign up to create
+                      {t('templates.empty.signUp')}
                     </motion.div>
                   </Link>
                 )}
@@ -760,11 +766,13 @@ function TemplatesPage() {
         </div>
       </section>
 
+      {/* Modals */}
       <AnimatePresence>
         {selectedTemplate && (
           <TemplatePreviewModal
             templateId={selectedTemplate}
             theme={theme}
+            t={t}
             onClose={() => setSelectedTemplate(null)}
             onApply={() => {
               applyMutation.mutate(selectedTemplate)
@@ -777,6 +785,7 @@ function TemplatesPage() {
           <PresetTemplatePreviewModal
             template={selectedPresetTemplate}
             theme={theme}
+            t={t}
             onClose={() => setSelectedPresetTemplate(null)}
             onApply={() => {
               void handleApplyPreset(selectedPresetTemplate)
@@ -806,6 +815,7 @@ interface TemplateCardProps {
     userUsername?: string | null
   }
   theme: ReturnType<typeof useTheme>['theme']
+  t: ReturnType<typeof useTranslation>['t']
   onApply: () => void
   onLike: () => void
   onPreview: () => void
@@ -821,6 +831,7 @@ interface TemplateCardProps {
 function TemplateCard({
   template,
   theme,
+  t,
   onApply,
   onLike,
   onPreview,
@@ -829,34 +840,55 @@ function TemplateCard({
   featured,
   listView,
   cardRadius,
-  glowOpacity,
   isOfficial,
 }: TemplateCardProps) {
   const settings = template.settings as {
     accentColor?: string
-    customBackground?: { type: string; value?: string; imageUrl?: string }
+    secondaryColor?: string
+    textColor?: string
+    customBackground?: {
+      type: string
+      value?: string
+      imageUrl?: string
+      gradientColors?: string[]
+      gradientAngle?: number
+    }
+    layoutSettings?: {
+      cardLayout?: CardLayout
+      cardTiltDegree?: number
+      cardBorderRadius?: number
+    }
     customCSS?: string
     animatedProfile?: { enabled?: boolean }
   }
   const accentColor = settings?.accentColor || theme.colors.primary
-  const bgPreview =
-    settings?.customBackground?.type === 'image' &&
-    settings.customBackground.imageUrl
-      ? `url(${settings.customBackground.imageUrl}) center/cover`
-      : settings?.customBackground?.type === 'gradient'
-        ? settings.customBackground.value
-        : settings?.customBackground?.type === 'solid'
-          ? settings.customBackground.value
-          : `linear-gradient(135deg, ${accentColor}, ${theme.colors.accent})`
+  const secondaryColor =
+    settings?.secondaryColor || settings?.accentColor || theme.colors.accent
 
+  // Generate proper background preview
+  let bgPreview = `linear-gradient(135deg, ${accentColor}, ${secondaryColor})`
+  if (settings?.customBackground) {
+    const bg = settings.customBackground
+    if (bg.type === 'image' && bg.imageUrl) {
+      bgPreview = `url(${bg.imageUrl}) center/cover`
+    } else if (
+      bg.type === 'gradient' &&
+      bg.gradientColors &&
+      bg.gradientColors.length > 0
+    ) {
+      bgPreview = `linear-gradient(${bg.gradientAngle || 135}deg, ${bg.gradientColors.join(', ')})`
+    } else if (bg.type === 'solid' && bg.value) {
+      bgPreview = bg.value
+    }
+  }
   const hasCreatorFeatures = !!(
     settings?.customCSS || settings?.animatedProfile?.enabled
   )
   const requiredTier = isOfficial
-    ? 'Official'
+    ? t('templates.tier.official')
     : hasCreatorFeatures
-      ? 'Creator'
-      : 'Pro'
+      ? t('templates.tier.creator')
+      : t('templates.tier.pro')
   const tierColor = isOfficial
     ? theme.colors.primary
     : hasCreatorFeatures
@@ -875,11 +907,8 @@ function TemplateCard({
               : theme.colors.card,
           border: `1px solid ${theme.colors.border}`,
           borderRadius: cardRadius,
-          backdropFilter:
-            theme.effects.cardStyle === 'glass' ? 'blur(10px)' : undefined,
         }}
         whileHover={{ scale: 1.01, x: 4 }}
-        transition={{ type: 'spring', stiffness: 400, damping: 25 }}
         onClick={onPreview}
       >
         <div
@@ -889,82 +918,80 @@ function TemplateCard({
             borderRadius: `calc(${cardRadius} - 8px)`,
           }}
         >
-          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all bg-black/40 backdrop-blur-sm">
-            <Eye size={20} className="text-white" />
-          </div>
-          <div
-            className="absolute top-1.5 left-1.5 px-2 py-0.5 text-[9px] font-bold flex items-center gap-1 backdrop-blur-md"
-            style={{
-              background: `${tierColor}dd`,
-              color: '#fff',
-              borderRadius: '6px',
-            }}
-          >
-            <Crown size={9} />
-            {requiredTier[0]}
-          </div>
           {featured && (
-            <div className="absolute top-1.5 right-1.5">
-              <Sparkles size={14} className="text-yellow-400 drop-shadow-lg" />
+            <div
+              className="absolute top-1 left-1 p-1 rounded-md"
+              style={{ background: '#fbbf24' }}
+            >
+              <Star size={10} className="text-white" />
+            </div>
+          )}
+          {isOfficial && (
+            <div
+              className="absolute top-1 right-1 p-1 rounded-md"
+              style={{ background: theme.colors.primary }}
+            >
+              <Check size={10} className="text-white" />
             </div>
           )}
         </div>
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1.5">
+          <div className="flex items-center gap-2 mb-1">
             <h3
-              className="font-bold text-sm truncate"
+              className="font-semibold truncate"
               style={{ color: theme.colors.foreground }}
             >
               {template.name}
             </h3>
+            <span
+              className="px-2 py-0.5 text-[10px] font-medium rounded-full shrink-0"
+              style={{ background: `${tierColor}20`, color: tierColor }}
+            >
+              {requiredTier}
+            </span>
+          </div>
+          <p
+            className="text-xs truncate mb-2"
+            style={{ color: theme.colors.foregroundMuted }}
+          >
+            {template.description || t('templates.card.noDescription')}
+          </p>
+          <div
+            className="flex items-center gap-3 text-xs"
+            style={{ color: theme.colors.foregroundMuted }}
+          >
             {categoryData && (
-              <span
-                className="px-2 py-0.5 text-[10px] font-medium flex items-center gap-1"
-                style={{
-                  background: `${categoryData.color}15`,
-                  color: categoryData.color,
-                  borderRadius: '6px',
-                }}
-              >
-                <categoryData.icon size={10} />
-                {categoryData.label}
+              <span className="flex items-center gap-1">
+                <categoryData.icon
+                  size={12}
+                  style={{ color: categoryData.color }}
+                />
+                {t(categoryData.labelKey)}
+              </span>
+            )}
+            <span className="flex items-center gap-1">
+              <User size={12} />@{template.userUsername}
+            </span>
+            {template.likes !== null && (
+              <span className="flex items-center gap-1">
+                <Heart size={12} />
+                {template.likes}
               </span>
             )}
           </div>
-          <div
-            className="flex items-center gap-4 text-xs"
-            style={{ color: theme.colors.foregroundMuted }}
-          >
-            <span className="flex items-center gap-1.5">
-              <User size={12} />
-              {template.userUsername || 'Anonymous'}
-            </span>
-            <span className="flex items-center gap-1.5">
-              <Download size={12} />
-              {template.uses || 0}
-            </span>
-            <span className="flex items-center gap-1.5">
-              <Heart size={12} />
-              {template.likes || 0}
-            </span>
-          </div>
         </div>
-        <div className="flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
           <motion.button
             onClick={(e) => {
               e.stopPropagation()
               onLike()
             }}
-            className="p-2.5"
-            style={{
-              background: theme.colors.backgroundSecondary,
-              borderRadius: cardRadius,
-            }}
+            className="p-2 rounded-lg"
+            style={{ background: theme.colors.backgroundSecondary }}
             whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+            whileTap={{ scale: 0.9 }}
           >
-            <Heart size={18} style={{ color: theme.colors.foregroundMuted }} />
+            <Heart size={16} style={{ color: theme.colors.foregroundMuted }} />
           </motion.button>
           <motion.button
             onClick={(e) => {
@@ -972,26 +999,19 @@ function TemplateCard({
               onApply()
             }}
             disabled={!canApply || isApplying}
-            className="px-5 py-2.5 font-medium text-sm disabled:opacity-50 flex items-center gap-2"
+            className="px-4 py-2 rounded-lg text-xs font-medium text-white"
             style={{
               background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
-              color: '#fff',
-              borderRadius: cardRadius,
-              boxShadow:
-                glowOpacity > 0
-                  ? `0 8px 20px ${theme.colors.primary}30`
-                  : undefined,
+              opacity: canApply ? 1 : 0.5,
             }}
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.98 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
             {isApplying ? (
               <Loader2 size={14} className="animate-spin" />
             ) : (
-              <Download size={14} />
+              t('templates.card.apply')
             )}
-            Apply
           </motion.button>
         </div>
       </motion.div>
@@ -1000,7 +1020,7 @@ function TemplateCard({
 
   return (
     <motion.div
-      className="overflow-hidden group cursor-pointer relative"
+      className="group cursor-pointer"
       style={{
         background:
           theme.effects.cardStyle === 'glass'
@@ -1008,141 +1028,97 @@ function TemplateCard({
             : theme.colors.card,
         border: `1px solid ${theme.colors.border}`,
         borderRadius: cardRadius,
-        backdropFilter:
-          theme.effects.cardStyle === 'glass' ? 'blur(10px)' : undefined,
+        overflow: 'hidden',
       }}
-      whileHover={{ scale: 1.03, y: -6 }}
-      transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+      whileHover={{ scale: 1.02, y: -4 }}
       onClick={onPreview}
     >
-      {/* Preview Image */}
       <div
-        className="h-32 relative overflow-hidden"
+        className="aspect-[4/3] relative overflow-hidden"
         style={{ background: bgPreview }}
       >
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-
-        {/* Badges */}
-        <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
+        {featured && (
           <div
-            className="px-2 py-1 text-[10px] font-bold flex items-center gap-1 backdrop-blur-md"
-            style={{
-              background: `${tierColor}dd`,
-              color: '#fff',
-              borderRadius: '8px',
-            }}
+            className="absolute top-2 left-2 px-2 py-1 rounded-md flex items-center gap-1 text-[10px] font-medium text-white"
+            style={{ background: '#fbbf24' }}
           >
-            <Crown size={10} />
-            {requiredTier}+
+            <Star size={10} />
+            {t('templates.card.featured')}
           </div>
-          {featured && (
-            <div
-              className="px-2 py-1 text-[10px] font-bold flex items-center gap-1 backdrop-blur-md"
-              style={{
-                background: 'rgba(251, 191, 36, 0.9)',
-                color: '#fff',
-                borderRadius: '8px',
-              }}
-            >
-              <Sparkles size={10} />
-              Featured
-            </div>
-          )}
-        </div>
-
-        {/* Hover Preview Button */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200">
-          <motion.div
-            className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center"
-            initial={{ scale: 0.8 }}
-            whileHover={{ scale: 1.1 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-          >
-            <Eye size={24} className="text-white" />
-          </motion.div>
-        </div>
-
-        {/* Template Name */}
-        <div className="absolute bottom-2.5 left-2.5 right-2.5">
-          <h3 className="font-bold text-sm text-white truncate drop-shadow-lg">
-            {template.name}
-          </h3>
-        </div>
-      </div>
-
-      {/* Card Content */}
-      <div className="p-3.5">
-        <div className="flex items-center justify-between mb-2.5">
-          <div className="flex items-center gap-1.5">
-            <User size={12} style={{ color: theme.colors.foregroundMuted }} />
-            <span
-              className="text-xs truncate max-w-[80px]"
-              style={{ color: theme.colors.foregroundMuted }}
-            >
-              {template.userUsername || 'Anonymous'}
-            </span>
-          </div>
-          {categoryData && (
-            <span
-              className="px-2 py-0.5 text-[9px] font-medium"
-              style={{
-                background: `${categoryData.color}15`,
-                color: categoryData.color,
-                borderRadius: '6px',
-              }}
-            >
-              {categoryData.label}
-            </span>
-          )}
-        </div>
-
-        <div className="flex items-center justify-between">
+        )}
+        {isOfficial && (
           <div
-            className="flex items-center gap-3 text-xs"
-            style={{ color: theme.colors.foregroundMuted }}
+            className="absolute top-2 right-2 px-2 py-1 rounded-md flex items-center gap-1 text-[10px] font-medium text-white"
+            style={{ background: theme.colors.primary }}
           >
-            <span className="flex items-center gap-1">
-              <Download size={12} />
-              {template.uses || 0}
-            </span>
-            <motion.button
-              onClick={(e) => {
-                e.stopPropagation()
-                onLike()
-              }}
-              className="flex items-center gap-1 hover:text-red-500 transition-colors"
-              whileTap={{ scale: 0.9 }}
-            >
-              <Heart size={12} />
-              {template.likes || 0}
-            </motion.button>
+            <Check size={10} />
+            {t('templates.card.official')}
           </div>
+        )}
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
           <motion.button
-            onClick={(e) => {
-              e.stopPropagation()
-              onApply()
-            }}
-            disabled={!canApply || isApplying}
-            className="px-3.5 py-1.5 text-xs font-semibold disabled:opacity-50 flex items-center gap-1.5"
+            className="px-4 py-2 rounded-lg text-sm font-medium text-white flex items-center gap-2"
             style={{
               background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
-              color: '#fff',
-              borderRadius: `calc(${cardRadius} - 6px)`,
-              boxShadow:
-                glowOpacity > 0
-                  ? `0 4px 12px ${theme.colors.primary}30`
-                  : undefined,
             }}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 25 }}
           >
-            {isApplying ? (
-              <Loader2 size={12} className="animate-spin" />
-            ) : (
-              'Apply'
-            )}
+            <Eye size={16} />
+            {t('templates.card.preview')}
           </motion.button>
+        </div>
+      </div>
+      <div className="p-4">
+        <div className="flex items-center justify-between mb-2">
+          <h3
+            className="font-semibold text-sm truncate"
+            style={{ color: theme.colors.foreground }}
+          >
+            {template.name}
+          </h3>
+          <span
+            className="px-2 py-0.5 text-[10px] font-medium rounded-full shrink-0"
+            style={{ background: `${tierColor}20`, color: tierColor }}
+          >
+            {requiredTier}
+          </span>
+        </div>
+        <p
+          className="text-xs truncate mb-3"
+          style={{ color: theme.colors.foregroundMuted }}
+        >
+          {template.description || t('templates.card.noDescription')}
+        </p>
+        <div className="flex items-center justify-between">
+          <div
+            className="flex items-center gap-2 text-xs"
+            style={{ color: theme.colors.foregroundMuted }}
+          >
+            <span className="flex items-center gap-1">
+              <User size={12} />@{template.userUsername}
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            {template.likes !== null && (
+              <span
+                className="flex items-center gap-1 text-xs"
+                style={{ color: theme.colors.foregroundMuted }}
+              >
+                <Heart size={12} />
+                {template.likes}
+              </span>
+            )}
+            {template.uses !== null && (
+              <span
+                className="flex items-center gap-1 text-xs"
+                style={{ color: theme.colors.foregroundMuted }}
+              >
+                <Download size={12} />
+                {template.uses}
+              </span>
+            )}
+          </div>
         </div>
       </div>
     </motion.div>
@@ -1152,260 +1128,107 @@ function TemplateCard({
 interface TemplatePreviewModalProps {
   templateId: string
   theme: ReturnType<typeof useTheme>['theme']
+  t: ReturnType<typeof useTranslation>['t']
   onClose: () => void
   onApply: () => void
   canApply: boolean
 }
 
 function TemplatePreviewModal({
-  templateId,
   theme,
+  t,
   onClose,
   onApply,
   canApply,
 }: TemplatePreviewModalProps) {
-  const getTemplate = useServerFn(getPublicTemplatesFn)
-
   const cardRadius =
     theme.effects.borderRadius === 'pill'
       ? '24px'
       : theme.effects.borderRadius === 'sharp'
         ? '8px'
         : '16px'
-  const glowOpacity =
-    theme.effects.glowIntensity === 'strong'
-      ? 0.5
-      : theme.effects.glowIntensity === 'medium'
-        ? 0.35
-        : theme.effects.glowIntensity === 'subtle'
-          ? 0.2
-          : 0
-
-  const { data, isLoading } = useQuery({
-    queryKey: ['template', templateId],
-    queryFn: () => getTemplate({ data: { limit: 50 } }),
-  })
-
-  const template = data?.templates?.find((t) => t.id === templateId)
-
-  const settings = template?.settings as
-    | {
-        accentColor?: string
-        customBackground?: { type: string; value?: string; imageUrl?: string }
-        layoutSettings?: { cardBorderRadius?: number; cardShadow?: string }
-      }
-    | undefined
-
-  const bgPreview =
-    settings?.customBackground?.type === 'image' &&
-    settings.customBackground.imageUrl
-      ? `url(${settings.customBackground.imageUrl}) center/cover`
-      : settings?.customBackground?.value ||
-        `linear-gradient(135deg, ${settings?.accentColor || theme.colors.primary}, ${theme.colors.accent})`
-
-  const categoryData = CATEGORIES.find((c) => c.id === template?.category)
-
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-md"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
       style={{ background: 'rgba(0,0,0,0.8)' }}
       onClick={onClose}
     >
       <motion.div
-        initial={{ scale: 0.95, opacity: 0, y: 20 }}
-        animate={{ scale: 1, opacity: 1, y: 0 }}
-        exit={{ scale: 0.95, opacity: 0, y: 20 }}
-        transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-        className="w-full max-w-lg overflow-hidden shadow-2xl"
-        style={{
-          background: theme.colors.card,
-          border: `1px solid ${theme.colors.border}`,
-          borderRadius: cardRadius,
-          boxShadow:
-            glowOpacity > 0
-              ? `0 25px 60px ${theme.colors.primary}30`
-              : '0 25px 50px rgba(0,0,0,0.3)',
-        }}
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        className="w-full max-w-lg p-6"
+        style={{ background: theme.colors.card, borderRadius: cardRadius }}
         onClick={(e) => e.stopPropagation()}
       >
-        {isLoading || !template ? (
-          <div className="h-64 flex items-center justify-center">
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-            >
-              <Loader2 size={32} style={{ color: theme.colors.primary }} />
-            </motion.div>
-          </div>
-        ) : (
-          <>
-            {/* Preview Header */}
-            <div
-              className="h-44 relative overflow-hidden"
-              style={{ background: bgPreview }}
-            >
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-              <motion.button
-                onClick={onClose}
-                className="absolute top-4 right-4 p-2.5 rounded-full backdrop-blur-md"
-                style={{ background: 'rgba(0,0,0,0.4)' }}
-                whileHover={{ scale: 1.1, background: 'rgba(0,0,0,0.6)' }}
-                whileTap={{ scale: 0.9 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-              >
-                <X size={18} className="text-white" />
-              </motion.button>
-              <div className="absolute bottom-4 left-5 right-5">
-                <h2
-                  className="text-2xl font-bold text-white mb-1"
-                  style={{ fontFamily: theme.typography.displayFont }}
-                >
-                  {template.name}
-                </h2>
-                <div className="flex items-center gap-3">
-                  <p className="text-white/80 text-sm flex items-center gap-1.5">
-                    <User size={14} />
-                    {template.userUsername || 'Anonymous'}
-                  </p>
-                  {categoryData && (
-                    <span
-                      className="px-2.5 py-0.5 text-xs font-medium flex items-center gap-1 backdrop-blur-md"
-                      style={{
-                        background: `${categoryData.color}90`,
-                        color: '#fff',
-                        borderRadius: '8px',
-                      }}
-                    >
-                      <categoryData.icon size={12} />
-                      {categoryData.label}
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Modal Content */}
-            <div className="p-6">
-              {template.description && (
-                <p
-                  className="text-sm mb-5"
-                  style={{ color: theme.colors.foregroundMuted }}
-                >
-                  {template.description}
-                </p>
-              )}
-
-              {/* Stats Grid */}
-              <div className="grid grid-cols-3 gap-3 mb-6">
-                {[
-                  {
-                    value: template.uses || 0,
-                    label: 'Uses',
-                    icon: Download,
-                    color: '#22c55e',
-                  },
-                  {
-                    value: template.likes || 0,
-                    label: 'Likes',
-                    icon: Heart,
-                    color: '#ef4444',
-                  },
-                  {
-                    value: template.category,
-                    label: 'Category',
-                    icon: Layers,
-                    color: theme.colors.primary,
-                    capitalize: true,
-                  },
-                ].map((stat) => (
-                  <div
-                    key={stat.label}
-                    className="text-center p-4"
-                    style={{
-                      background: theme.colors.backgroundSecondary,
-                      borderRadius: `calc(${cardRadius} - 6px)`,
-                    }}
-                  >
-                    <div className="flex items-center justify-center gap-1.5 mb-1">
-                      <stat.icon size={14} style={{ color: stat.color }} />
-                      <p
-                        className={`text-xl font-bold ${stat.capitalize ? 'capitalize' : ''}`}
-                        style={{ color: theme.colors.foreground }}
-                      >
-                        {stat.value}
-                      </p>
-                    </div>
-                    <p
-                      className="text-xs"
-                      style={{ color: theme.colors.foregroundMuted }}
-                    >
-                      {stat.label}
-                    </p>
-                  </div>
-                ))}
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex gap-3">
-                <motion.button
-                  onClick={onClose}
-                  className="flex-1 py-3.5 font-medium text-sm"
-                  style={{
-                    background: theme.colors.backgroundSecondary,
-                    color: theme.colors.foreground,
-                    borderRadius: cardRadius,
-                  }}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                >
-                  Cancel
-                </motion.button>
-                <motion.button
-                  onClick={onApply}
-                  disabled={!canApply}
-                  className="flex-1 py-3.5 font-semibold text-sm disabled:opacity-50 flex items-center justify-center gap-2"
-                  style={{
-                    background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
-                    color: '#fff',
-                    borderRadius: cardRadius,
-                    boxShadow:
-                      glowOpacity > 0
-                        ? `0 10px 30px ${theme.colors.primary}40`
-                        : undefined,
-                  }}
-                  whileHover={{ scale: canApply ? 1.02 : 1 }}
-                  whileTap={{ scale: canApply ? 0.98 : 1 }}
-                  transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                >
-                  {canApply ? (
-                    <>
-                      <Download size={16} />
-                      Apply Template
-                    </>
-                  ) : (
-                    <>
-                      <Crown size={16} />
-                      Pro Required
-                    </>
-                  )}
-                </motion.button>
-              </div>
-            </div>
-          </>
-        )}
+        <div className="flex items-center justify-between mb-6">
+          <h2
+            className="text-xl font-bold"
+            style={{ color: theme.colors.foreground }}
+          >
+            {t('templates.modal.title')}
+          </h2>
+          <motion.button
+            onClick={(e) => {
+              e.stopPropagation()
+              onClose()
+            }}
+            className="p-2 rounded-lg"
+            style={{ background: theme.colors.backgroundSecondary }}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+          >
+            <X size={20} style={{ color: theme.colors.foregroundMuted }} />
+          </motion.button>
+        </div>
+        <div
+          className="aspect-video rounded-xl mb-6"
+          style={{
+            background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
+          }}
+        />
+        <div className="flex gap-3">
+          <motion.button
+            onClick={onClose}
+            className="flex-1 py-3 rounded-lg font-medium"
+            style={{
+              background: theme.colors.backgroundSecondary,
+              color: theme.colors.foreground,
+              borderRadius: cardRadius,
+            }}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            {t('templates.modal.cancel')}
+          </motion.button>
+          <motion.button
+            onClick={onApply}
+            disabled={!canApply}
+            className="flex-1 py-3 rounded-lg font-medium text-white flex items-center justify-center gap-2"
+            style={{
+              background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
+              borderRadius: cardRadius,
+              opacity: canApply ? 1 : 0.5,
+            }}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <Check size={18} />
+            {t('templates.modal.apply')}
+          </motion.button>
+        </div>
       </motion.div>
     </motion.div>
   )
 }
 
-// Preview Modal for Preset Templates (no DB query needed)
 interface PresetTemplatePreviewModalProps {
   template: PresetTemplate
   theme: ReturnType<typeof useTheme>['theme']
+  t: ReturnType<typeof useTranslation>['t']
   onClose: () => void
   onApply: () => void
   canApply: boolean
@@ -1416,211 +1239,422 @@ interface PresetTemplatePreviewModalProps {
 function PresetTemplatePreviewModal({
   template,
   theme,
+  t,
   onClose,
   onApply,
   canApply,
   cardRadius,
-  glowOpacity,
 }: PresetTemplatePreviewModalProps) {
   const settings = template.settings
-  const accentColor = settings?.accentColor || theme.colors.primary
-  const bgPreview =
-    settings?.customBackground?.type === 'image' &&
-    settings.customBackground.imageUrl
-      ? `url(${settings.customBackground.imageUrl}) center/cover`
-      : settings?.customBackground?.type === 'gradient' &&
-          settings.customBackground.gradientColors
-        ? `linear-gradient(${settings.customBackground.gradientAngle || 135}deg, ${settings.customBackground.gradientColors.join(', ')})`
-        : settings?.customBackground?.type === 'solid'
-          ? settings.customBackground.value
-          : `linear-gradient(135deg, ${accentColor}, ${theme.colors.accent})`
+  const { layoutSettings, animatedProfile, customBackground } = settings
 
-  const categoryData = CATEGORIES.find((c) => c.id === template.category)
+  // Generate background
+  let bgStyle = `linear-gradient(135deg, ${settings.accentColor}, ${settings.secondaryColor || settings.accentColor})`
+  if (customBackground) {
+    if (customBackground.type === 'solid' && customBackground.value) {
+      bgStyle = customBackground.value
+    } else if (
+      customBackground.type === 'gradient' &&
+      customBackground.gradientColors &&
+      customBackground.gradientColors.length > 0
+    ) {
+      bgStyle = `linear-gradient(${customBackground.gradientAngle || 135}deg, ${customBackground.gradientColors.join(', ')})`
+    }
+  }
+
+  // Card layout styles
+  const previewCardRadius = layoutSettings.cardBorderRadius || 12
+  const cardTilt =
+    layoutSettings.cardLayout === 'tilt'
+      ? layoutSettings.cardTiltDegree || 2
+      : 0
+  const isStackLayout = layoutSettings.cardLayout === 'stack'
+  const isGridLayout = layoutSettings.cardLayout === 'grid'
+  const isTiltLayout = layoutSettings.cardLayout === 'tilt'
+
+  // Sample links for preview
+  const sampleLinks = [
+    { name: 'YouTube', icon: <SiYoutube /> },
+    { name: 'Twitter / X', icon: <SiX /> },
+    { name: 'Discord', icon: <SiDiscord /> },
+    { name: 'Website', icon: <Globe /> },
+  ]
 
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-md"
-      style={{ background: 'rgba(0,0,0,0.8)' }}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{ background: 'rgba(0,0,0,0.9)' }}
       onClick={onClose}
     >
       <motion.div
-        initial={{ scale: 0.95, opacity: 0, y: 20 }}
-        animate={{ scale: 1, opacity: 1, y: 0 }}
-        exit={{ scale: 0.95, opacity: 0, y: 20 }}
-        transition={{ duration: 0.2 }}
-        className="w-full max-w-lg overflow-hidden shadow-2xl"
-        style={{
-          background: theme.colors.card,
-          border: `1px solid ${theme.colors.border}`,
-          borderRadius: cardRadius,
-          boxShadow:
-            glowOpacity > 0
-              ? `0 25px 60px ${theme.colors.primary}30`
-              : '0 25px 50px rgba(0,0,0,0.3)',
-        }}
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        className="w-full max-w-4xl overflow-hidden flex flex-col lg:flex-row"
+        style={{ background: theme.colors.card, borderRadius: cardRadius }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Preview Header */}
+        {/* Live Preview Section */}
         <div
-          className="h-44 relative overflow-hidden"
-          style={{ background: bgPreview }}
+          className="lg:w-1/2 p-6 relative overflow-hidden"
+          style={{ background: bgStyle, minHeight: '400px' }}
         >
-          <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-transparent" />
           <motion.button
-            onClick={onClose}
-            className="absolute top-4 right-4 p-2.5 rounded-full backdrop-blur-md"
-            style={{ background: 'rgba(0,0,0,0.4)' }}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            transition={{ duration: 0.1 }}
+            type="button"
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              onClose()
+            }}
+            className="absolute top-4 right-4 p-3 rounded-full z-50 cursor-pointer"
+            style={{ background: 'rgba(0,0,0,0.7)' }}
+            whileHover={{ scale: 1.1, background: 'rgba(0,0,0,0.9)' }}
+            whileTap={{ scale: 0.95 }}
           >
-            <X size={18} className="text-white" />
+            <X size={20} className="text-white" />
           </motion.button>
-          <div className="absolute top-4 left-4">
-            <div
-              className="px-3 py-1.5 text-xs font-bold flex items-center gap-1.5 backdrop-blur-md"
+
+          {/* Animated particles overlay for animated backgrounds */}
+          {animatedProfile.bannerAnimation === 'particles' && (
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+              {[...Array(20)].map((_, i) => (
+                <motion.div
+                  key={i}
+                  className="absolute w-1 h-1 rounded-full"
+                  style={{
+                    background:
+                      animatedProfile.particleColor || settings.accentColor,
+                    left: `${Math.random() * 100}%`,
+                    top: `${Math.random() * 100}%`,
+                  }}
+                  animate={{ y: [-20, -100], opacity: [0, 1, 0] }}
+                  transition={{
+                    duration: 2 + Math.random() * 2,
+                    repeat: Infinity,
+                    delay: Math.random() * 2,
+                  }}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* Profile Preview */}
+          <div className="relative z-10 flex flex-col items-center pt-8">
+            {/* Avatar */}
+            <motion.div
+              className="w-20 h-20 rounded-full mb-4 flex items-center justify-center text-2xl font-bold"
               style={{
-                background: `${theme.colors.primary}dd`,
+                background: `linear-gradient(135deg, ${settings.accentColor}, ${settings.secondaryColor || settings.accentColor})`,
                 color: '#fff',
-                borderRadius: '8px',
+                boxShadow:
+                  animatedProfile.avatarAnimation === 'glow'
+                    ? `0 0 30px ${animatedProfile.glowColor || settings.accentColor}`
+                    : 'none',
+              }}
+              animate={
+                animatedProfile.avatarAnimation === 'pulse'
+                  ? { scale: [1, 1.05, 1] }
+                  : animatedProfile.avatarAnimation === 'bounce'
+                    ? { y: [0, -8, 0] }
+                    : animatedProfile.avatarAnimation === 'float'
+                      ? { y: [0, -6, 0] }
+                      : animatedProfile.avatarAnimation === 'rotate'
+                        ? { rotate: [0, 360] }
+                        : {}
+              }
+              transition={{
+                duration: animatedProfile.avatarAnimation === 'rotate' ? 8 : 2,
+                repeat: Infinity,
+                ease: 'easeInOut',
               }}
             >
-              <Crown size={12} />
-              Eziox Official
+              E
+            </motion.div>
+
+            {/* Username */}
+            <h3
+              className="text-lg font-bold mb-1"
+              style={{ color: settings.textColor || '#fff' }}
+            >
+              @username
+            </h3>
+            <p
+              className="text-sm mb-6 opacity-80"
+              style={{ color: settings.textColor || '#fff' }}
+            >
+              Bio description here
+            </p>
+
+            {/* Link Cards Preview */}
+            <div
+              className={`w-full max-w-xs space-y-${layoutSettings.cardSpacing > 12 ? '4' : '3'} ${isGridLayout ? 'grid grid-cols-2 gap-3 space-y-0' : ''}`}
+            >
+              {sampleLinks.map((link, i) => (
+                <motion.div
+                  key={link.name}
+                  className="px-4 py-3 flex items-center justify-center gap-2 text-sm font-medium"
+                  style={{
+                    background:
+                      layoutSettings.linkStyle === 'glass'
+                        ? 'rgba(255,255,255,0.1)'
+                        : layoutSettings.linkStyle === 'outline'
+                          ? 'transparent'
+                          : layoutSettings.linkStyle === 'gradient'
+                            ? `linear-gradient(135deg, ${settings.accentColor}40, ${settings.secondaryColor || settings.accentColor}40)`
+                            : layoutSettings.linkStyle === 'neon'
+                              ? 'rgba(0,0,0,0.3)'
+                              : 'rgba(255,255,255,0.15)',
+                    color: settings.textColor || '#fff',
+                    borderRadius: `${previewCardRadius}px`,
+                    border:
+                      layoutSettings.linkStyle === 'outline'
+                        ? `2px solid ${settings.accentColor}`
+                        : layoutSettings.linkStyle === 'neon'
+                          ? `1px solid ${settings.accentColor}`
+                          : layoutSettings.linkStyle === 'glass'
+                            ? '1px solid rgba(255,255,255,0.2)'
+                            : 'none',
+                    transform: isTiltLayout
+                      ? `rotate(${i % 2 === 0 ? cardTilt : -cardTilt}deg)`
+                      : isStackLayout
+                        ? `translateX(${i * 4}px)`
+                        : 'none',
+                    boxShadow:
+                      layoutSettings.linkStyle === 'neon'
+                        ? `0 0 15px ${settings.accentColor}40`
+                        : layoutSettings.cardShadow === 'glow'
+                          ? `0 0 20px ${settings.accentColor}30`
+                          : layoutSettings.cardShadow === 'lg'
+                            ? '0 10px 30px rgba(0,0,0,0.3)'
+                            : layoutSettings.cardShadow === 'md'
+                              ? '0 4px 15px rgba(0,0,0,0.2)'
+                              : 'none',
+                    backdropFilter:
+                      layoutSettings.linkStyle === 'glass'
+                        ? 'blur(10px)'
+                        : 'none',
+                  }}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.1 }}
+                  whileHover={
+                    animatedProfile.linkHoverEffect === 'scale'
+                      ? { scale: 1.03 }
+                      : animatedProfile.linkHoverEffect === 'lift'
+                        ? { y: -4 }
+                        : animatedProfile.linkHoverEffect === 'tilt'
+                          ? { rotate: 2 }
+                          : animatedProfile.linkHoverEffect === 'glow'
+                            ? {
+                                boxShadow: `0 0 25px ${settings.accentColor}60`,
+                              }
+                            : {}
+                  }
+                >
+                  <span>{link.icon}</span>
+                  <span>{link.name}</span>
+                </motion.div>
+              ))}
             </div>
           </div>
-          <div className="absolute bottom-4 left-5 right-5">
-            <h2
-              className="text-2xl font-bold text-white mb-1"
-              style={{ fontFamily: theme.typography.displayFont }}
-            >
-              {template.name}
-            </h2>
-            <div className="flex items-center gap-3">
-              <p className="text-white/80 text-sm flex items-center gap-1.5">
-                <User size={14} />
-                Eziox
-              </p>
-              {categoryData && (
-                <span
-                  className="px-2.5 py-0.5 text-xs font-medium flex items-center gap-1 backdrop-blur-md"
-                  style={{
-                    background: `${categoryData.color}90`,
-                    color: '#fff',
-                    borderRadius: '8px',
-                  }}
-                >
-                  <categoryData.icon size={12} />
-                  {categoryData.label}
-                </span>
-              )}
-            </div>
+
+          {/* Layout badge */}
+          <div
+            className="absolute bottom-4 left-4 px-3 py-1.5 rounded-lg flex items-center gap-2"
+            style={{ background: 'rgba(0,0,0,0.6)' }}
+          >
+            <Check size={14} className="text-white" />
+            <span className="text-xs font-medium text-white">
+              {layoutSettings.cardLayout.toUpperCase()} Layout
+            </span>
           </div>
         </div>
 
-        {/* Modal Content */}
-        <div className="p-6">
+        {/* Info Section */}
+        <div className="lg:w-1/2 p-6 flex flex-col">
+          <div className="flex items-start justify-between mb-4">
+            <div>
+              <h2
+                className="text-2xl font-bold mb-1"
+                style={{ color: theme.colors.foreground }}
+              >
+                {template.name}
+              </h2>
+              <div className="flex items-center gap-2">
+                <span
+                  className="px-2 py-0.5 text-xs font-medium rounded-full"
+                  style={{
+                    background: `${theme.colors.primary}20`,
+                    color: theme.colors.primary,
+                  }}
+                >
+                  {t('templates.card.official')}
+                </span>
+                {template.featured && (
+                  <span
+                    className="px-2 py-0.5 text-xs font-medium rounded-full"
+                    style={{ background: '#fbbf2420', color: '#fbbf24' }}
+                  >
+                    {t('templates.card.featured')}
+                  </span>
+                )}
+              </div>
+            </div>
+            <div className="text-right">
+              <p
+                className="text-2xl font-bold"
+                style={{ color: theme.colors.foreground }}
+              >
+                {template.popularity.toLocaleString()}
+              </p>
+              <p
+                className="text-xs"
+                style={{ color: theme.colors.foregroundMuted }}
+              >
+                uses
+              </p>
+            </div>
+          </div>
+
           <p
-            className="text-sm mb-5"
+            className="text-sm mb-6"
             style={{ color: theme.colors.foregroundMuted }}
           >
             {template.description}
           </p>
 
-          {/* Features */}
-          <div className="grid grid-cols-2 gap-3 mb-6">
-            {template.settings.animatedProfile?.enabled && (
-              <div
-                className="text-center p-3"
-                style={{
-                  background: theme.colors.backgroundSecondary,
-                  borderRadius: `calc(${cardRadius} - 6px)`,
-                }}
-              >
-                <Sparkles
-                  size={16}
-                  className="mx-auto mb-1"
-                  style={{ color: theme.colors.primary }}
-                />
-                <p
-                  className="text-xs"
-                  style={{ color: theme.colors.foreground }}
-                >
-                  Animations
-                </p>
-              </div>
-            )}
-            {template.settings.customCSS && (
-              <div
-                className="text-center p-3"
-                style={{
-                  background: theme.colors.backgroundSecondary,
-                  borderRadius: `calc(${cardRadius} - 6px)`,
-                }}
-              >
-                <Palette
-                  size={16}
-                  className="mx-auto mb-1"
-                  style={{ color: theme.colors.accent }}
-                />
-                <p
-                  className="text-xs"
-                  style={{ color: theme.colors.foreground }}
-                >
-                  Custom CSS
-                </p>
-              </div>
-            )}
-            <div
-              className="text-center p-3"
+          {/* Tags */}
+          <div className="flex flex-wrap gap-2 mb-6">
+            <span
+              className="px-3 py-1 text-xs font-medium rounded-full capitalize"
               style={{
-                background: theme.colors.backgroundSecondary,
-                borderRadius: `calc(${cardRadius} - 6px)`,
+                background: `${settings.accentColor}20`,
+                color: settings.accentColor,
               }}
             >
-              <Layers
-                size={16}
-                className="mx-auto mb-1"
-                style={{ color: '#22c55e' }}
-              />
-              <p
-                className="text-xs capitalize"
-                style={{ color: theme.colors.foreground }}
-              >
-                {template.category}
-              </p>
-            </div>
-            {template.featured && (
-              <div
-                className="text-center p-3"
+              {template.category}
+            </span>
+            {template.tags.slice(0, 4).map((tag) => (
+              <span
+                key={tag}
+                className="px-3 py-1 text-xs font-medium rounded-full"
                 style={{
                   background: theme.colors.backgroundSecondary,
-                  borderRadius: `calc(${cardRadius} - 6px)`,
+                  color: theme.colors.foregroundMuted,
                 }}
               >
-                <Star
-                  size={16}
-                  className="mx-auto mb-1"
-                  style={{ color: '#fbbf24' }}
-                />
-                <p
-                  className="text-xs"
-                  style={{ color: theme.colors.foreground }}
-                >
-                  Featured
-                </p>
-              </div>
-            )}
+                #{tag}
+              </span>
+            ))}
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex gap-3">
+          {/* Features */}
+          <div className="grid grid-cols-2 gap-3 mb-6">
+            <div
+              className="p-3 rounded-lg"
+              style={{ background: theme.colors.backgroundSecondary }}
+            >
+              <p
+                className="text-xs font-medium mb-1"
+                style={{ color: theme.colors.foregroundMuted }}
+              >
+                Layout
+              </p>
+              <p
+                className="text-sm font-semibold capitalize"
+                style={{ color: theme.colors.foreground }}
+              >
+                {layoutSettings.cardLayout}
+              </p>
+            </div>
+            <div
+              className="p-3 rounded-lg"
+              style={{ background: theme.colors.backgroundSecondary }}
+            >
+              <p
+                className="text-xs font-medium mb-1"
+                style={{ color: theme.colors.foregroundMuted }}
+              >
+                Link Style
+              </p>
+              <p
+                className="text-sm font-semibold capitalize"
+                style={{ color: theme.colors.foreground }}
+              >
+                {layoutSettings.linkStyle}
+              </p>
+            </div>
+            <div
+              className="p-3 rounded-lg"
+              style={{ background: theme.colors.backgroundSecondary }}
+            >
+              <p
+                className="text-xs font-medium mb-1"
+                style={{ color: theme.colors.foregroundMuted }}
+              >
+                Hover Effect
+              </p>
+              <p
+                className="text-sm font-semibold capitalize"
+                style={{ color: theme.colors.foreground }}
+              >
+                {animatedProfile.linkHoverEffect}
+              </p>
+            </div>
+            <div
+              className="p-3 rounded-lg"
+              style={{ background: theme.colors.backgroundSecondary }}
+            >
+              <p
+                className="text-xs font-medium mb-1"
+                style={{ color: theme.colors.foregroundMuted }}
+              >
+                Animations
+              </p>
+              <p
+                className="text-sm font-semibold"
+                style={{ color: theme.colors.foreground }}
+              >
+                {animatedProfile.enabled ? 'Enabled' : 'Disabled'}
+              </p>
+            </div>
+          </div>
+
+          {/* Accent Color */}
+          <div
+            className="flex items-center gap-3 mb-6 p-3 rounded-lg"
+            style={{ background: theme.colors.backgroundSecondary }}
+          >
+            <div
+              className="w-8 h-8 rounded-full"
+              style={{
+                background: `linear-gradient(135deg, ${settings.accentColor}, ${settings.secondaryColor || settings.accentColor})`,
+              }}
+            />
+            <div>
+              <p
+                className="text-xs font-medium"
+                style={{ color: theme.colors.foregroundMuted }}
+              >
+                Accent Color
+              </p>
+              <p
+                className="text-sm font-mono"
+                style={{ color: theme.colors.foreground }}
+              >
+                {settings.accentColor}
+              </p>
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="mt-auto flex gap-3">
             <motion.button
               onClick={onClose}
-              className="flex-1 py-3.5 font-medium text-sm"
+              className="flex-1 py-3 rounded-lg font-medium"
               style={{
                 background: theme.colors.backgroundSecondary,
                 color: theme.colors.foreground,
@@ -1628,40 +1662,33 @@ function PresetTemplatePreviewModal({
               }}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              transition={{ duration: 0.1 }}
             >
-              Cancel
+              {t('templates.modal.cancel')}
             </motion.button>
             <motion.button
               onClick={onApply}
               disabled={!canApply}
-              className="flex-1 py-3.5 font-semibold text-sm disabled:opacity-50 flex items-center justify-center gap-2"
+              className="flex-1 py-3 rounded-lg font-medium text-white flex items-center justify-center gap-2"
               style={{
-                background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
-                color: '#fff',
+                background: `linear-gradient(135deg, ${settings.accentColor}, ${settings.secondaryColor || settings.accentColor})`,
                 borderRadius: cardRadius,
-                boxShadow:
-                  glowOpacity > 0
-                    ? `0 10px 30px ${theme.colors.primary}40`
-                    : undefined,
+                opacity: canApply ? 1 : 0.5,
               }}
-              whileHover={{ scale: canApply ? 1.02 : 1 }}
-              whileTap={{ scale: canApply ? 0.98 : 1 }}
-              transition={{ duration: 0.1 }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
             >
-              {canApply ? (
-                <>
-                  <Download size={16} />
-                  Apply Template
-                </>
-              ) : (
-                <>
-                  <Crown size={16} />
-                  Pro Required
-                </>
-              )}
+              <Check size={18} />
+              {t('templates.modal.apply')}
             </motion.button>
           </div>
+          {!canApply && (
+            <p
+              className="text-center text-xs mt-4"
+              style={{ color: theme.colors.foregroundMuted }}
+            >
+              {t('templates.modal.proRequired')}
+            </p>
+          )}
         </div>
       </motion.div>
     </motion.div>

@@ -14,6 +14,7 @@ Thank you for your interest in contributing to Eziox! 🎉
 ### 📝 Reporting Issues
 
 When creating an issue, please include:
+
 - Clear description of the problem
 - Steps to reproduce
 - Expected vs actual behavior
@@ -41,6 +42,7 @@ When creating an issue, please include:
 **Eziox is licensed under PolyForm Noncommercial 1.0.0**
 
 ### ✅ What Contributors CAN Do:
+
 - View and study the source code
 - Submit Pull Requests to improve the project
 - Report issues and suggest features
@@ -48,6 +50,7 @@ When creating an issue, please include:
 - Use for educational purposes
 
 ### ❌ What Contributors CANNOT Do:
+
 - Use commercially without a license
 - Sell or monetize the software
 - Offer as a hosted service (SaaS)
@@ -64,6 +67,7 @@ When creating an issue, please include:
 ## 💬 Questions?
 
 Feel free to:
+
 - Open an issue for questions
 - Contact us at: 📧 business@eziox.link
 
@@ -71,4 +75,4 @@ Feel free to:
 
 **Thank you for helping make Eziox better!** 🙏
 
-*By contributing, you agree that your contributions will be licensed under the PolyForm Noncommercial 1.0.0 license.*
+_By contributing, you agree that your contributions will be licensed under the PolyForm Noncommercial 1.0.0 license._

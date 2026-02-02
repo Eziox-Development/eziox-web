@@ -3,9 +3,10 @@
  * Handles referral signups at eziox.link/join/{code}
  */
 
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { createFileRoute, Link, useParams } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import { motion } from 'motion/react'
+import { useTranslation } from 'react-i18next'
 import { useQuery } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
 import { validateReferralCodeFn } from '@/server/functions/referrals'
@@ -41,8 +42,10 @@ export const Route = createFileRoute('/_public/join/$code')({
   component: JoinPage,
 })
 
-function JoinPage() {
-  const { code } = Route.useParams()
+export function JoinPage() {
+  const params = useParams({ strict: false })
+  const code = params.code || ''
+  const { t } = useTranslation()
   const { theme } = useTheme()
   const [storedCode, setStoredCode] = useState(false)
 
@@ -56,6 +59,7 @@ function JoinPage() {
     queryKey: ['validateReferral', code],
     queryFn: () => validateCode({ data: { code } }),
     retry: false,
+    enabled: !!code,
   })
 
   const cardRadius =
@@ -73,7 +77,6 @@ function JoinPage() {
           ? 0.2
           : 0
 
-  // Mark code as ready for redirect
   useEffect(() => {
     if (validation?.valid && code) {
       setStoredCode(true)
@@ -110,13 +113,13 @@ function JoinPage() {
             className="text-lg font-medium"
             style={{ color: theme.colors.foreground }}
           >
-            Validating invite...
+            {t('join.loading.title')}
           </p>
           <p
             className="text-sm mt-1"
             style={{ color: theme.colors.foregroundMuted }}
           >
-            Code: {code.toUpperCase()}
+            {t('join.loading.code')}: {code.toUpperCase()}
           </p>
         </motion.div>
       </div>
@@ -130,7 +133,6 @@ function JoinPage() {
         className="min-h-screen flex items-center justify-center p-4"
         style={{ background: theme.colors.background }}
       >
-        {/* Background */}
         <div className="fixed inset-0 pointer-events-none overflow-hidden">
           <div
             className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-[200px]"
@@ -163,23 +165,22 @@ function JoinPage() {
               fontFamily: theme.typography.displayFont,
             }}
           >
-            Invalid Invite Code
+            {t('join.error.title')}
           </h1>
           <p
             className="text-lg mb-2"
             style={{ color: theme.colors.foregroundMuted }}
           >
-            The code{' '}
+            {t('join.error.codeInvalid')}{' '}
             <span
               className="font-mono font-bold"
               style={{ color: theme.colors.foreground }}
             >
               "{code.toUpperCase()}"
-            </span>{' '}
-            is not valid.
+            </span>
           </p>
           <p className="mb-8" style={{ color: theme.colors.foregroundMuted }}>
-            It may have expired or was entered incorrectly.
+            {t('join.error.expired')}
           </p>
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -196,7 +197,7 @@ function JoinPage() {
                       : undefined,
                 }}
               >
-                Sign Up Anyway
+                {t('join.error.signUpAnyway')}
                 <ArrowRight size={18} />
               </motion.button>
             </Link>
@@ -211,7 +212,7 @@ function JoinPage() {
                   color: theme.colors.foreground,
                 }}
               >
-                Go Home
+                {t('join.error.goHome')}
               </motion.button>
             </Link>
           </div>
@@ -252,7 +253,6 @@ function JoinPage() {
           transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
         />
 
-        {/* Floating particles */}
         {[...Array(5)].map((_, i) => (
           <motion.div
             key={i}
@@ -301,7 +301,7 @@ function JoinPage() {
             className="text-sm font-medium"
             style={{ color: theme.colors.foreground }}
           >
-            Exclusive Invite
+            {t('join.badge')}
           </span>
           <Star size={14} style={{ color: theme.colors.accent }} />
         </motion.div>
@@ -362,14 +362,14 @@ function JoinPage() {
             fontFamily: theme.typography.displayFont,
           }}
         >
-          You're{' '}
+          {t('join.success.titleStart')}{' '}
           <span
             className="bg-clip-text text-transparent"
             style={{
               backgroundImage: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
             }}
           >
-            Invited!
+            {t('join.success.titleHighlight')}
           </span>
         </motion.h1>
 
@@ -390,7 +390,6 @@ function JoinPage() {
               theme.effects.cardStyle === 'glass' ? 'blur(20px)' : undefined,
           }}
         >
-          {/* Glow */}
           <div
             className="absolute -top-10 -right-10 w-32 h-32 rounded-full blur-2xl"
             style={{
@@ -400,7 +399,6 @@ function JoinPage() {
           />
 
           <div className="relative flex items-center justify-center gap-5">
-            {/* Avatar */}
             <div className="relative">
               <div
                 className="absolute inset-0 rounded-full blur-lg"
@@ -459,7 +457,7 @@ function JoinPage() {
                       color: '#000',
                     }}
                   >
-                    Owner
+                    {t('join.success.owner')}
                   </span>
                 )}
               </div>
@@ -473,7 +471,7 @@ function JoinPage() {
                 className="text-sm mt-2"
                 style={{ color: theme.colors.foregroundMuted }}
               >
-                invited you to join{' '}
+                {t('join.success.invitedYou')}{' '}
                 <span
                   className="font-semibold"
                   style={{ color: theme.colors.primary }}
@@ -496,17 +494,33 @@ function JoinPage() {
             className="text-sm font-medium mb-4"
             style={{ color: theme.colors.foregroundMuted }}
           >
-            What you'll get:
+            {t('join.success.benefits.title')}
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {[
-              { icon: Link2, text: 'Unlimited bio links', color: '#6366f1' },
-              { icon: Palette, text: '30+ free themes', color: '#ec4899' },
-              { icon: BarChart3, text: 'Live analytics', color: '#22c55e' },
-              { icon: Zap, text: 'Instant setup', color: '#f59e0b' },
+              {
+                icon: Link2,
+                text: t('join.success.benefits.links'),
+                color: '#6366f1',
+              },
+              {
+                icon: Palette,
+                text: t('join.success.benefits.themes'),
+                color: '#ec4899',
+              },
+              {
+                icon: BarChart3,
+                text: t('join.success.benefits.analytics'),
+                color: '#22c55e',
+              },
+              {
+                icon: Zap,
+                text: t('join.success.benefits.setup'),
+                color: '#f59e0b',
+              },
             ].map((benefit, i) => (
               <motion.div
-                key={benefit.text}
+                key={i}
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.6 + i * 0.05 }}
@@ -547,7 +561,7 @@ function JoinPage() {
           >
             <CheckCircle size={16} className="text-green-500" />
             <span className="text-sm font-medium text-green-500">
-              Code applied: {code.toUpperCase()}
+              {t('join.success.codeApplied')}: {code.toUpperCase()}
             </span>
           </motion.div>
         )}
@@ -572,7 +586,7 @@ function JoinPage() {
               }}
             >
               <Users size={24} />
-              Join Eziox Now
+              {t('join.success.cta')}
               <ArrowRight size={24} />
             </motion.button>
           </Link>
@@ -586,13 +600,13 @@ function JoinPage() {
           className="mt-8 text-sm"
           style={{ color: theme.colors.foregroundMuted }}
         >
-          Already have an account?{' '}
+          {t('join.success.alreadyHaveAccount')}{' '}
           <Link
             to="/sign-in"
             className="font-semibold hover:underline"
             style={{ color: theme.colors.primary }}
           >
-            Sign In
+            {t('join.success.signIn')}
           </Link>
         </motion.p>
       </motion.div>

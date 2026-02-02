@@ -921,6 +921,112 @@ export async function sendContactNotificationEmail(
   }
 }
 
+// Email Change Verification Email - sent to the NEW email address
+export async function sendEmailChangeVerificationEmail(
+  to: string,
+  username: string,
+  token: string,
+): Promise<EmailResult> {
+  const verifyUrl = `${APP_URL}/verify-email-change?token=${token}`
+
+  try {
+    const { error } = await getResend().emails.send({
+      from: FROM_EMAIL,
+      to,
+      subject: 'Verify your new email address - Eziox',
+      html: generateEmailTemplate({
+        title: 'Verify New Email',
+        subtitle: `Hey @${username}, please verify this email address to complete your email change.`,
+        content: `
+          <div style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 12px; padding: 16px; margin-bottom: 24px;">
+            <p style="margin: 0; font-size: 14px; color: #3b82f6; text-align: center;">
+              📧 Someone requested to change their Eziox account email to this address
+            </p>
+          </div>
+          <p style="margin: 0 0 16px; font-size: 14px; color: rgba(255, 255, 255, 0.7); line-height: 1.6;">
+            Click the button below to verify this email address. Once verified, this will become your new login email for Eziox.
+          </p>
+        `,
+        buttonText: 'Verify Email Address',
+        buttonUrl: verifyUrl,
+        footer:
+          "This link expires in 24 hours. If you didn't request this change, you can safely ignore this email.",
+      }),
+    })
+
+    if (error) {
+      console.error('[Email] Failed to send email change verification:', error)
+      return { success: false, error: error.message }
+    }
+
+    return { success: true }
+  } catch (err) {
+    console.error('[Email] Error sending email change verification:', err)
+    return { success: false, error: 'Failed to send email' }
+  }
+}
+
+// Email Changed Notification - sent to the OLD email address
+export async function sendEmailChangedNotificationEmail(
+  oldEmail: string,
+  username: string,
+  newEmail: string,
+): Promise<EmailResult> {
+  const timestamp = new Date()
+  const formattedTime = formatTimestamp(timestamp)
+
+  try {
+    const { error } = await getResend().emails.send({
+      from: FROM_EMAIL,
+      to: oldEmail,
+      subject: '⚠️ Your Eziox email address was changed',
+      html: generateEmailTemplate({
+        title: 'Email Address Changed',
+        subtitle: `Hey @${username}, your account email has been changed.`,
+        content: `
+          <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 12px; padding: 16px; margin-bottom: 24px;">
+            <p style="margin: 0; font-size: 14px; color: #ef4444; text-align: center;">
+              ⚠️ Security Alert: Email address changed
+            </p>
+          </div>
+          <table width="100%" cellpadding="0" cellspacing="0" style="background: rgba(255, 255, 255, 0.05); border-radius: 12px; overflow: hidden; margin-bottom: 24px;">
+            <tr>
+              <td style="padding: 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                <p style="margin: 0 0 4px; font-size: 12px; color: rgba(255, 255, 255, 0.5);">Previous Email</p>
+                <p style="margin: 0; font-size: 14px; color: #ffffff;">${oldEmail}</p>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                <p style="margin: 0 0 4px; font-size: 12px; color: rgba(255, 255, 255, 0.5);">New Email</p>
+                <p style="margin: 0; font-size: 14px; color: #ffffff;">${newEmail}</p>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 16px;">
+                <p style="margin: 0 0 4px; font-size: 12px; color: rgba(255, 255, 255, 0.5);">Time</p>
+                <p style="margin: 0; font-size: 14px; color: #ffffff;">${formattedTime}</p>
+              </td>
+            </tr>
+          </table>
+        `,
+        footer:
+          'If you didn\'t make this change, your account may be compromised. Please contact support immediately at <a href="mailto:security@eziox.link" style="color: #8b5cf6;">security@eziox.link</a>.',
+      }),
+    })
+
+    if (error) {
+      console.error('[Email] Failed to send email changed notification:', error)
+      return { success: false, error: error.message }
+    }
+
+    return { success: true }
+  } catch (err) {
+    console.error('[Email] Error sending email changed notification:', err)
+    return { success: false, error: 'Failed to send email' }
+  }
+}
+
 export async function sendContactConfirmationEmail(
   to: string,
   name: string,
@@ -1022,5 +1128,127 @@ export async function sendContactConfirmationEmail(
   } catch (error) {
     console.error('Failed to send contact confirmation email:', error)
     return { success: false, error: 'Failed to send confirmation email' }
+  }
+}
+
+// Abuse Alert Email - sent to admin/support team
+export async function sendAbuseAlertEmail(params: {
+  alertType: string
+  severity: string
+  title: string
+  description: string
+  username: string
+  userEmail: string
+  metadata?: Record<string, unknown>
+}): Promise<EmailResult> {
+  const {
+    alertType,
+    severity,
+    title,
+    description,
+    username,
+    userEmail,
+    metadata,
+  } = params
+  const timestamp = new Date()
+  const formattedTime = formatTimestamp(timestamp)
+
+  const severityColors: Record<
+    string,
+    { bg: string; border: string; text: string }
+  > = {
+    info: {
+      bg: 'rgba(59, 130, 246, 0.1)',
+      border: 'rgba(59, 130, 246, 0.3)',
+      text: '#3b82f6',
+    },
+    warning: {
+      bg: 'rgba(245, 158, 11, 0.1)',
+      border: 'rgba(245, 158, 11, 0.3)',
+      text: '#f59e0b',
+    },
+    critical: {
+      bg: 'rgba(239, 68, 68, 0.1)',
+      border: 'rgba(239, 68, 68, 0.3)',
+      text: '#ef4444',
+    },
+  }
+
+  const colors = severityColors[severity] ?? severityColors.warning!
+  const severityEmoji =
+    severity === 'critical' ? '🚨' : severity === 'warning' ? '⚠️' : 'ℹ️'
+
+  const metadataHtml = metadata
+    ? `<tr>
+        <td style="padding: 16px;">
+          <p style="margin: 0 0 4px; font-size: 12px; color: rgba(255, 255, 255, 0.5);">Metadata</p>
+          <pre style="margin: 0; font-size: 12px; color: #ffffff; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; overflow-x: auto;">${JSON.stringify(metadata, null, 2)}</pre>
+        </td>
+      </tr>`
+    : ''
+
+  try {
+    const { error } = await getResend().emails.send({
+      from: FROM_EMAIL,
+      to: 'legal@eziox.link',
+      subject: `${severityEmoji} [${severity.toUpperCase()}] Abuse Alert: ${title}`,
+      html: generateEmailTemplate({
+        title: `${severityEmoji} Abuse Alert`,
+        subtitle: `A ${severity} abuse alert has been triggered`,
+        content: `
+          <div style="background: ${colors.bg}; border: 1px solid ${colors.border}; border-radius: 12px; padding: 16px; margin-bottom: 24px;">
+            <p style="margin: 0; font-size: 14px; color: ${colors.text}; text-align: center; font-weight: 600;">
+              ${severityEmoji} ${severity.toUpperCase()}: ${title}
+            </p>
+          </div>
+          
+          <table width="100%" cellpadding="0" cellspacing="0" style="background: rgba(255, 255, 255, 0.05); border-radius: 12px; overflow: hidden; margin-bottom: 24px;">
+            <tr>
+              <td style="padding: 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                <p style="margin: 0 0 4px; font-size: 12px; color: rgba(255, 255, 255, 0.5);">Alert Type</p>
+                <p style="margin: 0; font-size: 14px; color: #ffffff;">${alertType}</p>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                <p style="margin: 0 0 4px; font-size: 12px; color: rgba(255, 255, 255, 0.5);">User</p>
+                <p style="margin: 0; font-size: 14px; color: #ffffff;">@${username} (${userEmail})</p>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                <p style="margin: 0 0 4px; font-size: 12px; color: rgba(255, 255, 255, 0.5);">Description</p>
+                <p style="margin: 0; font-size: 14px; color: #ffffff; line-height: 1.6;">${description}</p>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                <p style="margin: 0 0 4px; font-size: 12px; color: rgba(255, 255, 255, 0.5);">Time</p>
+                <p style="margin: 0; font-size: 14px; color: #ffffff;">${formattedTime}</p>
+              </td>
+            </tr>
+            ${metadataHtml}
+          </table>
+          
+          <p style="margin: 0 0 16px; font-size: 14px; color: rgba(255, 255, 255, 0.7); line-height: 1.6;">
+            Please review this alert in the Admin Panel and take appropriate action.
+          </p>
+        `,
+        buttonText: 'View in Admin Panel',
+        buttonUrl: `${APP_URL}/admin/abuse-alerts`,
+        footer:
+          'This is an automated notification from the Eziox Abuse Detection System.',
+      }),
+    })
+
+    if (error) {
+      console.error('[Email] Failed to send abuse alert email:', error)
+      return { success: false, error: error.message }
+    }
+
+    return { success: true }
+  } catch (err) {
+    console.error('[Email] Error sending abuse alert email:', err)
+    return { success: false, error: 'Failed to send email' }
   }
 }

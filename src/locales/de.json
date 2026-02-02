@@ -1,0 +1,3787 @@
+{
+  "spotify": {
+    "nowPlaying": {
+      "loading": "Laden...",
+      "notPlaying": "Nicht am Spielen",
+      "offline": "Offline",
+      "notListening": "Hört gerade nicht auf Spotify",
+      "nowPlaying": "Jetzt läuft",
+      "paused": "Pausiert",
+      "listenOn": "Auf Spotify anhören"
+    },
+    "connect": {
+      "title": "Spotify",
+      "subtitle": "Zeige, was du hörst",
+      "connected": "Verbunden",
+      "notConnected": "Nicht verbunden",
+      "loading": "Lade Spotify-Verbindung...",
+      "showOnProfile": "Auf Profil anzeigen",
+      "visibleToVisitors": "Besucher können deine Aktivität sehen",
+      "activityHidden": "Aktivität ist verborgen",
+      "openSpotify": "Spotify öffnen",
+      "disconnect": "Trennen",
+      "connectedSince": "Verbunden seit",
+      "connectDescription": "Verbinde dein Spotify-Konto, um anzuzeigen, was du gerade hörst. Besucher sehen Echtzeit-Updates deiner Musik.",
+      "connectButton": "Spotify verbinden",
+      "connecting": "Verbinde...",
+      "privacyNote": "Wir fordern nur Lesezugriff auf deine Wiedergabe an",
+      "features": {
+        "realtime": "Echtzeit-Updates",
+        "albumArt": "Album-Artwork-Anzeige",
+        "progressBar": "Live-Fortschrittsbalken",
+        "privacy": "Datenschutz-Kontrollen"
+      }
+    }
+  },
+  "common": {
+    "loading": "Laden...",
+    "error": "Ein Fehler ist aufgetreten",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "create": "Erstellen",
+    "submit": "Absenden",
+    "back": "Zurück",
+    "next": "Weiter",
+    "previous": "Zurück",
+    "search": "Suchen",
+    "filter": "Filtern",
+    "sort": "Sortieren",
+    "connect": "Verbinden",
+    "disconnect": "Trennen",
+    "close": "Schließen",
+    "open": "Öffnen",
+    "yes": "Ja",
+    "no": "Nein",
+    "confirm": "Bestätigen",
+    "required": "Erforderlich",
+    "optional": "Optional",
+    "learnMore": "Mehr erfahren",
+    "viewAll": "Alle anzeigen",
+    "seeMore": "Mehr anzeigen",
+    "showLess": "Weniger anzeigen"
+  },
+  "nav": {
+    "home": "Startseite",
+    "about": "Über uns",
+    "pricing": "Preise",
+    "docs": "Dokumentation",
+    "contact": "Kontakt",
+    "signIn": "Anmelden",
+    "signUp": "Registrieren",
+    "signOut": "Abmelden",
+    "getStarted": "Loslegen",
+    "profile": "Profil",
+    "settings": "Einstellungen",
+    "dashboard": "Dashboard",
+    "analytics": "Statistiken",
+    "templates": "Vorlagen",
+    "creators": "Creator",
+    "leaderboard": "Bestenliste",
+    "partners": "Partner",
+    "playground": "Playground",
+    "themeBuilder": "Theme Builder",
+    "urlShortener": "URL-Kürzer",
+    "bioLinks": "Bio Links",
+    "community": {
+      "title": "Community",
+      "explore": "Community entdecken",
+      "creators": "Creator",
+      "creatorsDesc": "Entdecke großartige Creator",
+      "templates": "Vorlagen",
+      "templatesDesc": "Community-Stil-Vorlagen",
+      "partners": "Partner",
+      "partnersDesc": "Offizielle Plattform-Partner",
+      "leaderboard": "Bestenliste",
+      "leaderboardDesc": "Top-Nutzer"
+    },
+    "user": {
+      "quickActions": "Schnellaktionen",
+      "viewBioPage": "Bio-Seite ansehen",
+      "adminPanel": "Admin-Bereich",
+      "upgradeToPro": "Auf Pro upgraden",
+      "unlockFeatures": "Alle Premium-Funktionen freischalten"
+    }
+  },
+  "auth": {
+    "signIn": {
+      "title": "Willkommen zurück",
+      "subtitle": "Melde dich bei deinem Konto an",
+      "email": "E-Mail",
+      "password": "Passwort",
+      "rememberMe": "Angemeldet bleiben",
+      "forgotPassword": "Passwort vergessen?",
+      "noAccount": "Noch kein Konto?",
+      "signUpLink": "Registrieren",
+      "button": "Anmelden",
+      "loading": "Anmeldung läuft..."
+    },
+    "signUp": {
+      "title": "Konto erstellen",
+      "subtitle": "Werde Teil von tausenden Creatorn",
+      "username": "Benutzername",
+      "email": "E-Mail",
+      "password": "Passwort",
+      "confirmPassword": "Passwort bestätigen",
+      "terms": "Ich akzeptiere die",
+      "termsLink": "Nutzungsbedingungen",
+      "privacy": "und die",
+      "privacyLink": "Datenschutzerklärung",
+      "hasAccount": "Bereits ein Konto?",
+      "signInLink": "Anmelden",
+      "button": "Konto erstellen",
+      "loading": "Konto wird erstellt..."
+    },
+    "forgotPassword": {
+      "title": "Passwort vergessen",
+      "subtitle": "Gib deine E-Mail ein, um dein Passwort zurückzusetzen",
+      "email": "E-Mail",
+      "button": "Link senden",
+      "loading": "Wird gesendet...",
+      "success": "Überprüfe deine E-Mails für den Reset-Link",
+      "backToSignIn": "Zurück zur Anmeldung"
+    },
+    "resetPassword": {
+      "title": "Passwort zurücksetzen",
+      "subtitle": "Gib dein neues Passwort ein",
+      "password": "Neues Passwort",
+      "confirmPassword": "Neues Passwort bestätigen",
+      "button": "Passwort zurücksetzen",
+      "loading": "Wird zurückgesetzt...",
+      "success": "Passwort erfolgreich zurückgesetzt"
+    },
+    "errors": {
+      "invalidCredentials": "Ungültige E-Mail oder Passwort",
+      "emailInUse": "E-Mail wird bereits verwendet",
+      "usernameInUse": "Benutzername bereits vergeben",
+      "weakPassword": "Passwort ist zu schwach",
+      "passwordMismatch": "Passwörter stimmen nicht überein",
+      "invalidEmail": "Ungültige E-Mail-Adresse",
+      "tooManyAttempts": "Zu viele Versuche. Bitte versuche es später erneut."
+    }
+  },
+  "home": {
+    "badge": "{{themes}}+ Themes • {{creators}}+ Creators • Kostenlos",
+    "hero": {
+      "line1": "Deine Digitale",
+      "line2": "Identität",
+      "line3": "Nach Deinen Regeln",
+      "subtitle": "Erstelle eine beeindruckende Biolink-Seite, die deine persönliche Marke repräsentiert. Teile all deine Inhalte an einem schönen, anpassbaren Ort.",
+      "cta": "Jetzt starten – Kostenlos",
+      "dashboard": "Zum Dashboard",
+      "exploreCreators": "Creators entdecken"
+    },
+    "claim": {
+      "title": "Sichere dir deinen einzigartigen Link",
+      "subtitle": "Sichere dir dein Profil und erstelle in wenigen Minuten ein Konto!",
+      "placeholder": "benutzername",
+      "button": "Jetzt sichern",
+      "available": "Benutzername ist verfügbar!",
+      "taken": "Benutzername ist bereits vergeben",
+      "invalid": "Ungültiges Benutzernamen-Format",
+      "checking": "Prüfe...",
+      "free": "100% Kostenlos starten",
+      "noCard": "Keine Kreditkarte erforderlich"
+    },
+    "trustBadges": {
+      "free": "Für immer kostenlos",
+      "fast": "Online in 2 Min",
+      "gdpr": "DSGVO-konform"
+    },
+    "stats": {
+      "creators": "Creator",
+      "links": "Links",
+      "clicks": "Klicks",
+      "countries": "Länder"
+    },
+    "features": {
+      "badge": "Was enthalten ist",
+      "title": "Alles was du brauchst.",
+      "titleHighlight": "Nichts, was du nicht brauchst.",
+      "subtitle": "Keine komplizierten Einstellungen. Keine Paywalls für Basisfunktionen. Einfach loslegen und gut aussehen.",
+      "unlimited": {
+        "title": "Unbegrenzte Links",
+        "description": "Füge so viele Links hinzu wie du brauchst – keine Limits"
+      },
+      "analytics": {
+        "title": "Live-Statistiken",
+        "description": "Sieh wer klickt und woher sie kommen"
+      },
+      "themes": {
+        "title": "{{count}}+ Themes",
+        "description": "Von Gamer bis Minimal – finde deinen Stil"
+      },
+      "secure": {
+        "title": "Sicher & Privat",
+        "description": "Deine Daten gehören dir. Punkt."
+      },
+      "fast": {
+        "title": "Blitzschnell",
+        "description": "Optimiert für jedes Gerät"
+      },
+      "free": {
+        "title": "Kostenlos. Wirklich.",
+        "description": "Keine versteckten Kosten, kein Haken"
+      }
+    },
+    "themes": {
+      "badge": "Theme-System",
+      "title": "{{count}}+ Themes.",
+      "titleHighlight": "8 Kategorien.",
+      "subtitle": "Von Gamer-Ästhetik bis minimalistischer Eleganz. Jedes Theme hat eigene Farben, Schriften und Effekte. Wechsle wann du willst – alle sind kostenlos.",
+      "categories": {
+        "general": "Allgemein",
+        "gamer": "Gamer",
+        "vtuber": "VTuber",
+        "anime": "Anime",
+        "developer": "Entwickler",
+        "streamer": "Streamer",
+        "artist": "Künstler",
+        "minimal": "Minimal"
+      }
+    },
+    "integrations": {
+      "badge": "Integrationen",
+      "title": "Verbinde deine",
+      "titleHighlight": "Plattformen",
+      "subtitle": "Zeige was du gerade hörst, streamst oder erstellst – direkt auf deiner Bio-Seite",
+      "spotify": "Aktueller Song",
+      "youtube": "Videos einbetten",
+      "soundcloud": "Deine Tracks",
+      "twitch": "Live-Status",
+      "discord": "Server-Einladung"
+    },
+    "analytics": {
+      "badge": "Statistiken",
+      "title": "Kenne dein",
+      "titleHighlight": "Publikum",
+      "subtitle": "Sieh jeden Klick, woher deine Besucher kommen und was am besten ankommt. Alle Statistiken sind kostenlos – kein Premium nötig.",
+      "realtime": "Echtzeit",
+      "realtimeDesc": "Live Klick-Tracking",
+      "global": "Global",
+      "globalDesc": "Besucher-Standorte",
+      "trends": "Trends",
+      "trendsDesc": "Performance-Einblicke",
+      "retention": "30 Tage",
+      "retentionDesc": "Datenspeicherung",
+      "features": {
+        "clickTracking": "Klick-Tracking",
+        "referrerData": "Referrer-Daten",
+        "deviceStats": "Geräte-Stats",
+        "dataExport": "Daten-Export"
+      }
+    },
+    "creators": {
+      "badge": "Community Spotlight",
+      "title": "Triff unsere",
+      "titleHighlight": "Top Creator",
+      "subtitle": "Lass dich von Creatorn inspirieren, die ihre Bio-Seiten bereits rocken",
+      "viewLeaderboard": "Vollständige Rangliste",
+      "exploreAll": "Alle Creator entdecken",
+      "points": "Punkte",
+      "pts": "Pkt"
+    },
+    "howItWorks": {
+      "badge": "So funktioniert's",
+      "title": "Fertig in",
+      "titleHighlight": "3 Schritten",
+      "subtitle": "Kein technisches Wissen nötig. Wenn du klicken kannst, kannst du erstellen.",
+      "step1": {
+        "title": "Registrieren",
+        "description": "Erstelle dein kostenloses Konto in Sekunden"
+      },
+      "step2": {
+        "title": "Anpassen",
+        "description": "Füge Links hinzu, wähle ein Theme, mach es zu deinem"
+      },
+      "step3": {
+        "title": "Teilen",
+        "description": "Teile deinen einzigartigen Link überall"
+      }
+    },
+    "cta": {
+      "title": "Bereit loszulegen?",
+      "subtitle": "Schließe dich {{count}}+ Creatorn an, die Eziox bereits nutzen",
+      "button": "Kostenlos starten",
+      "noCreditCard": "Keine Kreditkarte erforderlich",
+      "loggedIn": {
+        "greeting": "Willkommen zurück",
+        "subtitle": "Deine Bio-Seite ist bereit",
+        "viewPage": "Seite ansehen",
+        "analytics": "Analysen",
+        "settings": "Einstellungen",
+        "stats": {
+          "views": "Aufrufe",
+          "clicks": "Link-Klicks",
+          "followers": "Follower"
+        }
+      },
+      "guest": {
+        "title": "Starte deine Reise",
+        "subtitle": "Erstelle deine personalisierte Bio-Seite in Sekunden",
+        "features": {
+          "free": "Für immer kostenlos",
+          "themes": "31+ Themes",
+          "analytics": "Integrierte Analysen"
+        },
+        "createPage": "Seite erstellen",
+        "learnMore": "Mehr erfahren"
+      }
+    },
+    "defaultBio": "Deine All-in-One Bio-Link-Plattform. Verbinde, teile & wachse mit deinem Publikum.",
+    "createBioLink": "Erstelle deine Bio-Link-Seite",
+    "verified": "Verifiziert",
+    "global": "Global"
+  },
+  "about": {
+    "badge": "Über Eziox",
+    "hero": {
+      "title": "Die Bio-Link-Plattform",
+      "titleHighlight": "für Creator gebaut",
+      "subtitle": "Keine Paywalls für wichtige Funktionen. Keine künstlichen Limits. Kein Verkauf deiner Daten. Einfach eine schöne, schnelle Bio-Seite, die dich und dein Publikum respektiert."
+    },
+    "stats": {
+      "creators": "Creator",
+      "links": "Erstellte Links",
+      "themes": "Themes",
+      "views": "Seitenaufrufe"
+    },
+    "cta": {
+      "start": "Kostenlos starten",
+      "playground": "Playground testen"
+    },
+    "features": {
+      "badge": "Kernfunktionen",
+      "title": "Alles was du brauchst,",
+      "titleHighlight": "inklusive",
+      "subtitle": "Kein Premium für das Wesentliche nötig. Baue deine perfekte Bio-Seite von Tag eins.",
+      "unlimited": {
+        "title": "Unbegrenzte Links",
+        "description": "Füge so viele Links hinzu wie du brauchst. Keine künstlichen Limits."
+      },
+      "themes": {
+        "title": "{{count}}+ Themes",
+        "description": "Kuratierte Themes für jeden Stil. Jederzeit wechseln."
+      },
+      "analytics": {
+        "title": "Echte Statistiken",
+        "description": "Verfolge Aufrufe, Klicks und Referrer. Keine Paywall."
+      },
+      "spotify": {
+        "title": "Spotify-Integration",
+        "description": "Zeige in Echtzeit, was du gerade hörst."
+      },
+      "scheduling": {
+        "title": "Link-Planung",
+        "description": "Plane Links, die automatisch erscheinen oder ablaufen."
+      },
+      "qrCode": {
+        "title": "QR-Codes",
+        "description": "Generiere individuelle QR-Codes für deine Bio-Seite."
+      }
+    },
+    "why": {
+      "title": "Warum Eziox?",
+      "p1": "Die meisten Bio-Link-Plattformen behandeln Basisfunktionen als Premium. Wasserzeichen entfernen? 2.99€/Monat. Ein ordentliches Theme? Nur Premium. Eigene Statistiken? Zahl erstmal.",
+      "p2": "Eziox dreht den Spieß um.",
+      "p3": "Unbegrenzte Links, alle {{count}} Themes, volle Anpassung, echte Statistiken — komplett kostenlos. Die Bezahl-Stufen gibt es für erweiterte Funktionen, die tatsächlich Geld kosten, wie eigene Domains und Priority-Support.",
+      "badges": {
+        "noWatermarks": "Keine Wasserzeichen",
+        "noLimits": "Keine Link-Limits",
+        "noRestrictions": "Keine Theme-Einschränkungen"
+      }
+    },
+    "privacy": {
+      "title": "Datenschutz zuerst",
+      "p1": "Deine Daten gehören dir. Wir verkaufen sie nicht, tracken dich nicht durchs Web und stopfen deine Seite nicht mit Drittanbieter-Scripts voll.",
+      "p2": "DSGVO-konform",
+      "p3": "mit vollständigem Datenexport und Löschung. Cloudflare Turnstile für Bot-Schutz ohne nervige CAPTCHAs. IP-Adressen werden in Statistiken anonymisiert.",
+      "badges": {
+        "gdpr": "DSGVO-konform",
+        "noTracking": "Kein Tracking",
+        "dataExport": "Daten-Export"
+      }
+    },
+    "themes": {
+      "title": "{{count}} Themes für jeden Stil",
+      "subtitle": "Von minimaler Eleganz bis lebhafter Gamer-Ästhetik. Jedes Theme enthält eigene Schriften, Farben und Effekte.",
+      "browseAll": "Alle Themes ansehen"
+    },
+    "premium": {
+      "title": "Geh weiter mit",
+      "titleHighlight": "Premium",
+      "subtitle": "Erweiterte Funktionen für Power-User. Ab nur 2,99€/Monat.",
+      "viewPricing": "Preise ansehen",
+      "features": {
+        "customCss": {
+          "title": "Eigenes CSS",
+          "description": "Volle Kontrolle über dein Seiten-Styling"
+        },
+        "customFonts": {
+          "title": "Eigene Schriften",
+          "description": "Lade deine eigenen Schriften hoch"
+        },
+        "removeBranding": {
+          "title": "Branding entfernen",
+          "description": "Saubere White-Label-Erfahrung"
+        },
+        "analyticsExport": {
+          "title": "Statistik-Export",
+          "description": "Lade deine Daten als CSV/JSON herunter"
+        },
+        "customDomain": {
+          "title": "Eigene Domain",
+          "description": "Nutze deinen eigenen Domainnamen"
+        },
+        "linkPasswords": {
+          "title": "Link-Passwörter",
+          "description": "Schütze Links mit Passwörtern"
+        }
+      }
+    },
+    "techStack": {
+      "badge": "Mit moderner Technik gebaut",
+      "title": "Angetrieben von den",
+      "titleHighlight": "besten Tools",
+      "subtitle": "Wir nutzen modernste Technologie für die schnellste und zuverlässigste Erfahrung."
+    },
+    "community": {
+      "badge": "Tritt der Community bei",
+      "title": "Verbinde dich mit",
+      "titleHighlight": "Creatorn",
+      "subtitle": "Tritt tausenden Creatorn auf Discord bei. Hol dir Hilfe, teile Ideen und bleib auf dem Laufenden.",
+      "discord": "Discord beitreten",
+      "github": "Auf GitHub ansehen"
+    },
+    "finalCta": {
+      "title": "Bereit, deine Bio-Seite zu erstellen?",
+      "subtitle": "Schließe dich {{count}}+ Creatorn an. Für immer kostenlos, keine Kreditkarte nötig.",
+      "button": "Kostenlos starten"
+    }
+  },
+  "pricing": {
+    "badge": "Einfache, transparente Preise",
+    "hero": {
+      "title": "Wähle deinen",
+      "titleHighlight": "perfekten Plan",
+      "subtitle": "Starte kostenlos, upgrade wenn du mehr brauchst. Keine versteckten Gebühren, jederzeit kündbar."
+    },
+    "loading": "Pläne werden geladen...",
+    "billing": {
+      "monthly": "Monatlich",
+      "yearly": "Jährlich",
+      "comingSoon": "Demnächst"
+    },
+    "billingType": {
+      "oneTime": "einmalig",
+      "perMonth": "/Monat",
+      "perYear": "/Jahr"
+    },
+    "savings": "Spare €{{amount}}/Jahr",
+    "badges": {
+      "popular": "BELIEBTESTE",
+      "bestValue": "BESTER WERT"
+    },
+    "buttons": {
+      "currentPlan": "Aktueller Plan",
+      "lifetimeAccess": "Lifetime-Zugang",
+      "getStartedFree": "Kostenlos starten",
+      "upgradeNow": "Jetzt upgraden",
+      "getLifetime": "Lifetime sichern"
+    },
+    "trust": {
+      "secure": "Sichere Zahlung",
+      "cancel": "Jederzeit kündbar",
+      "payment": "Alle Karten akzeptiert",
+      "guarantee": "Geld-zurück-Garantie"
+    },
+    "faq": {
+      "badge": "FAQ",
+      "title": "Häufig gestellte",
+      "titleHighlight": "Fragen",
+      "subtitle": "Alles was du über unsere Pläne wissen musst",
+      "items": {
+        "switch": {
+          "question": "Kann ich jederzeit den Plan wechseln?",
+          "answer": "Ja! Du kannst deinen Plan jederzeit upgraden oder downgraden. Beim Upgrade wird dir die anteilige Differenz berechnet. Beim Downgrade wird die Änderung am Ende deines Abrechnungszeitraums wirksam."
+        },
+        "payment": {
+          "question": "Welche Zahlungsmethoden akzeptiert ihr?",
+          "answer": "Wir akzeptieren alle gängigen Kreditkarten (Visa, Mastercard, American Express), PayPal und Apple Pay über unseren sicheren Zahlungsanbieter Stripe."
+        },
+        "trial": {
+          "question": "Gibt es eine kostenlose Testversion?",
+          "answer": "Unser Free-Tarif ist komplett kostenlos für immer, ohne Testzeitraum. Du kannst alle Kernfunktionen ohne zeitliche Begrenzung nutzen."
+        },
+        "cancel": {
+          "question": "Was passiert, wenn ich kündige?",
+          "answer": "Wenn du kündigst, behältst du Zugang zu deinen bezahlten Funktionen bis zum Ende deines Abrechnungszeitraums. Danach wird dein Konto auf den Free-Tarif zurückgesetzt."
+        },
+        "lifetime": {
+          "question": "Ist der Lifetime-Plan wirklich für immer?",
+          "answer": "Ja! Der Lifetime-Plan ist eine einmalige Zahlung, die dir permanenten Zugang zu allen Creator-Funktionen gibt, einschließlich aller zukünftigen Updates."
+        }
+      }
+    },
+    "cta": {
+      "title": "Bereit loszulegen?",
+      "subtitle": "Schließe dich tausenden Creatorn an, die Eziox bereits nutzen, um ihre Online-Präsenz auszubauen.",
+      "startFree": "Heute kostenlos starten",
+      "viewCreators": "Creator ansehen"
+    },
+    "errors": {
+      "noCheckoutUrl": "Keine Checkout-URL vom Server erhalten",
+      "checkoutFailed": "Checkout-Session konnte nicht erstellt werden"
+    }
+  },
+  "privacy": {
+    "badge": "Datenschutz",
+    "hero": {
+      "title": "Datenschutzerklärung",
+      "subtitle": "Informationen zum Umgang mit Ihren personenbezogenen Daten gemäß DSGVO"
+    },
+    "lastUpdated": "Zuletzt aktualisiert",
+    "lastUpdatedDate": "29. Januar 2026",
+    "navigation": "Navigation",
+    "tableOfContents": "Inhaltsverzeichnis",
+    "relatedPolicies": "Verwandte Richtlinien",
+    "related": {
+      "imprint": "Impressum",
+      "cookies": "Cookie-Richtlinie",
+      "terms": "Nutzungsbedingungen"
+    },
+    "sections": {
+      "preamble": {
+        "title": "Präambel",
+        "content": "Mit der folgenden Datenschutzerklärung möchten wir Sie darüber aufklären, welche Arten Ihrer personenbezogenen Daten (nachfolgend auch kurz als \"Daten\" bezeichnet) wir zu welchen Zwecken und in welchem Umfang verarbeiten. Die Datenschutzerklärung gilt für alle von uns durchgeführten Verarbeitungen personenbezogener Daten, sowohl im Rahmen der Erbringung unserer Leistungen als auch insbesondere auf unseren Webseiten, in mobilen Applikationen sowie innerhalb externer Onlinepräsenzen, wie z. B. unserer Social-Media-Profile (nachfolgend zusammenfassend bezeichnet als \"Onlineangebot\").\n\nDie verwendeten Begriffe sind nicht geschlechtsspezifisch."
+      },
+      "controller": {
+        "title": "Verantwortlicher",
+        "content": "**Nattapat Pongsuwan**\nRohstorf 59\n21397 Vastorf, Deutschland\n\n**Vertretungsberechtigte Personen:** Nattapat Pongsuwan\n\n**E-Mail-Adresse:** [contact@eziox.link](mailto:contact@eziox.link)\n\n**Impressum:** [https://eziox.link/imprint](https://eziox.link/imprint)"
+      },
+      "overview": {
+        "title": "Übersicht der Verarbeitungen",
+        "content": "Die nachfolgende Übersicht fasst die Arten der verarbeiteten Daten und die Zwecke ihrer Verarbeitung zusammen und verweist auf die betroffenen Personen.\n\n**Arten der verarbeiteten Daten:**\n• Bestandsdaten\n• Zahlungsdaten\n• Kontaktdaten\n• Inhaltsdaten\n• Vertragsdaten\n• Nutzungsdaten\n• Meta-, Kommunikations- und Verfahrensdaten\n• Protokolldaten\n\n**Kategorien betroffener Personen:**\n• Leistungsempfänger und Auftraggeber\n• Interessenten\n• Kommunikationspartner\n• Nutzer\n• Geschäfts- und Vertragspartner\n\n**Zwecke der Verarbeitung:**\n• Erbringung vertraglicher Leistungen und Erfüllung vertraglicher Pflichten\n• Kommunikation\n• Sicherheitsmaßnahmen\n• Büro- und Organisationsverfahren\n• Affiliate-Nachverfolgung\n• Organisations- und Verwaltungsverfahren\n• Feedback\n• Bereitstellung unseres Onlineangebotes und Nutzerfreundlichkeit\n• Geschäftsprozesse und betriebswirtschaftliche Verfahren"
+      },
+      "legalBasis": {
+        "title": "Maßgebliche Rechtsgrundlagen",
+        "content": "**Maßgebliche Rechtsgrundlagen nach der DSGVO:** Im Folgenden erhalten Sie eine Übersicht der Rechtsgrundlagen der DSGVO, auf deren Basis wir personenbezogene Daten verarbeiten.\n\n• **Einwilligung (Art. 6 Abs. 1 S. 1 lit. a) DSGVO)** - Die betroffene Person hat ihre Einwilligung in die Verarbeitung der sie betreffenden personenbezogenen Daten für einen spezifischen Zweck oder mehrere bestimmte Zwecke gegeben.\n\n• **Vertragserfüllung und vorvertragliche Anfragen (Art. 6 Abs. 1 S. 1 lit. b) DSGVO)** - Die Verarbeitung ist für die Erfüllung eines Vertrags, dessen Vertragspartei die betroffene Person ist, oder zur Durchführung vorvertraglicher Maßnahmen erforderlich, die auf Anfrage der betroffenen Person erfolgen.\n\n• **Rechtliche Verpflichtung (Art. 6 Abs. 1 S. 1 lit. c) DSGVO)** - Die Verarbeitung ist zur Erfüllung einer rechtlichen Verpflichtung erforderlich, der der Verantwortliche unterliegt.\n\n• **Berechtigte Interessen (Art. 6 Abs. 1 S. 1 lit. f) DSGVO)** - Die Verarbeitung ist zur Wahrung der berechtigten Interessen des Verantwortlichen oder eines Dritten notwendig, vorausgesetzt, dass die Interessen, Grundrechte und Grundfreiheiten der betroffenen Person, die den Schutz personenbezogener Daten verlangen, nicht überwiegen.\n\n**Nationale Datenschutzregelungen in Deutschland:** Zusätzlich zu den Datenschutzregelungen der DSGVO gelten nationale Regelungen zum Datenschutz in Deutschland. Hierzu gehört insbesondere das Bundesdatenschutzgesetz (BDSG)."
+      },
+      "security": {
+        "title": "Sicherheitsmaßnahmen",
+        "content": "Wir treffen nach Maßgabe der gesetzlichen Vorgaben unter Berücksichtigung des Stands der Technik geeignete technische und organisatorische Maßnahmen, um ein dem Risiko angemessenes Schutzniveau zu gewährleisten.\n\nZu den Maßnahmen gehören insbesondere die Sicherung der Vertraulichkeit, Integrität und Verfügbarkeit von Daten durch Kontrolle des physischen und elektronischen Zugangs zu den Daten.\n\n**Kürzung der IP-Adresse:** Sofern IP-Adressen verarbeitet werden und die Verarbeitung einer vollständigen IP-Adresse nicht erforderlich ist, wird die IP-Adresse gekürzt (auch als \"IP-Masking\" bezeichnet).\n\n**Sicherung von Online-Verbindungen durch TLS-/SSL-Verschlüsselungstechnologie (HTTPS):** Um die Daten der Nutzer vor unerlaubten Zugriffen zu schützen, setzen wir auf die TLS-/SSL-Verschlüsselungstechnologie."
+      },
+      "transfer": {
+        "title": "Übermittlung von personenbezogenen Daten",
+        "content": "Im Rahmen unserer Verarbeitung von personenbezogenen Daten kommt es vor, dass diese an andere Stellen, Unternehmen, rechtlich selbstständige Organisationseinheiten oder Personen übermittelt beziehungsweise ihnen gegenüber offengelegt werden. Zu den Empfängern dieser Daten können z. B. mit IT-Aufgaben beauftragte Dienstleister gehören. In solchen Fällen beachten wir die gesetzlichen Vorgaben und schließen entsprechende Verträge ab."
+      },
+      "international": {
+        "title": "Internationale Datentransfers",
+        "content": "**Datenverarbeitung in Drittländern:** Sofern wir Daten in ein Drittland übermitteln, erfolgt dies stets im Einklang mit den gesetzlichen Vorgaben.\n\nFür Datenübermittlungen in die USA stützen wir uns vorrangig auf das Data Privacy Framework (DPF), welches durch einen Angemessenheitsbeschluss der EU-Kommission vom 10.07.2023 als sicherer Rechtsrahmen anerkannt wurde. Zusätzlich haben wir mit den jeweiligen Anbietern Standardvertragsklauseln abgeschlossen.\n\nWeitere Informationen zum DPF finden Sie unter [https://www.dataprivacyframework.gov/](https://www.dataprivacyframework.gov/)"
+      },
+      "retention": {
+        "title": "Allgemeine Informationen zur Datenspeicherung und Löschung",
+        "content": "Wir löschen personenbezogene Daten gemäß den gesetzlichen Bestimmungen, sobald die zugrundeliegenden Einwilligungen widerrufen werden oder keine weiteren rechtlichen Grundlagen für die Verarbeitung bestehen.\n\n**Aufbewahrungsfristen nach deutschem Recht:**\n• **10 Jahre** - Bücher, Aufzeichnungen, Jahresabschlüsse (§ 147 AO, § 257 HGB)\n• **8 Jahre** - Buchungsbelege, Rechnungen\n• **6 Jahre** - Übrige Geschäftsunterlagen\n• **3 Jahre** - Daten für Gewährleistungs- und Schadensersatzansprüche (§§ 195, 199 BGB)"
+      },
+      "rights": {
+        "title": "Rechte der betroffenen Personen",
+        "content": "Ihnen stehen als Betroffene nach der DSGVO verschiedene Rechte zu (Art. 15 bis 21 DSGVO):\n\n• **Widerspruchsrecht:** Jederzeit gegen die Verarbeitung Widerspruch einlegen\n• **Widerrufsrecht bei Einwilligungen:** Erteilte Einwilligungen jederzeit widerrufen\n• **Auskunftsrecht:** Bestätigung und Auskunft über verarbeitete Daten verlangen\n• **Recht auf Berichtigung:** Vervollständigung oder Berichtigung unrichtiger Daten\n• **Recht auf Löschung und Einschränkung:** Löschung oder Einschränkung der Verarbeitung verlangen\n• **Recht auf Datenübertragbarkeit:** Daten in strukturiertem Format erhalten\n• **Beschwerde bei Aufsichtsbehörde:** Recht auf Beschwerde bei einer Aufsichtsbehörde"
+      },
+      "services": {
+        "title": "Geschäftliche Leistungen",
+        "content": "Wir verarbeiten Daten unserer Vertrags- und Geschäftspartner im Rahmen von vertraglichen und vergleichbaren Rechtsverhältnissen.\n\n**Verarbeitete Datenarten:** Bestandsdaten, Zahlungsdaten, Kontaktdaten, Vertragsdaten.\n\n**Zwecke:** Erbringung vertraglicher Leistungen, Kommunikation, Organisations- und Verwaltungsverfahren.\n\n**Rechtsgrundlagen:** Vertragserfüllung (Art. 6 Abs. 1 S. 1 lit. b) DSGVO), Rechtliche Verpflichtung (Art. 6 Abs. 1 S. 1 lit. c) DSGVO), Berechtigte Interessen (Art. 6 Abs. 1 S. 1 lit. f) DSGVO).\n\n**Angebot von Software- und Plattformleistungen:** Wir verarbeiten die Daten unserer Nutzer, um ihnen gegenüber unsere vertraglichen Leistungen erbringen zu können sowie auf Grundlage berechtigter Interessen, um die Sicherheit unseres Angebotes gewährleisten und es weiterentwickeln zu können."
+      },
+      "payment": {
+        "title": "Zahlungsverfahren",
+        "content": "Wir bieten effiziente und sichere Zahlungsmöglichkeiten an und setzen hierzu Zahlungsdienstleister ein. Der Zahlungsverkehr erfolgt ausschließlich über verschlüsselte Verbindungen.\n\n**Wir erhalten keine konto- oder kreditkartenbezogenen Informationen**, sondern lediglich Informationen mit Bestätigung oder Negativbeauskunftung der Zahlung.\n\n**Eingesetzte Zahlungsdienstleister:**\n• **Apple Pay** - Apple Inc., USA - [Datenschutz](https://www.apple.com/legal/privacy/de-ww/)\n• **Google Pay** - Google Ireland Limited, Irland - [Datenschutz](https://policies.google.com/privacy)\n• **Klarna** - Klarna Bank AB, Schweden - [Datenschutz](https://www.klarna.com/de/datenschutz)\n• **Mastercard** - Mastercard Europe SA, Belgien - [Datenschutz](https://www.mastercard.de/de-de/datenschutz.html)\n• **Stripe** - Stripe, Inc., USA (DPF-zertifiziert) - [Datenschutz](https://stripe.com/de/privacy)\n• **Visa** - Visa Europe Services Inc., GB - [Datenschutz](https://www.visa.de/nutzungsbedingungen/visa-privacy-center.html)"
+      },
+      "cookies": {
+        "title": "Einsatz von Cookies",
+        "content": "Unter dem Begriff Cookies werden Funktionen verstanden, die Informationen auf Endgeräten der Nutzer speichern und auslesen. Wir verwenden Cookies gemäß den gesetzlichen Vorschriften.\n\n**Speicherdauer:**\n• **Temporäre Cookies (Session-Cookies):** Werden nach Schließen des Browsers gelöscht\n• **Permanente Cookies:** Bleiben bis zu zwei Jahre gespeichert\n\n**Cookie-Einstellungen:** Eigene Consent-Lösung (Eziox Cookie Manager) - Einstellungen unter [https://eziox.link/privacy#cookies](https://eziox.link/privacy#cookies)\n\n**Rechtsgrundlagen:** Berechtigte Interessen (Art. 6 Abs. 1 S. 1 lit. f) DSGVO), Einwilligung (Art. 6 Abs. 1 S. 1 lit. a) DSGVO)."
+      },
+      "registration": {
+        "title": "Registrierung, Anmeldung und Nutzerkonto",
+        "content": "Nutzer können ein Nutzerkonto anlegen. Zu den verarbeiteten Daten gehören insbesondere Login-Informationen (Nutzername, Passwort, E-Mail-Adresse).\n\n**Besonderheiten:**\n• **Registrierung mit Pseudonymen:** Nutzer dürfen Pseudonyme als Nutzernamen verwenden\n• **Profile sind öffentlich:** Die Profile der Nutzer sind öffentlich sichtbar\n• **Einstellung der Sichtbarkeit:** Nutzer können die Sichtbarkeit ihrer Profile bestimmen\n• **Zwei-Faktor-Authentifizierung:** Zusätzliche Sicherheitsebene für Ihr Benutzerkonto\n• **Löschung nach Kündigung:** Daten werden nach Kündigung gelöscht\n• **Keine Aufbewahrungspflicht:** Nutzer sollten ihre Daten vor Kündigung sichern\n\n**Rechtsgrundlagen:** Vertragserfüllung (Art. 6 Abs. 1 S. 1 lit. b) DSGVO), Berechtigte Interessen (Art. 6 Abs. 1 S. 1 lit. f) DSGVO)."
+      },
+      "contact": {
+        "title": "Kontakt- und Anfrageverwaltung",
+        "content": "Bei der Kontaktaufnahme mit uns werden die Angaben der anfragenden Personen verarbeitet, soweit dies zur Beantwortung der Kontaktanfragen erforderlich ist.\n\n**Verarbeitete Datenarten:** Kontaktdaten, Inhaltsdaten, Meta-/Kommunikationsdaten.\n\n**Rechtsgrundlagen:** Berechtigte Interessen (Art. 6 Abs. 1 S. 1 lit. f) DSGVO), Vertragserfüllung (Art. 6 Abs. 1 S. 1 lit. b) DSGVO)."
+      },
+      "plugins": {
+        "title": "Plug-ins und eingebettete Funktionen sowie Inhalte",
+        "content": "Wir binden Funktions- und Inhaltselemente in unser Onlineangebot ein, die von den Servern ihrer jeweiligen Anbieter bezogen werden.\n\n**Google Fonts (Bezug vom Google Server):** Bezug von Schriften zum Zwecke einer technisch sicheren, wartungsfreien und effizienten Nutzung. Dem Anbieter wird die IP-Adresse des Nutzers mitgeteilt, damit die Schriftarten im Browser zur Verfügung gestellt werden können. IP-Adressen werden laut Google weder protokolliert noch gespeichert.\n\n**Dienstanbieter:** Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Irland\n**Website:** [https://fonts.google.com/](https://fonts.google.com/)\n**Datenschutzerklärung:** [https://policies.google.com/privacy](https://policies.google.com/privacy)\n**Grundlage Drittlandtransfers:** Data Privacy Framework (DPF)\n**Weitere Informationen:** [https://developers.google.com/fonts/faq/privacy?hl=de](https://developers.google.com/fonts/faq/privacy?hl=de)"
+      },
+      "changes": {
+        "title": "Änderung und Aktualisierung",
+        "content": "Wir bitten Sie, sich regelmäßig über den Inhalt unserer Datenschutzerklärung zu informieren. Wir passen die Datenschutzerklärung an, sobald die Änderungen der von uns durchgeführten Datenverarbeitungen dies erforderlich machen. Wir informieren Sie, sobald durch die Änderungen eine Mitwirkungshandlung Ihrerseits (z. B. Einwilligung) oder eine sonstige individuelle Benachrichtigung erforderlich wird."
+      },
+      "definitions": {
+        "title": "Begriffsdefinitionen",
+        "content": "**Affiliate-Nachverfolgung:** Protokollierung von Links, mit deren Hilfe verlinkende Webseiten Nutzer zu Angeboten verweisen.\n\n**Bestandsdaten:** Wesentliche Informationen für die Identifikation und Verwaltung von Vertragspartnern, Benutzerkonten und Profilen.\n\n**Inhaltsdaten:** Informationen, die im Zuge der Erstellung, Bearbeitung und Veröffentlichung von Inhalten generiert werden.\n\n**Kontaktdaten:** Informationen, die die Kommunikation mit Personen oder Organisationen ermöglichen.\n\n**Meta-, Kommunikations- und Verfahrensdaten:** Informationen über die Art und Weise, wie Daten verarbeitet, übermittelt und verwaltet werden.\n\n**Nutzungsdaten:** Informationen, die erfassen, wie Nutzer mit digitalen Produkten interagieren.\n\n**Personenbezogene Daten:** Alle Informationen, die sich auf eine identifizierte oder identifizierbare natürliche Person beziehen.\n\n**Protokolldaten:** Informationen über Ereignisse oder Aktivitäten, die in einem System protokolliert wurden.\n\n**Verantwortlicher:** Die natürliche oder juristische Person, die über die Zwecke und Mittel der Verarbeitung von personenbezogenen Daten entscheidet.\n\n**Verarbeitung:** Jeder Vorgang im Zusammenhang mit personenbezogenen Daten.\n\n**Vertragsdaten:** Spezifische Informationen, die sich auf die Formalisierung einer Vereinbarung beziehen.\n\n**Zahlungsdaten:** Sämtliche Informationen, die zur Abwicklung von Zahlungstransaktionen benötigt werden."
+      },
+      "generator": {
+        "title": "Impressum-Generator",
+        "content": "*Erstellt mit kostenlosem [Datenschutz-Generator.de](https://datenschutz-generator.de) von Dr. Thomas Schwenke*"
+      }
+    }
+  },
+  "status": {
+    "badge": "Live Status",
+    "hero": {
+      "title": "System",
+      "titleHighlight": "Status",
+      "subtitle": "Echtzeit-Überwachung aller Eziox-Dienste. Automatische Aktualisierung alle 30 Sekunden."
+    },
+    "overall": {
+      "operational": "Alle Systeme betriebsbereit",
+      "degraded": "Teilweise Systembeeinträchtigung",
+      "outage": "Dienstausfall erkannt",
+      "maintenance": "Geplante Wartung",
+      "servicesOperational": "{{count}} von {{total}} Diensten betriebsbereit"
+    },
+    "stats": {
+      "avgLatency": "Ø Latenz",
+      "uptime": "Verfügbarkeit (90T)",
+      "daysTracked": "Tage erfasst"
+    },
+    "lastChecked": "Zuletzt geprüft",
+    "response": "Antwort",
+    "uptime": "Verfügbarkeit",
+    "activeIncidents": "Aktive Vorfälle",
+    "tabs": {
+      "current": "Aktueller Status",
+      "history": "Vorfallshistorie"
+    },
+    "categories": {
+      "core": "Kerndienste",
+      "infrastructure": "Infrastruktur",
+      "integrations": "Drittanbieter-Integrationen"
+    },
+    "serviceStatus": {
+      "operational": "Betriebsbereit",
+      "degraded": "Beeinträchtigt",
+      "outage": "Ausfall",
+      "maintenance": "Wartung"
+    },
+    "severity": {
+      "minor": "Gering",
+      "major": "Erheblich",
+      "critical": "Kritisch"
+    },
+    "incidentStatus": {
+      "investigating": "Wird untersucht",
+      "identified": "Identifiziert",
+      "monitoring": "Wird überwacht",
+      "resolved": "Behoben"
+    },
+    "services": {
+      "web": {
+        "name": "Webanwendung",
+        "description": "Hauptwebsite und Benutzeroberfläche"
+      },
+      "api": {
+        "name": "API-Dienste",
+        "description": "Backend-API und Serverfunktionen"
+      },
+      "auth": {
+        "name": "Authentifizierung",
+        "description": "Benutzeranmeldung und Sitzungsverwaltung"
+      },
+      "database": {
+        "name": "Datenbank",
+        "description": "PostgreSQL auf Neon"
+      },
+      "cdn": {
+        "name": "CDN & Assets",
+        "description": "Vercel Edge Network"
+      },
+      "storage": {
+        "name": "Dateispeicher",
+        "description": "Cloudinary Medienspeicher"
+      },
+      "email": {
+        "name": "E-Mail-Dienst",
+        "description": "Transaktions-E-Mails über Resend"
+      },
+      "payments": {
+        "name": "Zahlungsabwicklung",
+        "description": "Stripe Zahlungsgateway"
+      },
+      "security": {
+        "name": "Bot-Schutz",
+        "description": "Cloudflare Turnstile"
+      },
+      "realtime": {
+        "name": "Echtzeit-Updates",
+        "description": "WebSocket-Verbindungen"
+      }
+    },
+    "noIncidents": {
+      "title": "Keine Vorfälle gemeldet",
+      "description": "Alle Systeme laufen seit 90 Tagen reibungslos."
+    },
+    "incidents": {
+      "past": {
+        "maintenance": {
+          "title": "Geplante Datenbankwartung",
+          "description": "Routinemäßige Datenbankoptimierung und Updates.",
+          "update1": "Geplantes Wartungsfenster beginnt.",
+          "update2": "Wartung erfolgreich abgeschlossen. Alle Systeme betriebsbereit."
+        }
+      }
+    },
+    "subscribe": {
+      "title": "Status-Benachrichtigungen",
+      "description": "Opt-in für E-Mail-Alarme über Dienststatus und Vorfälle.",
+      "button": "Benachrichtigungen aktivieren"
+    },
+    "support": {
+      "title": "Probleme?",
+      "description": "Unser Support-Team hilft dir gerne.",
+      "button": "Support kontaktieren"
+    },
+    "footer": {
+      "info": "Statusdaten werden in Echtzeit erfasst und alle 30 Sekunden aktualisiert."
+    }
+  },
+  "templates": {
+    "badge": "Template-Galerie",
+    "hero": {
+      "title": "Finde deinen perfekten",
+      "titleHighlight": "Style",
+      "subtitle": "Entdecke beeindruckende Profil-Templates aus der Community. Ein Klick verwandelt deine Bio-Seite."
+    },
+    "stats": {
+      "templates": "Templates",
+      "uses": "Nutzungen",
+      "likes": "Likes",
+      "featured": "Featured"
+    },
+    "categories": {
+      "all": "Alle",
+      "vtuber": "VTuber",
+      "gamer": "Gamer",
+      "developer": "Entwickler",
+      "minimal": "Minimal",
+      "creative": "Kreativ",
+      "business": "Business",
+      "music": "Musik",
+      "art": "Kunst",
+      "anime": "Anime"
+    },
+    "sort": {
+      "popular": "Beliebt",
+      "likes": "Geliked",
+      "newest": "Neu"
+    },
+    "search": {
+      "placeholder": "Templates nach Name, Creator oder Style suchen..."
+    },
+    "loading": "Templates werden geladen...",
+    "tier": {
+      "official": "Offiziell",
+      "creator": "Creator",
+      "pro": "Pro"
+    },
+    "card": {
+      "featured": "Featured",
+      "official": "Offiziell",
+      "preview": "Vorschau",
+      "apply": "Anwenden",
+      "noDescription": "Keine Beschreibung"
+    },
+    "empty": {
+      "title": "Keine Templates gefunden",
+      "description": "Versuche deine Filter oder Suchbegriffe anzupassen.",
+      "clearFilters": "Filter löschen",
+      "signUp": "Registrieren zum Erstellen"
+    },
+    "modal": {
+      "title": "Template-Vorschau",
+      "cancel": "Abbrechen",
+      "apply": "Template anwenden",
+      "proRequired": "Pro-Stufe oder höher erforderlich"
+    },
+    "toast": {
+      "applied": "Template angewendet!",
+      "appliedDescription": "Dein Profil wurde mit dem neuen Style aktualisiert.",
+      "appliedPreset": "\"{{name}}\" wurde angewendet.",
+      "proRequired": "Pro-Stufe erforderlich",
+      "proRequiredDescription": "Upgrade um Templates anzuwenden.",
+      "failed": "Template konnte nicht angewendet werden"
+    }
+  },
+  "shortlink": {
+    "title": "Link",
+    "titleHighlight": "nicht gefunden",
+    "description": "Dieser Kurzlink existiert nicht, ist abgelaufen oder wurde vom Besitzer entfernt.",
+    "reasons": {
+      "title": "Mögliche Gründe",
+      "expired": "Link ist abgelaufen",
+      "removed": "Vom Besitzer entfernt",
+      "typo": "Tippfehler in der URL"
+    },
+    "buttons": {
+      "home": "Zur Startseite",
+      "discover": "Creator entdecken"
+    },
+    "actions": {
+      "home": "Start",
+      "creators": "Creator",
+      "search": "Suchen"
+    },
+    "tryAgain": "Überprüfe die URL und versuche es erneut",
+    "help": {
+      "title": "Suchst du jemanden?",
+      "description": "Suche nach dem Benutzernamen oder durchstöbere unser",
+      "creatorDirectory": "Creator-Verzeichnis"
+    },
+    "footer": "Kurzlinks unterscheiden Groß- und Kleinschreibung und können ablaufen"
+  },
+  "shortener": {
+    "title": "URL-Kürzer",
+    "subtitle": "Erstelle kurze, einprägsame Links mit Klick-Tracking",
+    "badge": "Link-Manager",
+    "stats": {
+      "totalLinks": "Gesamt Links",
+      "activeLinks": "Aktive Links",
+      "totalClicks": "Gesamt Klicks",
+      "avgClicks": "Ø Klicks"
+    },
+    "empty": {
+      "title": "Noch keine Links",
+      "description": "Erstelle deinen ersten Kurzlink und beginne Klicks zu tracken",
+      "cta": "Link erstellen"
+    },
+    "create": {
+      "title": "Kurzlink erstellen",
+      "targetUrl": "Ziel-URL",
+      "targetUrlPlaceholder": "https://beispiel.de/deine-lange-url",
+      "title_field": "Titel (optional)",
+      "titlePlaceholder": "Mein toller Link",
+      "customCode": "Eigener Code (optional)",
+      "customCodePlaceholder": "mein-link",
+      "customCodeHint": "Leer lassen für automatisch generierten Code",
+      "expiresAt": "Ablaufdatum (optional)",
+      "submit": "Link erstellen",
+      "creating": "Erstelle...",
+      "success": "Link erfolgreich erstellt!",
+      "error": "Link konnte nicht erstellt werden"
+    },
+    "link": {
+      "clicks": "Klicks",
+      "click": "Klick",
+      "created": "Erstellt",
+      "expires": "Läuft ab",
+      "noExpiry": "Läuft nie ab",
+      "active": "Aktiv",
+      "inactive": "Inaktiv",
+      "copy": "Link kopieren",
+      "copied": "Kopiert!",
+      "visit": "Besuchen",
+      "delete": "Löschen",
+      "edit": "Bearbeiten",
+      "toggle": "Status ändern"
+    },
+    "delete": {
+      "title": "Link löschen",
+      "confirm": "Möchtest du diesen Link wirklich löschen?",
+      "warning": "Diese Aktion kann nicht rückgängig gemacht werden. Alle Klick-Daten gehen verloren.",
+      "cancel": "Abbrechen",
+      "delete": "Löschen",
+      "deleting": "Lösche..."
+    },
+    "filters": {
+      "all": "Alle Links",
+      "active": "Aktiv",
+      "inactive": "Inaktiv"
+    },
+    "sort": {
+      "newest": "Neueste zuerst",
+      "oldest": "Älteste zuerst",
+      "mostClicks": "Meiste Klicks",
+      "leastClicks": "Wenigste Klicks"
+    },
+    "search": {
+      "placeholder": "Links suchen..."
+    },
+    "baseUrl": "eziox.link/s/"
+  },
+  "themeBuilder": {
+    "title": "Theme Builder",
+    "subtitle": "Erstelle und passe deine eigenen Themes an",
+    "badge": "Pro Feature",
+    "themesCount": "{{count}}/{{max}} Themes",
+    "upgrade": {
+      "title": "Theme Builder",
+      "description": "Erstelle eigene Themes mit Pro oder höher.",
+      "cta": "Auf Pro upgraden"
+    },
+    "actions": {
+      "import": "Importieren",
+      "export": "Exportieren",
+      "new": "Neues Theme",
+      "save": "Speichern",
+      "saving": "Speichert...",
+      "delete": "Löschen",
+      "activate": "Aktivieren",
+      "active": "Aktiv",
+      "preview": "Vorschau"
+    },
+    "tabs": {
+      "colors": "Farben",
+      "typography": "Typografie",
+      "effects": "Effekte"
+    },
+    "colors": {
+      "presets": "Farb-Vorlagen",
+      "background": "Hintergrund",
+      "backgroundSecondary": "Sekundärer Hintergrund",
+      "foreground": "Vordergrund",
+      "foregroundMuted": "Gedämpfter Text",
+      "primary": "Primär",
+      "accent": "Akzent",
+      "border": "Rahmen",
+      "card": "Karte"
+    },
+    "typography": {
+      "displayFont": "Überschrift-Schrift",
+      "bodyFont": "Text-Schrift"
+    },
+    "effects": {
+      "glowIntensity": "Leucht-Intensität",
+      "borderRadius": "Ecken-Rundung",
+      "cardStyle": "Karten-Stil",
+      "none": "Keine",
+      "subtle": "Dezent",
+      "medium": "Mittel",
+      "strong": "Stark",
+      "sharp": "Eckig",
+      "rounded": "Gerundet",
+      "pill": "Pill",
+      "flat": "Flach",
+      "glass": "Glas",
+      "neon": "Neon",
+      "gradient": "Verlauf"
+    },
+    "preview": {
+      "title": "Vorschau",
+      "subtitle": "Theme-Vorschau",
+      "link": "Link"
+    },
+    "empty": {
+      "title": "Noch keine Themes",
+      "description": "Erstelle dein erstes eigenes Theme",
+      "select": "Wähle oder erstelle ein Theme"
+    },
+    "list": {
+      "title": "Deine Themes"
+    },
+    "toast": {
+      "created": "Theme erstellt!",
+      "saved": "Theme gespeichert!",
+      "deleted": "Theme gelöscht!",
+      "activated": "Theme aktiviert!",
+      "exported": "Theme exportiert!",
+      "imported": "Theme importiert!",
+      "error": "Etwas ist schiefgelaufen",
+      "invalidFile": "Ungültige Theme-Datei"
+    }
+  },
+  "contact": {
+    "badge": "Kontakt aufnehmen",
+    "hero": {
+      "title": "Wie können wir",
+      "titleHighlight": "helfen",
+      "subtitle": "Hast du eine Frage, Feedback oder möchtest mit uns zusammenarbeiten? Wir freuen uns von dir zu hören."
+    },
+    "quickLinks": {
+      "discord": {
+        "title": "Discord Community",
+        "description": "1.000+ Mitglieder"
+      },
+      "github": {
+        "title": "GitHub Issues",
+        "description": "Bugs melden"
+      },
+      "email": {
+        "title": "E-Mail",
+        "description": "contact@eziox.link"
+      }
+    },
+    "categories": {
+      "title": "Kategorie wählen",
+      "general": {
+        "label": "Allgemeine Anfrage",
+        "description": "Fragen zu Eziox"
+      },
+      "support": {
+        "label": "Technischer Support",
+        "description": "Bugs oder Probleme melden"
+      },
+      "billing": {
+        "label": "Zahlung & Erstattung",
+        "description": "Zahlungsprobleme, Rückerstattungen, Kündigungen"
+      },
+      "account": {
+        "label": "Konto & Datenschutz",
+        "description": "Datenanfragen, Kontolöschung, DSGVO"
+      },
+      "feature": {
+        "label": "Feature-Anfrage",
+        "description": "Neue Funktionen vorschlagen"
+      },
+      "security": {
+        "label": "Sicherheit",
+        "description": "Schwachstellen melden"
+      }
+    },
+    "form": {
+      "name": "Dein Name",
+      "namePlaceholder": "Max Mustermann",
+      "email": "E-Mail-Adresse",
+      "emailPlaceholder": "max@beispiel.de",
+      "subject": "Betreff",
+      "subjectPlaceholder": "Kurze Beschreibung deiner Anfrage",
+      "message": "Nachricht",
+      "messagePlaceholder": "Bitte beschreibe deine Frage, dein Problem oder Feedback im Detail...",
+      "submit": "Nachricht senden",
+      "sending": "Wird gesendet...",
+      "privacyNote": "Mit dem Absenden stimmst du unserer",
+      "privacyLink": "Datenschutzerklärung",
+      "privacyNote2": " zu. Wir geben deine Daten niemals an Dritte weiter."
+    },
+    "validation": {
+      "nameRequired": "Name ist erforderlich",
+      "emailRequired": "E-Mail ist erforderlich",
+      "emailInvalid": "Ungültiges E-Mail-Format",
+      "subjectRequired": "Betreff ist erforderlich",
+      "subjectTooShort": "Betreff zu kurz (min. 5 Zeichen)",
+      "messageRequired": "Nachricht ist erforderlich",
+      "messageTooShort": "Nachricht zu kurz (min. 20 Zeichen)",
+      "messageTooLong": "Nachricht zu lang (max. 2000 Zeichen)",
+      "fixErrors": "Bitte behebe die Fehler im Formular"
+    },
+    "success": {
+      "title": "Nachricht gesendet!",
+      "subtitle": "Vielen Dank für deine Nachricht.",
+      "responseTime": "Wir melden uns innerhalb von",
+      "backHome": "Zurück zur Startseite",
+      "sendAnother": "Weitere senden"
+    },
+    "tips": {
+      "title": "Schnelle Tipps",
+      "tip1": "Sei spezifisch bei deinem Problem oder deiner Frage",
+      "tip2": "Füge relevante Details hinzu (Browser, Gerät, etc.)",
+      "tip3": "Schau auf Discord für schnelleren Community-Support"
+    },
+    "responseTime": {
+      "12-24h": "12-24h",
+      "24-48h": "24-48h",
+      "1-3d": "1-3 Tage",
+      "priority": "Priorität"
+    },
+    "faq": {
+      "title": "Häufig gestellte",
+      "titleHighlight": "Fragen",
+      "subtitle": "Schnelle Antworten auf häufige Fragen",
+      "q1": "Wie schnell bekomme ich eine Antwort?",
+      "a1": "Wir antworten in der Regel innerhalb von 24-48 Stunden bei allgemeinen Anfragen. Support-Tickets werden priorisiert und meist innerhalb von 12-24 Stunden beantwortet. Sicherheitsmeldungen erhalten sofortige Aufmerksamkeit.",
+      "q2": "Kann ich Sicherheitslücken melden?",
+      "a2": "Ja! Bitte wähle die Kategorie \"Sicherheit\" für verantwortungsvolle Offenlegung. Sicherheitsmeldungen werden mit höchster Priorität behandelt und du könntest für unser Bug-Bounty-Programm berechtigt sein.",
+      "q3": "Wie beantrage ich eine Rückerstattung?",
+      "a3": "Wähle \"Zahlung & Erstattung\" und gib deine Abo-Details an. Wir bearbeiten Rückerstattungen innerhalb von 14 Tagen gemäß unserer Widerrufsbelehrung. Für sofortige Hilfe, schau auf unsere Widerrufsbelehrung-Seite.",
+      "q4": "Gibt es eine Discord-Community?",
+      "a4": "Ja! Tritt unserem Discord-Server bei für sofortige Hilfe von der Community und dem Team. Es ist der schnellste Weg, Antworten zu bekommen und sich mit anderen Creatorn zu verbinden."
+    }
+  },
+  "apiDocs": {
+    "badge": "Entwickler-API",
+    "hero": {
+      "title": "Entwickle mit der",
+      "titleHighlight": "Eziox API",
+      "subtitle": "Leistungsstarke REST API für nahtlose Integration. Greife programmatisch auf Profile, Links und Statistiken zu."
+    },
+    "quickStart": {
+      "title": "Schnellstart",
+      "step1": {
+        "title": "Hol dir deinen API-Key",
+        "description": "Erstelle einen API-Key in deinem Dashboard unter Einstellungen → API-Zugang."
+      },
+      "step2": {
+        "title": "Sende eine Anfrage",
+        "description": "Nutze deinen Key zur Authentifizierung von API-Anfragen."
+      },
+      "step3": {
+        "title": "Baue etwas",
+        "description": "Integriere Eziox-Daten in deine Apps, Websites oder Tools."
+      }
+    },
+    "auth": {
+      "title": "Authentifizierung",
+      "description": "Alle API-Anfragen erfordern Authentifizierung via Bearer-Token. Füge deinen API-Key im Authorization-Header ein.",
+      "warning": {
+        "title": "Halte deinen Key sicher",
+        "description": "Zeige deinen API-Key niemals im Client-Code. Nutze Umgebungsvariablen."
+      }
+    },
+    "baseUrl": {
+      "title": "Basis-URL",
+      "description": "Alle API-Anfragen sollten an diese URL gesendet werden:"
+    },
+    "endpoints": {
+      "title": "Endpunkte",
+      "profile": {
+        "title": "Profil",
+        "getPublic": {
+          "title": "Öffentliches Profil abrufen",
+          "description": "Rufe öffentliche Profilinformationen eines Nutzers ab."
+        },
+        "getMe": {
+          "title": "Mein Profil abrufen",
+          "description": "Hole dein authentifiziertes Profil mit allen Details."
+        },
+        "update": {
+          "title": "Profil aktualisieren",
+          "description": "Aktualisiere deine Profilinformationen."
+        }
+      },
+      "links": {
+        "title": "Links",
+        "getAll": {
+          "title": "Alle Links abrufen",
+          "description": "Rufe alle deine Bio-Links ab."
+        },
+        "create": {
+          "title": "Link erstellen",
+          "description": "Erstelle einen neuen Bio-Link."
+        },
+        "update": {
+          "title": "Link aktualisieren",
+          "description": "Aktualisiere einen bestehenden Link."
+        },
+        "delete": {
+          "title": "Link löschen",
+          "description": "Lösche einen Link dauerhaft."
+        }
+      },
+      "analytics": {
+        "title": "Statistiken",
+        "get": {
+          "title": "Statistiken abrufen",
+          "description": "Rufe deine Profil- und Link-Statistiken ab."
+        }
+      }
+    },
+    "rateLimits": {
+      "title": "Rate Limits",
+      "description": "API-Anfragen sind je nach Abo-Stufe limitiert.",
+      "perHour": "pro Stunde"
+    },
+    "errors": {
+      "title": "Fehlercodes",
+      "description": "Die API nutzt Standard-HTTP-Statuscodes für Erfolg oder Fehler.",
+      "400": "Bad Request - Ungültige Parameter oder fehlerhafte Anfrage",
+      "401": "Unauthorized - Ungültiger oder fehlender API-Key",
+      "403": "Forbidden - Unzureichende Berechtigungen",
+      "404": "Not Found - Die angeforderte Ressource existiert nicht",
+      "429": "Too Many Requests - Rate Limit überschritten",
+      "500": "Server Error - Etwas ist auf unserer Seite schiefgelaufen"
+    },
+    "sdks": {
+      "title": "SDKs & Bibliotheken",
+      "description": "Offizielle Bibliotheken für einen schnelleren Start.",
+      "comingSoon": "Demnächst"
+    },
+    "cta": {
+      "title": "Bereit zur Integration?",
+      "subtitle": "Hol dir deinen API-Key und starte noch heute.",
+      "button": "API-Key holen"
+    },
+    "params": "Parameter",
+    "requestBody": "Request Body",
+    "response": "Antwort",
+    "required": "Erforderlich",
+    "optional": "Optional",
+    "copyCode": "Code kopieren"
+  },
+  "creators": {
+    "badge": "Creator Community",
+    "hero": {
+      "title": "Entdecke",
+      "titleHighlight": "Großartige",
+      "titleEnd": "Creator",
+      "subtitle": "Verbinde dich mit talentierten VTubern, Streamern, Künstlern, Musikern und mehr aus der ganzen Welt"
+    },
+    "stats": {
+      "creators": "Creator",
+      "featured": "Featured",
+      "categories": "Kategorien"
+    },
+    "live": "Live",
+    "updated": "Aktualisiert",
+    "categories": {
+      "all": {
+        "label": "Alle",
+        "description": "Alle Creator durchsuchen"
+      },
+      "vtuber": {
+        "label": "VTuber",
+        "description": "Virtuelle Content Creator"
+      },
+      "streamer": {
+        "label": "Streamer",
+        "description": "Live-Streamer"
+      },
+      "artist": {
+        "label": "Künstler",
+        "description": "Digitale & traditionelle Künstler"
+      },
+      "musician": {
+        "label": "Musiker",
+        "description": "Musikproduzenten & Künstler"
+      },
+      "gamer": {
+        "label": "Gamer",
+        "description": "Gaming Content Creator"
+      },
+      "developer": {
+        "label": "Entwickler",
+        "description": "Programmierer & Tech Creator"
+      },
+      "other": {
+        "label": "Andere",
+        "description": "Andere Creator"
+      }
+    },
+    "sort": {
+      "nameAsc": "Name A → Z",
+      "nameDesc": "Name Z → A",
+      "views": "Meiste Aufrufe",
+      "followers": "Meiste Follower",
+      "newest": "Neueste zuerst"
+    },
+    "search": {
+      "placeholder": "Creator nach Name, Benutzername oder Bio suchen..."
+    },
+    "results": {
+      "allCreators": "Alle Creator",
+      "creatorsFound": "Creator gefunden",
+      "creatorsFoundPlural": "Creator gefunden",
+      "featured": "Featured",
+      "rank": "Rang",
+      "user": "Benutzer"
+    },
+    "loading": "Entdecke großartige Creator...",
+    "empty": {
+      "title": "Keine Creator gefunden",
+      "subtitle": "Versuche deine Suche anzupassen oder erkunde andere Kategorien",
+      "clearFilters": "Filter löschen"
+    },
+    "card": {
+      "featured": "Featured",
+      "owner": "Owner",
+      "view": "Ansehen",
+      "invitedBy": "Eingeladen von"
+    },
+    "pagination": {
+      "showing": "Zeige",
+      "of": "von"
+    }
+  },
+  "leaderboard": {
+    "meta": {
+      "title": "Rangliste | Eziox",
+      "description": "Top-Creator auf Eziox nach Engagement und Aktivität"
+    },
+    "badge": "Live-Rangliste",
+    "live": "Live",
+    "hero": {
+      "title": "Creator",
+      "titleHighlight": "Rangliste",
+      "subtitle": "Sieh, wer an der Spitze steht. Steige in den Rängen auf, indem du dein Profil ausbaust und mit der Community interagierst.",
+      "updated": "Aktualisiert"
+    },
+    "stats": {
+      "totalCreators": "Creator gesamt",
+      "totalPoints": "Punkte gesamt",
+      "activeToday": "Heute aktiv",
+      "newThisWeek": "Neu diese Woche"
+    },
+    "podium": {
+      "title": "Top 3 Creator",
+      "points": "Punkte"
+    },
+    "rankings": {
+      "title": "Alle Ränge",
+      "competing": "Creator im Wettbewerb",
+      "viewAllCreators": "Alle Creator ansehen"
+    },
+    "loading": "Rangliste wird geladen...",
+    "empty": {
+      "title": "Noch keine Ränge",
+      "subtitle": "Sei der Erste auf dem Podium!",
+      "cta": "Jetzt mitmachen"
+    },
+    "earnPoints": {
+      "title": "So sammelst du Punkte",
+      "profileViews": "Profilaufrufe",
+      "linkClicks": "Link-Klicks",
+      "followers": "Follower",
+      "referrals": "Empfehlungen",
+      "perView": "pro Aufruf",
+      "perClick": "pro Klick",
+      "perFollower": "pro Follower",
+      "perSignup": "pro Anmeldung"
+    },
+    "cta": "Starte deinen Aufstieg",
+    "pagination": {
+      "page": "Seite",
+      "of": "von",
+      "previous": "Zurück",
+      "next": "Weiter",
+      "showing": "Zeige",
+      "to": "bis",
+      "results": "Ergebnisse"
+    }
+  },
+  "partners": {
+    "badge": "Partner-Programm",
+    "hero": {
+      "title": "Werde Teil unseres",
+      "titleHighlight": "Partner-Netzwerks",
+      "subtitle": "Arbeite mit uns zusammen und schalte exklusive Vorteile frei. Egal ob Streamer, Entwickler, Gamer oder Creator – wir möchten mit dir zusammenarbeiten."
+    },
+    "applyNow": "Jetzt bewerben",
+    "signInToApply": "Anmelden zum Bewerben",
+    "yourApplication": "Deine Bewerbung",
+    "loading": "Partner werden geladen...",
+    "status": {
+      "pending": "In Prüfung",
+      "reviewing": "Wird geprüft",
+      "approved": "Genehmigt",
+      "rejected": "Abgelehnt"
+    },
+    "stats": {
+      "officialPartners": "Offizielle Partner",
+      "featuredCreators": "Featured Creator",
+      "totalViews": "Gesamtaufrufe",
+      "pendingApps": "Offene Bewerbungen"
+    },
+    "benefits": {
+      "title": "Partner-Vorteile",
+      "subtitle": "Schalte exklusive Features frei und wachse gemeinsam mit Eziox",
+      "badge": {
+        "title": "Partner-Badge",
+        "description": "Exklusives verifiziertes Partner-Badge auf deinem Profil"
+      },
+      "featured": {
+        "title": "Featured Platzierung",
+        "description": "Werde auf unserer Homepage und Partner-Showcase vorgestellt"
+      },
+      "premium": {
+        "title": "Premium Features",
+        "description": "Früher Zugang zu neuen Features und Premium-Tools"
+      },
+      "community": {
+        "title": "Community-Zugang",
+        "description": "Tritt unserem exklusiven Partner-Discord und Events bei"
+      }
+    },
+    "requirements": {
+      "title": "Was wir suchen",
+      "subtitle": "Wir suchen leidenschaftliche Creator, die unsere Werte teilen",
+      "followers": {
+        "title": "100+ Follower",
+        "description": "Aktive Community-Präsenz"
+      },
+      "quality": {
+        "title": "Qualitäts-Content",
+        "description": "Konstant hochwertige Beiträge"
+      },
+      "active": {
+        "title": "Aktives Profil",
+        "description": "Regelmäßiges Engagement auf Eziox"
+      }
+    },
+    "showcase": {
+      "badge": "Partner-Showcase",
+      "title": "Lerne unsere",
+      "titleHighlight": "Partner kennen",
+      "subtitle": "Entdecke die talentierten Creator und Entwickler in unserem Partner-Programm"
+    },
+    "tabs": {
+      "official": "Offizielle Partner",
+      "featured": "Featured Creator"
+    },
+    "official": {
+      "title": "Offizielle Partner",
+      "subtitle": "verifizierte Partner"
+    },
+    "featured": {
+      "title": "Featured Creator",
+      "subtitle": "hervorgehobene Community-Mitglieder"
+    },
+    "empty": {
+      "title": "Noch keine Partner",
+      "subtitle": "Sei der Erste in unserem Partner-Programm!",
+      "featuredTitle": "Noch keine Featured Creator",
+      "featuredSubtitle": "Featured Creator werden bald hier angezeigt!"
+    }
+  },
+  "join": {
+    "loading": {
+      "title": "Einladung wird überprüft...",
+      "code": "Code"
+    },
+    "error": {
+      "title": "Ungültiger Einladungscode",
+      "codeInvalid": "Der Code",
+      "expired": "Er ist möglicherweise abgelaufen oder wurde falsch eingegeben.",
+      "signUpAnyway": "Trotzdem registrieren",
+      "goHome": "Zur Startseite"
+    },
+    "badge": "Exklusive Einladung",
+    "success": {
+      "titleStart": "Du bist",
+      "titleHighlight": "Eingeladen!",
+      "owner": "Owner",
+      "invitedYou": "hat dich eingeladen zu",
+      "benefits": {
+        "title": "Das bekommst du:",
+        "links": "Unbegrenzte Bio-Links",
+        "themes": "30+ kostenlose Themes",
+        "analytics": "Live-Statistiken",
+        "setup": "Sofortige Einrichtung"
+      },
+      "codeApplied": "Code angewendet",
+      "cta": "Jetzt Eziox beitreten",
+      "alreadyHaveAccount": "Bereits ein Konto?",
+      "signIn": "Anmelden"
+    }
+  },
+  "imprint": {
+    "title": "Impressum",
+    "subtitle": "Rechtliche Angaben gemäß § 5 DDG",
+    "badge": "Legal",
+    "sections": {
+      "provider": {
+        "title": "Diensteanbieter",
+        "content": "**Nattapat Pongsuwan**\n\nRohstorf\n21397 Vastorf\nDeutschland"
+      },
+      "contact": {
+        "title": "Kontaktmöglichkeiten",
+        "content": "**E-Mail-Adresse:** [contact@eziox.link](mailto:contact@eziox.link)\n\n**Kontaktformular:** [https://eziox.link/contact](https://eziox.link/contact)"
+      },
+      "disputeResolution": {
+        "title": "Verbraucherstreitbeilegung",
+        "content": "Wir sind nicht bereit und nicht verpflichtet an einem Streitbeilegungsverfahren vor einer Verbraucherstreitschlichtungsstelle teilzunehmen."
+      },
+      "socialMedia": {
+        "title": "Social Media und andere Onlinepräsenzen",
+        "content": "Dieses Impressum gilt auch für die folgenden Social-Media-Präsenzen und Onlineprofile:\n\n**Discord-Community:** [https://discord.com/invite/KD84DmNA89](https://discord.com/invite/KD84DmNA89)\n\n**GitHub-Organisation:** [https://github.com/Eziox-Development](https://github.com/Eziox-Development)\n• Projekt-Repo: [https://github.com/Eziox-Development/eziox-web](https://github.com/Eziox-Development/eziox-web)\n• Issue-Tracker: [https://github.com/Eziox-Development/eziox-web/issues](https://github.com/Eziox-Development/eziox-web/issues)"
+      },
+      "dataMining": {
+        "title": "Vorbehalt der Nutzung für Text und Data Mining",
+        "content": "Der Inhaber dieser Website gestattet die Nutzung oder das Herunterladen von Inhalten dieser Website durch Dritte für die Entwicklung, das Training oder den Betrieb von künstlicher Intelligenz oder anderen maschinellen Lernsystemen (\"Text und Data Mining\") ausschließlich mit ausdrücklicher schriftlicher Zustimmung des Inhabers.\n\nOhne eine solche Zustimmung ist es untersagt, die Inhalte für Text und Data Mining zu verwenden. Dies gilt auch, wenn auf der Website keine Meta-Angaben vorhanden sind, die entsprechende Verfahren aussperren, und selbst dann, wenn Bots, die den Zweck haben, die Website zu Zwecken des Text und Data Mining auszulesen, nicht ausgesperrt werden."
+      },
+      "liability": {
+        "title": "Haftungs- und Schutzrechtshinweise",
+        "content": "**Haftungsausschluss:** Die Inhalte dieses Onlineangebotes wurden sorgfältig und nach unserem aktuellen Kenntnisstand erstellt, dienen jedoch nur der Information und entfalten keine rechtlich bindende Wirkung, sofern es sich nicht um gesetzlich verpflichtende Informationen (z. B. das Impressum, die Datenschutzerklärung, AGB oder verpflichtende Belehrungen von Verbrauchern) handelt. Wir behalten uns vor, die Inhalte vollständig oder teilweise zu ändern oder zu löschen, soweit vertragliche Verpflichtungen unberührt bleiben. Alle Angebote sind freibleibend und unverbindlich.\n\n**Links auf fremde Webseiten:** Die Inhalte fremder Webseiten, auf die wir direkt oder indirekt verweisen, liegen außerhalb unseres Verantwortungsbereiches und wir machen sie uns nicht zu Eigen. Für alle Inhalte und Nachteile, die aus der Nutzung der in den verlinkten Webseiten aufrufbaren Informationen entstehen, übernehmen wir keine Verantwortung.\n\n**Urheberrechte und Markenrechte:** Alle auf dieser Website dargestellten Inhalte, wie Texte, Fotografien, Grafiken, Marken und Warenzeichen sind durch die jeweiligen Schutzrechte (Urheberrechte, Markenrechte) geschützt. Die Verwendung, Vervielfältigung usw. unterliegen unseren Rechten oder den Rechten der jeweiligen Urheber bzw. Rechteinhaber.\n\n**Hinweise auf Rechtsverstöße:** Sollten Sie innerhalb unseres Internetauftritts Rechtsverstöße bemerken, bitten wir Sie uns auf diese hinzuweisen. Wir werden rechtswidrige Inhalte und Links nach Kenntnisnahme unverzüglich entfernen."
+      },
+      "generator": {
+        "title": "Impressum-Generator",
+        "content": "*Erstellt mit kostenlosem Datenschutz-Generator.de von Dr. Thomas Schwenke*"
+      }
+    },
+    "relatedLinks": {
+      "privacy": "Datenschutzerklärung",
+      "terms": "Nutzungsbedingungen",
+      "cookies": "Cookie-Richtlinie"
+    }
+  },
+  "cookies": {
+    "title": "Cookie-Richtlinie",
+    "subtitle": "Erfahren Sie, wie wir Cookies und ähnliche Technologien auf unserer Plattform verwenden.",
+    "badge": "Cookies",
+    "lastUpdated": "Zuletzt aktualisiert",
+    "cookieTypes": {
+      "title": "Verwendete Cookies",
+      "essential": {
+        "name": "Essentielle Cookies",
+        "description": "Diese Cookies sind für die Funktion der Website notwendig und können nicht deaktiviert werden."
+      },
+      "functional": {
+        "name": "Funktionale Cookies",
+        "description": "Diese Cookies ermöglichen personalisierte Funktionen und speichern Ihre Präferenzen."
+      },
+      "analytics": {
+        "name": "Analyse",
+        "description": "Serverseitige Analysen helfen uns zu verstehen, wie Besucher mit unserer Website interagieren."
+      }
+    },
+    "cookies": {
+      "sessionToken": {
+        "name": "session-token",
+        "purpose": "Erhält Ihre Anmeldesitzung"
+      },
+      "cfClearance": {
+        "name": "cf_clearance",
+        "purpose": "Cloudflare Turnstile Bot-Schutz"
+      },
+      "theme": {
+        "name": "theme",
+        "purpose": "Speichert Ihr bevorzugtes Farbschema"
+      },
+      "sidebarCollapsed": {
+        "name": "sidebar-collapsed",
+        "purpose": "Merkt sich den Sidebar-Status"
+      },
+      "internalAnalytics": {
+        "name": "Interne Analyse",
+        "purpose": "Anonymisierte Seitenaufruf-Verfolgung"
+      }
+    },
+    "duration": {
+      "7days": "7 Tage",
+      "30min": "30 Minuten",
+      "persistent": "Dauerhaft",
+      "session": "Sitzung"
+    },
+    "type": {
+      "httpCookie": "HTTP Cookie",
+      "localStorage": "Local Storage",
+      "serverSide": "Serverseitig (keine Cookies)"
+    },
+    "required": "Erforderlich",
+    "optional": "Optional",
+    "sections": {
+      "legalBasis": {
+        "title": "Rechtsgrundlage",
+        "content": "Diese Cookie-Richtlinie basiert auf folgenden Rechtsgrundlagen:\n\n**§ 25 TDDDG (Telekommunikation-Digitale-Dienste-Datenschutz-Gesetz):**\nDie Speicherung von Informationen in der Endeinrichtung des Endnutzers oder der Zugriff auf bereits gespeicherte Informationen ist nur zulässig, wenn der Endnutzer eingewilligt hat oder die Speicherung/der Zugriff unbedingt erforderlich ist.\n\n**Art. 6 Abs. 1 DSGVO:**\n• **lit. a:** Einwilligung für nicht-essentielle Cookies\n• **lit. b:** Vertragserfüllung für essentielle Cookies\n• **lit. f:** Berechtigte Interessen für Sicherheits-Cookies\n\n**ePrivacy-Richtlinie (2002/58/EG):**\nEuropäische Richtlinie zum Schutz der Privatsphäre in der elektronischen Kommunikation."
+      },
+      "whatAreCookies": {
+        "title": "Was sind Cookies?",
+        "content": "Cookies sind kleine Textdateien, die auf Ihrem Gerät gespeichert werden, wenn Sie eine Website besuchen. Sie werden häufig verwendet, um Websites effizienter zu gestalten und Informationen an Website-Betreiber zu übermitteln.\n\n**Arten der Speicherung:**\n• **Cookies:** Kleine Textdateien in Ihrem Browser\n• **Local Storage:** Lokal in Ihrem Browser gespeicherte Daten\n• **Session Storage:** Temporäre Daten, die beim Schließen des Browsers gelöscht werden\n\nCookies können \"First-Party\" (von uns gesetzt) oder \"Third-Party\" (von anderen Diensten gesetzt) sein. Wir verwenden hauptsächlich First-Party-Cookies."
+      },
+      "howWeUse": {
+        "title": "Wie wir Cookies verwenden",
+        "content": "Wir verwenden Cookies für folgende Zwecke:\n\n**Authentifizierung (technisch notwendig, § 25 Abs. 2 Nr. 2 TDDDG):**\n• Aufrechterhaltung Ihrer Anmeldung über Sitzungen hinweg\n• Sicherung Ihres Kontos mit HTTP-only Cookies\n• Validierung Ihrer Sitzung bei jeder Anfrage\n\n**Präferenzen (mit Einwilligung):**\n• Speicherung Ihrer Theme-Präferenz (Dunkel-/Hellmodus)\n• Speicherung von UI-Einstellungen wie Sidebar-Status\n• Personalisierung Ihrer Erfahrung\n\n**Analyse (mit Einwilligung):**\n• Zählung von Seitenaufrufen und eindeutigen Besuchern\n• Verständnis, welche Funktionen am meisten genutzt werden\n• Verbesserung unseres Dienstes basierend auf Nutzungsmustern\n\n**Wir verwenden Cookies NICHT für:**\n• Werbung oder Anzeigen-Targeting\n• Cross-Site-Tracking\n• Verkauf von Daten an Dritte"
+      },
+      "yourChoices": {
+        "title": "Ihre Cookie-Wahlmöglichkeiten",
+        "content": "Sie haben die Kontrolle über Cookies:\n\n**Einwilligungsverwaltung:**\n• Beim ersten Besuch werden Sie um Ihre Einwilligung gebeten\n• Sie können Ihre Einwilligung jederzeit widerrufen\n• Essentielle Cookies können nicht deaktiviert werden (für Login erforderlich)\n\n**Browser-Einstellungen:**\n• Die meisten Browser erlauben das Blockieren oder Löschen von Cookies\n• Sie können Ihren Browser so einstellen, dass er Sie benachrichtigt, wenn Cookies gesetzt werden\n• Privater/Inkognito-Modus begrenzt die Cookie-Speicherung\n\n**Folgen der Deaktivierung von Cookies:**\n• Sie können nicht angemeldet bleiben\n• Ihre Präferenzen werden nicht gespeichert\n• Einige Funktionen funktionieren möglicherweise nicht richtig"
+      },
+      "thirdParty": {
+        "title": "Drittanbieter-Dienste",
+        "content": "Wir verwenden minimale Drittanbieter-Dienste:\n\n**Hosting (Vercel):**\n• Kann leistungsbezogene Cookies setzen\n• Unterliegt deren eigenen Datenschutzrichtlinien\n\n**Sicherheit (Cloudflare):**\n• Turnstile Bot-Schutz (cf_clearance Cookie)\n• DDoS-Schutz und CDN\n\n**Wir verwenden NICHT:**\n• Google Analytics\n• Facebook Pixel\n• Werbenetzwerke\n• Social-Media-Tracking-Pixel"
+      },
+      "security": {
+        "title": "Cookie-Sicherheit",
+        "content": "Wir implementieren Sicherheitsmaßnahmen für unsere Cookies:\n\n**HTTP-Only Cookies:**\n• Session-Cookies können nicht von JavaScript aufgerufen werden\n• Schützt vor XSS (Cross-Site Scripting) Angriffen\n\n**Secure-Flag:**\n• Cookies werden in der Produktion nur über HTTPS gesendet\n• Verhindert Abfangen bei unsicheren Verbindungen\n\n**SameSite-Attribut:**\n• Auf \"Lax\" gesetzt, um CSRF-Angriffe zu verhindern\n• Cookies werden nicht mit Cross-Site-Anfragen gesendet\n\n**Ablauf:**\n• Session-Cookies laufen nach 7 Tagen ab\n• Automatische Bereinigung abgelaufener Sitzungen"
+      },
+      "updates": {
+        "title": "Aktualisierungen der Richtlinie",
+        "content": "Wir können diese Cookie-Richtlinie von Zeit zu Zeit aktualisieren:\n\n• Änderungen werden im Datum \"Zuletzt aktualisiert\" widergespiegelt\n• Wesentliche Änderungen werden per E-Mail oder In-App-Benachrichtigung angekündigt\n• Die fortgesetzte Nutzung des Dienstes nach Änderungen gilt als Zustimmung"
+      },
+      "contact": {
+        "title": "Kontakt",
+        "content": "Bei Fragen zur Verwendung von Cookies:\n\n**E-Mail:** privacy@eziox.link\n**Website:** https://eziox.link/contact\n\nFür allgemeine Datenschutzanfragen siehe unsere Datenschutzerklärung."
+      }
+    },
+    "relatedLinks": {
+      "privacy": "Datenschutzerklärung",
+      "terms": "AGB",
+      "imprint": "Impressum"
+    }
+  },
+  "footer": {
+    "tagline": "Die moderne Bio-Link-Plattform für Creator",
+    "description": "Teile deine Online-Präsenz mit einem schönen Link. Entwickelt für Creator, Streamer und Unternehmen.",
+    "platform": {
+      "title": "Plattform",
+      "features": "Funktionen",
+      "templates": "Vorlagen",
+      "pricing": "Preise",
+      "playground": "Playground"
+    },
+    "community": {
+      "title": "Community",
+      "creators": "Creator",
+      "partners": "Partner",
+      "leaderboard": "Rangliste"
+    },
+    "resources": {
+      "title": "Ressourcen",
+      "docs": "Dokumentation",
+      "blog": "Blog",
+      "helpCenter": "Hilfe-Center",
+      "status": "Status"
+    },
+    "legal": {
+      "title": "Rechtliches",
+      "privacy": "Datenschutzerklärung",
+      "terms": "Nutzungsbedingungen",
+      "cookies": "Cookie-Richtlinie",
+      "cancellation": "Widerrufsbelehrung",
+      "imprint": "Impressum"
+    },
+    "stats": {
+      "creators": "Creator",
+      "clicks": "Klicks",
+      "views": "Aufrufe",
+      "links": "Links",
+      "activeToday": "Heute aktiv"
+    },
+    "status": {
+      "operational": "Alle Systeme funktionsfähig",
+      "secure": "Sicher",
+      "analytics": "Analysen",
+      "global": "Global"
+    },
+    "contact": {
+      "email": "Kontaktiere uns",
+      "discord": "Community beitreten"
+    },
+    "madeIn": "Made in Germany",
+    "craftedBy": "Erstellt mit",
+    "by": "von",
+    "themesAvailable": "{{count}} Themes",
+    "copyright": "© {{year}} Eziox"
+  },
+  "language": {
+    "select": "Sprache wählen",
+    "en": "English",
+    "de": "Deutsch"
+  },
+  "errors": {
+    "notFound": {
+      "title": "Seite nicht gefunden",
+      "description": "Die gesuchte Seite existiert nicht oder wurde verschoben.",
+      "button": "Zur Startseite"
+    },
+    "serverError": {
+      "title": "Etwas ist schiefgelaufen",
+      "description": "Wir arbeiten daran, das Problem zu beheben. Bitte versuche es später erneut.",
+      "button": "Erneut versuchen"
+    }
+  },
+  "terms": {
+    "title": "Nutzungsbedingungen",
+    "subtitle": "Regeln und Richtlinien für die Nutzung von Eziox",
+    "badge": "AGB",
+    "relatedLinks": {
+      "privacy": "Datenschutzerklärung",
+      "widerruf": "Widerrufsbelehrung",
+      "imprint": "Impressum"
+    },
+    "sections": {
+      "agreement": {
+        "title": "Zustimmung zu unseren rechtlichen Bedingungen",
+        "content": "Wir sind **Nattapat Pongsuwan**, handelnd als **Eziox** (\"Unternehmen\", \"wir\", \"uns\", \"unser\"), ein in Deutschland eingetragenes Unternehmen mit Sitz in Rohstorf 59, Vastorf, Niedersachsen 21397.\n\nWir betreiben die Website [https://eziox.link](https://eziox.link) (die \"Seite\") sowie alle anderen damit verbundenen Produkte und Dienste.\n\n**Eziox ist eine SaaS-Bio-Link-Plattform für Creator und kleine Teams zur Verwaltung von Profilen, Links, Analysen und Premium-Anpassungen.**\n\nDu kannst uns per E-Mail unter [contact@eziox.link](mailto:contact@eziox.link) kontaktieren.\n\nDiese Rechtlichen Bedingungen stellen eine rechtsverbindliche Vereinbarung zwischen dir und Eziox dar. **WENN DU NICHT MIT ALLEN DIESEN RECHTLICHEN BEDINGUNGEN EINVERSTANDEN BIST, IST DIR DIE NUTZUNG DER DIENSTE AUSDRÜCKLICH UNTERSAGT.**\n\nDie Dienste sind für Nutzer bestimmt, die mindestens 13 Jahre alt sind."
+      },
+      "services": {
+        "title": "1. Unsere Dienste",
+        "content": "Die bei der Nutzung der Dienste bereitgestellten Informationen sind nicht zur Verbreitung in Rechtsordnungen bestimmt, in denen eine solche Verbreitung gegen Gesetze verstoßen würde.\n\nDie Dienste sind nicht auf die Einhaltung branchenspezifischer Vorschriften (HIPAA, FISMA usw.) zugeschnitten."
+      },
+      "ip": {
+        "title": "2. Geistige Eigentumsrechte",
+        "content": "**Unser geistiges Eigentum**\n\nWir sind Eigentümer oder Lizenznehmer aller geistigen Eigentumsrechte an unseren Diensten, einschließlich aller Quellcodes, Datenbanken, Funktionen, Software, Website-Designs, Audio, Video, Text, Fotografien und Grafiken.\n\nUnser Inhalt und unsere Marken sind durch Urheber- und Markengesetze geschützt.\n\n**Deine Nutzung unserer Dienste**\n\nWir gewähren dir eine nicht-exklusive, nicht übertragbare, widerrufliche Lizenz zum Zugriff auf die Dienste für deinen persönlichen, nicht-kommerziellen Gebrauch.\n\n**Deine Einreichungen und Beiträge**\n\nDurch das Senden von Feedback oder Vorschlägen erklärst du dich damit einverstanden, uns alle geistigen Eigentumsrechte daran abzutreten.\n\nDurch das Posten von Beiträgen gewährst du uns eine weltweite, gebührenfreie Lizenz zur Nutzung dieser Inhalte."
+      },
+      "userreps": {
+        "title": "3. Nutzergarantien",
+        "content": "Durch die Nutzung der Dienste garantierst du, dass:\n\n• alle Registrierungsinformationen wahr, genau und vollständig sind;\n• du die rechtliche Fähigkeit hast, diese Bedingungen einzuhalten;\n• du nicht unter 13 Jahre alt bist;\n• du die Dienste nicht für illegale Zwecke nutzen wirst;\n• deine Nutzung nicht gegen geltendes Recht verstoßen wird."
+      },
+      "userreg": {
+        "title": "4. Benutzerregistrierung",
+        "content": "Du musst dich möglicherweise registrieren, um die Dienste zu nutzen. Du erklärst dich damit einverstanden, dein Passwort vertraulich zu behandeln und bist für alle Nutzungen deines Kontos verantwortlich."
+      },
+      "purchases": {
+        "title": "5. Käufe und Zahlung",
+        "content": "Wir akzeptieren: Visa, Mastercard, Apple Pay, Google Pay, Klarna.\n\nAlle Zahlungen erfolgen in Euro (€). Wir behalten uns das Recht vor, Preise jederzeit zu ändern und Bestellungen abzulehnen."
+      },
+      "subscriptions": {
+        "title": "6. Abonnements",
+        "content": "**Abrechnung und Verlängerung**\n\nDein Abonnement verlängert sich automatisch monatlich, sofern es nicht gekündigt wird.\n\n**Kündigung**\n\nDu kannst dein Abonnement jederzeit über deine Kontoeinstellungen kündigen. Die Kündigung wird am Ende der aktuellen Laufzeit wirksam.\n\n**Gebührenänderungen**\n\nPreisänderungen werden gemäß geltendem Recht mitgeteilt."
+      },
+      "prohibited": {
+        "title": "7. Verbotene Aktivitäten",
+        "content": "Als Nutzer der Dienste erklärst du dich damit einverstanden, NICHT:\n\n• Daten systematisch ohne Genehmigung abzurufen\n• Andere Nutzer zu täuschen oder zu betrügen\n• Sicherheitsfunktionen zu umgehen\n• Uns oder die Dienste zu schädigen\n• Informationen zur Belästigung anderer zu verwenden\n• Die Dienste für illegale Zwecke zu nutzen\n• Viren oder schädliche Software hochzuladen\n• Automatisierte Systeme ohne Genehmigung zu verwenden\n• Urheberrechtshinweise zu entfernen\n• Sich als andere Person auszugeben\n• Die Dienste zu stören oder zu überlasten\n• Unsere Software zu kopieren oder zurückzuentwickeln\n• Dein Profil zu verkaufen oder zu übertragen"
+      },
+      "ugc": {
+        "title": "8. Nutzergenerierte Beiträge",
+        "content": "Wenn du Beiträge erstellst, garantierst du, dass:\n\n• sie keine Rechte Dritter verletzen\n• du die erforderlichen Rechte besitzt\n• sie nicht falsch oder irreführend sind\n• sie keine Spam oder unerwünschte Werbung sind\n• sie nicht anstößig oder illegal sind\n• sie nicht gegen geltendes Recht verstoßen"
+      },
+      "license": {
+        "title": "9. Beitragslizenz",
+        "content": "Durch das Posten von Beiträgen gewährst du uns eine weltweite, unbefristete, gebührenfreie Lizenz zur Nutzung, Reproduktion, Änderung und Verbreitung dieser Inhalte.\n\nDu behältst das volle Eigentum an deinen Beiträgen. Wir haben das Recht, Beiträge jederzeit zu bearbeiten oder zu löschen."
+      },
+      "socialmedia": {
+        "title": "10. Soziale Medien",
+        "content": "Du kannst dein Konto mit Drittanbieter-Konten verknüpfen. Deine Beziehung zu diesen Drittanbietern wird ausschließlich durch deine Vereinbarungen mit ihnen geregelt."
+      },
+      "thirdparty": {
+        "title": "11. Websites und Inhalte Dritter",
+        "content": "Die Dienste können Links zu Websites Dritter enthalten. Wir sind nicht verantwortlich für deren Inhalte, Genauigkeit oder Datenschutzpraktiken. Die Nutzung erfolgt auf eigenes Risiko."
+      },
+      "sitemanage": {
+        "title": "12. Dienstverwaltung",
+        "content": "Wir behalten uns das Recht vor:\n\n• die Dienste auf Verstöße zu überwachen\n• rechtliche Schritte gegen Verstöße einzuleiten\n• Beiträge zu entfernen oder einzuschränken\n• die Dienste zu verwalten, um deren ordnungsgemäßes Funktionieren zu gewährleisten"
+      },
+      "privacy": {
+        "title": "13. Datenschutzrichtlinie",
+        "content": "Bitte lies unsere Datenschutzrichtlinie: [https://eziox.link/privacy](/privacy).\n\nDie Dienste werden in Deutschland und den USA gehostet. Durch die Nutzung stimmst du der Datenübertragung in diese Länder zu.\n\nWir erheben wissentlich keine Daten von Kindern unter 13 Jahren."
+      },
+      "copyright": {
+        "title": "14. Urheberrechtsverletzungen",
+        "content": "Wenn du glaubst, dass Material auf den Diensten dein Urheberrecht verletzt, kontaktiere uns bitte. Beachte, dass du für Falschdarstellungen haftbar gemacht werden kannst."
+      },
+      "termination": {
+        "title": "15. Laufzeit und Kündigung",
+        "content": "**WIR BEHALTEN UNS DAS RECHT VOR, JEDER PERSON AUS BELIEBIGEM GRUND DEN ZUGANG ZU DEN DIENSTEN ZU VERWEIGERN.**\n\n**WIR KÖNNEN DEIN KONTO JEDERZEIT OHNE VORWARNUNG KÜNDIGEN ODER SPERREN.**\n\nNach einer Kündigung ist es dir untersagt, ein neues Konto zu erstellen."
+      },
+      "modifications": {
+        "title": "16. Änderungen und Unterbrechungen",
+        "content": "Wir können die Dienste jederzeit ohne Vorankündigung ändern oder einstellen. Wir haften nicht für Unterbrechungen oder Nichtverfügbarkeit der Dienste."
+      },
+      "law": {
+        "title": "17. Anwendbares Recht",
+        "content": "Diese Bedingungen unterliegen deutschem Recht. Gerichtsstand ist Niedersachsen, Deutschland.\n\nEU-Verbraucher können auch in ihrem Wohnsitzland Klage erheben."
+      },
+      "disputes": {
+        "title": "18. Streitbeilegung",
+        "content": "Die Europäische Kommission stellt eine [Online-Streitbeilegungsplattform](https://ec.europa.eu/consumers/odr) bereit."
+      },
+      "corrections": {
+        "title": "19. Korrekturen",
+        "content": "Wir behalten uns das Recht vor, Fehler, Ungenauigkeiten oder Auslassungen jederzeit zu korrigieren."
+      },
+      "disclaimer": {
+        "title": "20. Haftungsausschluss",
+        "content": "**DIE DIENSTE WERDEN \"WIE BESEHEN\" BEREITGESTELLT. WIR LEHNEN ALLE GARANTIEN AB, EINSCHLIESSLICH DER GARANTIEN DER MARKTGÄNGIGKEIT UND EIGNUNG FÜR EINEN BESTIMMTEN ZWECK.**"
+      },
+      "liability": {
+        "title": "21. Haftungsbeschränkungen",
+        "content": "**WIR HAFTEN NICHT FÜR INDIREKTE, ZUFÄLLIGE ODER FOLGESCHÄDEN. UNSERE GESAMTHAFTUNG IST AUF DEN BETRAG BESCHRÄNKT, DEN DU UNS IN DEN LETZTEN 6 MONATEN GEZAHLT HAST.**"
+      },
+      "indemnification": {
+        "title": "22. Freistellung",
+        "content": "Du erklärst dich damit einverstanden, uns von allen Ansprüchen freizustellen, die sich aus deinen Beiträgen, deiner Nutzung der Dienste oder Verstößen gegen diese Bedingungen ergeben."
+      },
+      "userdata": {
+        "title": "23. Benutzerdaten",
+        "content": "Du bist allein für alle Daten verantwortlich, die du an die Dienste übermittelst. Wir haften nicht für Datenverlust oder -beschädigung."
+      },
+      "electronic": {
+        "title": "24. Elektronische Kommunikation",
+        "content": "Du stimmst dem Empfang elektronischer Kommunikation zu. Alle elektronischen Mitteilungen erfüllen die gesetzlichen Schriftformerfordernisse."
+      },
+      "california": {
+        "title": "25. Kalifornische Nutzer",
+        "content": "Kalifornische Nutzer können sich an die Beschwerdestelle des California Department of Consumer Affairs wenden."
+      },
+      "misc": {
+        "title": "26. Verschiedenes",
+        "content": "Diese Bedingungen stellen die gesamte Vereinbarung zwischen dir und uns dar. Sollte eine Bestimmung unwirksam sein, bleiben die übrigen Bestimmungen in Kraft."
+      },
+      "contact": {
+        "title": "27. Kontakt",
+        "content": "**Nattapat Pongsuwan**\nRohstorf 59\nVastorf, Niedersachsen 21397\nDeutschland\n\n**E-Mail:** [contact@eziox.link](mailto:contact@eziox.link)"
+      }
+    }
+  },
+  "verifyEmail": {
+    "loading": {
+      "title": "E-Mail wird verifiziert...",
+      "message": "Bitte warte, während wir deine E-Mail-Adresse verifizieren."
+    },
+    "success": {
+      "badge": "Verifiziert",
+      "title": "E-Mail verifiziert!",
+      "message": "Deine E-Mail wurde erfolgreich verifiziert. Du hast jetzt vollen Zugriff auf alle Funktionen.",
+      "redirect": "Weiterleitung in {{seconds}}s...",
+      "button": "Zum Profil"
+    },
+    "error": {
+      "title": "Verifizierung fehlgeschlagen",
+      "defaultMessage": "Der Verifizierungslink ist ungültig oder abgelaufen.",
+      "button": "Zum Profil",
+      "hint": "Du kannst eine neue Verifizierungs-E-Mail in deinen Profileinstellungen anfordern."
+    },
+    "noToken": {
+      "title": "Kein Token vorhanden",
+      "message": "Bitte verwende den Link aus deiner Verifizierungs-E-Mail.",
+      "button": "Zum Profil"
+    },
+    "securityNote": "Sichere Verifizierung powered by Eziox"
+  },
+  "verifyEmailChange": {
+    "pending": {
+      "badge": "E-Mail-Änderungsanfrage",
+      "title": "E-Mail-Änderung bestätigen",
+      "message": "Klicke auf den Button unten, um deine neue E-Mail-Adresse zu bestätigen. Deine Konto-E-Mail wird sofort aktualisiert.",
+      "button": "Neue E-Mail bestätigen",
+      "hint": "Diese Änderung nicht angefordert? Du kannst diese Seite ignorieren."
+    },
+    "loading": {
+      "title": "E-Mail wird aktualisiert...",
+      "message": "Bitte warte, während wir deine E-Mail-Adresse aktualisieren."
+    },
+    "success": {
+      "badge": "E-Mail aktualisiert",
+      "title": "E-Mail aktualisiert!",
+      "message": "Deine E-Mail-Adresse wurde erfolgreich geändert.",
+      "redirect": "Weiterleitung in {{seconds}}s...",
+      "button": "Zu Einstellungen"
+    },
+    "error": {
+      "title": "Verifizierung fehlgeschlagen",
+      "defaultMessage": "Der Verifizierungslink ist ungültig oder abgelaufen.",
+      "button": "Zu Einstellungen",
+      "hint": "Du kannst eine neue E-Mail-Änderung in deinen Kontoeinstellungen anfordern."
+    },
+    "noToken": {
+      "title": "Kein Token vorhanden",
+      "message": "Bitte verwende den Link aus deiner E-Mail-Änderungs-Verifizierungs-E-Mail.",
+      "button": "Zu Einstellungen"
+    },
+    "securityNote": "Sichere Verifizierung powered by Eziox"
+  },
+  "widerruf": {
+    "title": "Widerrufsbelehrung",
+    "subtitle": "Informationen zu Ihrem Widerrufsrecht gemäß § 355 BGB",
+    "badge": "Verbraucherrecht",
+    "sections": {
+      "verbraucher": {
+        "title": "Verbraucher",
+        "content": "\"Verbraucher\" im Sinne dieser Widerrufsbelehrung ist jede natürliche Person, die ein Rechtsgeschäft zu Zwecken abschließt, der überwiegend weder ihrer gewerblichen noch ihrer selbstständigen beruflichen Tätigkeit zugerechnet werden können."
+      },
+      "widerrufsrecht": {
+        "title": "Widerrufsrecht",
+        "content": "Sie haben das Recht, binnen 14 Tagen ohne Angabe von Gründen diesen Vertrag zu widerrufen.\n\nDie Widerrufsfrist beträgt 14 Tage ab dem Tag des Vertragsabschlusses.\n\nUm Ihr Widerrufsrecht auszuüben, müssen Sie uns (Nattapat Pongsuwan, Rohstorf 59, 21397 Vastorf, Deutschland, E-Mail-Adresse: [contact@eziox.link](mailto:contact@eziox.link)) mittels einer eindeutigen Erklärung (z. B. ein mit der Post versandter Brief oder eine E-Mail) über Ihren Entschluss, diesen Vertrag zu widerrufen, informieren.\n\nSie können das Muster-Widerrufsformular oder eine andere eindeutige Erklärung auch auf unserer Webseite [https://eziox.link/contact](https://eziox.link/contact) elektronisch ausfüllen und übermitteln. Machen Sie von dieser Möglichkeit Gebrauch, so werden wir Ihnen unverzüglich (z. B. per E-Mail) eine Bestätigung über den Eingang eines solchen Widerrufs übermitteln.\n\nZur Wahrung der Widerrufsfrist reicht es aus, dass Sie die Mitteilung über die Ausübung des Widerrufsrechts vor Ablauf der Widerrufsfrist absenden."
+      },
+      "folgen": {
+        "title": "Folgen des Widerrufs",
+        "content": "Wenn Sie diesen Vertrag widerrufen, haben wir Ihnen alle Zahlungen, die wir von Ihnen erhalten haben, einschließlich der Lieferkosten (mit Ausnahme der zusätzlichen Kosten, die sich daraus ergeben, dass Sie eine andere Art der Lieferung als die von uns angebotene, günstigste Standardlieferung gewählt haben), unverzüglich und spätestens binnen vierzehn Tagen ab dem Tag zurückzuzahlen, an dem die Mitteilung über Ihren Widerruf dieses Vertrags bei uns eingegangen ist.\n\nFür diese Rückzahlung verwenden wir dasselbe Zahlungsmittel, das Sie bei der ursprünglichen Transaktion eingesetzt haben, es sei denn, mit Ihnen wurde ausdrücklich etwas anderes vereinbart; in keinem Fall werden Ihnen wegen dieser Rückzahlung Entgelte berechnet.\n\nHaben Sie verlangt, dass die Dienstleistung während der Widerrufsfrist beginnen soll, so haben Sie uns einen angemessenen Betrag zu zahlen, der dem Anteil der bis zu dem Zeitpunkt, zu dem Sie uns von der Ausübung des Widerrufsrechts hinsichtlich dieses Vertrags unterrichten, bereits erbrachten Dienstleistungen im Vergleich zum Gesamtumfang der im Vertrag vorgesehenen Dienstleistungen entspricht."
+      },
+      "erloeschen": {
+        "title": "Ausschluss bzw. vorzeitiges Erlöschen des Widerrufsrechts",
+        "content": "Das Widerrufsrecht erlischt vorzeitig, wenn wir mit der Ausführung des Vertrages erst begonnen haben, nachdem Sie dazu Ihre ausdrückliche Zustimmung gegeben und gleichzeitig Ihre Kenntnis davon bestätigt haben, dass Sie Ihr Widerrufsrecht mit Beginn der Vertragserfüllung unsererseits verlieren.\n\nWir weisen darauf hin, dass wir den Vertragsschluss von der vorgenannten Zustimmung und Bestätigung abhängig machen können."
+      },
+      "muster": {
+        "title": "Muster-Widerrufsformular",
+        "content": "Wenn Sie den Vertrag widerrufen wollen, dann füllen Sie bitte dieses Formular aus und senden Sie es zurück:\n\n---\n\n**An:**\nE-Mail-Adresse: [contact@eziox.link](mailto:contact@eziox.link)\n\n**Betreff:** Widerruf meines Vertrags\n\n**Nachricht:**\n\nHiermit widerrufe(n) ich/wir (*) den von mir/uns (*) abgeschlossenen Vertrag über den Kauf der folgenden Waren (*)/die Erbringung der folgenden Dienstleistung (*):\n\n______________________________________________________\n\nBestellt am (*): ____________ / erhalten am (*): _________________\n\nName des/der Verbraucher(s): _______________________________\n\nAnschrift des/der Verbraucher(s): ____________________________\n\nUnterschrift des/der Verbraucher(s) (nur bei Mitteilung auf Papier): _______________\n\nDatum: _________________________\n\n(*) Unzutreffendes streichen.\n\n---"
+      }
+    },
+    "relatedLinks": {
+      "terms": "AGB",
+      "privacy": "Datenschutzerklärung",
+      "imprint": "Impressum"
+    },
+    "generator": {
+      "text": "Erstellt mit dem Datenschutz-Generator.de von Dr. Thomas Schwenke"
+    }
+  },
+  "emailVerification": {
+    "banner": {
+      "title": "E-Mail nicht verifiziert",
+      "description": "Bitte bestätige deine E-Mail-Adresse, um alle Funktionen nutzen zu können.",
+      "resend": "Erneut senden",
+      "sent": "E-Mail gesendet",
+      "error": "Fehler beim Senden. Bitte versuche es später erneut."
+    },
+    "indicator": {
+      "title": "E-Mail nicht verifiziert",
+      "description": "Bestätige deine E-Mail für den vollen Funktionsumfang.",
+      "resend": "Erneut senden",
+      "sent": "Gesendet",
+      "error": "Fehler beim Senden"
+    }
+  },
+  "forgotPassword": {
+    "title": "Passwort vergessen?",
+    "description": "Gib deine E-Mail-Adresse ein und wir senden dir Anweisungen zum Zurücksetzen deines Passworts.",
+    "badge": "Passwort-Reset",
+    "email": {
+      "label": "E-Mail-Adresse",
+      "placeholder": "deine@email.de",
+      "invalid": "Bitte gib eine gültige E-Mail-Adresse ein"
+    },
+    "security": {
+      "title": "Sicherheitsprüfung"
+    },
+    "submit": "Reset-Anweisungen senden",
+    "sending": "Wird gesendet...",
+    "backToSignIn": "Zurück zum Login",
+    "success": {
+      "title": "Überprüfe deine E-Mail",
+      "message": "Wenn ein Konto für {{email}} existiert, haben wir dir Anweisungen zum Zurücksetzen des Passworts gesendet.",
+      "expiry": "Der Link ist 15 Minuten gültig",
+      "security": "Sichere Verschlüsselung garantiert"
+    },
+    "errors": {
+      "general": "Beim Senden der E-Mail ist ein Fehler aufgetreten",
+      "securityRequired": "Bitte vervollständige die Sicherheitsprüfung"
+    }
+  },
+  "signIn": {
+    "title": "Willkommen zurück",
+    "description": "Melde dich an, um zu deinem Dashboard zu gelangen.",
+    "badge": "Anmelden",
+    "email": {
+      "label": "E-Mail-Adresse",
+      "placeholder": "deine@email.de"
+    },
+    "password": {
+      "label": "Passwort",
+      "placeholder": "••••••••",
+      "forgot": "Vergessen?"
+    },
+    "rememberMe": "Angemeldet bleiben",
+    "security": {
+      "title": "Sicherheitsprüfung"
+    },
+    "submit": "Anmelden",
+    "signingIn": "Wird angemeldet...",
+    "divider": "Neu bei Eziox?",
+    "createAccount": "Kostenloses Konto erstellen",
+    "stats": {
+      "creators": "Aktive Creator",
+      "clicks": "Gesamte Klicks",
+      "uptime": "Verfügbarkeit"
+    },
+    "footer": {
+      "ssl": "256-bit SSL",
+      "instant": "Sofortiger Zugang"
+    },
+    "errors": {
+      "general": "Anmeldung fehlgeschlagen",
+      "securityRequired": "Bitte vervollständige die Sicherheitsprüfung",
+      "email": {
+        "invalid": "Bitte gib eine gültige E-Mail-Adresse ein"
+      },
+      "password": {
+        "required": "Passwort ist erforderlich"
+      }
+    }
+  },
+  "signOut": {
+    "signingOut": "Wird abgemeldet...",
+    "signedOut": "Erfolgreich abgemeldet",
+    "signingOutDescription": "Du wirst sicher abgemeldet. Einen Moment bitte...",
+    "signedOutDescription": "Du wurdest erfolgreich abgemeldet. Alle Sessions wurden beendet.",
+    "redirecting": "Weiterleitung in {{seconds}} Sekunden...",
+    "goHome": "Zur Startseite",
+    "security": "Sichere Abmeldung"
+  },
+  "signUp": {
+    "title": "Konto erstellen",
+    "description": "Werde Teil von {{count}}+ Creatorn - kostenlos",
+    "badge": "Registrieren",
+    "name": {
+      "label": "Name",
+      "placeholder": "Dein Name"
+    },
+    "username": {
+      "label": "Benutzername",
+      "placeholder": "benutzername",
+      "preview": "Dein Link:"
+    },
+    "email": {
+      "label": "E-Mail-Adresse",
+      "placeholder": "deine@email.de"
+    },
+    "password": {
+      "label": "Passwort",
+      "placeholder": "••••••••",
+      "strength": {
+        "weak": "Schwach",
+        "fair": "Mittel",
+        "good": "Gut",
+        "strong": "Stark",
+        "veryStrong": "Sehr stark"
+      },
+      "requirements": {
+        "minLength": "8+ Zeichen",
+        "uppercase": "A-Z",
+        "lowercase": "a-z",
+        "number": "0-9"
+      }
+    },
+    "confirmPassword": {
+      "label": "Passwort bestätigen",
+      "placeholder": "••••••••"
+    },
+    "security": {
+      "title": "Sicherheitsprüfung"
+    },
+    "terms": {
+      "text": "Ich akzeptiere die",
+      "termsLink": "AGB",
+      "privacyLink": "Datenschutzerklärung"
+    },
+    "submit": "Konto erstellen",
+    "creating": "Wird erstellt...",
+    "divider": "Bereits ein Konto?",
+    "signInLink": "Anmelden",
+    "features": {
+      "oneLink": {
+        "title": "Ein Link",
+        "desc": "Alle deine Inhalte"
+      },
+      "analytics": {
+        "title": "Analytics",
+        "desc": "Klicks verfolgen"
+      },
+      "customize": {
+        "title": "Anpassen",
+        "desc": "Mach es zu deinem"
+      },
+      "creators": "Creator"
+    },
+    "footer": {
+      "ssl": "256-bit SSL",
+      "free": "Für immer kostenlos"
+    },
+    "errors": {
+      "general": "Konto konnte nicht erstellt werden",
+      "securityRequired": "Bitte vervollständige die Sicherheitsprüfung",
+      "name": {
+        "minLength": "Mindestens 2 Zeichen"
+      },
+      "username": {
+        "minLength": "Mindestens 3 Zeichen",
+        "maxLength": "Maximal 30 Zeichen",
+        "invalid": "Nur Buchstaben, Zahlen, _ und -"
+      },
+      "email": {
+        "invalid": "Bitte gib eine gültige E-Mail-Adresse ein"
+      },
+      "password": {
+        "minLength": "Mindestens 8 Zeichen",
+        "uppercase": "Großbuchstabe erforderlich",
+        "lowercase": "Kleinbuchstabe erforderlich",
+        "number": "Zahl erforderlich"
+      },
+      "confirmPassword": {
+        "required": "Passwort bestätigen",
+        "match": "Passwörter stimmen nicht überein"
+      },
+      "terms": {
+        "required": "Du musst die AGB akzeptieren"
+      }
+    }
+  },
+  "resetPassword": {
+    "title": "Neues Passwort festlegen",
+    "description": "Wähle ein sicheres neues Passwort für dein Konto.",
+    "badge": "Neues Passwort",
+    "password": {
+      "label": "Neues Passwort",
+      "placeholder": "••••••••"
+    },
+    "confirmPassword": {
+      "label": "Passwort bestätigen",
+      "placeholder": "••••••••"
+    },
+    "security": {
+      "title": "Sicherheitsprüfung"
+    },
+    "submit": "Passwort aktualisieren",
+    "resetting": "Wird aktualisiert...",
+    "backToSignIn": "Zurück zum Login",
+    "requirements": {
+      "title": "Passwort-Anforderungen:",
+      "minLength": "Mindestens 8 Zeichen",
+      "uppercase": "Großbuchstabe",
+      "lowercase": "Kleinbuchstabe",
+      "number": "Zahl"
+    },
+    "success": {
+      "title": "Passwort erfolgreich aktualisiert!",
+      "message": "Dein Passwort wurde erfolgreich geändert. Du kannst dich jetzt mit deinem neuen Passwort anmelden.",
+      "security": "Sichere Verschlüsselung angewendet",
+      "info": "Alle aktiven Sessions wurden beendet",
+      "signIn": "Zum Login"
+    },
+    "errors": {
+      "general": "Fehler beim Zurücksetzen des Passworts",
+      "securityRequired": "Bitte vervollständige die Sicherheitsprüfung",
+      "securityFailed": "Sicherheitsprüfung fehlgeschlagen",
+      "password": {
+        "minLength": "Passwort muss mindestens 8 Zeichen lang sein",
+        "uppercase": "Passwort muss einen Großbuchstaben enthalten",
+        "lowercase": "Passwort muss einen Kleinbuchstaben enthalten",
+        "number": "Passwort muss eine Zahl enthalten",
+        "match": "Passwörter stimmen nicht überein"
+      }
+    }
+  },
+  "bioPage": {
+    "loading": "Profil wird geladen...",
+    "notFound": {
+      "title": "@{{username}}",
+      "description": "Diese Bio-Seite existiert noch nicht.",
+      "claim": "Diesen Benutzernamen sichern"
+    },
+    "private": {
+      "title": "Privates Profil",
+      "description": "Dieses Profil ist auf privat gestellt."
+    },
+    "nav": {
+      "profile": "Profil",
+      "links": "Links",
+      "comments": "Kommentare"
+    },
+    "scrollToSeeLinks": "Scrolle oder klicke um Links zu sehen",
+    "linksTitle": "Links",
+    "comments": {
+      "title": "Kommentare",
+      "comingSoon": "Demnächst verfügbar...",
+      "placeholder": "Schreibe einen Kommentar...",
+      "submit": "Posten",
+      "noComments": "Noch keine Kommentare",
+      "beFirst": "Sei der Erste, der einen Kommentar hinterlässt!",
+      "signInToComment": "Anmelden um zu kommentieren",
+      "writeComment": "Kommentar schreiben",
+      "delete": "Löschen",
+      "report": "Melden",
+      "pin": "Anheften",
+      "unpin": "Lösen",
+      "pinned": "Angeheftet",
+      "like": "Gefällt mir",
+      "reply": "Antworten",
+      "showReplies": "Antworten anzeigen",
+      "hideReplies": "Antworten ausblenden",
+      "deleted": "Kommentar gelöscht",
+      "reported": "Kommentar gemeldet",
+      "sortNewest": "Neueste zuerst",
+      "sortOldest": "Älteste zuerst",
+      "sortPopular": "Beliebteste",
+      "reportReasons": {
+        "spam": "Spam",
+        "harassment": "Belästigung",
+        "hate_speech": "Hassrede",
+        "inappropriate": "Unangemessener Inhalt",
+        "other": "Sonstiges"
+      },
+      "reportModal": {
+        "title": "Kommentar melden",
+        "description": "Warum meldest du diesen Kommentar?",
+        "additionalInfo": "Zusätzliche Informationen (optional)",
+        "submit": "Meldung absenden",
+        "cancel": "Abbrechen"
+      },
+      "errors": {
+        "tooLong": "Kommentar ist zu lang (max. 500 Zeichen)",
+        "empty": "Kommentar darf nicht leer sein",
+        "inappropriate": "Dein Kommentar enthält unangemessene Inhalte",
+        "failed": "Kommentar konnte nicht gepostet werden"
+      }
+    },
+    "stats": {
+      "views": "Aufrufe",
+      "followers": "Follower",
+      "following": "Folgt",
+      "clicks": "Klicks",
+      "joined": "Dabei seit {{date}}"
+    },
+    "actions": {
+      "follow": "Folgen",
+      "following": "Folgst du",
+      "unfollow": "Entfolgen",
+      "signInToFollow": "Anmelden zum Folgen",
+      "share": "Teilen",
+      "copied": "Kopiert!",
+      "editProfile": "Profil bearbeiten"
+    },
+    "links": {
+      "noLinks": "Noch keine Links",
+      "noLinksDescription": "Dieser Creator hat noch keine Links hinzugefügt",
+      "badges": {
+        "discord": "Discord",
+        "github": "GitHub",
+        "x": "X",
+        "youtube": "YouTube",
+        "twitch": "Twitch",
+        "instagram": "Instagram",
+        "tiktok": "TikTok",
+        "audio": "Audio"
+      }
+    },
+    "branding": {
+      "createOwn": "Erstelle deine eigene Eziox-Seite"
+    },
+    "layout": {
+      "card": "Karten",
+      "tilt": "Gekippte Karten",
+      "grid": "Raster",
+      "minimal": "Minimal",
+      "bento": "Bento"
+    },
+    "modal": {
+      "followers": "Follower",
+      "following": "Folgt",
+      "noFollowers": "Noch keine Follower",
+      "noFollowing": "Folgt noch niemandem"
+    }
+  },
+  "analytics": {
+    "title": "Analytics",
+    "subtitle": "Verfolge deine Profil-Performance",
+    "trackingFor": "Tracking für @{{username}}",
+    "timeRange": {
+      "7d": "7 Tage",
+      "30d": "30 Tage",
+      "90d": "90 Tage",
+      "1y": "1 Jahr"
+    },
+    "refresh": "Aktualisieren",
+    "export": "Exportieren",
+    "exportCsv": "Als CSV exportieren",
+    "exportJson": "Als JSON exportieren",
+    "delayBanner": {
+      "title": "Analytics verzögert um {{hours}}h",
+      "description": "Upgrade auf Pro für Echtzeit-Analytics",
+      "upgrade": "Upgraden"
+    },
+    "stats": {
+      "totalViews": "Aufrufe gesamt",
+      "linkClicks": "Link-Klicks",
+      "followers": "Follower",
+      "avgDailyViews": "Ø Tägliche Aufrufe",
+      "lastDays": "Letzte {{days}} Tage"
+    },
+    "chart": {
+      "title": "Aktivitätsübersicht",
+      "views": "Aufrufe",
+      "clicks": "Klicks",
+      "noData": "Keine Daten verfügbar"
+    },
+    "topLinks": {
+      "title": "Top Links",
+      "subtitle": "Nach Klicks sortiert",
+      "noData": "Noch keine Link-Daten",
+      "addFirst": "Füge deinen ersten Link hinzu",
+      "requiresUpgrade": "Per-Link Analytics",
+      "upgradeDescription": "Verfolge Klicks auf einzelne Links"
+    },
+    "referrers": {
+      "title": "Traffic-Quellen",
+      "subtitle": "Woher deine Besucher kommen",
+      "noData": "Noch keine Referrer-Daten",
+      "shareProfile": "Teile dein Profil, um Traffic-Quellen zu sehen",
+      "requiresUpgrade": "Referrer-Tracking",
+      "upgradeDescription": "Sieh woher deine Besucher kommen",
+      "direct": "Direkt"
+    },
+    "insights": {
+      "title": "Schnelle Einblicke",
+      "subtitle": "Performance-Zusammenfassung",
+      "ctr": "Klickrate",
+      "viewsTrend": "Aufrufe-Trend",
+      "engagementScore": "Engagement-Score",
+      "period": "Zeitraum",
+      "optimizeProfile": "Profil optimieren"
+    },
+    "upgrade": {
+      "toPro": "Auf Pro upgraden",
+      "toCreator": "Auf Creator upgraden"
+    },
+    "realtime": {
+      "badge": "Echtzeit",
+      "description": "Daten werden live aktualisiert"
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Verwalte dein Profil",
+    "welcome": "Willkommen zurück",
+    "saved": "Gespeichert!",
+    "saveFailed": "Speichern fehlgeschlagen",
+    "saving": "Speichern...",
+    "unsavedChanges": "Ungespeicherte Änderungen",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "sidebar": {
+      "dashboard": "Dashboard",
+      "premium": "Premium",
+      "account": "Konto",
+      "quickLinks": "Schnellzugriff",
+      "admin": "Admin",
+      "adminPanel": "Admin Panel",
+      "partnerApps": "Partner Apps",
+      "bioLink": "Dein Bio-Link"
+    },
+    "tabs": {
+      "profile": "Profil",
+      "profileDesc": "Bearbeite deine Profilinfos",
+      "links": "Links",
+      "linksDesc": "Verwalte deine Links",
+      "referrals": "Empfehlungen",
+      "referralsDesc": "Lade Freunde ein",
+      "badges": "Abzeichen",
+      "badgesDesc": "Deine Erfolge",
+      "subscription": "Premium",
+      "subscriptionDesc": "Upgrade deinen Plan",
+      "api": "API-Zugang",
+      "apiDesc": "Verwalte API-Schlüssel",
+      "settings": "Einstellungen",
+      "settingsDesc": "Kontoeinstellungen",
+      "privacy": "Datenschutz",
+      "privacyDesc": "Datenschutzkontrollen"
+    },
+    "quickLinks": {
+      "myBioPage": "Meine Bio-Seite",
+      "shortener": "Shortener",
+      "analytics": "Analytics",
+      "leaderboard": "Rangliste",
+      "playground": "Playground",
+      "themeBuilder": "Theme Builder"
+    },
+    "stats": {
+      "profileViews": "Profilaufrufe",
+      "linkClicks": "Link-Klicks",
+      "followers": "Follower",
+      "referrals": "Empfehlungen"
+    },
+    "qrCode": {
+      "title": "Bio-Seite QR-Code",
+      "style": "Stil",
+      "download": "Herunterladen",
+      "classic": "Klassisch",
+      "light": "Hell",
+      "accent": "Akzent",
+      "pink": "Pink",
+      "green": "Grün"
+    },
+    "profile": {
+      "title": "Profil bearbeiten",
+      "basicInfo": "Grundinformationen",
+      "displayName": "Anzeigename",
+      "username": "Benutzername",
+      "bio": "Bio",
+      "bioPlaceholder": "Erzähle etwas über dich...",
+      "website": "Website",
+      "location": "Standort",
+      "pronouns": "Pronomen",
+      "customPronouns": "Eigene Pronomen",
+      "birthday": "Geburtstag",
+      "creatorType": "Creator-Typ",
+      "socialLinks": "Social Links",
+      "addMore": "Mehr hinzufügen",
+      "searchPlatforms": "Plattformen suchen...",
+      "connectedServices": "Verbundene Dienste",
+      "connectedServicesDesc": "Verknüpfe externe Konten, um dein Profil zu erweitern",
+      "services": {
+        "spotify": {
+          "name": "Spotify",
+          "description": "Zeige, was du gerade hörst",
+          "connectedSince": "Verbunden seit {{date}}"
+        }
+      },
+      "banner": "Banner",
+      "bannerUrl": "Banner-URL",
+      "avatar": "Avatar",
+      "avatarUrl": "Avatar-URL",
+      "namePlaceholder": "Dein Name",
+      "usernamePlaceholder": "benutzername",
+      "websitePlaceholder": "https://beispiel.de",
+      "locationPlaceholder": "Stadt, Land"
+    },
+    "links": {
+      "title": "Links verwalten",
+      "addLink": "Link hinzufügen",
+      "editLink": "Link bearbeiten",
+      "deleteLink": "Link löschen",
+      "linkTitle": "Titel",
+      "linkUrl": "URL",
+      "linkDescription": "Beschreibung",
+      "linkIcon": "Icon",
+      "linkThumbnail": "Thumbnail",
+      "noLinks": "Noch keine Links",
+      "addFirst": "Füge deinen ersten Link hinzu",
+      "dragToReorder": "Ziehen zum Neuordnen",
+      "clicks": "Klicks",
+      "advanced": "Erweitert",
+      "schedule": "Zeitplan",
+      "analytics": "Analytics"
+    },
+    "referrals": {
+      "title": "Empfehlungsprogramm",
+      "yourCode": "Dein Empfehlungscode",
+      "yourLink": "Dein Empfehlungslink",
+      "copied": "Kopiert!",
+      "totalReferrals": "Gesamt Empfehlungen",
+      "pendingRewards": "Ausstehende Belohnungen",
+      "earnedRewards": "Verdiente Belohnungen",
+      "howItWorks": "So funktioniert's",
+      "step1": "Teile deinen Link",
+      "step2": "Freunde melden sich an",
+      "step3": "Beide erhalten Belohnungen",
+      "recentReferrals": "Letzte Empfehlungen",
+      "noReferrals": "Noch keine Empfehlungen"
+    },
+    "badges": {
+      "title": "Deine Abzeichen",
+      "earned": "Verdient",
+      "locked": "Gesperrt",
+      "progress": "Fortschritt",
+      "noBadges": "Noch keine Abzeichen",
+      "keepGoing": "Mach weiter, um Abzeichen freizuschalten!",
+      "items": {
+        "early_adopter": {
+          "name": "Früher Nutzer",
+          "description": "Während der Beta-Phase beigetreten"
+        },
+        "verified": {
+          "name": "Verifiziert",
+          "description": "Verifiziertes Konto"
+        },
+        "premium": {
+          "name": "Premium",
+          "description": "Premium-Abonnent"
+        },
+        "creator": {
+          "name": "Creator",
+          "description": "Creator-Tier Mitglied"
+        },
+        "lifetime": {
+          "name": "Lifetime",
+          "description": "Lifetime-Unterstützer"
+        },
+        "referrer_bronze": {
+          "name": "Empfehler Bronze",
+          "description": "5+ Nutzer empfohlen"
+        },
+        "referrer_silver": {
+          "name": "Empfehler Silber",
+          "description": "25+ Nutzer empfohlen"
+        },
+        "referrer_gold": {
+          "name": "Empfehler Gold",
+          "description": "100+ Nutzer empfohlen"
+        },
+        "community": {
+          "name": "Community",
+          "description": "Aktives Community-Mitglied"
+        },
+        "developer": {
+          "name": "Entwickler",
+          "description": "Nutzt API-Integration"
+        },
+        "supporter": {
+          "name": "Unterstützer",
+          "description": "Früher Unterstützer"
+        },
+        "partner": {
+          "name": "Partner",
+          "description": "Offizieller Partner"
+        },
+        "staff": {
+          "name": "Mitarbeiter",
+          "description": "Eziox-Team Mitglied"
+        },
+        "bug_hunter": {
+          "name": "Bug Hunter",
+          "description": "Fehler gefunden und gemeldet"
+        },
+        "top_creator": {
+          "name": "Top Creator",
+          "description": "Top 10 auf der Bestenliste"
+        }
+      }
+    },
+    "subscription": {
+      "title": "Premium-Abonnement",
+      "currentPlan": "Aktueller Plan",
+      "free": "Kostenlos",
+      "pro": "Pro",
+      "creator": "Creator",
+      "lifetime": "Lifetime",
+      "upgrade": "Upgraden",
+      "downgrade": "Downgraden",
+      "cancel": "Kündigen",
+      "lifetimeAccess": "Lifetime-Zugang",
+      "features": "Features",
+      "billing": "Abrechnung",
+      "nextBilling": "Nächste Abrechnung",
+      "manageBilling": "Abrechnung verwalten",
+      "popular": "Beliebt",
+      "perMonth": "/Monat",
+      "plans": {
+        "free": {
+          "name": "Kostenlos",
+          "price": "0€",
+          "features": {
+            "links": "5 Links",
+            "analytics": "Basis-Statistiken",
+            "support": "Standard-Support",
+            "themes": "Basis-Themes"
+          }
+        },
+        "pro": {
+          "name": "Pro",
+          "price": "2.99€",
+          "features": {
+            "links": "Unbegrenzte Links",
+            "analytics": "Erweiterte Statistiken",
+            "themes": "Eigene Themes",
+            "support": "Prioritäts-Support",
+            "api": "API-Zugang",
+            "customization": "Erweiterte Anpassung"
+          }
+        },
+        "creator": {
+          "name": "Creator",
+          "price": "5.99€",
+          "features": {
+            "everything": "Alles aus Pro",
+            "css": "Eigenes CSS",
+            "animated": "Animierte Hintergründe",
+            "video": "Video-Hintergründe",
+            "whitelabel": "White-Label",
+            "support": "Dedizierter Support",
+            "advanced": "Erweiterte Features"
+          }
+        },
+        "lifetime": {
+          "name": "Lifetime",
+          "price": "29€",
+          "features": {
+            "everything": "Alles aus Creator",
+            "lifetime": "Lifetime-Zugang",
+            "updates": "Alle zukünftigen Updates",
+            "priority": "Prioritäts-Support",
+            "exclusive": "Exklusive Features"
+          }
+        }
+      }
+    },
+    "api": {
+      "title": "API-Zugang",
+      "subtitle": "Verwalte deine API-Schlüssel für programmatischen Zugriff",
+      "apiKeys": "API-Schlüssel",
+      "createKey": "Schlüssel erstellen",
+      "deleteKey": "Schlüssel löschen",
+      "keyName": "Schlüsselname",
+      "keyNamePlaceholder": "Mein API-Schlüssel",
+      "lastUsed": "Zuletzt verwendet",
+      "created": "Erstellt",
+      "expires": "Läuft ab",
+      "never": "Nie",
+      "noExpiry": "Läuft nie ab",
+      "noKeys": "Noch keine API-Schlüssel",
+      "noKeysDescription": "Erstelle deinen ersten API-Schlüssel",
+      "documentation": "Dokumentation",
+      "rateLimit": "Rate Limit",
+      "rateLimitValue": "{{count}} Anfragen/Stunde",
+      "usage": "Nutzung",
+      "requests": "Anfragen",
+      "active": "Aktiv",
+      "inactive": "Inaktiv",
+      "expired": "Abgelaufen",
+      "keyCreated": "API-Schlüssel erstellt!",
+      "keyCreatedWarning": "Kopiere diesen Schlüssel jetzt. Du wirst ihn nicht mehr sehen können.",
+      "dismiss": "Schließen",
+      "permissions": "Berechtigungen",
+      "permissionsDescription": "Konfiguriere, worauf dieser Schlüssel zugreifen kann",
+      "profile": "Profil",
+      "links": "Links",
+      "analytics": "Statistiken",
+      "templates": "Vorlagen",
+      "read": "Lesen",
+      "write": "Schreiben",
+      "delete": "Löschen",
+      "apply": "Anwenden",
+      "expiration": "Ablauf",
+      "expirationOptions": {
+        "30": "30 Tage",
+        "90": "90 Tage",
+        "180": "180 Tage",
+        "365": "1 Jahr",
+        "never": "Nie"
+      },
+      "tierLimits": {
+        "title": "Deine Limits",
+        "keys": "{{current}}/{{max}} Schlüssel",
+        "rate": "{{count}} Anf./Std."
+      },
+      "stats": {
+        "title": "Nutzungsstatistiken",
+        "totalRequests": "Anfragen gesamt",
+        "successRate": "Erfolgsrate",
+        "avgResponseTime": "Ø Antwortzeit"
+      }
+    },
+    "settings": {
+      "title": "Kontoeinstellungen",
+      "subtitle": "Verwalte dein Konto, Sicherheit und Einstellungen",
+      "account": "Konto",
+      "email": "E-Mail",
+      "changeEmail": "E-Mail ändern",
+      "newEmail": "Neue E-Mail-Adresse",
+      "currentPassword": "Aktuelles Passwort",
+      "emailChangeSuccess": "Bestätigungs-E-Mail an deine neue Adresse gesendet",
+      "emailVerified": "Verifiziert",
+      "emailNotVerified": "Nicht verifiziert",
+      "resendVerification": "Erneut senden",
+      "password": "Passwort",
+      "changePassword": "Passwort ändern",
+      "resetPassword": "Passwort zurücksetzen",
+      "security": "Sicherheit",
+      "twoFactor": "Zwei-Faktor-Authentifizierung",
+      "twoFactorDesc": "Füge eine zusätzliche Sicherheitsebene zu deinem Konto hinzu",
+      "twoFactorEnabled": "Aktiviert",
+      "twoFactorDisabled": "Nicht aktiviert",
+      "enable2FA": "2FA aktivieren",
+      "disable2FA": "2FA deaktivieren",
+      "setup2FA": "2FA einrichten",
+      "scan2FACode": "Scanne diesen QR-Code mit deiner Authenticator-App",
+      "enter2FACode": "Gib den 6-stelligen Code aus deiner App ein",
+      "recoveryCodes": "Wiederherstellungscodes",
+      "recoveryCodesDesc": "Speichere diese Codes an einem sicheren Ort. Jeder Code kann nur einmal verwendet werden.",
+      "recoveryCodesRemaining": "{{count}} Codes übrig",
+      "regenerateCodes": "Codes neu generieren",
+      "downloadCodes": "Codes herunterladen",
+      "sessions": "Aktive Sitzungen",
+      "sessionsDesc": "Verwalte deine aktiven Anmeldesitzungen",
+      "currentSession": "Aktuelle Sitzung",
+      "lastActive": "Zuletzt aktiv",
+      "logoutSession": "Abmelden",
+      "logoutAll": "Alle Sitzungen beenden",
+      "logoutAllDesc": "Dies meldet dich von allen Geräten außer diesem ab",
+      "noOtherSessions": "Keine anderen aktiven Sitzungen",
+      "notifications": "Benachrichtigungen",
+      "notificationsDesc": "Wähle, welche Benachrichtigungen du erhältst",
+      "notifyNewFollower": "Neuer Follower",
+      "notifyMilestones": "Meilensteine",
+      "notifySystemUpdates": "System-Updates",
+      "emailNotifications": "E-Mail-Benachrichtigungen",
+      "emailLoginAlerts": "Login-Benachrichtigungen",
+      "emailSecurityAlerts": "Sicherheitswarnungen",
+      "emailWeeklyDigest": "Wöchentliche Zusammenfassung",
+      "emailProductUpdates": "Produkt-Updates",
+      "privacy": "Datenschutz",
+      "privacyDesc": "Kontrolliere deine Profil-Sichtbarkeit und Daten",
+      "profileVisibility": "Profil-Sichtbarkeit",
+      "profilePublic": "Öffentlich",
+      "profilePrivate": "Privat",
+      "showActivity": "Aktivitätsstatus anzeigen",
+      "showActivityDesc": "Lass andere sehen, wenn du online bist",
+      "dataExport": "Datenexport",
+      "dataExportDesc": "Lade eine Kopie all deiner Daten herunter",
+      "exportData": "Daten exportieren",
+      "exportingData": "Export wird vorbereitet...",
+      "dangerZone": "Gefahrenzone",
+      "deleteAccount": "Konto löschen",
+      "deleteWarning": "Diese Aktion kann nicht rückgängig gemacht werden. Alle deine Daten werden dauerhaft gelöscht.",
+      "deleteConfirmText": "Gib DELETE ein zur Bestätigung",
+      "yourPassword": "Dein Passwort",
+      "language": "Sprache",
+      "theme": "Theme"
+    },
+    "privacy": {
+      "title": "Datenschutzeinstellungen",
+      "subtitle": "Kontrolliere deine Daten und Profil-Sichtbarkeit",
+      "profileVisibility": "Profil-Sichtbarkeit",
+      "profileVisibilityDesc": "Bestimme, wer dein Profil sehen kann",
+      "public": "Öffentlich",
+      "publicDesc": "Jeder kann dein Profil sehen",
+      "private": "Privat",
+      "privateDesc": "Nur du kannst dein Profil sehen",
+      "showActivity": "Aktivität anzeigen",
+      "showActivityDesc": "Zeige deine letzten Aktivitäten auf deinem Profil",
+      "dataCollection": "Daten & Analytics",
+      "analyticsTracking": "Analytics-Tracking",
+      "analyticsDesc": "Hilf uns durch anonyme Nutzungsanalysen zu verbessern",
+      "analyticsEnabled": "Aktiviert",
+      "analyticsDisabled": "Deaktiviert",
+      "dataExport": "Deine Daten exportieren",
+      "dataExportDesc": "Lade eine Kopie aller deiner Daten im JSON-Format herunter",
+      "dataExportButton": "Daten exportieren",
+      "dataExportSuccess": "Dein Datenexport ist zum Download bereit",
+      "dataExporting": "Export wird vorbereitet...",
+      "searchEngines": "Suchmaschinen-Indexierung",
+      "searchEnginesDesc": "Erlaube Suchmaschinen, dein Profil zu indexieren",
+      "searchEnginesEnabled": "Dein Profil kann in Suchergebnissen erscheinen",
+      "searchEnginesDisabled": "Dein Profil ist vor Suchmaschinen verborgen",
+      "activityStatus": "Online-Status",
+      "activityStatusDesc": "Zeige anderen Nutzern, wenn du online bist",
+      "profileViews": "Profilaufrufe anzeigen",
+      "profileViewsDesc": "Zeige die Gesamtzahl der Profilaufrufe auf deiner Seite",
+      "lastSeen": "Zuletzt gesehen",
+      "lastSeenDesc": "Zeige, wann du zuletzt aktiv warst",
+      "blockList": "Blockierte Nutzer",
+      "blockListDesc": "Verwalte Nutzer, die du blockiert hast",
+      "blockListEmpty": "Du hast niemanden blockiert",
+      "unblock": "Entsperren",
+      "gdprTitle": "DSGVO & Datenrechte",
+      "gdprDesc": "Deine Rechte gemäß Datenschutzverordnung",
+      "rightToAccess": "Recht auf Auskunft",
+      "rightToAccessDesc": "Fordere eine Kopie deiner personenbezogenen Daten an",
+      "rightToErasure": "Recht auf Löschung",
+      "rightToErasureDesc": "Fordere die Löschung deiner personenbezogenen Daten an",
+      "rightToPortability": "Recht auf Datenübertragbarkeit",
+      "rightToPortabilityDesc": "Übertrage deine Daten zu einem anderen Dienst",
+      "export": "Exportieren",
+      "settings": "Einstellungen",
+      "analyticsNote": "Wir erfassen nur anonyme Nutzungsdaten zur Verbesserung unseres Dienstes. Keine persönlichen Daten werden an Dritte weitergegeben.",
+      "accountInfo": "Kontoinformationen",
+      "accountUsername": "Benutzername",
+      "accountCreated": "Konto erstellt",
+      "accountEmail": "E-Mail",
+      "accountTier": "Stufe"
+    }
+  },
+  "playground": {
+    "title": "Playground",
+    "subtitle": "Passe dein Profil an",
+    "preview": "Vorschau",
+    "reset": "Zurücksetzen",
+    "resetSuccess": "Alle Einstellungen wurden zurückgesetzt",
+    "backgroundType": "Hintergrund-Typ",
+    "imageUrl": "Bild-URL",
+    "videoUrl": "Video-URL",
+    "videoLoop": "Wiederholen",
+    "videoMuted": "Stummgeschaltet",
+    "cardLayout": "Karten-Layout",
+    "creatorOnly": "Nur für Creator",
+    "upgradeToCreator": "Upgrade auf Creator, um diese Funktion freizuschalten",
+    "upgradePlan": "Plan upgraden",
+    "saved": "Gespeichert!",
+    "saveFailed": "Speichern fehlgeschlagen",
+    "fontAdded": "Schriftart hinzugefügt",
+    "fontRemoved": "Schriftart entfernt",
+    "backupCreated": "Backup erstellt",
+    "backupRestored": "Backup wiederhergestellt",
+    "backupDeleted": "Backup gelöscht"
+  },
+  "followModal": {
+    "followers": "Follower",
+    "following": "Folge ich",
+    "searchPlaceholder": "Benutzer suchen...",
+    "refresh": "Aktualisieren",
+    "results": "Ergebnis | Ergebnisse",
+    "loading": "Laden...",
+    "noResults": "Keine Ergebnisse gefunden",
+    "noFollowers": "Noch keine Follower",
+    "noFollowing": "Folgt noch niemandem",
+    "noFollowersDesc": "Dieser Benutzer hat noch keine Follower",
+    "noFollowingDesc": "Dieser Benutzer folgt noch niemandem",
+    "noUsersMatch": "Keine Benutzer passen zu \"{{query}}\"",
+    "follow": "Folgen",
+    "unfollow": "Entfolgen"
+  },
+  "docs": {
+    "title": "Dokumentation",
+    "subtitle": "Alles, was du brauchst, um deine perfekte Bio-Seite zu erstellen und anzupassen.",
+    "searchPlaceholder": "Dokumentation durchsuchen...",
+    "searchShortcut": "Drücke / zum Suchen",
+    "noResults": "Keine Ergebnisse gefunden",
+    "noResultsDesc": "Versuche einen anderen Suchbegriff oder durchsuche die gesamte Dokumentation.",
+    "clearSearch": "Suche löschen",
+    "breadcrumb": {
+      "docs": "Docs",
+      "home": "Startseite"
+    },
+    "navigation": {
+      "previous": "Zurück",
+      "next": "Weiter",
+      "backToDocs": "Zurück zur Dokumentation",
+      "onThisPage": "Auf dieser Seite",
+      "tableOfContents": "Inhaltsverzeichnis"
+    },
+    "categories": {
+      "basics": "Erste Schritte",
+      "features": "Funktionen",
+      "integrations": "Integrationen",
+      "account": "Konto & Sicherheit",
+      "support": "Hilfe & Support"
+    },
+    "pages": {
+      "gettingStarted": {
+        "title": "Erste Schritte",
+        "description": "Lerne, wie du deine Eziox Bio-Seite in wenigen Minuten erstellst.",
+        "sections": {
+          "account": {
+            "title": "Konto erstellen",
+            "intro": "Willkommen bei Eziox! So startest du in wenigen Minuten:",
+            "steps": [
+              "Besuche eziox.link/sign-up und wähle E-Mail + Passwort",
+              "Wähle einen einzigartigen Benutzernamen – das wird dein öffentlicher Link (eziox.link/username)",
+              "Fülle die Profilgrundlagen aus und akzeptiere die Nutzungsbedingungen",
+              "Bestätige deine E-Mail über den Link in unserer Nachricht"
+            ]
+          },
+          "profile": {
+            "title": "Profil einrichten",
+            "intro": "Gehe zu Dashboard → Profil und personalisiere deine Seite.",
+            "basicTitle": "Grundlegende Informationen",
+            "basicList": [
+              "Anzeigename · Öffentlicher Name, der überall angezeigt wird",
+              "Bio · 160 Zeichen, um dich vorzustellen",
+              "Avatar · Quadratisches Bild, 400×400px empfohlen",
+              "Banner · Breites Headerbild, 1200×400px empfohlen"
+            ],
+            "socialTitle": "Social Links",
+            "socialIntro": "Aktiviere die Plattformen, die du hervorheben möchtest:",
+            "socialList": [
+              "Twitter/X",
+              "Instagram",
+              "YouTube",
+              "TikTok",
+              "Twitch",
+              "Discord",
+              "GitHub",
+              "LinkedIn"
+            ]
+          },
+          "links": {
+            "title": "Links hinzufügen",
+            "intro": "Eziox unterstützt unbegrenzt viele Links mit umfangreichen Optionen.",
+            "steps": [
+              "Navigiere zu Dashboard → Links",
+              "Klicke auf \"Link hinzufügen\" und füge deine URL ein",
+              "Vergib einen prägnanten Titel und optional ein Icon",
+              "Sortiere per Drag & Drop in Sekunden"
+            ],
+            "featuresTitle": "Link-Funktionen",
+            "featuresList": [
+              "Beschreibungen · Gib jedem Link mehr Kontext",
+              "Planung · Starte/stoppe Links zu festgelegten Zeiten",
+              "Analytics · Sieh Klicks, Geräte, Referrer",
+              "Highlight-Stile · Betone wichtige Links mit Speziallayouts"
+            ]
+          },
+          "themes": {
+            "title": "Theme auswählen",
+            "intro": "Eziox liefert 31+ kuratierte Themes in 8 Kategorien:",
+            "tableHeaders": ["Kategorie", "Themes"],
+            "tableRows": [
+              ["General", "Eziox, Obsidian, Midnight, Ember"],
+              ["Gamer", "RGB Fusion, Cyber Neon, Arcade"],
+              ["VTuber", "Kawaii Bloom, Pastel Dream, Anime Night"],
+              ["Developer", "Terminal, GitHub Dark, VSCode"],
+              ["Streamer", "Twitch Pulse, Creator Tube, Kick Wave"],
+              ["Artist", "Canvas, Watercolor, Gallery"],
+              ["Minimal", "Lumen, Aurora, Mono"],
+              ["Premium", "Neon Tokyo, Ocean Depths, Forest Night"]
+            ],
+            "changeTitle": "So wendest du ein Theme an:",
+            "changeSteps": [
+              "Öffne Dashboard → Anpassung",
+              "Probiere Themes in der Galerie aus",
+              "Passe Farben, Schriften und Effekte bei Bedarf an",
+              "Klicke auf Anwenden – sofort live"
+            ]
+          },
+          "next": {
+            "title": "Nächste Schritte",
+            "items": [
+              "Anpassung · Tauche tiefer in Styling-Optionen ein",
+              "Analytics · Beobachte Profilaufrufe und Link-Performance",
+              "Templates · Nutze Community-Layouts für einen schnellen Start",
+              "API-Zugang · Automatisiere Abläufe mit API-Schlüsseln"
+            ],
+            "helpPrefix": "Braucht du Hilfe?",
+            "contactLabel": "Kontaktseite",
+            "helpInfix": "oder besuche die",
+            "faqLabel": "FAQ",
+            "helpSuffix": "für weitere Antworten."
+          }
+        }
+      },
+      "customization": {
+        "title": "Anpassung",
+        "description": "Erweiterte Styling-Optionen für deine Bio-Seite.",
+        "sections": {
+          "themes": {
+            "title": "Themes",
+            "builtIn": "Eingebaute Themes",
+            "builtInIntro": "Wir bieten 31+ professionell gestaltete Themes. Jedes Theme enthält:",
+            "builtInFeatures": [
+              "**Farbpalette** - Primär-, Akzent-, Hintergrund- und Textfarben",
+              "**Typografie** - Display- und Body-Schriften von Google Fonts",
+              "**Effekte** - Randradius, Glow-Intensität, Kartenstile"
+            ],
+            "categories": "Theme-Kategorien",
+            "categoriesList": [
+              "**Allgemein** - Saubere, vielseitige Designs für jeden",
+              "**Gamer** - Lebhafte Neonfarben und RGB-Effekte",
+              "**VTuber** - Kawaii-Ästhetik und Anime-inspirierte Paletten",
+              "**Developer** - IDE-inspirierte Themes (VS Code, GitHub, Terminal)",
+              "**Streamer** - Plattform-gebrandete Themes (Twitch, YouTube, Kick)",
+              "**Artist** - Elegante, kreative Paletten",
+              "**Minimal** - Saubere, ablenkungsfreie Designs",
+              "**Premium** - Exklusive Themes für Pro+ Abonnenten"
+            ]
+          },
+          "themeBuilder": {
+            "title": "Theme Builder",
+            "intro": "Erstelle deine eigenen Themes mit dem Theme Builder:",
+            "limits": "Eigene Theme-Limits",
+            "limitsIntro": "Die Anzahl der eigenen Themes, die du erstellen kannst, hängt von deiner Stufe ab:",
+            "presets": "Farb-Presets",
+            "presetsIntro": "Starte mit einem unserer 8 Farb-Presets:",
+            "presetsList": [
+              "**Midnight** - Tiefes Lila und Violett",
+              "**Ocean** - Kühle Blautöne und Cyan",
+              "**Forest** - Natürliche Grüntöne",
+              "**Sunset** - Warme Orangen und Rottöne",
+              "**Lavender** - Sanfte Lila- und Rosatöne",
+              "**Rose** - Pink und Magenta",
+              "**Gold** - Warme Gelb- und Bernsteintöne",
+              "**Light** - Sauberer Light-Mode"
+            ],
+            "colors": "Anpassbare Farben",
+            "colorsList": [
+              "Background & Background Secondary",
+              "Foreground & Foreground Muted",
+              "Primary & Accent",
+              "Border & Card"
+            ],
+            "fonts": "Verfügbare Schriften",
+            "fontsList": [
+              "Inter",
+              "Poppins",
+              "Montserrat",
+              "Space Grotesk",
+              "JetBrains Mono",
+              "Orbitron",
+              "Playfair Display",
+              "Roboto"
+            ]
+          },
+          "effects": {
+            "title": "Effekte",
+            "glowIntensity": "Glow-Intensität",
+            "glowOptions": [
+              "**Keine** - Keine Glow-Effekte",
+              "**Subtil** - Leichter, dezenter Glow",
+              "**Mittel** - Ausgewogener Glow-Effekt",
+              "**Stark** - Kräftiger, prominenter Glow"
+            ],
+            "borderRadius": "Randradius",
+            "borderRadiusOptions": [
+              "**Scharf** - 4px Ecken für einen modernen Look",
+              "**Gerundet** - 12px Ecken (Standard)",
+              "**Pill** - Vollständig gerundete Ecken"
+            ],
+            "cardStyle": "Kartenstil",
+            "cardStyleOptions": [
+              "**Flat** - Solide Hintergrundkarten",
+              "**Glass** - Glasmorphismus mit Blur-Effekt",
+              "**Neon** - Leuchtende Randeffekte",
+              "**Gradient** - Gradient-Hintergründe"
+            ]
+          },
+          "backgrounds": {
+            "title": "Hintergründe",
+            "types": "Hintergrundtypen",
+            "typesTable": [
+              ["Solid", "Einfarbiger Hintergrund", "Free"],
+              ["Gradient", "Zweifarbiger Gradient mit Winkelsteuerung", "Free"],
+              ["Bild", "Eigenes Hintergrundbild hochladen", "Free"],
+              ["Video", "Video-Hintergrund hochladen oder verlinken", "Free"],
+              ["Animiert", "30+ animierte Presets", "Free"]
+            ],
+            "animated": "Animierte Presets",
+            "animatedIntro": "Wähle aus 30+ animierten Hintergründen in 5 Kategorien:",
+            "animatedCategories": [
+              "**VTuber/Anime** - Sakura-Blüten, Neon-City, Sternenfeld, holografischer Schimmer",
+              "**Gamer** - Matrix-Regen, Cyber-Grid, RGB-Welle, Partikel, Glitch",
+              "**Developer** - Code-Regen, Binärfluss, Terminal, Schaltkreis",
+              "**Natur** - Aurora Borealis, Ozeanwellen, Glühwürmchen, Wolken",
+              "**Abstrakt** - Fluid-Motion, geometrische Formen, Wellen, Bokeh"
+            ]
+          },
+          "bestPractices": {
+            "title": "Best Practices",
+            "tips": [
+              "**Kontrast** - Stelle sicher, dass Text vor deinem Hintergrund lesbar ist",
+              "**Konsistenz** - Verwende komplementäre Farben und Schriften",
+              "**Performance** - Vermeide schwere Video-Hintergründe auf Mobilgeräten",
+              "**Barrierefreiheit** - Teste mit Screenreadern und Tastaturnavigation"
+            ],
+            "inspiration": "Brauchst du Inspiration? Durchsuche unsere Templates-Galerie, um zu sehen, was andere erstellt haben."
+          }
+        }
+      },
+      "analytics": {
+        "title": "Analysen",
+        "description": "Verfolge die Performance deines Profils und Besuchereinblicke.",
+        "sections": {
+          "overview": {
+            "title": "Übersicht",
+            "intro": "Greife auf deine Analysen unter {{link}} oder über dein Dashboard zu: ",
+            "keyMetrics": "Wichtige Kennzahlen"
+          },
+          "metrics": {
+            "title": "Deine Metriken verstehen",
+            "profileViews": "Profilaufrufe",
+            "profileViewsDesc": "Gesamtbesuche auf deiner Bio-Seite",
+            "linkClicks": "Link-Klicks",
+            "linkClicksDesc": "Gesamtklicks auf alle Links",
+            "clickRate": "Klickrate",
+            "clickRateDesc": "Klicks ÷ Aufrufe (Engagement-Rate)",
+            "followers": "Follower",
+            "followersDesc": "Nutzer, die deinem Profil folgen"
+          },
+          "timeRanges": {
+            "title": "Zeiträume",
+            "description": "Filtere deine Analysen nach verschiedenen Zeiträumen:",
+            "today": "Heute",
+            "todayDesc": "Statistiken des aktuellen Tages",
+            "week": "Diese Woche",
+            "weekDesc": "Letzte 7 Tage",
+            "month": "Dieser Monat",
+            "monthDesc": "Letzte 30 Tage",
+            "year": "Dieses Jahr",
+            "yearDesc": "Letzte 365 Tage",
+            "allTime": "Gesamtzeit",
+            "allTimeDesc": "Kompletter Verlauf"
+          },
+          "charts": {
+            "title": "Diagramme & Visualisierungen",
+            "description": "Dein Analytics-Dashboard enthält interaktive Diagramme:",
+            "viewsOverTime": "Aufrufe im Zeitverlauf",
+            "viewsOverTimeDesc": "Liniendiagramm mit täglichen/wöchentlichen/monatlichen Aufrufen",
+            "topLinks": "Top-Links",
+            "topLinksDesc": "Balkendiagramm deiner meistgeklickten Links",
+            "deviceBreakdown": "Geräteverteilung",
+            "deviceBreakdownDesc": "Kreisdiagramm mit Mobil- vs. Desktop-Besuchern",
+            "geoDistribution": "Geografische Verteilung",
+            "geoDistributionDesc": "Karte mit Besucherstandorten"
+          },
+          "export": {
+            "title": "Daten exportieren",
+            "description": "Exportiere deine Analytics-Daten für externe Analysen:",
+            "formats": "Verfügbare Formate: CSV, JSON, PDF",
+            "howTo": "Klicke auf die Export-Schaltfläche in deinem Analytics-Dashboard, um deine Daten herunterzuladen."
+          },
+          "tips": {
+            "title": "Tipps für bessere Analysen",
+            "tip1": "Teile deinen Profil-Link konsistent auf allen Plattformen",
+            "tip2": "Verwende beschreibende Link-Titel, um die Klickrate zu verbessern",
+            "tip3": "Überprüfe deine Analysen wöchentlich, um Trends zu erkennen",
+            "tip4": "Vergleiche verschiedene Zeiträume, um Wachstum zu messen"
+          }
+        }
+      },
+      "api": {
+        "title": "API-Zugang",
+        "description": "Integriere unsere REST-API für erweiterte Anwendungsfälle.",
+        "sections": {
+          "overview": {
+            "title": "Übersicht",
+            "intro": "Die Eziox API ermöglicht dir:",
+            "features": [
+              "Profildaten lesen",
+              "Links programmatisch verwalten",
+              "Auf Analytics-Daten zugreifen",
+              "Templates auf dein Profil anwenden"
+            ]
+          },
+          "authentication": {
+            "title": "Authentifizierung",
+            "intro": "Alle API-Anfragen erfordern einen API-Schlüssel. Erstelle einen unter",
+            "dashboardLink": "Dashboard → API-Zugang",
+            "keyFormat": "API-Schlüssel Format",
+            "keyFormatDesc": "API-Schlüssel beginnen mit dem Präfix `ezx_` gefolgt von 64 hexadezimalen Zeichen:",
+            "usingKey": "Deinen Schlüssel verwenden",
+            "usingKeyDesc": "Füge deinen API-Schlüssel im `Authorization` Header ein:"
+          },
+          "rateLimits": {
+            "title": "Rate Limits",
+            "intro": "Rate Limits variieren je nach Abonnement-Stufe:",
+            "tiers": {
+              "free": "Free",
+              "pro": "Pro",
+              "creator": "Creator",
+              "lifetime": "Lifetime"
+            },
+            "requestsPerHour": "Anfragen/Stunde",
+            "headers": "Rate Limit Headers",
+            "headersDesc": "Jede Antwort enthält Rate-Limit-Informationen:"
+          },
+          "keyLimits": {
+            "title": "API-Schlüssel Limits",
+            "intro": "Die Anzahl der aktiven API-Schlüssel, die du erstellen kannst, hängt von deiner Stufe ab:",
+            "activeKeys": "Aktive Schlüssel"
+          },
+          "endpoints": {
+            "title": "Endpunkte",
+            "baseUrl": "Basis-URL",
+            "getProfile": "Profil abrufen",
+            "getProfileDesc": "Gibt deine Profilinformationen zurück, einschließlich Bio, Avatar und Einstellungen.",
+            "listLinks": "Links auflisten",
+            "listLinksDesc": "Gibt alle deine Links mit ihren Einstellungen zurück.",
+            "createLink": "Link erstellen",
+            "createLinkDesc": "Erstellt einen neuen Link auf deinem Profil.",
+            "updateLink": "Link aktualisieren",
+            "updateLinkDesc": "Aktualisiert einen bestehenden Link.",
+            "deleteLink": "Link löschen",
+            "deleteLinkDesc": "Löscht einen Link dauerhaft.",
+            "getAnalytics": "Analytics abrufen",
+            "getAnalyticsDesc": "Gibt Analytics-Daten für dein Profil zurück.",
+            "parameters": "Parameter",
+            "paramLimit": "Max. Ergebnisse (Standard: 50)",
+            "paramOffset": "Paginierungs-Offset",
+            "paramActive": "Nach aktivem Status filtern",
+            "paramPeriod": "Zeitraum: 7d, 30d, 90d, 1y",
+            "paramMetric": "Metrik-Typ: views, clicks, all"
+          },
+          "permissions": {
+            "title": "Berechtigungen",
+            "intro": "Beim Erstellen eines API-Schlüssels kannst du granulare Berechtigungen konfigurieren:",
+            "profileRead": "Profildaten lesen",
+            "profileWrite": "Profileinstellungen aktualisieren",
+            "linksRead": "Links auflisten und anzeigen",
+            "linksWrite": "Links erstellen und aktualisieren",
+            "linksDelete": "Links löschen",
+            "analyticsRead": "Auf Analytics-Daten zugreifen",
+            "templatesRead": "Verfügbare Templates auflisten",
+            "templatesApply": "Templates auf Profil anwenden"
+          },
+          "errors": {
+            "title": "Fehlercodes",
+            "unauthorized": "Ungültiger oder fehlender API-Schlüssel",
+            "forbidden": "Unzureichende Berechtigungen für diese Aktion",
+            "notFound": "Angeforderte Ressource nicht gefunden",
+            "rateLimitExceeded": "Zu viele Anfragen, bitte langsamer",
+            "validationError": "Ungültige Anfrageparameter",
+            "internalError": "Serverfehler, bitte erneut versuchen"
+          },
+          "moreInfo": {
+            "title": "Weitere Informationen",
+            "text": "Für interaktive Beispiele und detaillierte Antwort-Schemas, schau dir unsere",
+            "apiReference": "API-Referenz"
+          }
+        }
+      },
+      "premium": {
+        "title": "Premium-Funktionen",
+        "description": "Entdecke die Vorteile von Pro, Creator und Lifetime-Plänen.",
+        "sections": {
+          "philosophy": {
+            "title": "Philosophie",
+            "quote": "Free ist voll nutzbar. Bezahlte Stufen verbessern Komfort, Kontrolle und Feinschliff — nicht den Zugang.",
+            "text": "Jeder bekommt das Kernerlebnis. Premium bedeutet Verfeinerung, nicht Einschränkung."
+          },
+          "comparison": {
+            "title": "Tier-Vergleich",
+            "headers": ["Feature", "Free", "Pro", "Creator", "Lifetime"],
+            "features": [
+              "Unbegrenzte Links",
+              "Alle 31+ Themes",
+              "Alle Hintergründe",
+              "Media Embeds",
+              "Volle Analytics",
+              "Custom CSS",
+              "Eigene Schriften",
+              "Branding entfernen",
+              "Profil-Backups",
+              "Analytics exportieren",
+              "Eigene Domain",
+              "Passwort-Links",
+              "E-Mail-Sammlung",
+              "Prioritäts-Support"
+            ]
+          },
+          "pricing": {
+            "title": "Preise",
+            "headers": ["Stufe", "Preis", "Abrechnung"],
+            "rows": [
+              ["Free", "€0", "Für immer"],
+              ["Pro", "€2,99", "Monatlich"],
+              ["Creator", "€5,99", "Monatlich"],
+              ["Lifetime", "€29", "Einmalig"]
+            ]
+          },
+          "free": {
+            "title": "Free-Stufe (Eziox Core)",
+            "intro": "Alles, was du für eine schöne Bio-Seite brauchst:",
+            "features": [
+              "Unbegrenzte Links und Kurzlinks",
+              "Alle 31+ Themes und Farbschemata",
+              "Alle Hintergründe (einfarbig, Verlauf, Bild, Video, animiert)",
+              "Alle Animationen und Effekte",
+              "Spotify, SoundCloud & YouTube Embeds",
+              "Social-Media-Icons und Integrationen",
+              "Profilbild & Banner-Anpassung",
+              "Volles Analytics-Dashboard (30 Tage Speicherung)",
+              "Mobil-optimiertes responsives Design"
+            ],
+            "limitationsTitle": "Einschränkungen",
+            "limitations": [
+              "Dezentes \"Powered by Eziox\"-Branding",
+              "Kein Custom CSS oder eigene Schriften",
+              "Kein Analytics-Export"
+            ]
+          },
+          "pro": {
+            "title": "Pro-Stufe",
+            "intro": "Essentielle Power-Features für Anpassungs-Enthusiasten:",
+            "cssTitle": "Custom CSS",
+            "cssText": "Schreibe eigene Styles, um jedes Element zu überschreiben:",
+            "cssExample": "/* Links beim Hover leuchten lassen */\n.link-card:hover {\n  box-shadow: 0 0 30px var(--primary);\n}",
+            "otherTitle": "Weitere Pro-Features",
+            "otherFeatures": [
+              "Eigene Schriften · Bis zu 4 Fonts hochladen",
+              "Branding entfernen · Footer-Link ausblenden",
+              "Profil-Backups · Automatisch mit Wiederherstellung",
+              "Analytics exportieren · CSV oder JSON",
+              "Pro-Abzeichen · Zeige deine Unterstützung"
+            ]
+          },
+          "creator": {
+            "title": "Creator-Stufe",
+            "intro": "Professionelles Toolkit für ernsthafte Creator:",
+            "domainTitle": "Eigene Domain (Demnächst)",
+            "domainText": "Nutze deine eigene Domain (z.B. links.deinedomain.com). Dieses Feature ist geplant und wird bald verfügbar sein.",
+            "otherTitle": "Weitere Creator-Features",
+            "otherFeatures": [
+              "Passwortgeschützte Links",
+              "Link-Ablaufdatum",
+              "E-Mail-Sammlung mit DSGVO-konformen Formularen",
+              "Eigene Open-Graph-Bilder",
+              "Prioritäts-Support",
+              "Früher Zugang zu neuen Features",
+              "Creator-Abzeichen"
+            ]
+          },
+          "lifetime": {
+            "title": "Lifetime-Stufe",
+            "intro": "Alles in Creator, für immer:",
+            "features": [
+              "Einmalzahlung · Keine wiederkehrenden Kosten",
+              "Alle zukünftigen Features inklusive",
+              "Exklusives Lifetime-Abzeichen",
+              "Prioritäts-Support für immer",
+              "Nie wieder zahlen"
+            ]
+          },
+          "upgrade": {
+            "title": "So upgradest du",
+            "steps": [
+              "Gehe zu Preise",
+              "Wähle deinen Plan",
+              "Schließe die Zahlung über Stripe ab",
+              "Features werden sofort aktiviert"
+            ],
+            "ctaPrefix": "Bereit zum Upgrade? Besuche unsere",
+            "ctaLink": "Preisseite",
+            "ctaSuffix": "um loszulegen."
+          }
+        }
+      },
+      "spotifyIntegration": {
+        "title": "Spotify-Integration",
+        "description": "Zeige deine aktuell abgespielte Musik auf deinem Profil an.",
+        "sections": {
+          "overview": {
+            "title": "Übersicht",
+            "intro": "Die Spotify-Integration zeigt ein \"Now Playing\"-Widget auf deiner Bio-Seite mit:",
+            "features": [
+              "Album-Artwork mit Blur-Hintergrund",
+              "Songtitel und Künstlername",
+              "Live-Fortschrittsbalken mit Echtzeit-Updates",
+              "Direkter Link zum Track auf Spotify",
+              "\"Nicht am Hören\"-Status wenn offline oder pausiert"
+            ]
+          },
+          "setup": {
+            "title": "Einrichtung",
+            "connect": {
+              "title": "Schritt 1: Konto verbinden",
+              "steps": [
+                "Gehe zu Dashboard → Einstellungen",
+                "Finde den Spotify-Bereich",
+                "Klicke auf Spotify verbinden",
+                "Autorisiere Eziox für den Zugriff auf deine Hör-Aktivität"
+              ]
+            },
+            "privacy": {
+              "title": "Schritt 2: Datenschutz konfigurieren",
+              "intro": "Nach dem Verbinden kannst du die Sichtbarkeit steuern:",
+              "options": [
+                "Auf Profil anzeigen · Widget ein-/ausblenden",
+                "Offline anzeigen · \"Nicht am Hören\" anzeigen oder komplett ausblenden"
+              ]
+            }
+          },
+          "howItWorks": {
+            "title": "Funktionsweise",
+            "realtime": {
+              "title": "Echtzeit-Updates",
+              "text": "Das Widget aktualisiert sich alle 10 Sekunden, um deinen aktuellen Track anzuzeigen."
+            },
+            "tokens": {
+              "title": "Token-Verwaltung",
+              "items": [
+                "Tokens sicher gespeichert (verschlüsselt mit AES-256-GCM)",
+                "Automatische Token-Aktualisierung bei Ablauf",
+                "Jederzeit in den Einstellungen trennen"
+              ]
+            },
+            "privacy": {
+              "title": "Datenschutz",
+              "items": [
+                "Wir greifen nur auf deine \"aktuell abgespielt\"-Daten zu",
+                "Kein Zugriff auf Playlists, gespeicherte Tracks oder Hörverlauf",
+                "Deine Spotify-Daten werden nie mit Dritten geteilt"
+              ]
+            }
+          },
+          "troubleshooting": {
+            "title": "Fehlerbehebung",
+            "notShowing": {
+              "title": "Widget wird nicht angezeigt",
+              "items": [
+                "Prüfe, ob Spotify in den Einstellungen verbunden ist",
+                "Stelle sicher, dass \"Auf Profil anzeigen\" aktiviert ist",
+                "Stelle sicher, dass du aktiv Musik abspielst (nicht pausiert)"
+              ]
+            },
+            "wrongTrack": {
+              "title": "Falscher Track wird angezeigt",
+              "items": [
+                "Das Widget aktualisiert sich alle 10 Sekunden",
+                "Versuche die Seite zu aktualisieren",
+                "Prüfe, ob du auf dem richtigen Gerät abspielst"
+              ]
+            },
+            "connection": {
+              "title": "Verbindungsprobleme",
+              "items": [
+                "Trenne Spotify in den Einstellungen",
+                "Lösche deinen Browser-Cache",
+                "Verbinde dein Konto erneut"
+              ]
+            }
+          },
+          "disconnect": {
+            "title": "Trennen",
+            "intro": "Um die Spotify-Integration zu entfernen:",
+            "steps": [
+              "Gehe zu Dashboard → Einstellungen",
+              "Klicke auf Trennen im Spotify-Bereich",
+              "Deine Tokens werden sofort gelöscht"
+            ],
+            "revokePrefix": "Du kannst den Zugriff auch widerrufen unter",
+            "revokeLink": "Spotify-Kontoeinstellungen",
+            "revokeSuffix": "."
+          },
+          "platforms": {
+            "title": "Unterstützte Plattformen",
+            "intro": "Die Integration funktioniert mit:",
+            "items": [
+              "Spotify Desktop-App",
+              "Spotify Web Player",
+              "Spotify Mobile-App",
+              "Spotify auf Smart Speakern (eingeschränkt)"
+            ]
+          },
+          "future": {
+            "title": "Zukünftige Features",
+            "intro": "Demnächst verfügbar:",
+            "items": [
+              "Zuletzt gespielte Tracks",
+              "Top-Künstler/Tracks-Anzeige",
+              "Playlist-Embeds",
+              "Apple Music Integration"
+            ],
+            "note": "Diese Features sind noch nicht implementiert."
+          }
+        }
+      },
+      "security": {
+        "title": "Sicherheit",
+        "description": "Sicherheitsfunktionen und Best Practices für dein Konto.",
+        "sections": {
+          "accountSecurity": {
+            "title": "Kontosicherheit",
+            "passwords": {
+              "title": "Starke Passwörter",
+              "intro": "Wir setzen strenge Passwortanforderungen durch:",
+              "requirements": [
+                "Mindestens 8 Zeichen",
+                "Mindestens ein Großbuchstabe",
+                "Mindestens ein Kleinbuchstabe",
+                "Mindestens eine Zahl"
+              ],
+              "advanced": "Zusätzliche Schutzmaßnahmen:",
+              "advancedList": [
+                "Erkennung gängiger Passwörter (blockiert Top 1000+)",
+                "Tastaturmuster-Erkennung (blockiert qwerty, asdf, etc.)",
+                "Sequenz-Erkennung (blockiert 123456, abcdef)",
+                "Prüfung auf geleakte Passwörter via HaveIBeenPwned API"
+              ]
+            },
+            "twoFactor": {
+              "title": "Zwei-Faktor-Authentifizierung (2FA)",
+              "intro": "Füge eine zusätzliche Sicherheitsebene mit TOTP-basierter 2FA hinzu:",
+              "steps": [
+                "Gehe zu Dashboard → Einstellungen → Sicherheit",
+                "Klicke auf 2FA aktivieren",
+                "Scanne den QR-Code mit deiner Authenticator-App",
+                "Gib den 6-stelligen Code zur Bestätigung ein"
+              ],
+              "appsTitle": "Unterstützte Apps:",
+              "apps": ["Google Authenticator", "Authy", "1Password", "Bitwarden"]
+            },
+            "recoveryCodes": {
+              "title": "Wiederherstellungscodes",
+              "intro": "Bei Aktivierung von 2FA erhältst du 10 Wiederherstellungscodes:",
+              "features": [
+                "Jeder Code kann nur einmal verwendet werden",
+                "Bewahre sie sicher auf (Download als .txt verfügbar)",
+                "Nutze sie, wenn du keinen Zugang zu deiner Authenticator-App hast",
+                "Codes jederzeit in den Einstellungen neu generieren"
+              ]
+            },
+            "loginProtection": {
+              "title": "Login-Schutz",
+              "intro": "Mehrere Ebenen schützen deinen Login:",
+              "features": [
+                "Kontosperre nach 5 Fehlversuchen (30 Minuten)",
+                "Login-Benachrichtigungen per E-Mail mit Geräte- & Standortinfo",
+                "Sitzungsablauf (7 Tage, oder 30 Tage mit Angemeldet bleiben)",
+                "Cloudflare Turnstile Bot-Schutz auf allen Auth-Formularen"
+              ]
+            }
+          },
+          "dataProtection": {
+            "title": "Datenschutz",
+            "encryption": {
+              "title": "Verschlüsselung",
+              "items": [
+                "Passwörter · Gehasht mit bcrypt (Kostenfaktor 12)",
+                "Sitzungen · 64-Zeichen kryptografisch sichere Tokens",
+                "OAuth-Tokens · Verschlüsselt mit AES-256-GCM",
+                "2FA-Geheimnisse · Verschlüsselt gespeichert mit AES-256-GCM"
+              ]
+            },
+            "cookies": {
+              "title": "Sichere Cookies",
+              "items": [
+                "HTTP-Only · Verhindert JavaScript-Zugriff (XSS-Schutz)",
+                "Secure Flag · Nur über HTTPS gesendet",
+                "SameSite=Lax · CSRF-Schutz"
+              ]
+            },
+            "ipAnonymization": {
+              "title": "IP-Anonymisierung (DSGVO)",
+              "intro": "Wir anonymisieren IP-Adressen für Datenschutz-Compliance:",
+              "items": [
+                "IPv4: Letztes Oktett auf Null gesetzt (z.B. 192.168.1.x)",
+                "IPv6: Letzte 80 Bits auf Null gesetzt",
+                "Vollständige IPs werden nie in Analytics gespeichert",
+                "Gehashte IPs nur für Sitzungssicherheit verwendet"
+              ]
+            }
+          },
+          "botProtection": {
+            "title": "Bot-Schutz & Rate Limiting",
+            "turnstile": {
+              "title": "Cloudflare Turnstile",
+              "intro": "Unsichtbarer Bot-Schutz ohne nervige CAPTCHAs:",
+              "features": [
+                "Schützt Registrierung, Login und Passwort-Reset",
+                "Datenschutzfreundliche Verifizierung",
+                "Keine Benutzerinteraktion erforderlich"
+              ]
+            },
+            "rateLimiting": {
+              "title": "Rate Limiting",
+              "intro": "Wir begrenzen Anfragen, um Missbrauch zu verhindern:",
+              "headers": ["Endpunkt", "Limit"],
+              "rows": [
+                ["Login-Versuche", "5 pro 30 Minuten"],
+                ["Passwort-Reset", "3 pro Stunde"],
+                ["API-Anfragen", "1.000–10.000/Stunde (tier-basiert)"],
+                ["Datei-Uploads", "10 pro Minute"],
+                ["Profilaufrufe-Tracking", "1.000 pro Minute"]
+              ]
+            },
+            "ddos": {
+              "title": "DDoS-Schutz",
+              "intro": "Infrastruktur-Level-Schutz:",
+              "features": [
+                "Cloudflare WAF & Bot Fight Mode",
+                "Globales CDN mit Edge-Caching",
+                "Automatische Traffic-Filterung"
+              ]
+            }
+          },
+          "inputValidation": {
+            "title": "Eingabevalidierung & Sanitization",
+            "intro": "Alle Benutzereingaben werden validiert und bereinigt:",
+            "items": [
+              "Zod-Schema-Validierung auf allen Server-Funktionen",
+              "E-Mail-Validierung mit DNS/MX-Prüfung",
+              "Wegwerf-E-Mail-Filter (300+ blockierte Domains)",
+              "Custom CSS Sanitization (sandboxed)",
+              "URL-Validierung und Sanitization",
+              "Datei-Upload MIME-Typ-Validierung (Magic Bytes)",
+              "Maximale Dateigröße: 5MB"
+            ]
+          },
+          "privacyControls": {
+            "title": "Datenschutz-Kontrollen",
+            "dataExport": {
+              "title": "Datenexport",
+              "intro": "Lade jederzeit alle deine Daten herunter:",
+              "steps": [
+                "Gehe zu Dashboard → Einstellungen → Datenschutz & Daten",
+                "Klicke auf Meine Daten exportieren",
+                "Erhalte eine JSON-Datei mit allen deinen Informationen"
+              ]
+            },
+            "accountDeletion": {
+              "title": "Kontolöschung",
+              "intro": "Lösche dein Konto dauerhaft:",
+              "steps": [
+                "Gehe zu Dashboard → Einstellungen → Gefahrenzone",
+                "Klicke auf Konto löschen",
+                "Bestätige mit deinem Passwort",
+                "Alle Daten werden dauerhaft gelöscht"
+              ]
+            },
+            "cookieConsent": {
+              "title": "Cookie-Einwilligung",
+              "intro": "Granulare Kontrolle über Cookies:",
+              "features": [
+                "Standardmäßig nur essentielle Cookies",
+                "Optionale Analytics-Cookies (Vercel Analytics)",
+                "Einstellungen werden gespeichert und respektiert"
+              ]
+            }
+          },
+          "bestPractices": {
+            "title": "Best Practices",
+            "dos": {
+              "title": "Empfohlen",
+              "items": [
+                "Verwende ein einzigartiges, starkes Passwort",
+                "Aktiviere Zwei-Faktor-Authentifizierung",
+                "Bewahre Wiederherstellungscodes sicher auf",
+                "Prüfe Login-Benachrichtigungs-E-Mails",
+                "Melde dich auf geteilten Geräten ab"
+              ]
+            },
+            "donts": {
+              "title": "Vermeiden",
+              "items": [
+                "Teile dein Passwort mit niemandem",
+                "Verwende dasselbe Passwort auf mehreren Seiten",
+                "Klicke auf verdächtige Links in E-Mails",
+                "Ignoriere Login-Benachrichtigungen",
+                "Speichere Passwörter im Klartext"
+              ]
+            }
+          },
+          "reporting": {
+            "title": "Sicherheitsprobleme melden",
+            "intro": "Sicherheitslücke gefunden? Kontaktiere uns verantwortungsvoll:",
+            "contact": [
+              "E-Mail: security@eziox.link",
+              "Antwortzeit: Innerhalb von 48 Stunden"
+            ],
+            "note": "Wir schätzen verantwortungsvolle Offenlegung und bieten möglicherweise Anerkennung für valide Meldungen."
+          },
+          "compliance": {
+            "title": "Compliance",
+            "gdpr": {
+              "title": "DSGVO / GDPR",
+              "items": [
+                "Datenminimierung",
+                "Recht auf Auskunft (Datenexport)",
+                "Recht auf Löschung (Kontolöschung)",
+                "IP-Anonymisierung",
+                "Einwilligungsbasierte Verarbeitung",
+                "Datenschutzerklärung & Cookie-Richtlinie"
+              ]
+            },
+            "contact": "Fragen zur Sicherheit? Kontaktiere uns unter",
+            "email": "security@eziox.link"
+          },
+          "planned": {
+            "title": "Geplante Sicherheitsfunktionen",
+            "intro": "Die folgenden Funktionen sind auf unserer Roadmap:",
+            "items": [
+              "Bug-Bounty-Programm",
+              "Sicherheitsaudit-Berichte",
+              "Erweitertes Malware-Scanning für Uploads",
+              "Hardware-Sicherheitsschlüssel-Support (WebAuthn)"
+            ],
+            "note": "Diese Funktionen sind noch nicht implementiert."
+          }
+        }
+      },
+      "faq": {
+        "title": "FAQ",
+        "description": "Häufig gestellte Fragen und Antworten.",
+        "sections": {
+          "general": {
+            "title": "Allgemein",
+            "whatIsEziox": "Was ist Eziox?",
+            "whatIsEzioxAnswer": "Eziox ist eine moderne Bio-Link-Plattform, mit der du eine personalisierte Seite mit all deinen wichtigen Links an einem Ort erstellen kannst. Teile einen Link statt vieler.",
+            "isFree": "Ist Eziox kostenlos?",
+            "isFreeAnswer": "Ja! Eziox Core ist komplett kostenlos mit unbegrenzten Links, allen Themes, vollständigen Analytics und mehr. Premium-Stufen bieten zusätzliche Anpassungsoptionen.",
+            "vsLinktree": "Wie unterscheidet sich Eziox von Linktree?",
+            "vsLinktreeFeatures": [
+              "**Keine Paywalls bei Kernfunktionen** - Alle Themes und Analytics sind kostenlos",
+              "**Modernes Design** - 31+ Themes mit animierten Hintergründen",
+              "**Besserer Datenschutz** - Kein Drittanbieter-Tracking, DSGVO-konform",
+              "**Offene Entwicklung** - Transparent über unsere Funktionen und Roadmap"
+            ]
+          },
+          "account": {
+            "title": "Konto",
+            "changeUsername": "Wie ändere ich meinen Benutzernamen?",
+            "changeUsernameSteps": [
+              "Gehe zu Dashboard → Profil",
+              "Bearbeite das Benutzername-Feld",
+              "Klicke auf Änderungen speichern"
+            ],
+            "changeUsernameNote": "Hinweis: Dein alter Benutzername wird sofort für andere verfügbar.",
+            "deleteAccount": "Wie lösche ich mein Konto?",
+            "deleteAccountSteps": [
+              "Gehe zu Dashboard → Einstellungen → Gefahrenzone",
+              "Klicke auf Konto löschen",
+              "Bestätige mit deinem Passwort"
+            ],
+            "deleteAccountNote": "Alle deine Daten werden innerhalb von 30 Tagen dauerhaft gelöscht.",
+            "forgotPassword": "Ich habe mein Passwort vergessen",
+            "forgotPasswordSteps": [
+              "Gehe zu Anmelden",
+              "Klicke auf Passwort vergessen",
+              "Gib deine E-Mail-Adresse ein",
+              "Prüfe deinen Posteingang auf einen Reset-Link"
+            ],
+            "cantLogin": "Warum kann ich mich nicht anmelden?",
+            "cantLoginIntro": "Häufige Gründe:",
+            "cantLoginReasons": [
+              "**Falsches Passwort** - Versuche das Passwort zurückzusetzen",
+              "**Konto gesperrt** - Warte 30 Minuten nach 5 fehlgeschlagenen Versuchen",
+              "**2FA erforderlich** - Gib deinen Authenticator-Code ein",
+              "**E-Mail nicht verifiziert** - Prüfe deinen Posteingang auf die Verifizierungs-E-Mail"
+            ]
+          },
+          "links": {
+            "title": "Links",
+            "howManyLinks": "Wie viele Links kann ich hinzufügen?",
+            "howManyLinksAnswer": "Unbegrenzt! Es gibt kein Limit für die Anzahl der Links.",
+            "reorderLinks": "Kann ich meine Links neu anordnen?",
+            "reorderLinksAnswer": "Ja! Ziehe und lege Links im Dashboard ab, um sie neu anzuordnen.",
+            "scheduleLinks": "Kann ich Links planen?",
+            "scheduleLinksAnswer": "Ja! Setze Start- und Enddaten für Links, damit sie automatisch erscheinen/verschwinden. Verfügbar für alle Benutzer.",
+            "trackClicks": "Kann ich Link-Klicks verfolgen?",
+            "trackClicksIntro": "Ja! Jeder Link hat detaillierte Analytics einschließlich:",
+            "trackClicksFeatures": [
+              "Gesamtklicks",
+              "Geräteaufschlüsselung",
+              "Geografische Daten",
+              "Klick-Heatmap nach Stunde"
+            ]
+          },
+          "customization": {
+            "title": "Anpassung",
+            "changeTheme": "Wie ändere ich mein Theme?",
+            "changeThemeSteps": [
+              "Gehe zu Dashboard → Anpassung",
+              "Durchsuche die Theme-Galerie",
+              "Klicke auf ein Theme zur Vorschau",
+              "Klicke auf Anwenden zum Speichern"
+            ],
+            "customColors": "Kann ich eigene Farben verwenden?",
+            "customColorsAnswer": "Ja! Verwende den Theme Builder, um eigene Farbschemata zu erstellen. Free-Benutzer erhalten 1 eigenes Theme, Pro 5 und Creator/Lifetime 10.",
+            "customDomain": "Kann ich meine eigene Domain verwenden?",
+            "customDomainAnswer": "Eigene Domains sind für die Creator-Stufe geplant, aber noch nicht verfügbar. Schreibe an support@eziox.link, um benachrichtigt zu werden."
+          },
+          "premium": {
+            "title": "Premium",
+            "paymentMethods": "Welche Zahlungsmethoden akzeptiert ihr?",
+            "paymentMethodsIntro": "Die Zahlung läuft sicher über Stripe. Aktuell unterstützen wir:",
+            "paymentMethodsList": [
+              "Visa",
+              "Mastercard",
+              "American Express",
+              "Apple Pay / Google Pay (über Stripe)"
+            ],
+            "cancelSubscription": "Kann ich mein Abonnement kündigen?",
+            "cancelSubscriptionAnswer": "Ja, jederzeit kündbar unter Dashboard → Abonnement. Du behältst den Zugang bis zum Ende deines Abrechnungszeitraums.",
+            "refunds": "Bietet ihr Rückerstattungen an?",
+            "refundsAnswer": "Rückerstattungen prüfen wir individuell gemäß Widerrufsbelehrung. Sende eine E-Mail mit deinen Abodaten an support@eziox.link.",
+            "lifetimeIncludes": "Was ist in Lifetime enthalten?",
+            "lifetimeIncludesIntro": "Alles in der Creator-Stufe, für immer:",
+            "lifetimeIncludesList": [
+              "Alle aktuellen Funktionen",
+              "Alle zukünftigen Funktionen",
+              "Keine wiederkehrenden Zahlungen",
+              "Exklusives Lifetime-Abzeichen"
+            ]
+          },
+          "technical": {
+            "title": "Technisch",
+            "browsers": "Welche Browser werden unterstützt?",
+            "browsersList": [
+              "Chrome 90+",
+              "Firefox 90+",
+              "Safari 14+",
+              "Edge 90+"
+            ],
+            "mobileApp": "Gibt es eine mobile App?",
+            "mobileAppAnswer": "Noch nicht, aber unsere Website ist vollständig für Mobilgeräte optimiert. Eine PWA ist für die Zukunft geplant.",
+            "hasApi": "Habt ihr eine API?",
+            "hasApiAnswer": "Ja! Erstelle API-Schlüssel unter Dashboard → API-Zugang. Siehe unsere API-Dokumentation für Details."
+          },
+          "support": {
+            "title": "Support",
+            "contactSupport": "Wie kontaktiere ich den Support?",
+            "contactSupportOptions": [
+              "E-Mail: support@eziox.link",
+              "Kontaktformular: eziox.link/contact",
+              "Discord: Kommt bald"
+            ],
+            "foundBug": "Ich habe einen Bug gefunden!",
+            "foundBugIntro": "Melde Bugs über:",
+            "foundBugOptions": [
+              "GitHub Issues: github.com/Eziox-Development",
+              "E-Mail: bugs@eziox.link"
+            ],
+            "featureRequest": "Ich habe einen Feature-Wunsch",
+            "featureRequestIntro": "Wir lieben Feedback! Reiche Feature-Wünsche ein über:",
+            "featureRequestOptions": [
+              "GitHub Discussions",
+              "E-Mail: feedback@eziox.link"
+            ]
+          },
+          "stillQuestions": {
+            "title": "Noch Fragen?",
+            "text": "Kontaktiere uns und wir helfen dir gerne!"
+          }
+        }
+      }
+    },
+    "help": {
+      "title": "Brauchst du mehr Hilfe?",
+      "contactSupport": "Support kontaktieren",
+      "apiReference": "API-Referenz",
+      "viewPricing": "Preise ansehen"
+    },
+    "meta": {
+      "readTime": "{{minutes}} Min. Lesezeit",
+      "lastUpdated": "Zuletzt aktualisiert {{date}}",
+      "editPage": "Diese Seite bearbeiten",
+      "reportIssue": "Problem melden"
+    },
+    "sidebar": {
+      "collapse": "Seitenleiste einklappen",
+      "expand": "Seitenleiste ausklappen"
+    }
+  }
+}

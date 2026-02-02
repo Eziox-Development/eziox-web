@@ -2,6 +2,8 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 import { motion } from 'motion/react'
 import { useQuery } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
+import { useState, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { getTopUsersFn } from '@/server/functions/users'
 import { getPlatformStatsFn } from '@/server/functions/stats'
 import { BadgeDisplay } from '@/components/ui/badge-display'
@@ -26,7 +28,11 @@ import {
   UserPlus,
   Target,
   Award,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react'
+
+const ITEMS_PER_PAGE = 20
 
 export const Route = createFileRoute('/_public/leaderboard')({
   head: () => ({
@@ -46,26 +52,55 @@ export const Route = createFileRoute('/_public/leaderboard')({
   component: LeaderboardPage,
 })
 
-function LeaderboardPage() {
+export function LeaderboardPage() {
+  const { t } = useTranslation()
   const { theme } = useTheme()
+  const [currentPage, setCurrentPage] = useState(1)
+
   const getTopUsers = useServerFn(getTopUsersFn)
   const getPlatformStats = useServerFn(getPlatformStatsFn)
 
   const {
-    data: topUsers,
+    data: allUsers,
     isLoading,
     dataUpdatedAt,
+    error: usersError,
   } = useQuery({
-    queryKey: ['leaderboard'],
-    queryFn: () => getTopUsers({ data: { limit: 50 } }),
-    refetchInterval: 30000,
+    queryKey: ['leaderboard-all'],
+    queryFn: () => getTopUsers({ data: { limit: 100 } }),
+    refetchInterval: 60000, // 1 minute instead of 30 seconds
+    staleTime: 300000, // 5 minutes - consider data fresh for 5 minutes
+    gcTime: 600000, // 10 minutes - keep in cache for 10 minutes
   })
 
   const { data: platformStats } = useQuery({
     queryKey: ['platform-stats'],
     queryFn: () => getPlatformStats(),
-    refetchInterval: 30000,
+    refetchInterval: 120000, // 2 minutes for stats
+    staleTime: 300000, // 5 minutes
+    gcTime: 600000, // 10 minutes
   })
+
+  const totalPages = useMemo(() => {
+    if (!allUsers) return 1
+    return Math.ceil(allUsers.length / ITEMS_PER_PAGE)
+  }, [allUsers])
+
+  const paginatedUsers = useMemo(() => {
+    if (!allUsers) return []
+    const start = (currentPage - 1) * ITEMS_PER_PAGE
+    return allUsers.slice(start, start + ITEMS_PER_PAGE)
+  }, [allUsers, currentPage])
+
+  const top3 = useMemo(() => {
+    if (!allUsers || !Array.isArray(allUsers)) return []
+    return allUsers.slice(0, 3)
+  }, [allUsers])
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
 
   const cardRadius =
     theme.effects.borderRadius === 'pill'
@@ -73,6 +108,7 @@ function LeaderboardPage() {
       : theme.effects.borderRadius === 'sharp'
         ? '8px'
         : '16px'
+
   const glowOpacity =
     theme.effects.glowIntensity === 'strong'
       ? 0.5
@@ -119,8 +155,6 @@ function LeaderboardPage() {
     }
   }
 
-  const top3 = topUsers?.slice(0, 3) || []
-
   return (
     <div
       className="min-h-screen pt-24 pb-16 px-4"
@@ -145,12 +179,6 @@ function LeaderboardPage() {
           }}
           animate={{ scale: [1.2, 1, 1.2], y: [0, -40, 0] }}
           transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut' }}
-        />
-        <motion.div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full blur-[150px]"
-          style={{ background: '#fbbf24', opacity: glowOpacity * 0.1 }}
-          animate={{ scale: [1, 1.3, 1] }}
-          transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
         />
       </div>
 
@@ -182,7 +210,7 @@ function LeaderboardPage() {
               className="text-sm font-medium"
               style={{ color: theme.colors.foreground }}
             >
-              Live Rankings
+              {t('leaderboard.badge')}
             </span>
             <div className="flex items-center gap-1">
               <motion.div
@@ -191,7 +219,7 @@ function LeaderboardPage() {
                 transition={{ duration: 1.5, repeat: Infinity }}
               />
               <span className="text-xs" style={{ color: '#22c55e' }}>
-                Live
+                {t('leaderboard.live')}
               </span>
             </div>
           </motion.div>
@@ -207,14 +235,14 @@ function LeaderboardPage() {
               fontFamily: theme.typography.displayFont,
             }}
           >
-            Creator{' '}
+            {t('leaderboard.hero.title')}{' '}
             <span
               className="bg-clip-text text-transparent"
               style={{
                 backgroundImage: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
               }}
             >
-              Leaderboard
+              {t('leaderboard.hero.titleHighlight')}
             </span>
           </motion.h1>
 
@@ -225,8 +253,7 @@ function LeaderboardPage() {
             className="text-lg max-w-2xl mx-auto mb-2"
             style={{ color: theme.colors.foregroundMuted }}
           >
-            See who's leading the pack. Climb the ranks by growing your profile
-            and engaging with the community.
+            {t('leaderboard.hero.subtitle')}
           </motion.p>
 
           <motion.p
@@ -237,7 +264,7 @@ function LeaderboardPage() {
             style={{ color: theme.colors.foregroundMuted }}
           >
             <Activity size={14} style={{ color: '#22c55e' }} />
-            Updated{' '}
+            {t('leaderboard.hero.updated')}{' '}
             {dataUpdatedAt
               ? new Date(dataUpdatedAt).toLocaleTimeString()
               : 'just now'}
@@ -253,28 +280,28 @@ function LeaderboardPage() {
         >
           {[
             {
-              label: 'Total Creators',
+              label: t('leaderboard.stats.totalCreators'),
               value: stats.totalUsers,
               icon: Users2,
               color: theme.colors.primary,
               suffix: '+',
             },
             {
-              label: 'Total Points',
+              label: t('leaderboard.stats.totalPoints'),
               value: stats.totalScore,
               icon: Star,
               color: theme.colors.accent,
               suffix: '',
             },
             {
-              label: 'Active Today',
+              label: t('leaderboard.stats.activeToday'),
               value: stats.activeToday,
               icon: Flame,
               color: '#ef4444',
               suffix: '',
             },
             {
-              label: 'New This Week',
+              label: t('leaderboard.stats.newThisWeek'),
               value: stats.newThisWeek,
               icon: TrendingUp,
               color: '#22c55e',
@@ -301,21 +328,18 @@ function LeaderboardPage() {
                 borderRadius: cardRadius,
               }}
             >
-              {/* Hover glow */}
               <div
                 className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"
                 style={{
                   background: `radial-gradient(circle at 50% 0%, ${stat.color}15, transparent 70%)`,
                 }}
               />
-              {/* Top accent line */}
               <div
                 className="absolute top-0 left-0 right-0 h-px opacity-50"
                 style={{
                   background: `linear-gradient(90deg, transparent, ${stat.color}, transparent)`,
                 }}
               />
-
               <div className="relative flex items-center gap-4">
                 <div
                   className="w-12 h-12 rounded-xl flex items-center justify-center"
@@ -344,7 +368,7 @@ function LeaderboardPage() {
         </motion.div>
 
         {/* Top 3 Podium */}
-        {top3.length > 0 && (
+        {top3.length > 0 && currentPage === 1 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -367,7 +391,7 @@ function LeaderboardPage() {
                   fontFamily: theme.typography.displayFont,
                 }}
               >
-                Top 3 Creators
+                {t('leaderboard.podium.title')}
               </h2>
             </div>
 
@@ -420,7 +444,6 @@ function LeaderboardPage() {
                             : undefined,
                         }}
                       >
-                        {/* Glow effect for 1st place */}
                         {isFirst && (
                           <div
                             className="absolute -top-20 left-1/2 -translate-x-1/2 w-40 h-40 rounded-full blur-3xl opacity-30 group-hover:opacity-50 transition-opacity"
@@ -429,7 +452,6 @@ function LeaderboardPage() {
                         )}
 
                         <div className="relative p-6 text-center h-full flex flex-col justify-center">
-                          {/* Crown for 1st */}
                           {isFirst && (
                             <motion.div
                               animate={{ rotate: [0, 5, -5, 0], y: [0, -3, 0] }}
@@ -444,7 +466,6 @@ function LeaderboardPage() {
                             </motion.div>
                           )}
 
-                          {/* Avatar */}
                           <div className="relative inline-block mx-auto mb-4">
                             <div
                               className="absolute inset-0 rounded-full blur-lg opacity-50"
@@ -473,7 +494,6 @@ function LeaderboardPage() {
                                   .toUpperCase()}
                               </AvatarFallback>
                             </Avatar>
-                            {/* Rank badge */}
                             <div
                               className={`absolute -bottom-2 left-1/2 -translate-x-1/2 ${isFirst ? 'w-10 h-10 text-lg' : 'w-8 h-8 text-sm'} rounded-full flex items-center justify-center font-bold`}
                               style={{
@@ -486,7 +506,6 @@ function LeaderboardPage() {
                             </div>
                           </div>
 
-                          {/* Name */}
                           <h3
                             className={`${isFirst ? 'text-xl' : 'text-lg'} font-bold truncate mb-1`}
                             style={{ color: theme.colors.foreground }}
@@ -500,7 +519,6 @@ function LeaderboardPage() {
                             @{user.user.username}
                           </p>
 
-                          {/* Score */}
                           <div
                             className={`${isFirst ? 'text-3xl' : 'text-2xl'} font-bold`}
                             style={{ color: rankStyle.color }}
@@ -511,10 +529,9 @@ function LeaderboardPage() {
                             className="text-sm"
                             style={{ color: theme.colors.foregroundMuted }}
                           >
-                            points
+                            {t('leaderboard.podium.points')}
                           </p>
 
-                          {/* Badges */}
                           {user.profile?.badges &&
                             user.profile.badges.length > 0 && (
                               <div className="mt-3 flex justify-center">
@@ -571,13 +588,14 @@ function LeaderboardPage() {
                     className="font-bold"
                     style={{ color: theme.colors.foreground }}
                   >
-                    All Rankings
+                    {t('leaderboard.rankings.title')}
                   </h2>
                   <p
                     className="text-sm"
                     style={{ color: theme.colors.foregroundMuted }}
                   >
-                    {topUsers?.length || 0} creators competing
+                    {allUsers?.length || 0}{' '}
+                    {t('leaderboard.rankings.competing')}
                   </p>
                 </div>
               </div>
@@ -593,7 +611,7 @@ function LeaderboardPage() {
                   }}
                 >
                   <Users2 size={16} />
-                  View All Creators
+                  {t('leaderboard.rankings.viewAllCreators')}
                 </motion.button>
               </Link>
             </div>
@@ -613,10 +631,10 @@ function LeaderboardPage() {
                   />
                 </motion.div>
                 <p style={{ color: theme.colors.foregroundMuted }}>
-                  Loading rankings...
+                  {t('leaderboard.loading')}
                 </p>
               </div>
-            ) : !topUsers || topUsers.length === 0 ? (
+            ) : usersError ? (
               <div className="p-16 text-center">
                 <div
                   className="w-24 h-24 mx-auto mb-6 rounded-2xl flex items-center justify-center"
@@ -631,13 +649,37 @@ function LeaderboardPage() {
                   className="text-2xl font-bold mb-2"
                   style={{ color: theme.colors.foreground }}
                 >
-                  No rankings yet
+                  Error Loading Leaderboard
                 </h3>
                 <p
                   className="mb-6"
                   style={{ color: theme.colors.foregroundMuted }}
                 >
-                  Be the first to claim the top spot!
+                  Please try again later.
+                </p>
+              </div>
+            ) : !allUsers || allUsers.length === 0 ? (
+              <div className="p-16 text-center">
+                <div
+                  className="w-24 h-24 mx-auto mb-6 rounded-2xl flex items-center justify-center"
+                  style={{ background: `${theme.colors.primary}15` }}
+                >
+                  <Trophy
+                    size={48}
+                    style={{ color: theme.colors.primary, opacity: 0.5 }}
+                  />
+                </div>
+                <h3
+                  className="text-2xl font-bold mb-2"
+                  style={{ color: theme.colors.foreground }}
+                >
+                  {t('leaderboard.empty.title')}
+                </h3>
+                <p
+                  className="mb-6"
+                  style={{ color: theme.colors.foregroundMuted }}
+                >
+                  {t('leaderboard.empty.subtitle')}
                 </p>
                 <Link to="/sign-up">
                   <motion.button
@@ -653,14 +695,14 @@ function LeaderboardPage() {
                     }}
                   >
                     <Sparkles size={20} />
-                    Join Now
+                    {t('leaderboard.empty.cta')}
                   </motion.button>
                 </Link>
               </div>
             ) : (
               <div style={{ borderColor: theme.colors.border }}>
-                {topUsers.map((user, index) => {
-                  const rank = index + 1
+                {paginatedUsers.map((user, index) => {
+                  const rank = (currentPage - 1) * ITEMS_PER_PAGE + index + 1
                   const rankStyle = getRankStyle(rank)
                   const RankIcon = rankStyle.icon
                   const isTop3 = rank <= 3
@@ -670,10 +712,10 @@ function LeaderboardPage() {
                       key={user.user.id}
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.55 + index * 0.015 }}
+                      transition={{ delay: index * 0.01 }}
                       style={{
                         borderBottom:
-                          index < topUsers.length - 1
+                          index < paginatedUsers.length - 1
                             ? `1px solid ${theme.colors.border}`
                             : undefined,
                       }}
@@ -681,10 +723,11 @@ function LeaderboardPage() {
                       <Link
                         to="/$username"
                         params={{ username: user.user.username }}
-                        className="flex items-center gap-4 p-4 transition-all group"
+                        className="flex items-center gap-4 p-4 transition-all group hover:bg-opacity-50"
                         style={{ background: 'transparent' }}
                         onMouseEnter={(e) =>
-                          (e.currentTarget.style.background = `${theme.colors.backgroundSecondary}`)
+                          (e.currentTarget.style.background =
+                            theme.colors.backgroundSecondary)
                         }
                         onMouseLeave={(e) =>
                           (e.currentTarget.style.background = 'transparent')
@@ -806,7 +849,7 @@ function LeaderboardPage() {
                             className="text-xs"
                             style={{ color: theme.colors.foregroundMuted }}
                           >
-                            points
+                            {t('leaderboard.podium.points')}
                           </p>
                         </div>
 
@@ -824,6 +867,98 @@ function LeaderboardPage() {
                     </motion.div>
                   )
                 })}
+              </div>
+            )}
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div
+                className="p-4 flex items-center justify-between"
+                style={{ borderTop: `1px solid ${theme.colors.border}` }}
+              >
+                <p
+                  className="text-sm"
+                  style={{ color: theme.colors.foregroundMuted }}
+                >
+                  {t('leaderboard.pagination.showing')}{' '}
+                  {(currentPage - 1) * ITEMS_PER_PAGE + 1}{' '}
+                  {t('leaderboard.pagination.to')}{' '}
+                  {Math.min(
+                    currentPage * ITEMS_PER_PAGE,
+                    allUsers?.length || 0,
+                  )}{' '}
+                  {t('leaderboard.pagination.of')} {allUsers?.length || 0}{' '}
+                  {t('leaderboard.pagination.results')}
+                </p>
+                <div className="flex items-center gap-2">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className="p-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                    style={{
+                      background: theme.colors.backgroundSecondary,
+                      border: `1px solid ${theme.colors.border}`,
+                      color: theme.colors.foreground,
+                    }}
+                  >
+                    <ChevronLeft size={20} />
+                  </motion.button>
+                  <div className="flex items-center gap-1">
+                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                      let pageNum: number
+                      if (totalPages <= 5) {
+                        pageNum = i + 1
+                      } else if (currentPage <= 3) {
+                        pageNum = i + 1
+                      } else if (currentPage >= totalPages - 2) {
+                        pageNum = totalPages - 4 + i
+                      } else {
+                        pageNum = currentPage - 2 + i
+                      }
+                      return (
+                        <motion.button
+                          key={pageNum}
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.9 }}
+                          onClick={() => handlePageChange(pageNum)}
+                          className="w-10 h-10 rounded-lg font-medium"
+                          style={{
+                            background:
+                              currentPage === pageNum
+                                ? `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`
+                                : theme.colors.backgroundSecondary,
+                            color:
+                              currentPage === pageNum
+                                ? 'white'
+                                : theme.colors.foreground,
+                            border:
+                              currentPage === pageNum
+                                ? 'none'
+                                : `1px solid ${theme.colors.border}`,
+                          }}
+                        >
+                          {pageNum}
+                        </motion.button>
+                      )
+                    })}
+                  </div>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className="p-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                    style={{
+                      background: theme.colors.backgroundSecondary,
+                      border: `1px solid ${theme.colors.border}`,
+                      color: theme.colors.foreground,
+                    }}
+                  >
+                    <ChevronRight size={20} />
+                  </motion.button>
+                </div>
               </div>
             )}
           </div>
@@ -865,7 +1000,7 @@ function LeaderboardPage() {
                   fontFamily: theme.typography.displayFont,
                 }}
               >
-                How to Earn Points
+                {t('leaderboard.earnPoints.title')}
               </h3>
             </div>
 
@@ -873,30 +1008,30 @@ function LeaderboardPage() {
               {[
                 {
                   icon: Eye,
-                  label: 'Profile Views',
+                  label: t('leaderboard.earnPoints.profileViews'),
                   points: '+1',
-                  desc: 'per view',
+                  desc: t('leaderboard.earnPoints.perView'),
                   color: theme.colors.primary,
                 },
                 {
                   icon: MousePointerClick,
-                  label: 'Link Clicks',
+                  label: t('leaderboard.earnPoints.linkClicks'),
                   points: '+2',
-                  desc: 'per click',
+                  desc: t('leaderboard.earnPoints.perClick'),
                   color: theme.colors.accent,
                 },
                 {
                   icon: Heart,
-                  label: 'Followers',
+                  label: t('leaderboard.earnPoints.followers'),
                   points: '+3',
-                  desc: 'per follower',
+                  desc: t('leaderboard.earnPoints.perFollower'),
                   color: '#ef4444',
                 },
                 {
                   icon: UserPlus,
-                  label: 'Referrals',
+                  label: t('leaderboard.earnPoints.referrals'),
                   points: '+5',
-                  desc: 'per signup',
+                  desc: t('leaderboard.earnPoints.perSignup'),
                   color: '#22c55e',
                 },
               ].map((item, i) => (
@@ -957,7 +1092,7 @@ function LeaderboardPage() {
                   }}
                 >
                   <Sparkles size={20} />
-                  Start Climbing the Ranks
+                  {t('leaderboard.cta')}
                   <ArrowRight size={20} />
                 </motion.button>
               </Link>

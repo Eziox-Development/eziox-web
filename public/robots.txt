@@ -1,18 +1,38 @@
 # Eziox - Bio Link Platform
 # https://eziox.link
+# 
+# Security Note: This file tells search engines what NOT to index.
+# It does NOT provide actual access control - use proper authentication for that.
 
 User-agent: *
 Allow: /
-Disallow: /api/
-Disallow: /profile/
-Disallow: /links/
-Disallow: /analytics/
-Disallow: /admin/
+
+# Authentication & Account pages (no indexing needed)
 Disallow: /sign-in
 Disallow: /sign-up
 Disallow: /sign-out
 Disallow: /reset-password
+Disallow: /forgot-password
+Disallow: /verify-email
+Disallow: /verify-email-change
+
+# Protected user areas
+Disallow: /profile/
+Disallow: /links/
+Disallow: /analytics/
+Disallow: /settings/
+Disallow: /admin/
+
+# API endpoints (not for crawlers)
+Disallow: /api/
+Disallow: /_api/
+
+# Short links (redirect only)
 Disallow: /s/
+
+# Internal routes
+Disallow: /maintenance
+Disallow: /_
 
 # Sitemaps
 Sitemap: https://eziox.link/sitemap.xml
@@ -20,18 +40,32 @@ Sitemap: https://eziox.link/sitemap.xml
 # Crawl-delay for polite crawling
 Crawl-delay: 1
 
-# Allow social media crawlers full access
+# Social media crawlers - allow bio pages for link previews
 User-agent: Twitterbot
 Allow: /
+Disallow: /api/
+Disallow: /profile/
+Disallow: /sign-in
+Disallow: /sign-up
 
 User-agent: facebookexternalhit
 Allow: /
+Disallow: /api/
+Disallow: /profile/
+Disallow: /sign-in
+Disallow: /sign-up
 
 User-agent: LinkedInBot
 Allow: /
+Disallow: /api/
+Disallow: /profile/
 
 User-agent: Discordbot
 Allow: /
+Disallow: /api/
+Disallow: /profile/
 
 User-agent: TelegramBot
 Allow: /
+Disallow: /api/
+Disallow: /profile/

@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
 import {
   DocsLayout,
   DocSection,
@@ -6,6 +7,7 @@ import {
   DocParagraph,
   DocList,
   DocLink,
+  DocBlockquote,
 } from '@/components/docs/DocsLayout'
 
 export const Route = createFileRoute('/_public/docs/spotify-integration')({
@@ -21,154 +23,103 @@ export const Route = createFileRoute('/_public/docs/spotify-integration')({
   component: SpotifyDoc,
 })
 
-function SpotifyDoc() {
+export function SpotifyDoc() {
+  const { t } = useTranslation()
+  const s = 'docs.pages.spotifyIntegration.sections'
+
   return (
     <DocsLayout
-      title="Spotify Integration"
-      description="Display your currently playing music on your bio page."
+      title={t('docs.pages.spotifyIntegration.title')}
+      description={t('docs.pages.spotifyIntegration.description')}
       category="Integrations"
       icon="Music"
     >
-      <DocSection title="Overview">
-        <DocParagraph>
-          The Spotify integration displays a "Now Playing" widget on your bio
-          page with:
-        </DocParagraph>
+      <DocSection title={t(`${s}.overview.title`)}>
+        <DocParagraph>{t(`${s}.overview.intro`)}</DocParagraph>
         <DocList
-          items={[
-            'Album artwork with blur background',
-            'Song title and artist name',
-            'Live progress bar',
-            'Direct link to the track on Spotify',
-            '"Not listening" state when offline',
-          ]}
+          items={t(`${s}.overview.features`, { returnObjects: true }) as string[]}
         />
       </DocSection>
 
-      <DocSection title="Setup">
-        <DocSubSection title="Step 1: Connect Your Account">
+      <DocSection title={t(`${s}.setup.title`)}>
+        <DocSubSection title={t(`${s}.setup.connect.title`)}>
           <DocList
-            items={[
-              'Go to Dashboard → Settings',
-              'Find the Spotify section',
-              'Click Connect Spotify',
-              'Authorize Eziox to access your listening activity',
-            ]}
+            items={t(`${s}.setup.connect.steps`, { returnObjects: true }) as string[]}
           />
         </DocSubSection>
 
-        <DocSubSection title="Step 2: Configure Privacy">
-          <DocParagraph>
-            After connecting, you can control visibility:
-          </DocParagraph>
+        <DocSubSection title={t(`${s}.setup.privacy.title`)}>
+          <DocParagraph>{t(`${s}.setup.privacy.intro`)}</DocParagraph>
           <DocList
-            items={[
-              'Show on Profile - Toggle to show/hide the widget',
-              'Show When Offline - Display "Not listening" or hide completely',
-            ]}
+            items={t(`${s}.setup.privacy.options`, { returnObjects: true }) as string[]}
           />
         </DocSubSection>
       </DocSection>
 
-      <DocSection title="How It Works">
-        <DocSubSection title="Real-Time Updates">
-          <DocParagraph>
-            The widget refreshes every 10 seconds to show your current track.
-          </DocParagraph>
+      <DocSection title={t(`${s}.howItWorks.title`)}>
+        <DocSubSection title={t(`${s}.howItWorks.realtime.title`)}>
+          <DocParagraph>{t(`${s}.howItWorks.realtime.text`)}</DocParagraph>
         </DocSubSection>
 
-        <DocSubSection title="Token Management">
+        <DocSubSection title={t(`${s}.howItWorks.tokens.title`)}>
           <DocList
-            items={[
-              'We securely store your Spotify tokens (encrypted with AES-256-GCM)',
-              'Tokens auto-refresh when expired',
-              'You can disconnect anytime',
-            ]}
+            items={t(`${s}.howItWorks.tokens.items`, { returnObjects: true }) as string[]}
           />
         </DocSubSection>
 
-        <DocSubSection title="Privacy">
+        <DocSubSection title={t(`${s}.howItWorks.privacy.title`)}>
           <DocList
-            items={[
-              'We only access your "currently playing" data',
-              "We don't access your playlists, saved tracks, or listening history",
-              'Your Spotify data is never shared with third parties',
-            ]}
+            items={t(`${s}.howItWorks.privacy.items`, { returnObjects: true }) as string[]}
           />
         </DocSubSection>
       </DocSection>
 
-      <DocSection title="Troubleshooting">
-        <DocSubSection title="Widget Not Showing">
+      <DocSection title={t(`${s}.troubleshooting.title`)}>
+        <DocSubSection title={t(`${s}.troubleshooting.notShowing.title`)}>
           <DocList
-            items={[
-              'Check that Spotify is connected in Settings',
-              'Ensure "Show on Profile" is enabled',
-              "Make sure you're actively playing music (not paused)",
-            ]}
+            items={t(`${s}.troubleshooting.notShowing.items`, { returnObjects: true }) as string[]}
           />
         </DocSubSection>
 
-        <DocSubSection title="Wrong Track Showing">
+        <DocSubSection title={t(`${s}.troubleshooting.wrongTrack.title`)}>
           <DocList
-            items={[
-              'The widget updates every 10 seconds',
-              'Try refreshing the page',
-              "Check if you're playing on the correct device",
-            ]}
+            items={t(`${s}.troubleshooting.wrongTrack.items`, { returnObjects: true }) as string[]}
           />
         </DocSubSection>
 
-        <DocSubSection title="Connection Issues">
+        <DocSubSection title={t(`${s}.troubleshooting.connection.title`)}>
           <DocList
-            items={[
-              'Disconnect Spotify in Settings',
-              'Clear your browser cache',
-              'Reconnect your account',
-            ]}
+            items={t(`${s}.troubleshooting.connection.items`, { returnObjects: true }) as string[]}
           />
         </DocSubSection>
       </DocSection>
 
-      <DocSection title="Disconnect">
-        <DocParagraph>To remove the Spotify integration:</DocParagraph>
+      <DocSection title={t(`${s}.disconnect.title`)}>
+        <DocParagraph>{t(`${s}.disconnect.intro`)}</DocParagraph>
         <DocList
-          items={[
-            'Go to Dashboard → Settings',
-            'Click Disconnect in the Spotify section',
-            'Your tokens are immediately deleted',
-          ]}
+          items={t(`${s}.disconnect.steps`, { returnObjects: true }) as string[]}
         />
         <DocParagraph>
-          You can also revoke access from{' '}
+          {t(`${s}.disconnect.revokePrefix`)}{' '}
           <DocLink href="https://www.spotify.com/account/apps/">
-            Spotify Account Settings
+            {t(`${s}.disconnect.revokeLink`)}
           </DocLink>
-          .
+          {t(`${s}.disconnect.revokeSuffix`)}
         </DocParagraph>
       </DocSection>
 
-      <DocSection title="Supported Platforms">
-        <DocParagraph>The integration works with:</DocParagraph>
+      <DocSection title={t(`${s}.platforms.title`)}>
+        <DocParagraph>{t(`${s}.platforms.intro`)}</DocParagraph>
         <DocList
-          items={[
-            'Spotify Desktop App',
-            'Spotify Web Player',
-            'Spotify Mobile App',
-            'Spotify on smart speakers (limited)',
-          ]}
+          items={t(`${s}.platforms.items`, { returnObjects: true }) as string[]}
         />
       </DocSection>
 
-      <DocSection title="Future Features">
-        <DocParagraph>Coming soon:</DocParagraph>
+      <DocSection title={t(`${s}.future.title`)}>
+        <DocBlockquote type="info">{t(`${s}.future.note`)}</DocBlockquote>
+        <DocParagraph>{t(`${s}.future.intro`)}</DocParagraph>
         <DocList
-          items={[
-            'Recently played tracks',
-            'Top artists/tracks display',
-            'Playlist embeds',
-            'Apple Music integration',
-          ]}
+          items={t(`${s}.future.items`, { returnObjects: true }) as string[]}
         />
       </DocSection>
     </DocsLayout>

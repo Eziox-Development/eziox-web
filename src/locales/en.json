@@ -1,0 +1,3787 @@
+{
+  "spotify": {
+    "nowPlaying": {
+      "loading": "Loading...",
+      "notPlaying": "Not playing",
+      "offline": "Offline",
+      "notListening": "Not listening on Spotify",
+      "nowPlaying": "Now Playing",
+      "paused": "Paused",
+      "listenOn": "Listen on Spotify"
+    },
+    "connect": {
+      "title": "Spotify",
+      "subtitle": "Show what you're listening to",
+      "connected": "Connected",
+      "notConnected": "Not connected",
+      "loading": "Loading Spotify connection...",
+      "showOnProfile": "Show on profile",
+      "visibleToVisitors": "Visitors can see your activity",
+      "activityHidden": "Activity is hidden",
+      "openSpotify": "Open Spotify",
+      "disconnect": "Disconnect",
+      "connectedSince": "Connected since",
+      "connectDescription": "Connect your Spotify account to display what you're currently listening to on your bio page. Visitors will see real-time updates of your music.",
+      "connectButton": "Connect Spotify",
+      "connecting": "Connecting...",
+      "privacyNote": "We only request read access to your playback",
+      "features": {
+        "realtime": "Real-time updates",
+        "albumArt": "Album artwork display",
+        "progressBar": "Live progress bar",
+        "privacy": "Privacy controls"
+      }
+    }
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "submit": "Submit",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "connect": "Connect",
+    "disconnect": "Disconnect",
+    "close": "Close",
+    "open": "Open",
+    "yes": "Yes",
+    "no": "No",
+    "confirm": "Confirm",
+    "required": "Required",
+    "optional": "Optional",
+    "learnMore": "Learn more",
+    "viewAll": "View all",
+    "seeMore": "See more",
+    "showLess": "Show less"
+  },
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "pricing": "Pricing",
+    "docs": "Docs",
+    "contact": "Contact",
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "signOut": "Sign Out",
+    "getStarted": "Get Started",
+    "profile": "Profile",
+    "settings": "Settings",
+    "dashboard": "Dashboard",
+    "analytics": "Analytics",
+    "templates": "Templates",
+    "creators": "Creators",
+    "leaderboard": "Leaderboard",
+    "partners": "Partners",
+    "playground": "Playground",
+    "themeBuilder": "Theme Builder",
+    "urlShortener": "URL Shortener",
+    "bioLinks": "Bio Links",
+    "community": {
+      "title": "Community",
+      "explore": "Explore Community",
+      "creators": "Creators",
+      "creatorsDesc": "Discover amazing creators",
+      "templates": "Templates",
+      "templatesDesc": "Community style presets",
+      "partners": "Partners",
+      "partnersDesc": "Official platform partners",
+      "leaderboard": "Leaderboard",
+      "leaderboardDesc": "Top performing users"
+    },
+    "user": {
+      "quickActions": "Quick Actions",
+      "viewBioPage": "View Bio Page",
+      "adminPanel": "Admin Panel",
+      "upgradeToPro": "Upgrade to Pro",
+      "unlockFeatures": "Unlock all premium features"
+    }
+  },
+  "auth": {
+    "signIn": {
+      "title": "Welcome back",
+      "subtitle": "Sign in to your account",
+      "email": "Email",
+      "password": "Password",
+      "rememberMe": "Remember me",
+      "forgotPassword": "Forgot password?",
+      "noAccount": "Don't have an account?",
+      "signUpLink": "Sign up",
+      "button": "Sign In",
+      "loading": "Signing in..."
+    },
+    "signUp": {
+      "title": "Create an account",
+      "subtitle": "Join thousands of creators",
+      "username": "Username",
+      "email": "Email",
+      "password": "Password",
+      "confirmPassword": "Confirm password",
+      "terms": "I agree to the",
+      "termsLink": "Terms of Service",
+      "privacy": "and",
+      "privacyLink": "Privacy Policy",
+      "hasAccount": "Already have an account?",
+      "signInLink": "Sign in",
+      "button": "Create Account",
+      "loading": "Creating account..."
+    },
+    "forgotPassword": {
+      "title": "Forgot password",
+      "subtitle": "Enter your email to reset your password",
+      "email": "Email",
+      "button": "Send reset link",
+      "loading": "Sending...",
+      "success": "Check your email for a reset link",
+      "backToSignIn": "Back to sign in"
+    },
+    "resetPassword": {
+      "title": "Reset password",
+      "subtitle": "Enter your new password",
+      "password": "New password",
+      "confirmPassword": "Confirm new password",
+      "button": "Reset password",
+      "loading": "Resetting...",
+      "success": "Password reset successfully"
+    },
+    "errors": {
+      "invalidCredentials": "Invalid email or password",
+      "emailInUse": "Email already in use",
+      "usernameInUse": "Username already taken",
+      "weakPassword": "Password is too weak",
+      "passwordMismatch": "Passwords do not match",
+      "invalidEmail": "Invalid email address",
+      "tooManyAttempts": "Too many attempts. Please try again later."
+    }
+  },
+  "home": {
+    "badge": "{{themes}}+ Themes • {{creators}}+ Creators • Free",
+    "hero": {
+      "line1": "Your Digital",
+      "line2": "Identity",
+      "line3": "On Your Terms",
+      "subtitle": "Create a stunning biolink page that represents your personal brand. Share all your content in one beautiful, customizable location.",
+      "cta": "Get Started – Free",
+      "dashboard": "Go to Dashboard",
+      "exploreCreators": "Explore Creators"
+    },
+    "claim": {
+      "title": "Claim your unique link",
+      "subtitle": "Secure your profile and create an account in minutes!",
+      "placeholder": "username",
+      "button": "Claim Username",
+      "available": "Username is available!",
+      "taken": "Username is already taken",
+      "invalid": "Invalid username format",
+      "checking": "Checking...",
+      "free": "100% Free to Get Started",
+      "noCard": "No Credit Card Required"
+    },
+    "trustBadges": {
+      "free": "Free Forever",
+      "fast": "Online in 2 Min",
+      "gdpr": "GDPR Compliant"
+    },
+    "stats": {
+      "creators": "Creators",
+      "links": "Links",
+      "clicks": "Clicks",
+      "countries": "Countries"
+    },
+    "features": {
+      "badge": "What's Included",
+      "title": "Everything you need.",
+      "titleHighlight": "Nothing you don't.",
+      "subtitle": "No complicated settings. No paywalls for basic features. Just get started and look good.",
+      "unlimited": {
+        "title": "Unlimited Links",
+        "description": "Add as many links as you need – no limits"
+      },
+      "analytics": {
+        "title": "Live Analytics",
+        "description": "See who clicks and where they come from"
+      },
+      "themes": {
+        "title": "{{count}}+ Themes",
+        "description": "From gamer to minimal – find your style"
+      },
+      "secure": {
+        "title": "Secure & Private",
+        "description": "Your data belongs to you. Period."
+      },
+      "fast": {
+        "title": "Lightning Fast",
+        "description": "Optimized for every device"
+      },
+      "free": {
+        "title": "Free. Really.",
+        "description": "No hidden costs, no catch"
+      }
+    },
+    "themes": {
+      "badge": "Theme System",
+      "title": "{{count}}+ Themes.",
+      "titleHighlight": "8 Categories.",
+      "subtitle": "From gamer aesthetics to minimalist elegance. Each theme has its own colors, fonts, and effects. Switch whenever you want – all are free.",
+      "categories": {
+        "general": "General",
+        "gamer": "Gamer",
+        "vtuber": "VTuber",
+        "anime": "Anime",
+        "developer": "Developer",
+        "streamer": "Streamer",
+        "artist": "Artist",
+        "minimal": "Minimal"
+      }
+    },
+    "integrations": {
+      "badge": "Integrations",
+      "title": "Connect Your",
+      "titleHighlight": "Platforms",
+      "subtitle": "Show what you're listening to, streaming, or creating – right on your bio page",
+      "spotify": "Now Playing",
+      "youtube": "Embed Videos",
+      "soundcloud": "Your Tracks",
+      "twitch": "Live Status",
+      "discord": "Server Invite"
+    },
+    "analytics": {
+      "badge": "Analytics",
+      "title": "Know Your",
+      "titleHighlight": "Audience",
+      "subtitle": "See every click, where your visitors come from, and what resonates best. All analytics are free – no premium required.",
+      "realtime": "Real-time",
+      "realtimeDesc": "Live Click Tracking",
+      "global": "Global",
+      "globalDesc": "Visitor Locations",
+      "trends": "Trends",
+      "trendsDesc": "Performance Insights",
+      "retention": "30 Days",
+      "retentionDesc": "Data Retention",
+      "features": {
+        "clickTracking": "Click Tracking",
+        "referrerData": "Referrer Data",
+        "deviceStats": "Device Stats",
+        "dataExport": "Data Export"
+      }
+    },
+    "creators": {
+      "badge": "Community Spotlight",
+      "title": "Meet Our",
+      "titleHighlight": "Top Creators",
+      "subtitle": "Get inspired by creators who are already rocking their bio pages",
+      "viewLeaderboard": "View Full Leaderboard",
+      "exploreAll": "Explore All Creators",
+      "points": "points",
+      "pts": "pts"
+    },
+    "howItWorks": {
+      "badge": "How It Works",
+      "title": "Ready in",
+      "titleHighlight": "3 Steps",
+      "subtitle": "No technical knowledge required. If you can click, you can create.",
+      "step1": {
+        "title": "Sign Up",
+        "description": "Create your free account in seconds"
+      },
+      "step2": {
+        "title": "Customize",
+        "description": "Add links, pick a theme, make it yours"
+      },
+      "step3": {
+        "title": "Share",
+        "description": "Share your unique link everywhere"
+      }
+    },
+    "cta": {
+      "title": "Ready to Start?",
+      "subtitle": "Join {{count}}+ creators already using Eziox",
+      "button": "Get Started – Free",
+      "noCreditCard": "No credit card required",
+      "loggedIn": {
+        "greeting": "Welcome back",
+        "subtitle": "Your bio page is ready for action",
+        "viewPage": "View Page",
+        "analytics": "Analytics",
+        "settings": "Settings",
+        "stats": {
+          "views": "Total Views",
+          "clicks": "Link Clicks",
+          "followers": "Followers"
+        }
+      },
+      "guest": {
+        "title": "Start Your Journey",
+        "subtitle": "Create your personalized bio page in seconds",
+        "features": {
+          "free": "Free Forever",
+          "themes": "31+ Themes",
+          "analytics": "Built-in Analytics"
+        },
+        "createPage": "Create Your Page",
+        "learnMore": "Learn More"
+      }
+    },
+    "defaultBio": "Your all-in-one bio link platform. Connect, share & grow your audience.",
+    "createBioLink": "Create your bio link",
+    "verified": "Verified",
+    "global": "Global"
+  },
+  "about": {
+    "badge": "About Eziox",
+    "hero": {
+      "title": "The bio link platform",
+      "titleHighlight": "built for creators",
+      "subtitle": "No paywalls on essential features. No artificial limits. No selling your data. Just a beautiful, fast bio page that respects you and your audience."
+    },
+    "stats": {
+      "creators": "Creators",
+      "links": "Links Created",
+      "themes": "Themes",
+      "views": "Page Views"
+    },
+    "cta": {
+      "start": "Start for Free",
+      "playground": "Try Playground"
+    },
+    "features": {
+      "badge": "Core Features",
+      "title": "Everything you need,",
+      "titleHighlight": "included",
+      "subtitle": "No premium required for the essentials. Build your perfect bio page from day one.",
+      "unlimited": {
+        "title": "Unlimited Links",
+        "description": "Add as many links as you need. No artificial limits."
+      },
+      "themes": {
+        "title": "{{count}}+ Themes",
+        "description": "Curated themes for every style. Switch anytime."
+      },
+      "analytics": {
+        "title": "Real Analytics",
+        "description": "Track views, clicks, and referrers. No paywall."
+      },
+      "spotify": {
+        "title": "Spotify Integration",
+        "description": "Show what you're listening to in real-time."
+      },
+      "scheduling": {
+        "title": "Link Scheduling",
+        "description": "Schedule links to appear or expire automatically."
+      },
+      "qrCode": {
+        "title": "QR Codes",
+        "description": "Generate custom QR codes for your bio page."
+      }
+    },
+    "why": {
+      "title": "Why Eziox?",
+      "p1": "Most bio link platforms treat basic features as premium. Want to remove a watermark? €2.99/month. Want a decent theme? Premium only. Want your own analytics? Pay up.",
+      "p2": "Eziox flips that script.",
+      "p3": "Unlimited links, all {{count}} themes, full customization, real analytics — completely free. The paid tiers exist for advanced features that actually cost money to run, like custom domains and priority support.",
+      "badges": {
+        "noWatermarks": "No watermarks",
+        "noLimits": "No link limits",
+        "noRestrictions": "No theme restrictions"
+      }
+    },
+    "privacy": {
+      "title": "Privacy First",
+      "p1": "Your data belongs to you. We don't sell it, we don't track you across the web, and we don't stuff your page with third-party scripts.",
+      "p2": "GDPR compliant",
+      "p3": "with full data export and deletion. Cloudflare Turnstile for bot protection without annoying CAPTCHAs. IP addresses are anonymized in analytics.",
+      "badges": {
+        "gdpr": "GDPR compliant",
+        "noTracking": "No tracking",
+        "dataExport": "Data export"
+      }
+    },
+    "themes": {
+      "title": "{{count}} Themes for Every Style",
+      "subtitle": "From minimal elegance to vibrant gamer aesthetics. Each theme includes custom fonts, colors, and effects.",
+      "browseAll": "Browse All Themes"
+    },
+    "premium": {
+      "title": "Go further with",
+      "titleHighlight": "Premium",
+      "subtitle": "Advanced features for power users. Starting at just €2.99/month.",
+      "viewPricing": "View Pricing",
+      "features": {
+        "customCss": {
+          "title": "Custom CSS",
+          "description": "Full control over your page styling"
+        },
+        "customFonts": {
+          "title": "Custom Fonts",
+          "description": "Upload and use your own fonts"
+        },
+        "removeBranding": {
+          "title": "Remove Branding",
+          "description": "Clean, white-label experience"
+        },
+        "analyticsExport": {
+          "title": "Analytics Export",
+          "description": "Download your data as CSV/JSON"
+        },
+        "customDomain": {
+          "title": "Custom Domain",
+          "description": "Use your own domain name"
+        },
+        "linkPasswords": {
+          "title": "Link Passwords",
+          "description": "Protect links with passwords"
+        }
+      }
+    },
+    "techStack": {
+      "badge": "Built with Modern Tech",
+      "title": "Powered by the",
+      "titleHighlight": "Best Tools",
+      "subtitle": "We use cutting-edge technology to deliver the fastest, most reliable experience."
+    },
+    "community": {
+      "badge": "Join the Community",
+      "title": "Connect with",
+      "titleHighlight": "Creators",
+      "subtitle": "Join thousands of creators on Discord. Get help, share ideas, and stay updated.",
+      "discord": "Join Discord",
+      "github": "View on GitHub"
+    },
+    "finalCta": {
+      "title": "Ready to create your bio page?",
+      "subtitle": "Join {{count}}+ creators. Free forever, no credit card required.",
+      "button": "Get Started Free"
+    }
+  },
+  "contact": {
+    "badge": "Get in Touch",
+    "hero": {
+      "title": "How Can We",
+      "titleHighlight": "Help",
+      "subtitle": "Have a question, feedback, or want to partner with us? We'd love to hear from you."
+    },
+    "quickLinks": {
+      "discord": {
+        "title": "Discord Community",
+        "description": "Join 1,000+ members"
+      },
+      "github": {
+        "title": "GitHub Issues",
+        "description": "Report bugs"
+      },
+      "email": {
+        "title": "Email Us",
+        "description": "contact@eziox.link"
+      }
+    },
+    "categories": {
+      "title": "Select Category",
+      "general": {
+        "label": "General Inquiry",
+        "description": "Questions about Eziox"
+      },
+      "support": {
+        "label": "Technical Support",
+        "description": "Report bugs or issues"
+      },
+      "billing": {
+        "label": "Billing & Refunds",
+        "description": "Payment issues, refunds, cancellations"
+      },
+      "account": {
+        "label": "Account & Privacy",
+        "description": "Data requests, account deletion, GDPR"
+      },
+      "feature": {
+        "label": "Feature Request",
+        "description": "Suggest new features"
+      },
+      "security": {
+        "label": "Security",
+        "description": "Report vulnerabilities"
+      }
+    },
+    "form": {
+      "name": "Your Name",
+      "namePlaceholder": "John Doe",
+      "email": "Email Address",
+      "emailPlaceholder": "john@example.com",
+      "subject": "Subject",
+      "subjectPlaceholder": "Brief description of your inquiry",
+      "message": "Message",
+      "messagePlaceholder": "Please describe your question, issue, or feedback in detail...",
+      "submit": "Send Message",
+      "sending": "Sending...",
+      "privacyNote": "By submitting this form, you agree to our",
+      "privacyLink": "Privacy Policy",
+      "privacyNote2": ". We'll never share your information with third parties."
+    },
+    "validation": {
+      "nameRequired": "Name is required",
+      "emailRequired": "Email is required",
+      "emailInvalid": "Invalid email format",
+      "subjectRequired": "Subject is required",
+      "subjectTooShort": "Subject too short (min 5 chars)",
+      "messageRequired": "Message is required",
+      "messageTooShort": "Message too short (min 20 chars)",
+      "messageTooLong": "Message too long (max 2000 chars)",
+      "fixErrors": "Please fix the errors in the form"
+    },
+    "success": {
+      "title": "Message Sent!",
+      "subtitle": "Thank you for reaching out to us.",
+      "responseTime": "We'll get back to you within",
+      "backHome": "Back to Home",
+      "sendAnother": "Send Another"
+    },
+    "tips": {
+      "title": "Quick Tips",
+      "tip1": "Be specific about your issue or question",
+      "tip2": "Include relevant details (browser, device, etc.)",
+      "tip3": "Check Discord for faster community support"
+    },
+    "responseTime": {
+      "12-24h": "12-24h",
+      "24-48h": "24-48h",
+      "1-3d": "1-3 days",
+      "priority": "Priority"
+    },
+    "faq": {
+      "title": "Frequently Asked",
+      "titleHighlight": "Questions",
+      "subtitle": "Quick answers to common questions",
+      "q1": "How quickly will I get a response?",
+      "a1": "We typically respond within 24-48 hours for general inquiries. Support tickets are prioritized and usually answered within 12-24 hours. Security reports receive immediate attention.",
+      "q2": "Can I report security vulnerabilities?",
+      "a2": "Yes! Please select the \"Security\" category for responsible disclosure. Security reports are treated with highest priority and you may be eligible for our bug bounty program.",
+      "q3": "How do I request a refund?",
+      "a3": "Select \"Billing & Refunds\" and provide your subscription details. We process refunds within 14 days according to our withdrawal policy. For immediate help, check our withdrawal policy page.",
+      "q4": "Is there a Discord community?",
+      "a4": "Yes! Join our Discord server for instant help from the community and team. It's the fastest way to get answers and connect with other creators."
+    }
+  },
+  "apiDocs": {
+    "badge": "Developer API",
+    "hero": {
+      "title": "Build with the",
+      "titleHighlight": "Eziox API",
+      "subtitle": "Powerful REST API for seamless integration. Access profiles, links, and analytics programmatically."
+    },
+    "quickStart": {
+      "title": "Quick Start",
+      "step1": {
+        "title": "Get your API Key",
+        "description": "Create an API key in your dashboard under Settings → API Access."
+      },
+      "step2": {
+        "title": "Make a Request",
+        "description": "Use your key to authenticate requests to our API."
+      },
+      "step3": {
+        "title": "Build Something",
+        "description": "Integrate Eziox data into your apps, websites, or tools."
+      }
+    },
+    "auth": {
+      "title": "Authentication",
+      "description": "All API requests require authentication via Bearer token. Include your API key in the Authorization header.",
+      "warning": {
+        "title": "Keep your key secure",
+        "description": "Never expose your API key in client-side code. Use environment variables."
+      }
+    },
+    "baseUrl": {
+      "title": "Base URL",
+      "description": "All API requests should be made to:"
+    },
+    "endpoints": {
+      "title": "Endpoints",
+      "profile": {
+        "title": "Profile",
+        "getPublic": {
+          "title": "Get Public Profile",
+          "description": "Retrieve public profile information for any user."
+        },
+        "getMe": {
+          "title": "Get My Profile",
+          "description": "Get your authenticated profile with full details."
+        },
+        "update": {
+          "title": "Update Profile",
+          "description": "Update your profile information."
+        }
+      },
+      "links": {
+        "title": "Links",
+        "getAll": {
+          "title": "Get All Links",
+          "description": "Retrieve all your bio links."
+        },
+        "create": {
+          "title": "Create Link",
+          "description": "Create a new bio link."
+        },
+        "update": {
+          "title": "Update Link",
+          "description": "Update an existing link."
+        },
+        "delete": {
+          "title": "Delete Link",
+          "description": "Delete a link permanently."
+        }
+      },
+      "analytics": {
+        "title": "Analytics",
+        "get": {
+          "title": "Get Analytics",
+          "description": "Retrieve your profile and link analytics."
+        }
+      }
+    },
+    "rateLimits": {
+      "title": "Rate Limits",
+      "description": "API requests are rate limited based on your subscription tier.",
+      "perHour": "per hour"
+    },
+    "errors": {
+      "title": "Error Codes",
+      "description": "The API uses standard HTTP status codes to indicate success or failure.",
+      "400": "Bad Request - Invalid parameters or malformed request",
+      "401": "Unauthorized - Invalid or missing API key",
+      "403": "Forbidden - Insufficient permissions for this action",
+      "404": "Not Found - The requested resource doesn't exist",
+      "429": "Too Many Requests - Rate limit exceeded",
+      "500": "Server Error - Something went wrong on our end"
+    },
+    "sdks": {
+      "title": "SDKs & Libraries",
+      "description": "Official libraries to get started faster.",
+      "comingSoon": "Coming Soon"
+    },
+    "cta": {
+      "title": "Ready to integrate?",
+      "subtitle": "Get your API key and start building today.",
+      "button": "Get API Key"
+    },
+    "params": "Parameters",
+    "requestBody": "Request Body",
+    "response": "Response",
+    "required": "Required",
+    "optional": "Optional",
+    "copyCode": "Copy code"
+  },
+  "creators": {
+    "badge": "Creator Community",
+    "hero": {
+      "title": "Discover",
+      "titleHighlight": "Amazing",
+      "titleEnd": "Creators",
+      "subtitle": "Connect with talented VTubers, Streamers, Artists, Musicians, and more from around the world"
+    },
+    "stats": {
+      "creators": "Creators",
+      "featured": "Featured",
+      "categories": "Categories"
+    },
+    "live": "Live",
+    "updated": "Updated",
+    "categories": {
+      "all": {
+        "label": "All",
+        "description": "Browse all creators"
+      },
+      "vtuber": {
+        "label": "VTubers",
+        "description": "Virtual content creators"
+      },
+      "streamer": {
+        "label": "Streamers",
+        "description": "Live streamers"
+      },
+      "artist": {
+        "label": "Artists",
+        "description": "Digital & traditional artists"
+      },
+      "musician": {
+        "label": "Musicians",
+        "description": "Music producers & artists"
+      },
+      "gamer": {
+        "label": "Gamers",
+        "description": "Gaming content creators"
+      },
+      "developer": {
+        "label": "Developers",
+        "description": "Coders & tech creators"
+      },
+      "other": {
+        "label": "Other",
+        "description": "Other creators"
+      }
+    },
+    "sort": {
+      "nameAsc": "Name A → Z",
+      "nameDesc": "Name Z → A",
+      "views": "Most Views",
+      "followers": "Most Followers",
+      "newest": "Newest First"
+    },
+    "search": {
+      "placeholder": "Search creators by name, username, or bio..."
+    },
+    "results": {
+      "allCreators": "All Creators",
+      "creatorsFound": "creator found",
+      "creatorsFoundPlural": "creators found",
+      "featured": "Featured",
+      "rank": "Rank",
+      "user": "User"
+    },
+    "loading": "Discovering amazing creators...",
+    "empty": {
+      "title": "No creators found",
+      "subtitle": "Try adjusting your search or explore different categories",
+      "clearFilters": "Clear Filters"
+    },
+    "card": {
+      "featured": "Featured",
+      "owner": "Owner",
+      "view": "View",
+      "invitedBy": "Invited by"
+    },
+    "pagination": {
+      "showing": "Showing",
+      "of": "of"
+    }
+  },
+  "leaderboard": {
+    "meta": {
+      "title": "Leaderboard | Eziox",
+      "description": "Top creators on Eziox ranked by engagement and activity"
+    },
+    "badge": "Live Rankings",
+    "live": "Live",
+    "hero": {
+      "title": "Creator",
+      "titleHighlight": "Leaderboard",
+      "subtitle": "See who's leading the pack. Climb the ranks by growing your profile and engaging with the community.",
+      "updated": "Updated"
+    },
+    "stats": {
+      "totalCreators": "Total Creators",
+      "totalPoints": "Total Points",
+      "activeToday": "Active Today",
+      "newThisWeek": "New This Week"
+    },
+    "podium": {
+      "title": "Top 3 Creators",
+      "points": "points"
+    },
+    "rankings": {
+      "title": "All Rankings",
+      "competing": "creators competing",
+      "viewAllCreators": "View All Creators"
+    },
+    "loading": "Loading rankings...",
+    "empty": {
+      "title": "No rankings yet",
+      "subtitle": "Be the first to claim the top spot!",
+      "cta": "Join Now"
+    },
+    "earnPoints": {
+      "title": "How to Earn Points",
+      "profileViews": "Profile Views",
+      "linkClicks": "Link Clicks",
+      "followers": "Followers",
+      "referrals": "Referrals",
+      "perView": "per view",
+      "perClick": "per click",
+      "perFollower": "per follower",
+      "perSignup": "per signup"
+    },
+    "cta": "Start Climbing the Ranks",
+    "pagination": {
+      "page": "Page",
+      "of": "of",
+      "previous": "Previous",
+      "next": "Next",
+      "showing": "Showing",
+      "to": "to",
+      "results": "results"
+    }
+  },
+  "partners": {
+    "badge": "Partner Program",
+    "hero": {
+      "title": "Join Our",
+      "titleHighlight": "Partner Network",
+      "subtitle": "Collaborate with us and unlock exclusive benefits. Whether you're a streamer, developer, gamer, or creator – we want to work with you."
+    },
+    "applyNow": "Apply Now",
+    "signInToApply": "Sign In to Apply",
+    "yourApplication": "Your Application",
+    "loading": "Loading partners...",
+    "status": {
+      "pending": "Pending Review",
+      "reviewing": "Under Review",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "stats": {
+      "officialPartners": "Official Partners",
+      "featuredCreators": "Featured Creators",
+      "totalViews": "Total Views",
+      "pendingApps": "Pending Apps"
+    },
+    "benefits": {
+      "title": "Partner Benefits",
+      "subtitle": "Unlock exclusive features and grow together with Eziox",
+      "badge": {
+        "title": "Partner Badge",
+        "description": "Exclusive verified partner badge displayed on your profile"
+      },
+      "featured": {
+        "title": "Featured Placement",
+        "description": "Get featured on our homepage and partner showcase"
+      },
+      "premium": {
+        "title": "Premium Features",
+        "description": "Early access to new features and premium tools"
+      },
+      "community": {
+        "title": "Community Access",
+        "description": "Join our exclusive partner Discord and events"
+      }
+    },
+    "requirements": {
+      "title": "What We Look For",
+      "subtitle": "We're looking for passionate creators who align with our values",
+      "followers": {
+        "title": "100+ Followers",
+        "description": "Active community presence"
+      },
+      "quality": {
+        "title": "Quality Content",
+        "description": "Consistent, high-quality posts"
+      },
+      "active": {
+        "title": "Active Profile",
+        "description": "Regular engagement on Eziox"
+      }
+    },
+    "showcase": {
+      "badge": "Partner Showcase",
+      "title": "Meet Our",
+      "titleHighlight": "Partners",
+      "subtitle": "Discover the talented creators and developers in our partner program"
+    },
+    "tabs": {
+      "official": "Official Partners",
+      "featured": "Featured Creators"
+    },
+    "official": {
+      "title": "Official Partners",
+      "subtitle": "verified partners"
+    },
+    "featured": {
+      "title": "Featured Creators",
+      "subtitle": "highlighted community members"
+    },
+    "empty": {
+      "title": "No Partners Yet",
+      "subtitle": "Be the first to join our partner program!",
+      "featuredTitle": "No Featured Creators Yet",
+      "featuredSubtitle": "Featured creators will be highlighted here soon!"
+    }
+  },
+  "pricing": {
+    "badge": "Simple, transparent pricing",
+    "hero": {
+      "title": "Choose Your",
+      "titleHighlight": "Perfect Plan",
+      "subtitle": "Start free, upgrade when you need more. No hidden fees, cancel anytime."
+    },
+    "loading": "Loading plans...",
+    "billing": {
+      "monthly": "Monthly",
+      "yearly": "Yearly",
+      "comingSoon": "Coming Soon"
+    },
+    "billingType": {
+      "oneTime": "one-time",
+      "perMonth": "/month",
+      "perYear": "/year"
+    },
+    "savings": "Save €{{amount}}/year",
+    "badges": {
+      "popular": "MOST POPULAR",
+      "bestValue": "BEST VALUE"
+    },
+    "buttons": {
+      "currentPlan": "Current Plan",
+      "lifetimeAccess": "Lifetime Access",
+      "getStartedFree": "Get Started Free",
+      "upgradeNow": "Upgrade Now",
+      "getLifetime": "Get Lifetime"
+    },
+    "trust": {
+      "secure": "Secure Payment",
+      "cancel": "Cancel Anytime",
+      "payment": "All Cards Accepted",
+      "guarantee": "Money-back Guarantee"
+    },
+    "faq": {
+      "badge": "FAQ",
+      "title": "Frequently Asked",
+      "titleHighlight": "Questions",
+      "subtitle": "Everything you need to know about our plans",
+      "items": {
+        "switch": {
+          "question": "Can I switch plans anytime?",
+          "answer": "Yes! You can upgrade or downgrade your plan at any time. When upgrading, you'll be charged the prorated difference. When downgrading, the change takes effect at the end of your billing period."
+        },
+        "payment": {
+          "question": "What payment methods do you accept?",
+          "answer": "We accept all major credit cards (Visa, Mastercard, American Express), PayPal, and Apple Pay through our secure payment processor Stripe."
+        },
+        "trial": {
+          "question": "Is there a free trial?",
+          "answer": "Our Free tier is completely free forever with no trial period needed. You can use all core features without any time limit."
+        },
+        "cancel": {
+          "question": "What happens if I cancel?",
+          "answer": "If you cancel, you'll keep access to your paid features until the end of your billing period. After that, your account will revert to the Free tier."
+        },
+        "lifetime": {
+          "question": "Is the Lifetime plan really forever?",
+          "answer": "Yes! The Lifetime plan is a one-time payment that gives you permanent access to all Creator features, including any future updates."
+        }
+      }
+    },
+    "cta": {
+      "title": "Ready to get started?",
+      "subtitle": "Join thousands of creators who are already using Eziox to grow their online presence.",
+      "startFree": "Start Free Today",
+      "viewCreators": "View Creators"
+    },
+    "errors": {
+      "noCheckoutUrl": "No checkout URL received from server",
+      "checkoutFailed": "Failed to create checkout session"
+    }
+  },
+  "privacy": {
+    "badge": "Privacy Policy",
+    "hero": {
+      "title": "Privacy Policy",
+      "subtitle": "Information about how we handle your personal data in accordance with GDPR"
+    },
+    "lastUpdated": "Last updated",
+    "lastUpdatedDate": "January 29, 2026",
+    "navigation": "Navigation",
+    "tableOfContents": "Table of Contents",
+    "relatedPolicies": "Related Policies",
+    "related": {
+      "imprint": "Imprint",
+      "cookies": "Cookie Policy",
+      "terms": "Terms of Service"
+    },
+    "sections": {
+      "preamble": {
+        "title": "Preamble",
+        "content": "With the following privacy policy, we would like to inform you about what types of your personal data (hereinafter also referred to as \"data\") we process, for what purposes and to what extent. The privacy policy applies to all processing of personal data carried out by us, both in the context of providing our services and in particular on our websites, in mobile applications and within external online presences, such as our social media profiles (hereinafter collectively referred to as \"online offering\").\n\nThe terms used are not gender-specific."
+      },
+      "controller": {
+        "title": "Data Controller",
+        "content": "**Nattapat Pongsuwan**\nRohstorf 59\n21397 Vastorf, Germany\n\n**Authorized representative:** Nattapat Pongsuwan\n\n**Email:** [contact@eziox.link](mailto:contact@eziox.link)\n\n**Imprint:** [https://eziox.link/imprint](https://eziox.link/imprint)"
+      },
+      "overview": {
+        "title": "Overview of Processing",
+        "content": "The following overview summarizes the types of data processed and the purposes of their processing and refers to the data subjects.\n\n**Types of data processed:**\n• Inventory data\n• Payment data\n• Contact data\n• Content data\n• Contract data\n• Usage data\n• Meta, communication and procedural data\n• Log data\n\n**Categories of data subjects:**\n• Service recipients and clients\n• Interested parties\n• Communication partners\n• Users\n• Business and contractual partners\n\n**Purposes of processing:**\n• Provision of contractual services and fulfillment of contractual obligations\n• Communication\n• Security measures\n• Office and organizational procedures\n• Affiliate tracking\n• Organizational and administrative procedures\n• Feedback\n• Provision of our online offering and user-friendliness\n• Business processes and business management procedures"
+      },
+      "legalBasis": {
+        "title": "Legal Basis",
+        "content": "**Relevant legal bases under the GDPR:** Below is an overview of the legal bases of the GDPR on which we process personal data.\n\n• **Consent (Art. 6(1)(a) GDPR)** - The data subject has given consent to the processing of their personal data for one or more specific purposes.\n\n• **Contract performance and pre-contractual inquiries (Art. 6(1)(b) GDPR)** - Processing is necessary for the performance of a contract to which the data subject is party or for pre-contractual measures.\n\n• **Legal obligation (Art. 6(1)(c) GDPR)** - Processing is necessary for compliance with a legal obligation to which the controller is subject.\n\n• **Legitimate interests (Art. 6(1)(f) GDPR)** - Processing is necessary for the purposes of the legitimate interests pursued by the controller or by a third party.\n\n**National data protection regulations in Germany:** In addition to the GDPR, national regulations on data protection apply in Germany, including the Federal Data Protection Act (BDSG)."
+      },
+      "security": {
+        "title": "Security Measures",
+        "content": "We take appropriate technical and organizational measures in accordance with legal requirements, taking into account the state of the art, to ensure a level of protection appropriate to the risk.\n\nThese measures include in particular securing the confidentiality, integrity and availability of data by controlling physical and electronic access to data.\n\n**IP address shortening:** Where IP addresses are processed and processing of a complete IP address is not necessary, the IP address is shortened (also known as \"IP masking\").\n\n**Securing online connections through TLS/SSL encryption technology (HTTPS):** To protect user data from unauthorized access, we use TLS/SSL encryption technology."
+      },
+      "transfer": {
+        "title": "Transfer of Personal Data",
+        "content": "In the course of our processing of personal data, it may happen that data is transferred to or disclosed to other bodies, companies, legally independent organizational units or persons. Recipients of this data may include, for example, service providers entrusted with IT tasks. In such cases, we observe the legal requirements and conclude appropriate contracts."
+      },
+      "international": {
+        "title": "International Data Transfers",
+        "content": "**Data processing in third countries:** If we transfer data to a third country, this is always done in accordance with legal requirements.\n\nFor data transfers to the USA, we primarily rely on the Data Privacy Framework (DPF), which was recognized as a secure legal framework by an adequacy decision of the EU Commission on July 10, 2023. We have also concluded Standard Contractual Clauses with the respective providers.\n\nMore information about the DPF can be found at [https://www.dataprivacyframework.gov/](https://www.dataprivacyframework.gov/)"
+      },
+      "retention": {
+        "title": "Data Retention and Deletion",
+        "content": "We delete personal data in accordance with legal provisions as soon as the underlying consents are revoked or there are no further legal grounds for processing.\n\n**Retention periods under German law:**\n• **10 years** - Books, records, annual financial statements (§ 147 AO, § 257 HGB)\n• **8 years** - Accounting documents, invoices\n• **6 years** - Other business documents\n• **3 years** - Data for warranty and damage claims (§§ 195, 199 BGB)"
+      },
+      "rights": {
+        "title": "Rights of Data Subjects",
+        "content": "As a data subject, you have various rights under the GDPR (Art. 15 to 21 GDPR):\n\n• **Right to object:** Object to processing at any time\n• **Right to withdraw consent:** Withdraw given consents at any time\n• **Right of access:** Request confirmation and information about processed data\n• **Right to rectification:** Completion or correction of inaccurate data\n• **Right to erasure and restriction:** Request deletion or restriction of processing\n• **Right to data portability:** Receive data in a structured format\n• **Right to lodge a complaint:** Right to lodge a complaint with a supervisory authority"
+      },
+      "services": {
+        "title": "Business Services",
+        "content": "We process data of our contractual and business partners in the context of contractual and comparable legal relationships.\n\n**Types of data processed:** Inventory data, payment data, contact data, contract data.\n\n**Purposes:** Provision of contractual services, communication, organizational and administrative procedures.\n\n**Legal bases:** Contract performance (Art. 6(1)(b) GDPR), Legal obligation (Art. 6(1)(c) GDPR), Legitimate interests (Art. 6(1)(f) GDPR).\n\n**Provision of software and platform services:** We process user data to provide our contractual services and based on legitimate interests to ensure the security of our offering and to develop it further."
+      },
+      "payment": {
+        "title": "Payment Processing",
+        "content": "We offer efficient and secure payment options and use payment service providers for this purpose. Payment transactions are carried out exclusively via encrypted connections.\n\n**We do not receive any account or credit card information**, only information confirming or denying payment.\n\n**Payment service providers used:**\n• **Apple Pay** - Apple Inc., USA - [Privacy Policy](https://www.apple.com/legal/privacy/)\n• **Google Pay** - Google Ireland Limited, Ireland - [Privacy Policy](https://policies.google.com/privacy)\n• **Klarna** - Klarna Bank AB, Sweden - [Privacy Policy](https://www.klarna.com/privacy)\n• **Mastercard** - Mastercard Europe SA, Belgium - [Privacy Policy](https://www.mastercard.com/privacy)\n• **Stripe** - Stripe, Inc., USA (DPF-certified) - [Privacy Policy](https://stripe.com/privacy)\n• **Visa** - Visa Europe Services Inc., UK - [Privacy Policy](https://www.visa.com/privacy)"
+      },
+      "cookies": {
+        "title": "Use of Cookies",
+        "content": "The term \"cookies\" refers to functions that store and read information on users' devices. We use cookies in accordance with legal requirements.\n\n**Storage duration:**\n• **Temporary cookies (session cookies):** Deleted after closing the browser\n• **Permanent cookies:** Remain stored for up to two years\n\n**Cookie settings:** Own consent solution (\"Eziox Cookie Manager\") – Settings at [https://eziox.link/privacy#cookies](https://eziox.link/privacy#cookies)\n\n**Legal bases:** Legitimate interests (Art. 6(1)(f) GDPR), Consent (Art. 6(1)(a) GDPR)."
+      },
+      "registration": {
+        "title": "Registration and User Account",
+        "content": "Users can create a user account. The data processed includes in particular login information (username, password, email address).\n\n**Special features:**\n• **Registration with pseudonyms:** Users may use pseudonyms as usernames\n• **Profiles are public:** User profiles are publicly visible\n• **Visibility settings:** Users can determine the visibility of their profiles\n• **Two-factor authentication:** Additional security layer for your user account\n• **Deletion after termination:** Data is deleted after termination\n• **No retention obligation:** Users should back up their data before termination\n\n**Legal bases:** Contract performance (Art. 6(1)(b) GDPR), Legitimate interests (Art. 6(1)(f) GDPR)."
+      },
+      "contact": {
+        "title": "Contact and Inquiry Management",
+        "content": "When contacting us, the information provided by the inquiring persons is processed insofar as this is necessary to answer the contact inquiries.\n\n**Types of data processed:** Contact data, content data, meta/communication data.\n\n**Legal bases:** Legitimate interests (Art. 6(1)(f) GDPR), Contract performance (Art. 6(1)(b) GDPR)."
+      },
+      "plugins": {
+        "title": "Plugins and Embedded Content",
+        "content": "We integrate functional and content elements into our online offering that are obtained from the servers of their respective providers.\n\n**Google Fonts (obtained from Google server):** Obtaining fonts for the purpose of technically secure, maintenance-free and efficient use. The provider is informed of the user's IP address so that the fonts can be made available in the browser. According to Google, IP addresses are neither logged nor stored.\n\n**Service provider:** Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Ireland\n**Website:** [https://fonts.google.com/](https://fonts.google.com/)\n**Privacy Policy:** [https://policies.google.com/privacy](https://policies.google.com/privacy)\n**Basis for third country transfer:** Data Privacy Framework (DPF)\n**More information:** [https://developers.google.com/fonts/faq/privacy](https://developers.google.com/fonts/faq/privacy)"
+      },
+      "changes": {
+        "title": "Changes and Updates",
+        "content": "We ask you to regularly inform yourself about the content of our privacy policy. We adapt the privacy policy as soon as changes in the data processing carried out by us make this necessary. We will inform you as soon as the changes require your cooperation (e.g. consent) or other individual notification."
+      },
+      "definitions": {
+        "title": "Definitions",
+        "content": "**Affiliate tracking:** Logging of links with which linking websites refer users to offers.\n\n**Inventory data:** Essential information for the identification and management of contractual partners, user accounts and profiles.\n\n**Content data:** Information generated in the course of creating, editing and publishing content.\n\n**Contact data:** Information that enables communication with persons or organizations.\n\n**Meta, communication and procedural data:** Information about how data is processed, transmitted and managed.\n\n**Usage data:** Information that captures how users interact with digital products.\n\n**Personal data:** All information relating to an identified or identifiable natural person.\n\n**Log data:** Information about events or activities that have been logged in a system.\n\n**Controller:** The natural or legal person who decides on the purposes and means of processing personal data.\n\n**Processing:** Any operation in connection with personal data.\n\n**Contract data:** Specific information relating to the formalization of an agreement.\n\n**Payment data:** All information required for the processing of payment transactions."
+      },
+      "generator": {
+        "title": "Privacy Policy Generator",
+        "content": "*Created with free [Privacy Policy Generator](https://datenschutz-generator.de) by Dr. Thomas Schwenke*"
+      }
+    }
+  },
+  "status": {
+    "badge": "Live Status",
+    "hero": {
+      "title": "System",
+      "titleHighlight": "Status",
+      "subtitle": "Real-time monitoring of all Eziox services. Auto-refreshes every 30 seconds."
+    },
+    "overall": {
+      "operational": "All Systems Operational",
+      "degraded": "Partial System Degradation",
+      "outage": "Service Outage Detected",
+      "maintenance": "Scheduled Maintenance",
+      "servicesOperational": "{{count}} of {{total}} services operational"
+    },
+    "stats": {
+      "avgLatency": "Avg Latency",
+      "uptime": "Uptime (90d)",
+      "daysTracked": "Days Tracked"
+    },
+    "lastChecked": "Last checked",
+    "response": "Response",
+    "uptime": "Uptime",
+    "activeIncidents": "Active Incidents",
+    "tabs": {
+      "current": "Current Status",
+      "history": "Incident History"
+    },
+    "categories": {
+      "core": "Core Services",
+      "infrastructure": "Infrastructure",
+      "integrations": "Third-Party Integrations"
+    },
+    "serviceStatus": {
+      "operational": "Operational",
+      "degraded": "Degraded",
+      "outage": "Outage",
+      "maintenance": "Maintenance"
+    },
+    "severity": {
+      "minor": "Minor",
+      "major": "Major",
+      "critical": "Critical"
+    },
+    "incidentStatus": {
+      "investigating": "Investigating",
+      "identified": "Identified",
+      "monitoring": "Monitoring",
+      "resolved": "Resolved"
+    },
+    "services": {
+      "web": {
+        "name": "Web Application",
+        "description": "Main website and user interface"
+      },
+      "api": {
+        "name": "API Services",
+        "description": "Backend API and server functions"
+      },
+      "auth": {
+        "name": "Authentication",
+        "description": "User login and session management"
+      },
+      "database": {
+        "name": "Database",
+        "description": "PostgreSQL on Neon"
+      },
+      "cdn": {
+        "name": "CDN & Assets",
+        "description": "Vercel Edge Network"
+      },
+      "storage": {
+        "name": "File Storage",
+        "description": "Cloudinary media storage"
+      },
+      "email": {
+        "name": "Email Service",
+        "description": "Transactional emails via Resend"
+      },
+      "payments": {
+        "name": "Payment Processing",
+        "description": "Stripe payment gateway"
+      },
+      "security": {
+        "name": "Bot Protection",
+        "description": "Cloudflare Turnstile"
+      },
+      "realtime": {
+        "name": "Real-time Updates",
+        "description": "WebSocket connections"
+      }
+    },
+    "noIncidents": {
+      "title": "No Incidents Reported",
+      "description": "All systems have been running smoothly for the past 90 days."
+    },
+    "incidents": {
+      "past": {
+        "maintenance": {
+          "title": "Scheduled Database Maintenance",
+          "description": "Routine database optimization and updates.",
+          "update1": "Starting scheduled maintenance window.",
+          "update2": "Maintenance completed successfully. All systems operational."
+        }
+      }
+    },
+    "subscribe": {
+      "title": "Status Notifications",
+      "description": "Opt-in to receive email alerts about service status and incidents.",
+      "button": "Enable Notifications"
+    },
+    "support": {
+      "title": "Experiencing Issues?",
+      "description": "Our support team is here to help.",
+      "button": "Contact Support"
+    },
+    "footer": {
+      "info": "Status data is collected in real-time and updated every 30 seconds."
+    }
+  },
+  "templates": {
+    "badge": "Template Gallery",
+    "hero": {
+      "title": "Find Your Perfect",
+      "titleHighlight": "Style",
+      "subtitle": "Discover stunning profile templates created by the community. One click to transform your bio page."
+    },
+    "stats": {
+      "templates": "Templates",
+      "uses": "Uses",
+      "likes": "Likes",
+      "featured": "Featured"
+    },
+    "categories": {
+      "all": "All",
+      "vtuber": "VTuber",
+      "gamer": "Gamer",
+      "developer": "Developer",
+      "minimal": "Minimal",
+      "creative": "Creative",
+      "business": "Business",
+      "music": "Music",
+      "art": "Art",
+      "anime": "Anime"
+    },
+    "sort": {
+      "popular": "Popular",
+      "likes": "Liked",
+      "newest": "New"
+    },
+    "search": {
+      "placeholder": "Search templates by name, creator, or style..."
+    },
+    "loading": "Loading templates...",
+    "tier": {
+      "official": "Official",
+      "creator": "Creator",
+      "pro": "Pro"
+    },
+    "card": {
+      "featured": "Featured",
+      "official": "Official",
+      "preview": "Preview",
+      "apply": "Apply",
+      "noDescription": "No description"
+    },
+    "empty": {
+      "title": "No templates found",
+      "description": "Try adjusting your filters or search terms to find what you're looking for.",
+      "clearFilters": "Clear Filters",
+      "signUp": "Sign up to create"
+    },
+    "modal": {
+      "title": "Template Preview",
+      "cancel": "Cancel",
+      "apply": "Apply Template",
+      "proRequired": "Pro tier or higher required to apply templates"
+    },
+    "toast": {
+      "applied": "Template applied!",
+      "appliedDescription": "Your profile has been updated with the new style.",
+      "appliedPreset": "\"{{name}}\" has been applied.",
+      "proRequired": "Pro tier required",
+      "proRequiredDescription": "Upgrade to apply templates.",
+      "failed": "Failed to apply template"
+    }
+  },
+  "shortlink": {
+    "title": "Link",
+    "titleHighlight": "Not Found",
+    "description": "This short link doesn't exist, has expired, or was removed by the owner.",
+    "reasons": {
+      "title": "Possible reasons",
+      "expired": "Link has expired",
+      "removed": "Removed by owner",
+      "typo": "Typo in the URL"
+    },
+    "buttons": {
+      "home": "Go Home",
+      "discover": "Discover Creators"
+    },
+    "actions": {
+      "home": "Home",
+      "creators": "Creators",
+      "search": "Search"
+    },
+    "tryAgain": "Double-check the URL and try again",
+    "help": {
+      "title": "Looking for someone?",
+      "description": "Try searching for their username or browse our",
+      "creatorDirectory": "creator directory"
+    },
+    "footer": "Short links are case-sensitive and may expire over time"
+  },
+  "shortener": {
+    "title": "URL Shortener",
+    "subtitle": "Create short, memorable links with click tracking",
+    "badge": "Link Manager",
+    "stats": {
+      "totalLinks": "Total Links",
+      "activeLinks": "Active Links",
+      "totalClicks": "Total Clicks",
+      "avgClicks": "Avg. Clicks"
+    },
+    "empty": {
+      "title": "No links yet",
+      "description": "Create your first short link to start tracking clicks",
+      "cta": "Create Link"
+    },
+    "create": {
+      "title": "Create Short Link",
+      "targetUrl": "Destination URL",
+      "targetUrlPlaceholder": "https://example.com/your-long-url",
+      "title_field": "Title (optional)",
+      "titlePlaceholder": "My awesome link",
+      "customCode": "Custom Code (optional)",
+      "customCodePlaceholder": "my-link",
+      "customCodeHint": "Leave empty for auto-generated code",
+      "expiresAt": "Expiration Date (optional)",
+      "submit": "Create Link",
+      "creating": "Creating...",
+      "success": "Link created successfully!",
+      "error": "Failed to create link"
+    },
+    "link": {
+      "clicks": "clicks",
+      "click": "click",
+      "created": "Created",
+      "expires": "Expires",
+      "noExpiry": "Never expires",
+      "active": "Active",
+      "inactive": "Inactive",
+      "copy": "Copy Link",
+      "copied": "Copied!",
+      "visit": "Visit",
+      "delete": "Delete",
+      "edit": "Edit",
+      "toggle": "Toggle Status"
+    },
+    "delete": {
+      "title": "Delete Link",
+      "confirm": "Are you sure you want to delete this link?",
+      "warning": "This action cannot be undone. All click data will be lost.",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "deleting": "Deleting..."
+    },
+    "filters": {
+      "all": "All Links",
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "sort": {
+      "newest": "Newest First",
+      "oldest": "Oldest First",
+      "mostClicks": "Most Clicks",
+      "leastClicks": "Least Clicks"
+    },
+    "search": {
+      "placeholder": "Search links..."
+    },
+    "baseUrl": "eziox.link/s/"
+  },
+  "themeBuilder": {
+    "title": "Theme Builder",
+    "subtitle": "Create and customize your own themes",
+    "badge": "Pro Feature",
+    "themesCount": "{{count}}/{{max}} themes",
+    "upgrade": {
+      "title": "Theme Builder",
+      "description": "Create custom themes with Pro or higher.",
+      "cta": "Upgrade to Pro"
+    },
+    "actions": {
+      "import": "Import",
+      "export": "Export",
+      "new": "New Theme",
+      "save": "Save",
+      "saving": "Saving...",
+      "delete": "Delete",
+      "activate": "Activate",
+      "active": "Active",
+      "preview": "Preview"
+    },
+    "tabs": {
+      "colors": "Colors",
+      "typography": "Typography",
+      "effects": "Effects"
+    },
+    "colors": {
+      "presets": "Color Presets",
+      "background": "Background",
+      "backgroundSecondary": "Secondary Background",
+      "foreground": "Foreground",
+      "foregroundMuted": "Muted Text",
+      "primary": "Primary",
+      "accent": "Accent",
+      "border": "Border",
+      "card": "Card"
+    },
+    "typography": {
+      "displayFont": "Display Font",
+      "bodyFont": "Body Font"
+    },
+    "effects": {
+      "glowIntensity": "Glow Intensity",
+      "borderRadius": "Border Radius",
+      "cardStyle": "Card Style",
+      "none": "None",
+      "subtle": "Subtle",
+      "medium": "Medium",
+      "strong": "Strong",
+      "sharp": "Sharp",
+      "rounded": "Rounded",
+      "pill": "Pill",
+      "flat": "Flat",
+      "glass": "Glass",
+      "neon": "Neon",
+      "gradient": "Gradient"
+    },
+    "preview": {
+      "title": "Preview",
+      "subtitle": "Theme preview",
+      "link": "Link"
+    },
+    "empty": {
+      "title": "No themes yet",
+      "description": "Create your first custom theme",
+      "select": "Select or create a theme"
+    },
+    "list": {
+      "title": "Your Themes"
+    },
+    "toast": {
+      "created": "Theme created!",
+      "saved": "Theme saved!",
+      "deleted": "Theme deleted!",
+      "activated": "Theme activated!",
+      "exported": "Theme exported!",
+      "imported": "Theme imported!",
+      "error": "Something went wrong",
+      "invalidFile": "Invalid theme file"
+    }
+  },
+  "join": {
+    "loading": {
+      "title": "Validating invite...",
+      "code": "Code"
+    },
+    "error": {
+      "title": "Invalid Invite Code",
+      "codeInvalid": "The code",
+      "expired": "It may have expired or was entered incorrectly.",
+      "signUpAnyway": "Sign Up Anyway",
+      "goHome": "Go Home"
+    },
+    "badge": "Exclusive Invite",
+    "success": {
+      "titleStart": "You're",
+      "titleHighlight": "Invited!",
+      "owner": "Owner",
+      "invitedYou": "invited you to join",
+      "benefits": {
+        "title": "What you'll get:",
+        "links": "Unlimited bio links",
+        "themes": "30+ free themes",
+        "analytics": "Live analytics",
+        "setup": "Instant setup"
+      },
+      "codeApplied": "Code applied",
+      "cta": "Join Eziox Now",
+      "alreadyHaveAccount": "Already have an account?",
+      "signIn": "Sign In"
+    }
+  },
+  "imprint": {
+    "title": "Imprint",
+    "subtitle": "Legal information according to § 5 DDG",
+    "badge": "Legal",
+    "sections": {
+      "provider": {
+        "title": "Service Provider",
+        "content": "**Nattapat Pongsuwan**\n\nRohstorf\n21397 Vastorf\nGermany"
+      },
+      "contact": {
+        "title": "Contact Options",
+        "content": "**Email Address:** [contact@eziox.link](mailto:contact@eziox.link)\n\n**Contact Form:** [https://eziox.link/contact](https://eziox.link/contact)"
+      },
+      "disputeResolution": {
+        "title": "Consumer Dispute Resolution",
+        "content": "We are not willing and not obligated to participate in dispute resolution proceedings before a consumer dispute resolution body."
+      },
+      "socialMedia": {
+        "title": "Social Media and Other Online Presences",
+        "content": "This imprint also applies to the following social media presences and online profiles:\n\n**Discord Community:** [https://discord.com/invite/KD84DmNA89](https://discord.com/invite/KD84DmNA89)\n\n**GitHub Organization:** [https://github.com/Eziox-Development](https://github.com/Eziox-Development)\n• Project Repo: [https://github.com/Eziox-Development/eziox-web](https://github.com/Eziox-Development/eziox-web)\n• Issue Tracker: [https://github.com/Eziox-Development/eziox-web/issues](https://github.com/Eziox-Development/eziox-web/issues)"
+      },
+      "dataMining": {
+        "title": "Reservation of Rights for Text and Data Mining",
+        "content": "The owner of this website permits the use or download of content from this website by third parties for the development, training, or operation of artificial intelligence or other machine learning systems (\"text and data mining\") only with the express written consent of the owner.\n\nWithout such consent, it is prohibited to use the content for text and data mining. This also applies if no meta information is present on the website that excludes such procedures, and even then if bots designed to read the website for the purpose of text and data mining are not blocked."
+      },
+      "liability": {
+        "title": "Liability and Protection Rights Notices",
+        "content": "**Disclaimer:** The content of this online offer was carefully created and to the best of our knowledge, but serves only for information and has no legally binding effect, unless it concerns legally binding information (e.g., imprint, privacy policy, terms and conditions, or mandatory consumer information). We reserve the right to change or delete content in whole or in part, provided contractual obligations remain unaffected. All offers are non-binding and subject to change.\n\n**Links to External Websites:** The content of external websites to which we refer directly or indirectly is outside our area of responsibility and we do not make it our own. We assume no responsibility for all content and disadvantages arising from the use of information accessible through the linked websites.\n\n**Copyright and Trademark Rights:** All content displayed on this website, such as texts, photographs, graphics, brands and trademarks are protected by the respective protection rights (copyright, trademark rights). The use, reproduction, etc. are subject to our rights or the rights of the respective authors or rights holders.\n\n**Notice of Legal Violations:** Should you notice legal violations within our internet presence, we ask you to bring them to our attention. We will remove illegal content and links immediately upon becoming aware of them."
+      },
+      "generator": {
+        "title": "Imprint Generator",
+        "content": "*Created with free privacy-policy-generator.de by Dr. Thomas Schwenke*"
+      }
+    },
+    "relatedLinks": {
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "cookies": "Cookie Policy"
+    }
+  },
+  "cookies": {
+    "title": "Cookie Policy",
+    "subtitle": "Learn how we use cookies and similar technologies on our platform.",
+    "badge": "Cookies",
+    "lastUpdated": "Last updated",
+    "cookieTypes": {
+      "title": "Cookies We Use",
+      "essential": {
+        "name": "Essential Cookies",
+        "description": "These cookies are necessary for the website to function and cannot be disabled."
+      },
+      "functional": {
+        "name": "Functional Cookies",
+        "description": "These cookies enable personalized features and remember your preferences."
+      },
+      "analytics": {
+        "name": "Analytics",
+        "description": "Server-side analytics help us understand how visitors interact with our website."
+      }
+    },
+    "cookies": {
+      "sessionToken": {
+        "name": "session-token",
+        "purpose": "Maintains your login session"
+      },
+      "cfClearance": {
+        "name": "cf_clearance",
+        "purpose": "Cloudflare Turnstile bot protection"
+      },
+      "theme": {
+        "name": "theme",
+        "purpose": "Stores your preferred color theme"
+      },
+      "sidebarCollapsed": {
+        "name": "sidebar-collapsed",
+        "purpose": "Remembers sidebar state"
+      },
+      "internalAnalytics": {
+        "name": "Internal Analytics",
+        "purpose": "Anonymized page view tracking"
+      }
+    },
+    "duration": {
+      "7days": "7 days",
+      "30min": "30 minutes",
+      "persistent": "Persistent",
+      "session": "Session"
+    },
+    "type": {
+      "httpCookie": "HTTP Cookie",
+      "localStorage": "Local Storage",
+      "serverSide": "Server-side (no cookies)"
+    },
+    "required": "Required",
+    "optional": "Optional",
+    "sections": {
+      "legalBasis": {
+        "title": "Legal Basis",
+        "content": "This cookie policy is based on the following legal foundations:\n\n**§ 25 TDDDG (German Telecommunications Digital Services Data Protection Act):**\nStoring information on the user's device or accessing stored information is only permitted with consent or if strictly necessary.\n\n**Art. 6 GDPR:**\n• **lit. a:** Consent for non-essential cookies\n• **lit. b:** Contract fulfillment for essential cookies\n• **lit. f:** Legitimate interests for security cookies\n\n**ePrivacy Directive (2002/58/EC):**\nEuropean directive for privacy protection in electronic communications."
+      },
+      "whatAreCookies": {
+        "title": "What are Cookies?",
+        "content": "Cookies are small text files stored on your device when you visit a website. They are commonly used to make websites work more efficiently and provide information to website operators.\n\n**Types of Storage:**\n• **Cookies:** Small text files in your browser\n• **Local Storage:** Data stored locally in your browser\n• **Session Storage:** Temporary data deleted when browser closes\n\nCookies can be \"First-Party\" (set by us) or \"Third-Party\" (set by other services). We primarily use first-party cookies."
+      },
+      "howWeUse": {
+        "title": "How We Use Cookies",
+        "content": "We use cookies for the following purposes:\n\n**Authentication (technically necessary):**\n• Maintaining your login across sessions\n• Securing your account with HTTP-only cookies\n• Validating your session on each request\n\n**Preferences (with consent):**\n• Storing your theme preference (dark/light mode)\n• Storing UI settings like sidebar state\n• Personalizing your experience\n\n**Analytics (with consent):**\n• Counting page views and unique visitors\n• Understanding which features are most used\n• Improving our service based on usage patterns\n\n**We do NOT use cookies for:**\n• Advertising or ad targeting\n• Cross-site tracking\n• Selling data to third parties"
+      },
+      "yourChoices": {
+        "title": "Your Cookie Choices",
+        "content": "You have control over cookies:\n\n**Consent Management:**\n• You'll be asked for consent on first visit\n• You can withdraw consent at any time\n• Essential cookies cannot be disabled (required for login)\n\n**Browser Settings:**\n• Most browsers allow blocking or deleting cookies\n• You can set your browser to notify you when cookies are set\n• Private/Incognito mode limits cookie storage\n\n**Consequences of Disabling Cookies:**\n• You won't be able to stay logged in\n• Your preferences won't be saved\n• Some features may not work properly"
+      },
+      "thirdParty": {
+        "title": "Third-Party Services",
+        "content": "We use minimal third-party services:\n\n**Hosting (Vercel):**\n• May set performance-related cookies\n• Subject to their own privacy policies\n\n**Security (Cloudflare):**\n• Turnstile bot protection (cf_clearance cookie)\n• DDoS protection and CDN\n\n**We do NOT use:**\n• Google Analytics\n• Facebook Pixel\n• Advertising networks\n• Social media tracking pixels"
+      },
+      "security": {
+        "title": "Cookie Security",
+        "content": "We implement security measures for our cookies:\n\n**HTTP-Only Cookies:**\n• Session cookies cannot be accessed by JavaScript\n• Protects against XSS attacks\n\n**Secure Flag:**\n• Cookies are only sent over HTTPS in production\n• Prevents interception on insecure connections\n\n**SameSite Attribute:**\n• Set to \"Lax\" to prevent CSRF attacks\n• Cookies are not sent with cross-site requests\n\n**Expiration:**\n• Session cookies expire after 7 days\n• Automatic cleanup of expired sessions"
+      },
+      "updates": {
+        "title": "Policy Updates",
+        "content": "We may update this cookie policy from time to time:\n\n• Changes will be reflected in the \"Last updated\" date\n• Significant changes will be announced via email or in-app notification\n• Continued use of the service after changes constitutes acceptance"
+      },
+      "contact": {
+        "title": "Contact",
+        "content": "For questions about cookie usage:\n\n**Email:** privacy@eziox.link\n**Website:** https://eziox.link/contact\n\nFor general privacy inquiries, see our Privacy Policy."
+      }
+    },
+    "relatedLinks": {
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "imprint": "Imprint"
+    }
+  },
+  "footer": {
+    "tagline": "The modern bio link platform for creators",
+    "description": "Share your online presence with one beautiful link. Built for creators, streamers, and businesses.",
+    "platform": {
+      "title": "Platform",
+      "features": "Features",
+      "templates": "Templates",
+      "pricing": "Pricing",
+      "playground": "Playground"
+    },
+    "community": {
+      "title": "Community",
+      "creators": "Creators",
+      "partners": "Partners",
+      "leaderboard": "Leaderboard"
+    },
+    "resources": {
+      "title": "Resources",
+      "docs": "Documentation",
+      "blog": "Blog",
+      "helpCenter": "Help Center",
+      "status": "Status"
+    },
+    "legal": {
+      "title": "Legal",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "cookies": "Cookie Policy",
+      "cancellation": "Cancellation Policy",
+      "imprint": "Imprint"
+    },
+    "stats": {
+      "creators": "Creators",
+      "clicks": "Clicks",
+      "views": "Views",
+      "links": "Links",
+      "activeToday": "Active today"
+    },
+    "status": {
+      "operational": "All Systems Operational",
+      "secure": "Secure",
+      "analytics": "Analytics",
+      "global": "Global"
+    },
+    "contact": {
+      "email": "Contact us",
+      "discord": "Join Community"
+    },
+    "madeIn": "Made in Germany",
+    "craftedBy": "Crafted with",
+    "by": "by",
+    "themesAvailable": "{{count}} Themes",
+    "copyright": "© {{year}} Eziox"
+  },
+  "language": {
+    "select": "Select language",
+    "en": "English",
+    "de": "Deutsch"
+  },
+  "errors": {
+    "notFound": {
+      "title": "Page not found",
+      "description": "The page you're looking for doesn't exist or has been moved.",
+      "button": "Go home"
+    },
+    "serverError": {
+      "title": "Something went wrong",
+      "description": "We're working on fixing this. Please try again later.",
+      "button": "Try again"
+    }
+  },
+  "terms": {
+    "title": "Terms of Service",
+    "subtitle": "Rules and guidelines for using Eziox",
+    "badge": "Terms",
+    "relatedLinks": {
+      "privacy": "Privacy Policy",
+      "widerruf": "Cancellation Policy",
+      "imprint": "Imprint"
+    },
+    "sections": {
+      "agreement": {
+        "title": "Agreement to Our Legal Terms",
+        "content": "We are **Nattapat Pongsuwan**, doing business as **Eziox** (\"Company,\" \"we,\" \"us,\" \"our\"), a company registered in Germany at Rohstorf 59, Vastorf, Lower Saxony (Niedersachsen) 21397.\n\nWe operate the website [https://eziox.link](https://eziox.link) (the \"Site\"), as well as any other related products and services that refer or link to these legal terms (the \"Legal Terms\") (collectively, the \"Services\").\n\n**Eziox is a SaaS bio-link platform for creators and small teams to manage profiles, links, analytics, and premium customization.**\n\nYou can contact us by email at [contact@eziox.link](mailto:contact@eziox.link) or by mail to Rohstorf 59, Vastorf, Lower Saxony (Niedersachsen) 21397, Germany.\n\nThese Legal Terms constitute a legally binding agreement made between you, whether personally or on behalf of an entity (\"you\"), and Nattapat Pongsuwan, concerning your access to and use of the Services. You agree that by accessing the Services, you have read, understood, and agreed to be bound by all of these Legal Terms. **IF YOU DO NOT AGREE WITH ALL OF THESE LEGAL TERMS, THEN YOU ARE EXPRESSLY PROHIBITED FROM USING THE SERVICES AND YOU MUST DISCONTINUE USE IMMEDIATELY.**\n\nWe will provide you with prior notice of any scheduled changes to the Services you are using. The modified Legal Terms will become effective upon posting or notifying you by [legal@eziox.link](mailto:legal@eziox.link), as stated in the email message. By continuing to use the Services after the effective date of any changes, you agree to be bound by the modified terms.\n\nThe Services are intended for users who are at least 13 years of age. All users who are minors in the jurisdiction in which they reside (generally under the age of 18) must have the permission of, and be directly supervised by, their parent or guardian to use the Services. If you are a minor, you must have your parent or guardian read and agree to these Legal Terms prior to you using the Services.\n\nWe recommend that you print a copy of these Legal Terms for your records."
+      },
+      "services": {
+        "title": "1. Our Services",
+        "content": "The information provided when using the Services is not intended for distribution to or use by any person or entity in any jurisdiction or country where such distribution or use would be contrary to law or regulation or which would subject us to any registration requirement within such jurisdiction or country. Accordingly, those persons who choose to access the Services from other locations do so on their own initiative and are solely responsible for compliance with local laws, if and to the extent local laws are applicable.\n\nThe Services are not tailored to comply with industry-specific regulations (Health Insurance Portability and Accountability Act (HIPAA), Federal Information Security Management Act (FISMA), etc.), so if your interactions would be subjected to such laws, you may not use the Services. You may not use the Services in a way that would violate the Gramm-Leach-Bliley Act (GLBA)."
+      },
+      "ip": {
+        "title": "2. Intellectual Property Rights",
+        "content": "**Our intellectual property**\n\nWe are the owner or the licensee of all intellectual property rights in our Services, including all source code, databases, functionality, software, website designs, audio, video, text, photographs, and graphics in the Services (collectively, the \"Content\"), as well as the trademarks, service marks, and logos contained therein (the \"Marks\").\n\nOur Content and Marks are protected by copyright and trademark laws (and various other intellectual property rights and unfair competition laws) and treaties in the United States and around the world.\n\nThe Content and Marks are provided in or through the Services \"AS IS\" for your personal, non-commercial use or internal business purpose only.\n\n**Your use of our Services**\n\nSubject to your compliance with these Legal Terms, including the \"PROHIBITED ACTIVITIES\" section below, we grant you a non-exclusive, non-transferable, revocable license to:\n• access the Services; and\n• download or print a copy of any portion of the Content to which you have properly gained access,\n\nsolely for your personal, non-commercial use or internal business purpose.\n\nExcept as set out in this section or elsewhere in our Legal Terms, no part of the Services and no Content or Marks may be copied, reproduced, aggregated, republished, uploaded, posted, publicly displayed, encoded, translated, transmitted, distributed, sold, licensed, or otherwise exploited for any commercial purpose whatsoever, without our express prior written permission.\n\nIf you wish to make any use of the Services, Content, or Marks other than as set out in this section or elsewhere in our Legal Terms, please address your request to: [contact@eziox.link](mailto:contact@eziox.link).\n\nWe reserve all rights not expressly granted to you in and to the Services, Content, and Marks.\n\nAny breach of these Intellectual Property Rights will constitute a material breach of our Legal Terms and your right to use our Services will terminate immediately.\n\n**Your submissions and contributions**\n\n**Submissions:** By directly sending us any question, comment, suggestion, idea, feedback, or other information about the Services (\"Submissions\"), you agree to assign to us all intellectual property rights in such Submission. You agree that we shall own this Submission and be entitled to its unrestricted use and dissemination for any lawful purpose, commercial or otherwise, without acknowledgment or compensation to you.\n\n**Contributions:** The Services may invite you to chat, contribute to, or participate in blogs, message boards, online forums, and other functionality during which you may create, submit, post, display, transmit, publish, distribute, or broadcast content and materials to us or through the Services, including but not limited to text, writings, video, audio, photographs, music, graphics, comments, reviews, rating suggestions, personal information, or other material (\"Contributions\"). Any Submission that is publicly posted shall also be treated as a Contribution.\n\nYou understand that Contributions may be viewable by other users of the Services and possibly through third-party websites.\n\n**When you post Contributions, you grant us a license (including use of your name, trademarks, and logos):** By posting any Contributions, you grant us an unrestricted, unlimited, irrevocable, perpetual, non-exclusive, transferable, royalty-free, fully-paid, worldwide right, and license to: use, copy, reproduce, distribute, sell, resell, publish, broadcast, retitle, store, publicly perform, publicly display, reformat, translate, excerpt (in whole or in part), and exploit your Contributions for any purpose, commercial, advertising, or otherwise, to prepare derivative works of, or incorporate into other works, your Contributions, and to sublicense the licenses granted in this section.\n\n**We may remove or edit your Content:** Although we have no obligation to monitor any Contributions, we shall have the right to remove or edit any Contributions at any time without notice if in our reasonable opinion we consider such Contributions harmful or in breach of these Legal Terms.\n\n**Copyright infringement**\n\nWe respect the intellectual property rights of others. If you believe that any material available on or through the Services infringes upon any copyright you own or control, please immediately refer to the \"COPYRIGHT INFRINGEMENTS\" section below."
+      },
+      "userreps": {
+        "title": "3. User Representations",
+        "content": "By using the Services, you represent and warrant that:\n\n• all registration information you submit will be true, accurate, current, and complete;\n• you will maintain the accuracy of such information and promptly update such registration information as necessary;\n• you have the legal capacity and you agree to comply with these Legal Terms;\n• you are not under the age of 13;\n• you are not a minor in the jurisdiction in which you reside, or if a minor, you have received parental permission to use the Services;\n• you will not access the Services through automated or non-human means, whether through a bot, script or otherwise;\n• you will not use the Services for any illegal or unauthorized purpose; and\n• your use of the Services will not violate any applicable law or regulation.\n\nIf you provide any information that is untrue, inaccurate, not current, or incomplete, we have the right to suspend or terminate your account and refuse any and all current or future use of the Services (or any portion thereof)."
+      },
+      "userreg": {
+        "title": "4. User Registration",
+        "content": "You may be required to register to use the Services. You agree to keep your password confidential and will be responsible for all use of your account and password. We reserve the right to remove, reclaim, or change a username you select if we determine, in our sole discretion, that such username is inappropriate, obscene, or otherwise objectionable."
+      },
+      "purchases": {
+        "title": "5. Purchases and Payment",
+        "content": "We accept the following forms of payment:\n\n• Visa\n• Mastercard\n• Apple Pay\n• Google Pay\n• Klarna\n\nYou agree to provide current, complete, and accurate purchase and account information for all purchases made via the Services. You further agree to promptly update account and payment information, including email address, payment method, and payment card expiration date, so that we can complete your transactions and contact you as needed. Sales tax will be added to the price of purchases as deemed required by us. We may change prices at any time. All payments shall be in Euros (€).\n\nYou agree to pay all charges at the prices then in effect for your purchases and any applicable shipping fees, and you authorize us to charge your chosen payment provider for any such amounts upon placing your order. We reserve the right to correct any errors or mistakes in pricing, even if we have already requested or received payment.\n\nWe reserve the right to refuse any order placed through the Services. We may, in our sole discretion, limit or cancel quantities purchased per person, per household, or per order."
+      },
+      "subscriptions": {
+        "title": "6. Subscriptions",
+        "content": "**Billing and Renewal**\n\nYour subscription will continue and automatically renew unless canceled. You consent to our charging your payment method on a recurring basis without requiring your prior approval for each recurring charge, until such time as you cancel the applicable order. The length of your billing cycle is monthly.\n\n**Cancellation**\n\nYou can cancel your subscription at any time by logging into your account. Your cancellation will take effect at the end of the current paid term. If you have any questions or are unsatisfied with our Services, please email us at [contact@eziox.link](mailto:contact@eziox.link).\n\n**Fee Changes**\n\nWe may, from time to time, make changes to the subscription fee and will communicate any price changes to you in accordance with applicable law."
+      },
+      "prohibited": {
+        "title": "7. Prohibited Activities",
+        "content": "You may not access or use the Services for any purpose other than that for which we make the Services available. The Services may not be used in connection with any commercial endeavors except those that are specifically endorsed or approved by us.\n\nAs a user of the Services, you agree NOT to:\n\n• Systematically retrieve data or other content from the Services to create or compile, directly or indirectly, a collection, compilation, database, or directory without written permission from us.\n• Trick, defraud, or mislead us and other users, especially in any attempt to learn sensitive account information such as user passwords.\n• Circumvent, disable, or otherwise interfere with security-related features of the Services.\n• Disparage, tarnish, or otherwise harm, in our opinion, us and/or the Services.\n• Use any information obtained from the Services in order to harass, abuse, or harm another person.\n• Make improper use of our support services or submit false reports of abuse or misconduct.\n• Use the Services in a manner inconsistent with any applicable laws or regulations.\n• Engage in unauthorized framing of or linking to the Services.\n• Upload or transmit viruses, Trojan horses, or other material that interferes with any party's uninterrupted use and enjoyment of the Services.\n• Engage in any automated use of the system, such as using scripts to send comments or messages, or using any data mining, robots, or similar data gathering and extraction tools.\n• Delete the copyright or other proprietary rights notice from any Content.\n• Attempt to impersonate another user or person or use the username of another user.\n• Interfere with, disrupt, or create an undue burden on the Services or the networks or services connected to the Services.\n• Harass, annoy, intimidate, or threaten any of our employees or agents engaged in providing any portion of the Services to you.\n• Attempt to bypass any measures of the Services designed to prevent or restrict access to the Services.\n• Copy or adapt the Services' software, including but not limited to Flash, PHP, HTML, JavaScript, or other code.\n• Except as permitted by applicable law, decipher, decompile, disassemble, or reverse engineer any of the software comprising or in any way making up a part of the Services.\n• Use the Services as part of any effort to compete with us or otherwise use the Services and/or the Content for any revenue-generating endeavor or commercial enterprise.\n• Sell or otherwise transfer your profile."
+      },
+      "ugc": {
+        "title": "8. User Generated Contributions",
+        "content": "The Services may invite you to chat, contribute to, or participate in blogs, message boards, online forums, and other functionality, and may provide you with the opportunity to create, submit, post, display, transmit, perform, publish, distribute, or broadcast content and materials to us or on the Services, including but not limited to text, writings, video, audio, photographs, graphics, comments, suggestions, or personal information or other material (collectively, \"Contributions\"). Contributions may be viewable by other users of the Services and through third-party websites.\n\nWhen you create or make available any Contributions, you thereby represent and warrant that:\n\n• The creation, distribution, transmission, public display, or performance, and the accessing, downloading, or copying of your Contributions do not and will not infringe the proprietary rights of any third party.\n• You are the creator and owner of or have the necessary licenses, rights, consents, releases, and permissions to use and to authorize us, the Services, and other users of the Services to use your Contributions.\n• Your Contributions are not false, inaccurate, or misleading.\n• Your Contributions are not unsolicited or unauthorized advertising, promotional materials, pyramid schemes, chain letters, spam, mass mailings, or other forms of solicitation.\n• Your Contributions are not obscene, lewd, lascivious, filthy, violent, harassing, libelous, slanderous, or otherwise objectionable.\n• Your Contributions do not ridicule, mock, disparage, intimidate, or abuse anyone.\n• Your Contributions do not violate any applicable law, regulation, or rule.\n• Your Contributions do not violate the privacy or publicity rights of any third party.\n• Your Contributions do not contain any material that solicits personal information from anyone under the age of 18 or exploits people under the age of 18 in a sexual or violent manner.\n• Your Contributions do not otherwise violate, or link to material that violates, any provision of these Legal Terms, or any applicable law or regulation.\n\nAny use of the Services in violation of the foregoing violates these Legal Terms and may result in, among other things, termination or suspension of your rights to use the Services."
+      },
+      "license": {
+        "title": "9. Contribution License",
+        "content": "By posting your Contributions to any part of the Services or making Contributions accessible to the Services by linking your account from the Services to any of your social networking accounts, you automatically grant, and you represent and warrant that you have the right to grant, to us an unrestricted, unlimited, irrevocable, perpetual, non-exclusive, transferable, royalty-free, fully-paid, worldwide right, and license to host, use, copy, reproduce, disclose, sell, resell, publish, broadcast, retitle, archive, store, cache, publicly perform, publicly display, reformat, translate, transmit, excerpt (in whole or in part), and distribute such Contributions for any purpose, commercial, advertising, or otherwise, and to prepare derivative works of, or incorporate into other works, such Contributions, and grant and authorize sublicenses of the foregoing.\n\nThis license will apply to any form, media, or technology now known or hereafter developed, and includes our use of your name, company name, and franchise name, as applicable, and any of the trademarks, service marks, trade names, logos, and personal and commercial images you provide. You waive all moral rights in your Contributions, and you warrant that moral rights have not otherwise been asserted in your Contributions.\n\nWe do not assert any ownership over your Contributions. You retain full ownership of all of your Contributions and any intellectual property rights or other proprietary rights associated with your Contributions. We are not liable for any statements or representations in your Contributions provided by you in any area on the Services. You are solely responsible for your Contributions to the Services and you expressly agree to exonerate us from any and all responsibility and to refrain from any legal action against us regarding your Contributions.\n\nWe have the right, in our sole and absolute discretion, (1) to edit, redact, or otherwise change any Contributions; (2) to re-categorize any Contributions to place them in more appropriate locations on the Services; and (3) to pre-screen or delete any Contributions at any time and for any reason, without notice. We have no obligation to monitor your Contributions."
+      },
+      "socialmedia": {
+        "title": "10. Social Media",
+        "content": "As part of the functionality of the Services, you may link your account with online accounts you have with third-party service providers (each such account, a \"Third-Party Account\") by either: (1) providing your Third-Party Account login information through the Services; or (2) allowing us to access your Third-Party Account, as is permitted under the applicable terms and conditions that govern your use of each Third-Party Account.\n\nYou represent and warrant that you are entitled to disclose your Third-Party Account login information to us and/or grant us access to your Third-Party Account, without breach by you of any of the terms and conditions that govern your use of the applicable Third-Party Account, and without obligating us to pay any fees or making us subject to any usage limitations imposed by the third-party service provider of the Third-Party Account.\n\nBy granting us access to any Third-Party Accounts, you understand that (1) we may access, make available, and store (if applicable) any content that you have provided to and stored in your Third-Party Account (the \"Social Network Content\") so that it is available on and through the Services via your account, including without limitation any friend lists and (2) we may submit to and receive from your Third-Party Account additional information to the extent you are notified when you link your account with the Third-Party Account.\n\n**PLEASE NOTE THAT YOUR RELATIONSHIP WITH THE THIRD-PARTY SERVICE PROVIDERS ASSOCIATED WITH YOUR THIRD-PARTY ACCOUNTS IS GOVERNED SOLELY BY YOUR AGREEMENT(S) WITH SUCH THIRD-PARTY SERVICE PROVIDERS.**\n\nWe make no effort to review any Social Network Content for any purpose, including but not limited to, for accuracy, legality, or non-infringement, and we are not responsible for any Social Network Content."
+      },
+      "thirdparty": {
+        "title": "11. Third-Party Websites and Content",
+        "content": "The Services may contain (or you may be sent via the Site) links to other websites (\"Third-Party Websites\") as well as articles, photographs, text, graphics, pictures, designs, music, sound, video, information, applications, software, and other content or items belonging to or originating from third parties (\"Third-Party Content\").\n\nSuch Third-Party Websites and Third-Party Content are not investigated, monitored, or checked for accuracy, appropriateness, or completeness by us, and we are not responsible for any Third-Party Websites accessed through the Services or any Third-Party Content posted on, available through, or installed from the Services, including the content, accuracy, offensiveness, opinions, reliability, privacy practices, or other policies of or contained in the Third-Party Websites or the Third-Party Content.\n\nInclusion of, linking to, or permitting the use or installation of any Third-Party Websites or any Third-Party Content does not imply approval or endorsement thereof by us. If you decide to leave the Services and access the Third-Party Websites or to use or install any Third-Party Content, you do so at your own risk, and you should be aware these Legal Terms no longer govern.\n\nYou should review the applicable terms and policies, including privacy and data gathering practices, of any website to which you navigate from the Services or relating to any applications you use or install from the Services."
+      },
+      "sitemanage": {
+        "title": "12. Services Management",
+        "content": "We reserve the right, but not the obligation, to:\n\n• monitor the Services for violations of these Legal Terms;\n• take appropriate legal action against anyone who, in our sole discretion, violates the law or these Legal Terms, including without limitation, reporting such user to law enforcement authorities;\n• in our sole discretion and without limitation, refuse, restrict access to, limit the availability of, or disable (to the extent technologically feasible) any of your Contributions or any portion thereof;\n• in our sole discretion and without limitation, notice, or liability, to remove from the Services or otherwise disable all files and content that are excessive in size or are in any way burdensome to our systems; and\n• otherwise manage the Services in a manner designed to protect our rights and property and to facilitate the proper functioning of the Services."
+      },
+      "privacy": {
+        "title": "13. Privacy Policy",
+        "content": "We care about data privacy and security. Please review our Privacy Policy: [https://eziox.link/privacy](/privacy).\n\nBy using the Services, you agree to be bound by our Privacy Policy, which is incorporated into these Legal Terms. Please be advised the Services are hosted in Germany and United States. If you access the Services from any other region of the world with laws or other requirements governing personal data collection, use, or disclosure that differ from applicable laws in Germany and United States, then through your continued use of the Services, you are transferring your data to Germany and United States, and you expressly consent to have your data transferred to and processed in Germany and United States.\n\nFurther, we do not knowingly accept, request, or solicit information from children or knowingly market to children. Therefore, in accordance with the U.S. Children's Online Privacy Protection Act, if we receive actual knowledge that anyone under the age of 13 has provided personal information to us without the requisite and verifiable parental consent, we will delete that information from the Services as quickly as is reasonably practical."
+      },
+      "copyright": {
+        "title": "14. Copyright Infringements",
+        "content": "We respect the intellectual property rights of others. If you believe that any material available on or through the Services infringes upon any copyright you own or control, please immediately notify us using the contact information provided below (a \"Notification\").\n\nA copy of your Notification will be sent to the person who posted or stored the material addressed in the Notification. Please be advised that pursuant to applicable law you may be held liable for damages if you make material misrepresentations in a Notification. Thus, if you are not sure that material located on or linked to by the Services infringes your copyright, you should consider first contacting an attorney."
+      },
+      "termination": {
+        "title": "15. Term and Termination",
+        "content": "These Legal Terms shall remain in full force and effect while you use the Services. **WITHOUT LIMITING ANY OTHER PROVISION OF THESE LEGAL TERMS, WE RESERVE THE RIGHT TO, IN OUR SOLE DISCRETION AND WITHOUT NOTICE OR LIABILITY, DENY ACCESS TO AND USE OF THE SERVICES (INCLUDING BLOCKING CERTAIN IP ADDRESSES), TO ANY PERSON FOR ANY REASON OR FOR NO REASON, INCLUDING WITHOUT LIMITATION FOR BREACH OF ANY REPRESENTATION, WARRANTY, OR COVENANT CONTAINED IN THESE LEGAL TERMS OR OF ANY APPLICABLE LAW OR REGULATION.**\n\n**WE MAY TERMINATE YOUR USE OR PARTICIPATION IN THE SERVICES OR DELETE YOUR ACCOUNT AND ANY CONTENT OR INFORMATION THAT YOU POSTED AT ANY TIME, WITHOUT WARNING, IN OUR SOLE DISCRETION.**\n\nIf we terminate or suspend your account for any reason, you are prohibited from registering and creating a new account under your name, a fake or borrowed name, or the name of any third party, even if you may be acting on behalf of the third party. In addition to terminating or suspending your account, we reserve the right to take appropriate legal action, including without limitation pursuing civil, criminal, and injunctive redress."
+      },
+      "modifications": {
+        "title": "16. Modifications and Interruptions",
+        "content": "We reserve the right to change, modify, or remove the contents of the Services at any time or for any reason at our sole discretion without notice. However, we have no obligation to update any information on our Services. We will not be liable to you or any third party for any modification, price change, suspension, or discontinuance of the Services.\n\nWe cannot guarantee the Services will be available at all times. We may experience hardware, software, or other problems or need to perform maintenance related to the Services, resulting in interruptions, delays, or errors. We reserve the right to change, revise, update, suspend, discontinue, or otherwise modify the Services at any time or for any reason without notice to you.\n\nYou agree that we have no liability whatsoever for any loss, damage, or inconvenience caused by your inability to access or use the Services during any downtime or discontinuance of the Services. Nothing in these Legal Terms will be construed to obligate us to maintain and support the Services or to supply any corrections, updates, or releases in connection therewith."
+      },
+      "law": {
+        "title": "17. Governing Law",
+        "content": "These Legal Terms are governed by and interpreted following the laws of Germany, and the use of the United Nations Convention of Contracts for the International Sales of Goods is expressly excluded.\n\nIf your habitual residence is in the EU, and you are a consumer, you additionally possess the protection provided to you by obligatory provisions of the law in your country to residence. Nattapat Pongsuwan and yourself both agree to submit to the non-exclusive jurisdiction of the courts of Lower Saxony (Niedersachsen), which means that you may make a claim to defend your consumer protection rights in regards to these Legal Terms in Germany, or in the EU country in which you reside."
+      },
+      "disputes": {
+        "title": "18. Dispute Resolution",
+        "content": "The European Commission provides an [online dispute resolution platform](https://ec.europa.eu/consumers/odr), which you can access. If you would like to bring this subject to our attention, please contact us."
+      },
+      "corrections": {
+        "title": "19. Corrections",
+        "content": "There may be information on the Services that contains typographical errors, inaccuracies, or omissions, including descriptions, pricing, availability, and various other information. We reserve the right to correct any errors, inaccuracies, or omissions and to change or update the information on the Services at any time, without prior notice."
+      },
+      "disclaimer": {
+        "title": "20. Disclaimer",
+        "content": "**THE SERVICES ARE PROVIDED ON AN AS-IS AND AS-AVAILABLE BASIS. YOU AGREE THAT YOUR USE OF THE SERVICES WILL BE AT YOUR SOLE RISK. TO THE FULLEST EXTENT PERMITTED BY LAW, WE DISCLAIM ALL WARRANTIES, EXPRESS OR IMPLIED, IN CONNECTION WITH THE SERVICES AND YOUR USE THEREOF, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.**\n\n**WE MAKE NO WARRANTIES OR REPRESENTATIONS ABOUT THE ACCURACY OR COMPLETENESS OF THE SERVICES' CONTENT OR THE CONTENT OF ANY WEBSITES OR MOBILE APPLICATIONS LINKED TO THE SERVICES AND WE WILL ASSUME NO LIABILITY OR RESPONSIBILITY FOR ANY (1) ERRORS, MISTAKES, OR INACCURACIES OF CONTENT AND MATERIALS, (2) PERSONAL INJURY OR PROPERTY DAMAGE, OF ANY NATURE WHATSOEVER, RESULTING FROM YOUR ACCESS TO AND USE OF THE SERVICES, (3) ANY UNAUTHORIZED ACCESS TO OR USE OF OUR SECURE SERVERS AND/OR ANY AND ALL PERSONAL INFORMATION AND/OR FINANCIAL INFORMATION STORED THEREIN, (4) ANY INTERRUPTION OR CESSATION OF TRANSMISSION TO OR FROM THE SERVICES, (5) ANY BUGS, VIRUSES, TROJAN HORSES, OR THE LIKE WHICH MAY BE TRANSMITTED TO OR THROUGH THE SERVICES BY ANY THIRD PARTY, AND/OR (6) ANY ERRORS OR OMISSIONS IN ANY CONTENT AND MATERIALS OR FOR ANY LOSS OR DAMAGE OF ANY KIND INCURRED AS A RESULT OF THE USE OF ANY CONTENT POSTED, TRANSMITTED, OR OTHERWISE MADE AVAILABLE VIA THE SERVICES.**\n\n**WE DO NOT WARRANT, ENDORSE, GUARANTEE, OR ASSUME RESPONSIBILITY FOR ANY PRODUCT OR SERVICE ADVERTISED OR OFFERED BY A THIRD PARTY THROUGH THE SERVICES, ANY HYPERLINKED WEBSITE, OR ANY WEBSITE OR MOBILE APPLICATION FEATURED IN ANY BANNER OR OTHER ADVERTISING, AND WE WILL NOT BE A PARTY TO OR IN ANY WAY BE RESPONSIBLE FOR MONITORING ANY TRANSACTION BETWEEN YOU AND ANY THIRD-PARTY PROVIDERS OF PRODUCTS OR SERVICES.**"
+      },
+      "liability": {
+        "title": "21. Limitations of Liability",
+        "content": "**IN NO EVENT WILL WE OR OUR DIRECTORS, EMPLOYEES, OR AGENTS BE LIABLE TO YOU OR ANY THIRD PARTY FOR ANY DIRECT, INDIRECT, CONSEQUENTIAL, EXEMPLARY, INCIDENTAL, SPECIAL, OR PUNITIVE DAMAGES, INCLUDING LOST PROFIT, LOST REVENUE, LOSS OF DATA, OR OTHER DAMAGES ARISING FROM YOUR USE OF THE SERVICES, EVEN IF WE HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.**\n\n**NOTWITHSTANDING ANYTHING TO THE CONTRARY CONTAINED HEREIN, OUR LIABILITY TO YOU FOR ANY CAUSE WHATSOEVER AND REGARDLESS OF THE FORM OF THE ACTION, WILL AT ALL TIMES BE LIMITED TO THE AMOUNT PAID, IF ANY, BY YOU TO US DURING THE SIX (6) MONTH PERIOD PRIOR TO ANY CAUSE OF ACTION ARISING.**\n\n**CERTAIN US STATE LAWS AND INTERNATIONAL LAWS DO NOT ALLOW LIMITATIONS ON IMPLIED WARRANTIES OR THE EXCLUSION OR LIMITATION OF CERTAIN DAMAGES. IF THESE LAWS APPLY TO YOU, SOME OR ALL OF THE ABOVE DISCLAIMERS OR LIMITATIONS MAY NOT APPLY TO YOU, AND YOU MAY HAVE ADDITIONAL RIGHTS.**"
+      },
+      "indemnification": {
+        "title": "22. Indemnification",
+        "content": "You agree to defend, indemnify, and hold us harmless, including our subsidiaries, affiliates, and all of our respective officers, agents, partners, and employees, from and against any loss, damage, liability, claim, or demand, including reasonable attorneys' fees and expenses, made by any third party due to or arising out of:\n\n• your Contributions;\n• use of the Services;\n• breach of these Legal Terms;\n• any breach of your representations and warranties set forth in these Legal Terms;\n• your violation of the rights of a third party, including but not limited to intellectual property rights; or\n• any overt harmful act toward any other user of the Services with whom you connected via the Services.\n\nNotwithstanding the foregoing, we reserve the right, at your expense, to assume the exclusive defense and control of any matter for which you are required to indemnify us, and you agree to cooperate, at your expense, with our defense of such claims. We will use reasonable efforts to notify you of any such claim, action, or proceeding which is subject to this indemnification upon becoming aware of it."
+      },
+      "userdata": {
+        "title": "23. User Data",
+        "content": "We will maintain certain data that you transmit to the Services for the purpose of managing the performance of the Services, as well as data relating to your use of the Services. Although we perform regular routine backups of data, you are solely responsible for all data that you transmit or that relates to any activity you have undertaken using the Services.\n\nYou agree that we shall have no liability to you for any loss or corruption of any such data, and you hereby waive any right of action against us arising from any such loss or corruption of such data."
+      },
+      "electronic": {
+        "title": "24. Electronic Communications, Transactions, and Signatures",
+        "content": "Visiting the Services, sending us emails, and completing online forms constitute electronic communications. You consent to receive electronic communications, and you agree that all agreements, notices, disclosures, and other communications we provide to you electronically, via email and on the Services, satisfy any legal requirement that such communication be in writing.\n\n**YOU HEREBY AGREE TO THE USE OF ELECTRONIC SIGNATURES, CONTRACTS, ORDERS, AND OTHER RECORDS, AND TO ELECTRONIC DELIVERY OF NOTICES, POLICIES, AND RECORDS OF TRANSACTIONS INITIATED OR COMPLETED BY US OR VIA THE SERVICES.**\n\nYou hereby waive any rights or requirements under any statutes, regulations, rules, ordinances, or other laws in any jurisdiction which require an original signature or delivery or retention of non-electronic records, or to payments or the granting of credits by any means other than electronic means."
+      },
+      "california": {
+        "title": "25. California Users and Residents",
+        "content": "If any complaint with us is not satisfactorily resolved, you can contact the Complaint Assistance Unit of the Division of Consumer Services of the California Department of Consumer Affairs in writing at 1625 North Market Blvd., Suite N 112, Sacramento, California 95834 or by telephone at (800) 952-5210 or (916) 445-1254."
+      },
+      "misc": {
+        "title": "26. Miscellaneous",
+        "content": "These Legal Terms and any policies or operating rules posted by us on the Services or in respect to the Services constitute the entire agreement and understanding between you and us. Our failure to exercise or enforce any right or provision of these Legal Terms shall not operate as a waiver of such right or provision.\n\nThese Legal Terms operate to the fullest extent permissible by law. We may assign any or all of our rights and obligations to others at any time. We shall not be responsible or liable for any loss, damage, delay, or failure to act caused by any cause beyond our reasonable control.\n\nIf any provision or part of a provision of these Legal Terms is determined to be unlawful, void, or unenforceable, that provision or part of the provision is deemed severable from these Legal Terms and does not affect the validity and enforceability of any remaining provisions.\n\nThere is no joint venture, partnership, employment or agency relationship created between you and us as a result of these Legal Terms or use of the Services. You agree that these Legal Terms will not be construed against us by virtue of having drafted them. You hereby waive any and all defenses you may have based on the electronic form of these Legal Terms and the lack of signing by the parties hereto to execute these Legal Terms."
+      },
+      "contact": {
+        "title": "27. Contact Us",
+        "content": "In order to resolve a complaint regarding the Services or to receive further information regarding use of the Services, please contact us at:\n\n**Nattapat Pongsuwan**\nRohstorf 59\nVastorf, Lower Saxony (Niedersachsen) 21397\nGermany\n\n**Email:** [contact@eziox.link](mailto:contact@eziox.link)"
+      }
+    }
+  },
+  "verifyEmail": {
+    "loading": {
+      "title": "Verifying your email...",
+      "message": "Please wait while we verify your email address."
+    },
+    "success": {
+      "badge": "Verified",
+      "title": "Email Verified!",
+      "message": "Your email has been successfully verified. You now have full access to all features.",
+      "redirect": "Redirecting in {{seconds}}s...",
+      "button": "Go to Profile"
+    },
+    "error": {
+      "title": "Verification Failed",
+      "defaultMessage": "The verification link is invalid or has expired.",
+      "button": "Go to Profile",
+      "hint": "You can request a new verification email from your profile settings."
+    },
+    "noToken": {
+      "title": "No Token Provided",
+      "message": "Please use the link from your verification email.",
+      "button": "Go to Profile"
+    },
+    "securityNote": "Secure verification powered by Eziox"
+  },
+  "verifyEmailChange": {
+    "pending": {
+      "badge": "Email Change Request",
+      "title": "Confirm Email Change",
+      "message": "Click the button below to confirm your new email address. Your account email will be updated immediately.",
+      "button": "Confirm New Email",
+      "hint": "Didn't request this change? You can safely ignore this page."
+    },
+    "loading": {
+      "title": "Updating your email...",
+      "message": "Please wait while we update your email address."
+    },
+    "success": {
+      "badge": "Email Updated",
+      "title": "Email Updated!",
+      "message": "Your email address has been successfully changed.",
+      "redirect": "Redirecting in {{seconds}}s...",
+      "button": "Go to Settings"
+    },
+    "error": {
+      "title": "Verification Failed",
+      "defaultMessage": "The verification link is invalid or has expired.",
+      "button": "Go to Settings",
+      "hint": "You can request a new email change from your account settings."
+    },
+    "noToken": {
+      "title": "No Token Provided",
+      "message": "Please use the link from your email change verification email.",
+      "button": "Go to Settings"
+    },
+    "securityNote": "Secure verification powered by Eziox"
+  },
+  "widerruf": {
+    "title": "Cancellation Policy",
+    "subtitle": "Information about your right of cancellation according to § 355 BGB",
+    "badge": "Consumer Rights",
+    "sections": {
+      "verbraucher": {
+        "title": "Consumer",
+        "content": "\"Consumer\" within the meaning of this cancellation policy is any natural person who concludes a legal transaction for purposes that are predominantly neither commercial nor self-employed professional activity."
+      },
+      "widerrufsrecht": {
+        "title": "Right of Cancellation",
+        "content": "You have the right to cancel this contract within 14 days without giving any reason.\n\nThe cancellation period will expire after 14 days from the day of the conclusion of the contract.\n\nTo exercise the right of cancellation, you must inform us (Nattapat Pongsuwan, Rohstorf 59, 21397 Vastorf, Germany, email address: [contact@eziox.link](mailto:contact@eziox.link)) of your decision to cancel this contract by a clear statement (e.g. a letter sent by post or email).\n\nYou may use the model cancellation form or any other clear statement to cancel the contract electronically on our website [https://eziox.link/contact](https://eziox.link/contact). If you use this option, we will immediately send you a confirmation of receipt of such cancellation on a durable medium (e.g. by email).\n\nTo meet the cancellation deadline, it is sufficient for you to send your communication concerning your exercise of the right of cancellation before the cancellation period has expired."
+      },
+      "folgen": {
+        "title": "Consequences of Cancellation",
+        "content": "If you cancel this contract, we will reimburse to you all payments received from you, including the costs of delivery (with the exception of the supplementary costs resulting from your choice of a type of delivery other than the least expensive type of standard delivery offered by us), without undue delay and not later than fourteen days after the day on which we receive the cancellation of this contract.\n\nWe will make the reimbursement using the same means of payment as you used for the initial transaction, unless you have expressly agreed otherwise; in any event, you will not incur any fees as a result of such reimbursement.\n\nIf you requested to begin the performance of services during the cancellation period, you shall pay us an amount which is in proportion to what has been provided until the time you communicate the cancellation of this contract, in comparison with the full coverage of the contract."
+      },
+      "erloeschen": {
+        "title": "Exclusion or Premature Expiration of the Right of Cancellation",
+        "content": "The right of cancellation expires prematurely when we have started the performance of the contract only after you have expressly given your consent and at the same time confirmed your knowledge that you lose your right of cancellation with the start of the performance of the contract by us.\n\nWe point out that we can make the conclusion of the contract dependent on the aforementioned consent and confirmation."
+      },
+      "muster": {
+        "title": "Model Cancellation Form",
+        "content": "If you want to cancel this contract, please fill out this form and send it back:\n\n---\n\n**To:**\nEmail address: [contact@eziox.link](mailto:contact@eziox.link)\n\n**Subject:** Cancellation of my contract\n\n**Message:**\n\nI hereby (*) cancel the contract concluded by me/us (*) for the purchase of the following goods (*) / for the provision of the following service (*):\n\n______________________________________________________\n\nOrdered on (*): ____________ / received on (*): _________________\n\nName of consumer(s): _______________________________\n\nAddress of consumer(s): ____________________________\n\nSignature of consumer(s) (only if this notice is sent on paper): _______________\n\nDate: _________________________\n\n(*) Delete as appropriate.\n\n---"
+      }
+    },
+    "relatedLinks": {
+      "terms": "Terms",
+      "privacy": "Privacy Policy",
+      "imprint": "Imprint"
+    },
+    "generator": {
+      "text": "Created with Datenschutz-Generator.de by Dr. Thomas Schwenke"
+    }
+  },
+  "emailVerification": {
+    "banner": {
+      "title": "Email not verified",
+      "description": "Please verify your email address to access all features.",
+      "resend": "Resend email",
+      "sent": "Email sent",
+      "error": "Failed to send. Please try again later."
+    },
+    "indicator": {
+      "title": "Email not verified",
+      "description": "Confirm your email for full functionality.",
+      "resend": "Resend",
+      "sent": "Sent",
+      "error": "Failed to send"
+    }
+  },
+  "forgotPassword": {
+    "title": "Forgot password?",
+    "description": "Enter your email and we'll send you instructions to reset your password.",
+    "badge": "Password Reset",
+    "email": {
+      "label": "Email address",
+      "placeholder": "you@example.com",
+      "invalid": "Please enter a valid email address"
+    },
+    "security": {
+      "title": "Security check"
+    },
+    "submit": "Send Reset Instructions",
+    "sending": "Sending...",
+    "backToSignIn": "Back to Sign In",
+    "success": {
+      "title": "Check your email",
+      "message": "If an account exists for {{email}}, we've sent password reset instructions.",
+      "expiry": "Link expires in 15 minutes",
+      "security": "Secure encryption guaranteed"
+    },
+    "errors": {
+      "general": "An error occurred while sending the email",
+      "securityRequired": "Please complete the security check"
+    }
+  },
+  "signIn": {
+    "title": "Welcome back",
+    "description": "Sign in to continue to your dashboard.",
+    "badge": "Sign In",
+    "email": {
+      "label": "Email address",
+      "placeholder": "you@example.com"
+    },
+    "password": {
+      "label": "Password",
+      "placeholder": "••••••••",
+      "forgot": "Forgot?"
+    },
+    "rememberMe": "Keep me signed in",
+    "security": {
+      "title": "Security Check"
+    },
+    "submit": "Sign In",
+    "signingIn": "Signing in...",
+    "divider": "New to Eziox?",
+    "createAccount": "Create free account",
+    "stats": {
+      "creators": "Active Creators",
+      "clicks": "Total Clicks",
+      "uptime": "Uptime"
+    },
+    "footer": {
+      "ssl": "256-bit SSL",
+      "instant": "Instant Access"
+    },
+    "errors": {
+      "general": "Failed to sign in",
+      "securityRequired": "Please complete the security check",
+      "email": {
+        "invalid": "Please enter a valid email address"
+      },
+      "password": {
+        "required": "Password is required"
+      }
+    }
+  },
+  "signOut": {
+    "signingOut": "Signing out...",
+    "signedOut": "Successfully signed out",
+    "signingOutDescription": "You are being securely signed out. One moment please...",
+    "signedOutDescription": "You have been successfully signed out. All sessions have been terminated.",
+    "redirecting": "Redirecting in {{seconds}} seconds...",
+    "goHome": "Go to Homepage",
+    "security": "Secure Sign Out"
+  },
+  "signUp": {
+    "title": "Create your account",
+    "description": "Join {{count}}+ creators for free",
+    "badge": "Sign Up",
+    "name": {
+      "label": "Name",
+      "placeholder": "Your name"
+    },
+    "username": {
+      "label": "Username",
+      "placeholder": "username",
+      "preview": "Your link:"
+    },
+    "email": {
+      "label": "Email address",
+      "placeholder": "you@example.com"
+    },
+    "password": {
+      "label": "Password",
+      "placeholder": "••••••••",
+      "strength": {
+        "weak": "Weak",
+        "fair": "Fair",
+        "good": "Good",
+        "strong": "Strong",
+        "veryStrong": "Very Strong"
+      },
+      "requirements": {
+        "minLength": "8+ chars",
+        "uppercase": "A-Z",
+        "lowercase": "a-z",
+        "number": "0-9"
+      }
+    },
+    "confirmPassword": {
+      "label": "Confirm Password",
+      "placeholder": "••••••••"
+    },
+    "security": {
+      "title": "Security Check"
+    },
+    "terms": {
+      "text": "I agree to the",
+      "termsLink": "Terms",
+      "privacyLink": "Privacy Policy"
+    },
+    "submit": "Create Account",
+    "creating": "Creating...",
+    "divider": "Already have an account?",
+    "signInLink": "Sign In",
+    "features": {
+      "oneLink": {
+        "title": "One Link",
+        "desc": "All your content"
+      },
+      "analytics": {
+        "title": "Analytics",
+        "desc": "Track clicks"
+      },
+      "customize": {
+        "title": "Customize",
+        "desc": "Make it yours"
+      },
+      "creators": "Creators"
+    },
+    "footer": {
+      "ssl": "256-bit SSL",
+      "free": "Free forever"
+    },
+    "errors": {
+      "general": "Failed to create account",
+      "securityRequired": "Please complete the security check",
+      "name": {
+        "minLength": "Min 2 characters"
+      },
+      "username": {
+        "minLength": "Min 3 characters",
+        "maxLength": "Max 30 characters",
+        "invalid": "Letters, numbers, _ and - only"
+      },
+      "email": {
+        "invalid": "Please enter a valid email address"
+      },
+      "password": {
+        "minLength": "Min 8 characters",
+        "uppercase": "Need uppercase",
+        "lowercase": "Need lowercase",
+        "number": "Need number"
+      },
+      "confirmPassword": {
+        "required": "Confirm password",
+        "match": "Passwords don't match"
+      },
+      "terms": {
+        "required": "You must accept the terms"
+      }
+    }
+  },
+  "resetPassword": {
+    "title": "Set New Password",
+    "description": "Choose a secure new password for your account.",
+    "badge": "New Password",
+    "password": {
+      "label": "New Password",
+      "placeholder": "••••••••"
+    },
+    "confirmPassword": {
+      "label": "Confirm Password",
+      "placeholder": "••••••••"
+    },
+    "security": {
+      "title": "Security Check"
+    },
+    "submit": "Update Password",
+    "resetting": "Updating...",
+    "backToSignIn": "Back to Sign In",
+    "requirements": {
+      "title": "Password Requirements:",
+      "minLength": "At least 8 characters",
+      "uppercase": "Uppercase letter",
+      "lowercase": "Lowercase letter",
+      "number": "Number"
+    },
+    "success": {
+      "title": "Password Updated Successfully!",
+      "message": "Your password has been successfully changed. You can now sign in with your new password.",
+      "security": "Secure encryption applied",
+      "info": "All active sessions have been terminated",
+      "signIn": "Sign In"
+    },
+    "errors": {
+      "general": "Failed to reset password",
+      "securityRequired": "Please complete the security check",
+      "securityFailed": "Security check failed",
+      "password": {
+        "minLength": "Password must be at least 8 characters",
+        "uppercase": "Password must contain uppercase letter",
+        "lowercase": "Password must contain lowercase letter",
+        "number": "Password must contain number",
+        "match": "Passwords do not match"
+      }
+    }
+  },
+  "bioPage": {
+    "loading": "Loading profile...",
+    "notFound": {
+      "title": "@{{username}}",
+      "description": "This bio page doesn't exist yet.",
+      "claim": "Claim this username"
+    },
+    "private": {
+      "title": "Private Profile",
+      "description": "This profile is set to private."
+    },
+    "nav": {
+      "profile": "Profile",
+      "links": "Links",
+      "comments": "Comments"
+    },
+    "scrollToSeeLinks": "Scroll or click to see links",
+    "linksTitle": "Links",
+    "comments": {
+      "title": "Comments",
+      "comingSoon": "Coming soon...",
+      "placeholder": "Write a comment...",
+      "submit": "Post",
+      "noComments": "No comments yet",
+      "beFirst": "Be the first to leave a comment!",
+      "signInToComment": "Sign in to comment",
+      "writeComment": "Write Comment",
+      "delete": "Delete",
+      "report": "Report",
+      "pin": "Pin",
+      "unpin": "Unpin",
+      "pinned": "Pinned",
+      "like": "Like",
+      "reply": "Reply",
+      "showReplies": "Show replies",
+      "hideReplies": "Hide replies",
+      "deleted": "Comment deleted",
+      "reported": "Comment reported",
+      "sortNewest": "Newest first",
+      "sortOldest": "Oldest first",
+      "sortPopular": "Most popular",
+      "reportReasons": {
+        "spam": "Spam",
+        "harassment": "Harassment",
+        "hate_speech": "Hate speech",
+        "inappropriate": "Inappropriate content",
+        "other": "Other"
+      },
+      "reportModal": {
+        "title": "Report Comment",
+        "description": "Why are you reporting this comment?",
+        "additionalInfo": "Additional information (optional)",
+        "submit": "Submit Report",
+        "cancel": "Cancel"
+      },
+      "errors": {
+        "tooLong": "Comment is too long (max 500 characters)",
+        "empty": "Comment cannot be empty",
+        "inappropriate": "Your comment contains inappropriate content",
+        "failed": "Failed to post comment"
+      }
+    },
+    "stats": {
+      "views": "views",
+      "followers": "followers",
+      "following": "following",
+      "clicks": "clicks",
+      "joined": "Joined {{date}}"
+    },
+    "actions": {
+      "follow": "Follow",
+      "following": "Following",
+      "unfollow": "Unfollow",
+      "signInToFollow": "Sign in to Follow",
+      "share": "Share",
+      "copied": "Copied!",
+      "editProfile": "Edit Profile"
+    },
+    "links": {
+      "noLinks": "No links yet",
+      "noLinksDescription": "This creator hasn't added any links",
+      "badges": {
+        "discord": "Discord",
+        "github": "GitHub",
+        "x": "X",
+        "youtube": "YouTube",
+        "twitch": "Twitch",
+        "instagram": "Instagram",
+        "tiktok": "TikTok",
+        "audio": "Audio"
+      }
+    },
+    "branding": {
+      "createOwn": "Create your own Eziox page"
+    },
+    "layout": {
+      "card": "Card",
+      "tilt": "Tilt Cards",
+      "grid": "Grid",
+      "minimal": "Minimal",
+      "bento": "Bento"
+    },
+    "modal": {
+      "followers": "Followers",
+      "following": "Following",
+      "noFollowers": "No followers yet",
+      "noFollowing": "Not following anyone yet"
+    }
+  },
+  "analytics": {
+    "title": "Analytics",
+    "subtitle": "Track your profile performance",
+    "trackingFor": "Tracking for @{{username}}",
+    "timeRange": {
+      "7d": "7 Days",
+      "30d": "30 Days",
+      "90d": "90 Days",
+      "1y": "1 Year"
+    },
+    "refresh": "Refresh",
+    "export": "Export",
+    "exportCsv": "Export as CSV",
+    "exportJson": "Export as JSON",
+    "delayBanner": {
+      "title": "Analytics delayed by {{hours}}h",
+      "description": "Upgrade to Pro for realtime analytics",
+      "upgrade": "Upgrade"
+    },
+    "stats": {
+      "totalViews": "Total Views",
+      "linkClicks": "Link Clicks",
+      "followers": "Followers",
+      "avgDailyViews": "Avg. Daily Views",
+      "lastDays": "Last {{days}} days"
+    },
+    "chart": {
+      "title": "Activity Overview",
+      "views": "Views",
+      "clicks": "Clicks",
+      "noData": "No data available"
+    },
+    "topLinks": {
+      "title": "Top Links",
+      "subtitle": "By total clicks",
+      "noData": "No link data yet",
+      "addFirst": "Add your first link",
+      "requiresUpgrade": "Per-Link Analytics",
+      "upgradeDescription": "Track clicks on individual links"
+    },
+    "referrers": {
+      "title": "Traffic Sources",
+      "subtitle": "Where your visitors come from",
+      "noData": "No referrer data yet",
+      "shareProfile": "Share your profile to see traffic sources",
+      "requiresUpgrade": "Referrer Tracking",
+      "upgradeDescription": "See where your visitors come from",
+      "direct": "Direct"
+    },
+    "insights": {
+      "title": "Quick Insights",
+      "subtitle": "Performance summary",
+      "ctr": "Click-through Rate",
+      "viewsTrend": "Views Trend",
+      "engagementScore": "Engagement Score",
+      "period": "Period",
+      "optimizeProfile": "Optimize Profile"
+    },
+    "upgrade": {
+      "toPro": "Upgrade to Pro",
+      "toCreator": "Upgrade to Creator"
+    },
+    "realtime": {
+      "badge": "Realtime",
+      "description": "Data updates live"
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Manage your profile",
+    "welcome": "Welcome back",
+    "saved": "Saved!",
+    "saveFailed": "Failed to save",
+    "saving": "Saving...",
+    "unsavedChanges": "Unsaved changes",
+    "save": "Save",
+    "cancel": "Cancel",
+    "sidebar": {
+      "dashboard": "Dashboard",
+      "premium": "Premium",
+      "account": "Account",
+      "quickLinks": "Quick Links",
+      "admin": "Admin",
+      "adminPanel": "Admin Panel",
+      "partnerApps": "Partner Apps",
+      "bioLink": "Your Bio Link"
+    },
+    "tabs": {
+      "profile": "Profile",
+      "profileDesc": "Edit your profile info",
+      "links": "Links",
+      "linksDesc": "Manage your links",
+      "referrals": "Referrals",
+      "referralsDesc": "Invite friends",
+      "badges": "Badges",
+      "badgesDesc": "Your achievements",
+      "subscription": "Premium",
+      "subscriptionDesc": "Upgrade your plan",
+      "api": "API Access",
+      "apiDesc": "Manage API keys",
+      "settings": "Settings",
+      "settingsDesc": "Account settings",
+      "privacy": "Privacy",
+      "privacyDesc": "Privacy controls"
+    },
+    "quickLinks": {
+      "myBioPage": "My Bio Page",
+      "shortener": "Shortener",
+      "analytics": "Analytics",
+      "leaderboard": "Leaderboard",
+      "playground": "Playground",
+      "themeBuilder": "Theme Builder"
+    },
+    "stats": {
+      "profileViews": "Profile Views",
+      "linkClicks": "Link Clicks",
+      "followers": "Followers",
+      "referrals": "Referrals"
+    },
+    "qrCode": {
+      "title": "Bio Page QR Code",
+      "style": "Style",
+      "download": "Download",
+      "classic": "Classic",
+      "light": "Light",
+      "accent": "Accent",
+      "pink": "Pink",
+      "green": "Green"
+    },
+    "profile": {
+      "title": "Edit Profile",
+      "basicInfo": "Basic Information",
+      "displayName": "Display Name",
+      "username": "Username",
+      "bio": "Bio",
+      "bioPlaceholder": "Tell us about yourself...",
+      "website": "Website",
+      "location": "Location",
+      "pronouns": "Pronouns",
+      "customPronouns": "Custom Pronouns",
+      "birthday": "Birthday",
+      "creatorType": "Creator Type",
+      "socialLinks": "Social Links",
+      "addMore": "Add More",
+      "searchPlatforms": "Search platforms...",
+      "connectedServices": "Connected Services",
+      "connectedServicesDesc": "Link external accounts to enhance your profile",
+      "services": {
+        "spotify": {
+          "name": "Spotify",
+          "description": "Show what you're listening to",
+          "connectedSince": "Connected since {{date}}"
+        }
+      },
+      "banner": "Banner",
+      "bannerUrl": "Banner URL",
+      "avatar": "Avatar",
+      "avatarUrl": "Avatar URL",
+      "namePlaceholder": "Your name",
+      "usernamePlaceholder": "username",
+      "websitePlaceholder": "https://example.com",
+      "locationPlaceholder": "City, Country"
+    },
+    "links": {
+      "title": "Manage Links",
+      "addLink": "Add Link",
+      "editLink": "Edit Link",
+      "deleteLink": "Delete Link",
+      "linkTitle": "Title",
+      "linkUrl": "URL",
+      "linkDescription": "Description",
+      "linkIcon": "Icon",
+      "linkThumbnail": "Thumbnail",
+      "noLinks": "No links yet",
+      "addFirst": "Add your first link",
+      "dragToReorder": "Drag to reorder",
+      "clicks": "Clicks",
+      "advanced": "Advanced",
+      "schedule": "Schedule",
+      "analytics": "Analytics"
+    },
+    "referrals": {
+      "title": "Referral Program",
+      "yourCode": "Your Referral Code",
+      "yourLink": "Your Referral Link",
+      "copied": "Copied!",
+      "totalReferrals": "Total Referrals",
+      "pendingRewards": "Pending Rewards",
+      "earnedRewards": "Earned Rewards",
+      "howItWorks": "How it works",
+      "step1": "Share your link",
+      "step2": "Friends sign up",
+      "step3": "Both get rewards",
+      "recentReferrals": "Recent Referrals",
+      "noReferrals": "No referrals yet"
+    },
+    "badges": {
+      "title": "Your Badges",
+      "earned": "Earned",
+      "locked": "Locked",
+      "progress": "Progress",
+      "noBadges": "No badges yet",
+      "keepGoing": "Keep going to unlock badges!",
+      "items": {
+        "early_adopter": {
+          "name": "Early Adopter",
+          "description": "Joined during beta phase"
+        },
+        "verified": {
+          "name": "Verified",
+          "description": "Verified account"
+        },
+        "premium": {
+          "name": "Premium",
+          "description": "Premium subscriber"
+        },
+        "creator": {
+          "name": "Creator",
+          "description": "Creator tier member"
+        },
+        "lifetime": {
+          "name": "Lifetime",
+          "description": "Lifetime supporter"
+        },
+        "referrer_bronze": {
+          "name": "Referrer Bronze",
+          "description": "Referred 5+ users"
+        },
+        "referrer_silver": {
+          "name": "Referrer Silver",
+          "description": "Referred 25+ users"
+        },
+        "referrer_gold": {
+          "name": "Referrer Gold",
+          "description": "Referred 100+ users"
+        },
+        "community": {
+          "name": "Community",
+          "description": "Active community member"
+        },
+        "developer": {
+          "name": "Developer",
+          "description": "Uses API integration"
+        },
+        "supporter": {
+          "name": "Supporter",
+          "description": "Early supporter"
+        },
+        "partner": {
+          "name": "Partner",
+          "description": "Official partner"
+        },
+        "staff": {
+          "name": "Staff",
+          "description": "Eziox team member"
+        },
+        "bug_hunter": {
+          "name": "Bug Hunter",
+          "description": "Found and reported bugs"
+        },
+        "top_creator": {
+          "name": "Top Creator",
+          "description": "Top 10 on leaderboard"
+        }
+      }
+    },
+    "subscription": {
+      "title": "Premium Subscription",
+      "currentPlan": "Current Plan",
+      "free": "Free",
+      "pro": "Pro",
+      "creator": "Creator",
+      "lifetime": "Lifetime",
+      "upgrade": "Upgrade",
+      "downgrade": "Downgrade",
+      "cancel": "Cancel",
+      "lifetimeAccess": "Lifetime Access",
+      "features": "Features",
+      "billing": "Billing",
+      "nextBilling": "Next Billing",
+      "manageBilling": "Manage Billing",
+      "popular": "Popular",
+      "perMonth": "/month",
+      "plans": {
+        "free": {
+          "name": "Free",
+          "price": "$0",
+          "features": {
+            "links": "5 Links",
+            "analytics": "Basic Analytics",
+            "support": "Standard Support",
+            "themes": "Basic Themes"
+          }
+        },
+        "pro": {
+          "name": "Pro",
+          "price": "$2.99",
+          "features": {
+            "links": "Unlimited Links",
+            "analytics": "Advanced Analytics",
+            "themes": "Custom Themes",
+            "support": "Priority Support",
+            "api": "API Access",
+            "customization": "Advanced Customization"
+          }
+        },
+        "creator": {
+          "name": "Creator",
+          "price": "$5.99",
+          "features": {
+            "everything": "Everything in Pro",
+            "css": "Custom CSS",
+            "animated": "Animated Backgrounds",
+            "video": "Video Backgrounds",
+            "whitelabel": "White-label",
+            "support": "Dedicated Support",
+            "advanced": "Advanced Features"
+          }
+        },
+        "lifetime": {
+          "name": "Lifetime",
+          "price": "$29",
+          "features": {
+            "everything": "Everything in Creator",
+            "lifetime": "Lifetime Access",
+            "updates": "All Future Updates",
+            "priority": "Priority Support",
+            "exclusive": "Exclusive Features"
+          }
+        }
+      }
+    },
+    "api": {
+      "title": "API Access",
+      "subtitle": "Manage your API keys for programmatic access",
+      "apiKeys": "API Keys",
+      "createKey": "Create Key",
+      "deleteKey": "Delete Key",
+      "keyName": "Key Name",
+      "keyNamePlaceholder": "My API Key",
+      "lastUsed": "Last Used",
+      "created": "Created",
+      "expires": "Expires",
+      "never": "Never",
+      "noExpiry": "Never expires",
+      "noKeys": "No API keys yet",
+      "noKeysDescription": "Create your first API key to get started",
+      "documentation": "Documentation",
+      "rateLimit": "Rate Limit",
+      "rateLimitValue": "{{count}} requests/hour",
+      "usage": "Usage",
+      "requests": "Requests",
+      "active": "Active",
+      "inactive": "Inactive",
+      "expired": "Expired",
+      "keyCreated": "API Key Created!",
+      "keyCreatedWarning": "Copy this key now. You won't be able to see it again.",
+      "dismiss": "Dismiss",
+      "permissions": "Permissions",
+      "permissionsDescription": "Configure what this key can access",
+      "profile": "Profile",
+      "links": "Links",
+      "analytics": "Analytics",
+      "templates": "Templates",
+      "read": "Read",
+      "write": "Write",
+      "delete": "Delete",
+      "apply": "Apply",
+      "expiration": "Expiration",
+      "expirationOptions": {
+        "30": "30 days",
+        "90": "90 days",
+        "180": "180 days",
+        "365": "1 year",
+        "never": "Never"
+      },
+      "tierLimits": {
+        "title": "Your Limits",
+        "keys": "{{current}}/{{max}} keys",
+        "rate": "{{count}} req/hour"
+      },
+      "stats": {
+        "title": "Usage Statistics",
+        "totalRequests": "Total Requests",
+        "successRate": "Success Rate",
+        "avgResponseTime": "Avg Response Time"
+      }
+    },
+    "settings": {
+      "title": "Account Settings",
+      "subtitle": "Manage your account, security, and preferences",
+      "account": "Account",
+      "email": "Email",
+      "changeEmail": "Change Email",
+      "newEmail": "New email address",
+      "currentPassword": "Current password",
+      "emailChangeSuccess": "Verification email sent to your new address",
+      "emailVerified": "Verified",
+      "emailNotVerified": "Not verified",
+      "resendVerification": "Resend verification",
+      "password": "Password",
+      "changePassword": "Change Password",
+      "resetPassword": "Reset Password",
+      "security": "Security",
+      "twoFactor": "Two-Factor Authentication",
+      "twoFactorDesc": "Add an extra layer of security to your account",
+      "twoFactorEnabled": "Enabled",
+      "twoFactorDisabled": "Not enabled",
+      "enable2FA": "Enable 2FA",
+      "disable2FA": "Disable 2FA",
+      "setup2FA": "Set up 2FA",
+      "scan2FACode": "Scan this QR code with your authenticator app",
+      "enter2FACode": "Enter the 6-digit code from your app",
+      "recoveryCodes": "Recovery Codes",
+      "recoveryCodesDesc": "Save these codes in a safe place. Each code can only be used once.",
+      "recoveryCodesRemaining": "{{count}} codes remaining",
+      "regenerateCodes": "Regenerate Codes",
+      "downloadCodes": "Download Codes",
+      "sessions": "Active Sessions",
+      "sessionsDesc": "Manage your active login sessions",
+      "currentSession": "Current session",
+      "lastActive": "Last active",
+      "logoutSession": "Logout",
+      "logoutAll": "Logout All Sessions",
+      "logoutAllDesc": "This will log you out from all devices except this one",
+      "noOtherSessions": "No other active sessions",
+      "notifications": "Notifications",
+      "notificationsDesc": "Choose what notifications you receive",
+      "notifyNewFollower": "New follower",
+      "notifyMilestones": "Milestones",
+      "notifySystemUpdates": "System updates",
+      "emailNotifications": "Email Notifications",
+      "emailLoginAlerts": "Login alerts",
+      "emailSecurityAlerts": "Security alerts",
+      "emailWeeklyDigest": "Weekly digest",
+      "emailProductUpdates": "Product updates",
+      "privacy": "Privacy",
+      "privacyDesc": "Control your profile visibility and data",
+      "profileVisibility": "Profile visibility",
+      "profilePublic": "Public",
+      "profilePrivate": "Private",
+      "showActivity": "Show activity status",
+      "showActivityDesc": "Let others see when you're online",
+      "dataExport": "Data Export",
+      "dataExportDesc": "Download a copy of all your data",
+      "exportData": "Export Data",
+      "exportingData": "Preparing export...",
+      "dangerZone": "Danger Zone",
+      "deleteAccount": "Delete Account",
+      "deleteWarning": "This action cannot be undone. All your data will be permanently deleted.",
+      "deleteConfirmText": "Type DELETE to confirm",
+      "yourPassword": "Your password",
+      "language": "Language",
+      "theme": "Theme"
+    },
+    "privacy": {
+      "title": "Privacy Settings",
+      "subtitle": "Control your data and profile visibility",
+      "profileVisibility": "Profile Visibility",
+      "profileVisibilityDesc": "Control who can see your profile",
+      "public": "Public",
+      "publicDesc": "Anyone can view your profile",
+      "private": "Private",
+      "privateDesc": "Only you can view your profile",
+      "showActivity": "Show Activity",
+      "showActivityDesc": "Display your recent activity on your profile",
+      "dataCollection": "Data & Analytics",
+      "analyticsTracking": "Analytics Tracking",
+      "analyticsDesc": "Help us improve by allowing anonymous usage analytics",
+      "analyticsEnabled": "Enabled",
+      "analyticsDisabled": "Disabled",
+      "dataExport": "Export Your Data",
+      "dataExportDesc": "Download a copy of all your data in JSON format",
+      "dataExportButton": "Export Data",
+      "dataExportSuccess": "Your data export is ready for download",
+      "dataExporting": "Preparing export...",
+      "searchEngines": "Search Engine Indexing",
+      "searchEnginesDesc": "Allow search engines to index your profile",
+      "searchEnginesEnabled": "Your profile can appear in search results",
+      "searchEnginesDisabled": "Your profile is hidden from search engines",
+      "activityStatus": "Online Status",
+      "activityStatusDesc": "Show when you're online to other users",
+      "profileViews": "Profile View Count",
+      "profileViewsDesc": "Show total profile views on your page",
+      "lastSeen": "Last Seen",
+      "lastSeenDesc": "Show when you were last active",
+      "blockList": "Blocked Users",
+      "blockListDesc": "Manage users you've blocked",
+      "blockListEmpty": "You haven't blocked anyone",
+      "unblock": "Unblock",
+      "gdprTitle": "GDPR & Data Rights",
+      "gdprDesc": "Your rights under data protection regulations",
+      "rightToAccess": "Right to Access",
+      "rightToAccessDesc": "Request a copy of your personal data",
+      "rightToErasure": "Right to Erasure",
+      "rightToErasureDesc": "Request deletion of your personal data",
+      "rightToPortability": "Right to Portability",
+      "rightToPortabilityDesc": "Transfer your data to another service",
+      "export": "Export",
+      "settings": "Settings",
+      "analyticsNote": "We only collect anonymous usage data to improve our service. No personal information is shared with third parties.",
+      "accountInfo": "Account Information",
+      "accountUsername": "Username",
+      "accountCreated": "Account Created",
+      "accountEmail": "Email",
+      "accountTier": "Tier"
+    }
+  },
+  "playground": {
+    "title": "Playground",
+    "subtitle": "Customize your profile",
+    "preview": "Preview",
+    "reset": "Reset",
+    "resetSuccess": "All settings have been reset",
+    "backgroundType": "Background Type",
+    "imageUrl": "Image URL",
+    "videoUrl": "Video URL",
+    "videoLoop": "Loop",
+    "videoMuted": "Muted",
+    "cardLayout": "Card Layout",
+    "creatorOnly": "Creator Only",
+    "upgradeToCreator": "Upgrade to Creator to unlock this feature",
+    "upgradePlan": "Upgrade Plan",
+    "saved": "Saved!",
+    "saveFailed": "Failed to save",
+    "fontAdded": "Font added",
+    "fontRemoved": "Font removed",
+    "backupCreated": "Backup created",
+    "backupRestored": "Backup restored",
+    "backupDeleted": "Backup deleted"
+  },
+  "followModal": {
+    "followers": "Followers",
+    "following": "Following",
+    "searchPlaceholder": "Search users...",
+    "refresh": "Refresh",
+    "results": "result | results",
+    "loading": "Loading...",
+    "noResults": "No results found",
+    "noFollowers": "No followers yet",
+    "noFollowing": "No following yet",
+    "noFollowersDesc": "This user has no followers yet",
+    "noFollowingDesc": "This user is not following anyone yet",
+    "noUsersMatch": "No users match \"{{query}}\"",
+    "follow": "Follow",
+    "unfollow": "Unfollow"
+  },
+  "docs": {
+    "title": "Documentation",
+    "subtitle": "Everything you need to create and customize your perfect bio page.",
+    "searchPlaceholder": "Search documentation...",
+    "searchShortcut": "Press / to search",
+    "noResults": "No results found",
+    "noResultsDesc": "Try a different search term or browse all documentation.",
+    "clearSearch": "Clear Search",
+    "breadcrumb": {
+      "docs": "Docs",
+      "home": "Home"
+    },
+    "navigation": {
+      "previous": "Previous",
+      "next": "Next",
+      "backToDocs": "Back to Documentation",
+      "onThisPage": "On this page",
+      "tableOfContents": "Table of Contents"
+    },
+    "categories": {
+      "basics": "Getting Started",
+      "features": "Features",
+      "integrations": "Integrations",
+      "account": "Account & Security",
+      "support": "Help & Support"
+    },
+    "pages": {
+      "gettingStarted": {
+        "title": "Getting Started",
+        "description": "Learn how to create your Eziox bio page in minutes.",
+        "sections": {
+          "account": {
+            "title": "Creating your account",
+            "intro": "Welcome to Eziox! Follow these steps to launch your profile in just a few minutes:",
+            "steps": [
+              "Visit eziox.link/sign-up and choose your email + password",
+              "Pick a unique username — this becomes your public URL (eziox.link/username)",
+              "Complete the profile basics and accept the Terms",
+              "Verify your email by clicking the confirmation link"
+            ]
+          },
+          "profile": {
+            "title": "Setting up your profile",
+            "intro": "Head to Dashboard → Profile to personalize your page.",
+            "basicTitle": "Basic information",
+            "basicList": [
+              "Display Name · Public name shown across Eziox",
+              "Bio · 160 characters to tell visitors who you are",
+              "Avatar · Square image, 400×400px recommended",
+              "Banner · Wide hero image, 1200×400px recommended"
+            ],
+            "socialTitle": "Social links",
+            "socialIntro": "Enable the platforms you want to highlight:",
+            "socialList": [
+              "Twitter/X",
+              "Instagram",
+              "YouTube",
+              "TikTok",
+              "Twitch",
+              "Discord",
+              "GitHub",
+              "LinkedIn"
+            ]
+          },
+          "links": {
+            "title": "Adding links",
+            "intro": "Eziox supports unlimited links with rich customization.",
+            "steps": [
+              "Navigate to Dashboard → Links",
+              "Click “Add Link” and paste your URL",
+              "Give it a descriptive title and optional icon",
+              "Drag & drop to reorder links in seconds"
+            ],
+            "featuresTitle": "Link features",
+            "featuresList": [
+              "Descriptions · Provide extra context for each link",
+              "Scheduling · Set start/end dates for time-sensitive content",
+              "Analytics · View clicks, devices, referrers",
+              "Featured Styles · Spotlight key links with special layouts"
+            ]
+          },
+          "themes": {
+            "title": "Choosing a theme",
+            "intro": "Eziox ships with 31+ curated themes across 8 categories:",
+            "tableHeaders": ["Category", "Themes"],
+            "tableRows": [
+              ["General", "Eziox, Obsidian, Midnight, Ember"],
+              ["Gamer", "RGB Fusion, Cyber Neon, Arcade"],
+              ["VTuber", "Kawaii Bloom, Pastel Dream, Anime Night"],
+              ["Developer", "Terminal, GitHub Dark, VSCode"],
+              ["Streamer", "Twitch Pulse, Creator Tube, Kick Wave"],
+              ["Artist", "Canvas, Watercolor, Gallery"],
+              ["Minimal", "Lumen, Aurora, Mono"],
+              ["Premium", "Neon Tokyo, Ocean Depths, Forest Night"]
+            ],
+            "changeTitle": "To apply a theme:",
+            "changeSteps": [
+              "Open Dashboard → Customization",
+              "Preview any theme in the gallery",
+              "Fine-tune colors, fonts, and effects if needed",
+              "Click Apply to publish instantly"
+            ]
+          },
+          "next": {
+            "title": "Next steps",
+            "items": [
+              "Customize · Dive deeper into advanced styling options",
+              "Analytics · Monitor profile views and link performance",
+              "Templates · Apply ready-made layouts from the community",
+              "API Access · Automate workflows with API keys"
+            ],
+            "helpPrefix": "Need help?",
+            "contactLabel": "Contact Page",
+            "helpInfix": "or visit the",
+            "faqLabel": "FAQ",
+            "helpSuffix": "for more answers."
+          }
+        }
+      },
+      "customization": {
+        "title": "Customization",
+        "description": "Advanced styling options for your bio page.",
+        "sections": {
+          "themes": {
+            "title": "Themes",
+            "builtIn": "Built-in Themes",
+            "builtInIntro": "We offer 31+ professionally designed themes. Each theme includes:",
+            "builtInFeatures": [
+              "**Color Palette** - Primary, accent, background, and text colors",
+              "**Typography** - Display and body fonts from Google Fonts",
+              "**Effects** - Border radius, glow intensity, card styles"
+            ],
+            "categories": "Theme Categories",
+            "categoriesList": [
+              "**General** - Clean, versatile designs for everyone",
+              "**Gamer** - Vibrant neon colors and RGB effects",
+              "**VTuber** - Kawaii aesthetics and anime-inspired palettes",
+              "**Developer** - IDE-inspired themes (VS Code, GitHub, Terminal)",
+              "**Streamer** - Platform-branded themes (Twitch, YouTube, Kick)",
+              "**Artist** - Elegant, creative palettes",
+              "**Minimal** - Clean, distraction-free designs",
+              "**Premium** - Exclusive themes for Pro+ subscribers"
+            ]
+          },
+          "themeBuilder": {
+            "title": "Theme Builder",
+            "intro": "Create your own custom themes with the Theme Builder:",
+            "limits": "Custom Theme Limits",
+            "limitsIntro": "The number of custom themes you can create depends on your tier:",
+            "presets": "Color Presets",
+            "presetsIntro": "Start with one of our 8 color presets:",
+            "presetsList": [
+              "**Midnight** - Deep purple and violet",
+              "**Ocean** - Cool blues and cyans",
+              "**Forest** - Natural greens",
+              "**Sunset** - Warm oranges and reds",
+              "**Lavender** - Soft purples and pinks",
+              "**Rose** - Pink and magenta",
+              "**Gold** - Warm yellows and ambers",
+              "**Light** - Clean light mode"
+            ],
+            "colors": "Customizable Colors",
+            "colorsList": [
+              "Background & Background Secondary",
+              "Foreground & Foreground Muted",
+              "Primary & Accent",
+              "Border & Card"
+            ],
+            "fonts": "Available Fonts",
+            "fontsList": [
+              "Inter",
+              "Poppins",
+              "Montserrat",
+              "Space Grotesk",
+              "JetBrains Mono",
+              "Orbitron",
+              "Playfair Display",
+              "Roboto"
+            ]
+          },
+          "effects": {
+            "title": "Effects",
+            "glowIntensity": "Glow Intensity",
+            "glowOptions": [
+              "**None** - No glow effects",
+              "**Subtle** - Light, understated glow",
+              "**Medium** - Balanced glow effect",
+              "**Strong** - Bold, prominent glow"
+            ],
+            "borderRadius": "Border Radius",
+            "borderRadiusOptions": [
+              "**Sharp** - 4px corners for a modern look",
+              "**Rounded** - 12px corners (default)",
+              "**Pill** - Fully rounded corners"
+            ],
+            "cardStyle": "Card Style",
+            "cardStyleOptions": [
+              "**Flat** - Solid background cards",
+              "**Glass** - Glassmorphism with blur effect",
+              "**Neon** - Glowing border effects",
+              "**Gradient** - Gradient backgrounds"
+            ]
+          },
+          "backgrounds": {
+            "title": "Backgrounds",
+            "types": "Background Types",
+            "typesTable": [
+              ["Solid", "Single color background", "Free"],
+              ["Gradient", "Two-color gradient with angle control", "Free"],
+              ["Image", "Upload custom background image", "Free"],
+              ["Video", "Upload or link video background", "Free"],
+              ["Animated", "30+ animated presets", "Free"]
+            ],
+            "animated": "Animated Presets",
+            "animatedIntro": "Choose from 30+ animated backgrounds across 5 categories:",
+            "animatedCategories": [
+              "**VTuber/Anime** - Sakura petals, neon city, starfield, holographic shimmer",
+              "**Gamer** - Matrix rain, cyber grid, RGB wave, particles, glitch",
+              "**Developer** - Code rain, binary flow, terminal, circuit board",
+              "**Nature** - Aurora borealis, ocean waves, fireflies, clouds",
+              "**Abstract** - Fluid motion, geometric shapes, waves, bokeh"
+            ]
+          },
+          "bestPractices": {
+            "title": "Best Practices",
+            "tips": [
+              "**Contrast** - Ensure text is readable against your background",
+              "**Consistency** - Use complementary colors and fonts",
+              "**Performance** - Avoid heavy video backgrounds on mobile",
+              "**Accessibility** - Test with screen readers and keyboard navigation"
+            ],
+            "inspiration": "Need inspiration? Browse our Templates Gallery to see what others have created."
+          }
+        }
+      },
+      "analytics": {
+        "title": "Analytics",
+        "description": "Track your profile performance and visitor insights.",
+        "sections": {
+          "overview": {
+            "title": "Overview",
+            "intro": "Access your analytics at {{link}} or from your Dashboard: ",
+            "keyMetrics": "Key Metrics"
+          },
+          "metrics": {
+            "title": "Understanding Your Metrics",
+            "profileViews": "Profile Views",
+            "profileViewsDesc": "Total visits to your bio page",
+            "linkClicks": "Link Clicks",
+            "linkClicksDesc": "Total clicks across all links",
+            "clickRate": "Click Rate",
+            "clickRateDesc": "Clicks ÷ Views (engagement rate)",
+            "followers": "Followers",
+            "followersDesc": "Users following your profile"
+          },
+          "timeRanges": {
+            "title": "Time Ranges",
+            "description": "Filter your analytics by different time periods:",
+            "today": "Today",
+            "todayDesc": "Current day statistics",
+            "week": "This Week",
+            "weekDesc": "Last 7 days",
+            "month": "This Month",
+            "monthDesc": "Last 30 days",
+            "year": "This Year",
+            "yearDesc": "Last 365 days",
+            "allTime": "All Time",
+            "allTimeDesc": "Complete history"
+          },
+          "charts": {
+            "title": "Charts & Visualizations",
+            "description": "Your analytics dashboard includes interactive charts:",
+            "viewsOverTime": "Views Over Time",
+            "viewsOverTimeDesc": "Line chart showing daily/weekly/monthly views",
+            "topLinks": "Top Links",
+            "topLinksDesc": "Bar chart of your most clicked links",
+            "deviceBreakdown": "Device Breakdown",
+            "deviceBreakdownDesc": "Pie chart showing mobile vs desktop visitors",
+            "geoDistribution": "Geographic Distribution",
+            "geoDistributionDesc": "Map showing visitor locations"
+          },
+          "export": {
+            "title": "Exporting Data",
+            "description": "Export your analytics data for external analysis:",
+            "formats": "Available formats: CSV, JSON, PDF",
+            "howTo": "Click the Export button in your analytics dashboard to download your data."
+          },
+          "tips": {
+            "title": "Tips for Better Analytics",
+            "tip1": "Share your profile link consistently across platforms",
+            "tip2": "Use descriptive link titles to improve click-through rates",
+            "tip3": "Check your analytics weekly to identify trends",
+            "tip4": "Compare different time periods to measure growth"
+          }
+        }
+      },
+      "api": {
+        "title": "API Access",
+        "description": "Integrate with our REST API for advanced use cases.",
+        "sections": {
+          "overview": {
+            "title": "Overview",
+            "intro": "The Eziox API allows you to:",
+            "features": [
+              "Read your profile data",
+              "Manage your links programmatically",
+              "Access analytics data",
+              "Apply templates to your profile"
+            ]
+          },
+          "authentication": {
+            "title": "Authentication",
+            "intro": "All API requests require an API key. Generate one at",
+            "dashboardLink": "Dashboard → API Access",
+            "keyFormat": "API Key Format",
+            "keyFormatDesc": "API keys start with the prefix `ezx_` followed by 64 hexadecimal characters:",
+            "usingKey": "Using Your Key",
+            "usingKeyDesc": "Include your API key in the `Authorization` header:"
+          },
+          "rateLimits": {
+            "title": "Rate Limits",
+            "intro": "Rate limits vary by subscription tier:",
+            "tiers": {
+              "free": "Free",
+              "pro": "Pro",
+              "creator": "Creator",
+              "lifetime": "Lifetime"
+            },
+            "requestsPerHour": "Requests/Hour",
+            "headers": "Rate Limit Headers",
+            "headersDesc": "Every response includes rate limit information:"
+          },
+          "keyLimits": {
+            "title": "API Key Limits",
+            "intro": "The number of active API keys you can create depends on your tier:",
+            "activeKeys": "Active Keys"
+          },
+          "endpoints": {
+            "title": "Endpoints",
+            "baseUrl": "Base URL",
+            "getProfile": "Get Profile",
+            "getProfileDesc": "Returns your profile information including bio, avatar, and settings.",
+            "listLinks": "List Links",
+            "listLinksDesc": "Returns all your links with their settings.",
+            "createLink": "Create Link",
+            "createLinkDesc": "Creates a new link on your profile.",
+            "updateLink": "Update Link",
+            "updateLinkDesc": "Updates an existing link.",
+            "deleteLink": "Delete Link",
+            "deleteLinkDesc": "Permanently deletes a link.",
+            "getAnalytics": "Get Analytics",
+            "getAnalyticsDesc": "Returns analytics data for your profile.",
+            "parameters": "Parameters",
+            "paramLimit": "Max results (default: 50)",
+            "paramOffset": "Pagination offset",
+            "paramActive": "Filter by active status",
+            "paramPeriod": "Time period: 7d, 30d, 90d, 1y",
+            "paramMetric": "Metric type: views, clicks, all"
+          },
+          "permissions": {
+            "title": "Permissions",
+            "intro": "When creating an API key, you can configure granular permissions:",
+            "profileRead": "Read profile data",
+            "profileWrite": "Update profile settings",
+            "linksRead": "List and view links",
+            "linksWrite": "Create and update links",
+            "linksDelete": "Delete links",
+            "analyticsRead": "Access analytics data",
+            "templatesRead": "List available templates",
+            "templatesApply": "Apply templates to profile"
+          },
+          "errors": {
+            "title": "Error Codes",
+            "unauthorized": "Invalid or missing API key",
+            "forbidden": "Insufficient permissions for this action",
+            "notFound": "Requested resource not found",
+            "rateLimitExceeded": "Too many requests, please slow down",
+            "validationError": "Invalid request parameters",
+            "internalError": "Server error, please try again"
+          },
+          "moreInfo": {
+            "title": "More Information",
+            "text": "For interactive examples and detailed response schemas, check out our",
+            "apiReference": "API Reference"
+          }
+        }
+      },
+      "premium": {
+        "title": "Premium Features",
+        "description": "Explore Pro, Creator, and Lifetime plan benefits.",
+        "sections": {
+          "philosophy": {
+            "title": "Philosophy",
+            "quote": "Free is fully usable. Paid tiers improve comfort, control, and polish — not access.",
+            "text": "Everyone gets the core experience. Premium is about refinement, not restriction."
+          },
+          "comparison": {
+            "title": "Tier Comparison",
+            "headers": ["Feature", "Free", "Pro", "Creator", "Lifetime"],
+            "features": [
+              "Unlimited Links",
+              "All 31+ Themes",
+              "All Backgrounds",
+              "Media Embeds",
+              "Full Analytics",
+              "Custom CSS",
+              "Custom Fonts",
+              "Remove Branding",
+              "Profile Backups",
+              "Export Analytics",
+              "Custom Domain",
+              "Password Links",
+              "Email Collection",
+              "Priority Support"
+            ]
+          },
+          "pricing": {
+            "title": "Pricing",
+            "headers": ["Tier", "Price", "Billing"],
+            "rows": [
+              ["Free", "€0", "Forever"],
+              ["Pro", "€2.99", "Monthly"],
+              ["Creator", "€5.99", "Monthly"],
+              ["Lifetime", "€29", "One-time"]
+            ]
+          },
+          "free": {
+            "title": "Free Tier (Eziox Core)",
+            "intro": "Everything you need to create a beautiful bio page:",
+            "features": [
+              "Unlimited links and short links",
+              "All 31+ themes and color schemes",
+              "All backgrounds (solid, gradient, image, video, animated)",
+              "All animations and effects",
+              "Spotify, SoundCloud & YouTube embeds",
+              "Social media icons and integrations",
+              "Profile picture & banner customization",
+              "Full analytics dashboard (30-day retention)",
+              "Mobile-optimized responsive design"
+            ],
+            "limitationsTitle": "Limitations",
+            "limitations": [
+              "Subtle \"Powered by Eziox\" branding",
+              "No custom CSS or fonts",
+              "No analytics export"
+            ]
+          },
+          "pro": {
+            "title": "Pro Tier",
+            "intro": "Essential power features for customization enthusiasts:",
+            "cssTitle": "Custom CSS",
+            "cssText": "Write your own styles to override any element:",
+            "cssExample": "/* Make links glow on hover */\n.link-card:hover {\n  box-shadow: 0 0 30px var(--primary);\n}",
+            "otherTitle": "Other Pro Features",
+            "otherFeatures": [
+              "Custom Fonts · Upload up to 4 fonts",
+              "Remove Branding · Hide the footer link",
+              "Profile Backups · Automatic with restore",
+              "Export Analytics · CSV or JSON",
+              "Pro Badge · Show your support"
+            ]
+          },
+          "creator": {
+            "title": "Creator Tier",
+            "intro": "Professional toolkit for serious creators:",
+            "domainTitle": "Custom Domain (Coming Soon)",
+            "domainText": "Use your own domain (e.g., links.yourdomain.com). This feature is on our roadmap and will be available soon.",
+            "otherTitle": "Other Creator Features",
+            "otherFeatures": [
+              "Password-Protected Links",
+              "Link Expiration",
+              "Email Collection with GDPR-compliant forms",
+              "Custom Open Graph images",
+              "Priority Support",
+              "Early Access to new features",
+              "Creator Badge"
+            ]
+          },
+          "lifetime": {
+            "title": "Lifetime Tier",
+            "intro": "Everything in Creator, forever:",
+            "features": [
+              "One-time payment · No recurring charges",
+              "All future features included",
+              "Exclusive Lifetime badge",
+              "Priority support forever",
+              "Never pay again"
+            ]
+          },
+          "upgrade": {
+            "title": "How to Upgrade",
+            "steps": [
+              "Go to Pricing",
+              "Choose your plan",
+              "Complete payment via Stripe",
+              "Features activate instantly"
+            ],
+            "ctaPrefix": "Ready to upgrade? Visit our",
+            "ctaLink": "Pricing Page",
+            "ctaSuffix": "to get started."
+          }
+        }
+      },
+      "spotifyIntegration": {
+        "title": "Spotify Integration",
+        "description": "Display your currently playing music on your profile.",
+        "sections": {
+          "overview": {
+            "title": "Overview",
+            "intro": "The Spotify integration displays a \"Now Playing\" widget on your bio page with:",
+            "features": [
+              "Album artwork with blur background",
+              "Song title and artist name",
+              "Live progress bar with real-time updates",
+              "Direct link to the track on Spotify",
+              "\"Not listening\" state when offline or paused"
+            ]
+          },
+          "setup": {
+            "title": "Setup",
+            "connect": {
+              "title": "Step 1: Connect Your Account",
+              "steps": [
+                "Go to Dashboard → Settings",
+                "Find the Spotify section",
+                "Click Connect Spotify",
+                "Authorize Eziox to access your listening activity"
+              ]
+            },
+            "privacy": {
+              "title": "Step 2: Configure Privacy",
+              "intro": "After connecting, you can control visibility:",
+              "options": [
+                "Show on Profile · Toggle to show/hide the widget",
+                "Show When Offline · Display \"Not listening\" or hide completely"
+              ]
+            }
+          },
+          "howItWorks": {
+            "title": "How It Works",
+            "realtime": {
+              "title": "Real-Time Updates",
+              "text": "The widget refreshes every 10 seconds to show your current track."
+            },
+            "tokens": {
+              "title": "Token Management",
+              "items": [
+                "Tokens securely stored (encrypted with AES-256-GCM)",
+                "Automatic token refresh when expired",
+                "Disconnect anytime from Settings"
+              ]
+            },
+            "privacy": {
+              "title": "Privacy",
+              "items": [
+                "We only access your \"currently playing\" data",
+                "No access to playlists, saved tracks, or listening history",
+                "Your Spotify data is never shared with third parties"
+              ]
+            }
+          },
+          "troubleshooting": {
+            "title": "Troubleshooting",
+            "notShowing": {
+              "title": "Widget Not Showing",
+              "items": [
+                "Check that Spotify is connected in Settings",
+                "Ensure \"Show on Profile\" is enabled",
+                "Make sure you're actively playing music (not paused)"
+              ]
+            },
+            "wrongTrack": {
+              "title": "Wrong Track Showing",
+              "items": [
+                "The widget updates every 10 seconds",
+                "Try refreshing the page",
+                "Check if you're playing on the correct device"
+              ]
+            },
+            "connection": {
+              "title": "Connection Issues",
+              "items": [
+                "Disconnect Spotify in Settings",
+                "Clear your browser cache",
+                "Reconnect your account"
+              ]
+            }
+          },
+          "disconnect": {
+            "title": "Disconnect",
+            "intro": "To remove the Spotify integration:",
+            "steps": [
+              "Go to Dashboard → Settings",
+              "Click Disconnect in the Spotify section",
+              "Your tokens are immediately deleted"
+            ],
+            "revokePrefix": "You can also revoke access from",
+            "revokeLink": "Spotify Account Settings",
+            "revokeSuffix": "."
+          },
+          "platforms": {
+            "title": "Supported Platforms",
+            "intro": "The integration works with:",
+            "items": [
+              "Spotify Desktop App",
+              "Spotify Web Player",
+              "Spotify Mobile App",
+              "Spotify on smart speakers (limited)"
+            ]
+          },
+          "future": {
+            "title": "Future Features",
+            "intro": "Coming soon:",
+            "items": [
+              "Recently played tracks",
+              "Top artists/tracks display",
+              "Playlist embeds",
+              "Apple Music integration"
+            ],
+            "note": "These features are not yet implemented."
+          }
+        }
+      },
+      "security": {
+        "title": "Security",
+        "description": "Security features and best practices for your account.",
+        "sections": {
+          "accountSecurity": {
+            "title": "Account Security",
+            "passwords": {
+              "title": "Strong Passwords",
+              "intro": "We enforce strict password requirements:",
+              "requirements": [
+                "Minimum 8 characters",
+                "At least one uppercase letter",
+                "At least one lowercase letter",
+                "At least one number"
+              ],
+              "advanced": "Additional protections:",
+              "advancedList": [
+                "Common password detection (blocks top 1000+ passwords)",
+                "Keyboard pattern detection (blocks qwerty, asdf, etc.)",
+                "Sequential character detection (blocks 123456, abcdef)",
+                "Breached password check via HaveIBeenPwned API"
+              ]
+            },
+            "twoFactor": {
+              "title": "Two-Factor Authentication (2FA)",
+              "intro": "Add an extra layer of security with TOTP-based 2FA:",
+              "steps": [
+                "Go to Dashboard → Settings → Security",
+                "Click Enable 2FA",
+                "Scan the QR code with your authenticator app",
+                "Enter the 6-digit code to confirm"
+              ],
+              "appsTitle": "Supported Apps:",
+              "apps": ["Google Authenticator", "Authy", "1Password", "Bitwarden"]
+            },
+            "recoveryCodes": {
+              "title": "Recovery Codes",
+              "intro": "When you enable 2FA, you receive 10 recovery codes:",
+              "features": [
+                "Each code can only be used once",
+                "Store them in a safe place (download as .txt available)",
+                "Use them if you lose access to your authenticator",
+                "Regenerate codes anytime from Settings"
+              ]
+            },
+            "loginProtection": {
+              "title": "Login Protection",
+              "intro": "Multiple layers protect your login:",
+              "features": [
+                "Account lockout after 5 failed attempts (30 minutes)",
+                "Login notification emails with device & location info",
+                "Session expiry (7 days, or 30 days with Remember Me)",
+                "Cloudflare Turnstile bot protection on all auth forms"
+              ]
+            }
+          },
+          "dataProtection": {
+            "title": "Data Protection",
+            "encryption": {
+              "title": "Encryption",
+              "items": [
+                "Passwords · Hashed with bcrypt (cost factor 12)",
+                "Sessions · 64-character cryptographically secure tokens",
+                "OAuth Tokens · Encrypted with AES-256-GCM",
+                "2FA Secrets · Encrypted at rest with AES-256-GCM"
+              ]
+            },
+            "cookies": {
+              "title": "Secure Cookies",
+              "items": [
+                "HTTP-Only · Prevents JavaScript access (XSS protection)",
+                "Secure Flag · Only sent over HTTPS",
+                "SameSite=Lax · CSRF protection"
+              ]
+            },
+            "ipAnonymization": {
+              "title": "IP Anonymization (GDPR)",
+              "intro": "We anonymize IP addresses for privacy compliance:",
+              "items": [
+                "IPv4: Last octet zeroed (e.g., 192.168.1.x)",
+                "IPv6: Last 80 bits zeroed",
+                "Full IPs never stored in analytics",
+                "Hashed IPs used only for session security"
+              ]
+            }
+          },
+          "botProtection": {
+            "title": "Bot Protection & Rate Limiting",
+            "turnstile": {
+              "title": "Cloudflare Turnstile",
+              "intro": "Invisible bot protection without annoying CAPTCHAs:",
+              "features": [
+                "Protects sign-up, sign-in, and password reset",
+                "Privacy-preserving verification",
+                "No user interaction required"
+              ]
+            },
+            "rateLimiting": {
+              "title": "Rate Limiting",
+              "intro": "We limit requests to prevent abuse:",
+              "headers": ["Endpoint", "Limit"],
+              "rows": [
+                ["Login attempts", "5 per 30 minutes"],
+                ["Password reset", "3 per hour"],
+                ["API requests", "1,000–10,000/hour (tier-based)"],
+                ["File uploads", "10 per minute"],
+                ["Profile views tracking", "1,000 per minute"]
+              ]
+            },
+            "ddos": {
+              "title": "DDoS Protection",
+              "intro": "Infrastructure-level protection:",
+              "features": [
+                "Cloudflare WAF & Bot Fight Mode",
+                "Global CDN with edge caching",
+                "Automatic traffic filtering"
+              ]
+            }
+          },
+          "inputValidation": {
+            "title": "Input Validation & Sanitization",
+            "intro": "All user inputs are validated and sanitized:",
+            "items": [
+              "Zod schema validation on all server functions",
+              "Email validation with DNS/MX verification",
+              "Disposable email filter (300+ blocked domains)",
+              "Custom CSS sanitization (sandboxed)",
+              "URL validation and sanitization",
+              "File upload MIME type validation (magic bytes)",
+              "Maximum file size: 5MB"
+            ]
+          },
+          "privacyControls": {
+            "title": "Privacy Controls",
+            "dataExport": {
+              "title": "Data Export",
+              "intro": "Download all your data anytime:",
+              "steps": [
+                "Go to Dashboard → Settings → Privacy & Data",
+                "Click Export My Data",
+                "Receive a JSON file with all your information"
+              ]
+            },
+            "accountDeletion": {
+              "title": "Account Deletion",
+              "intro": "Permanently delete your account:",
+              "steps": [
+                "Go to Dashboard → Settings → Danger Zone",
+                "Click Delete Account",
+                "Confirm with your password",
+                "All data permanently deleted"
+              ]
+            },
+            "cookieConsent": {
+              "title": "Cookie Consent",
+              "intro": "Granular control over cookies:",
+              "features": [
+                "Essential cookies only by default",
+                "Optional analytics cookies (Vercel Analytics)",
+                "Preferences saved and respected"
+              ]
+            }
+          },
+          "bestPractices": {
+            "title": "Best Practices",
+            "dos": {
+              "title": "Do's",
+              "items": [
+                "Use a unique, strong password",
+                "Enable two-factor authentication",
+                "Keep recovery codes in a safe place",
+                "Review login notification emails",
+                "Sign out on shared devices"
+              ]
+            },
+            "donts": {
+              "title": "Don'ts",
+              "items": [
+                "Share your password with anyone",
+                "Use the same password on multiple sites",
+                "Click suspicious links in emails",
+                "Ignore login notifications",
+                "Store passwords in plain text"
+              ]
+            }
+          },
+          "reporting": {
+            "title": "Reporting Security Issues",
+            "intro": "Found a vulnerability? Contact us responsibly:",
+            "contact": [
+              "Email: security@eziox.link",
+              "Response Time: Within 48 hours"
+            ],
+            "note": "We appreciate responsible disclosure and may offer recognition for valid reports."
+          },
+          "compliance": {
+            "title": "Compliance",
+            "gdpr": {
+              "title": "GDPR / DSGVO",
+              "items": [
+                "Data minimization",
+                "Right to access (data export)",
+                "Right to deletion (account deletion)",
+                "IP anonymization",
+                "Consent-based processing",
+                "Privacy policy & cookie policy"
+              ]
+            },
+            "contact": "Questions about security? Contact us at",
+            "email": "security@eziox.link"
+          },
+          "planned": {
+            "title": "Planned Security Features",
+            "intro": "The following features are on our roadmap:",
+            "items": [
+              "Bug bounty program",
+              "Security audit reports",
+              "Advanced malware scanning for uploads",
+              "Hardware security key support (WebAuthn)"
+            ],
+            "note": "These features are not yet implemented."
+          }
+        }
+      },
+      "faq": {
+        "title": "FAQ",
+        "description": "Frequently asked questions and answers.",
+        "sections": {
+          "general": {
+            "title": "General",
+            "whatIsEziox": "What is Eziox?",
+            "whatIsEzioxAnswer": "Eziox is a modern bio link platform that lets you create a personalized page with all your important links in one place. Share one link instead of many.",
+            "isFree": "Is Eziox free?",
+            "isFreeAnswer": "Yes! Eziox Core is completely free with unlimited links, all themes, full analytics, and more. Premium tiers offer additional customization options.",
+            "vsLinktree": "How is Eziox different from Linktree?",
+            "vsLinktreeFeatures": [
+              "**No paywalls on core features** - All themes and analytics are free",
+              "**Modern design** - 31+ themes with animated backgrounds",
+              "**Better privacy** - No third-party tracking, GDPR compliant",
+              "**Open development** - Transparent about our features and roadmap"
+            ]
+          },
+          "account": {
+            "title": "Account",
+            "changeUsername": "How do I change my username?",
+            "changeUsernameSteps": [
+              "Go to Dashboard → Profile",
+              "Edit the Username field",
+              "Click Save Changes"
+            ],
+            "changeUsernameNote": "Note: Your old username becomes available for others immediately.",
+            "deleteAccount": "How do I delete my account?",
+            "deleteAccountSteps": [
+              "Go to Dashboard → Settings → Danger Zone",
+              "Click Delete Account",
+              "Confirm with your password"
+            ],
+            "deleteAccountNote": "All your data will be permanently deleted within 30 days.",
+            "forgotPassword": "I forgot my password",
+            "forgotPasswordSteps": [
+              "Go to Sign In",
+              "Click Forgot Password",
+              "Enter your email address",
+              "Check your inbox for a reset link"
+            ],
+            "cantLogin": "Why can't I log in?",
+            "cantLoginIntro": "Common reasons:",
+            "cantLoginReasons": [
+              "**Wrong password** - Try the password reset",
+              "**Account locked** - Wait 30 minutes after 5 failed attempts",
+              "**2FA required** - Enter your authenticator code",
+              "**Email not verified** - Check your inbox for verification email"
+            ]
+          },
+          "links": {
+            "title": "Links",
+            "howManyLinks": "How many links can I add?",
+            "howManyLinksAnswer": "Unlimited! There's no limit on the number of links.",
+            "reorderLinks": "Can I reorder my links?",
+            "reorderLinksAnswer": "Yes! Drag and drop links in the Dashboard to reorder them.",
+            "scheduleLinks": "Can I schedule links?",
+            "scheduleLinksAnswer": "Yes! Set start and end dates for links to appear/disappear automatically. Available for all users.",
+            "trackClicks": "Can I track link clicks?",
+            "trackClicksIntro": "Yes! Every link has detailed analytics including:",
+            "trackClicksFeatures": [
+              "Total clicks",
+              "Device breakdown",
+              "Geographic data",
+              "Click heatmap by hour"
+            ]
+          },
+          "customization": {
+            "title": "Customization",
+            "changeTheme": "How do I change my theme?",
+            "changeThemeSteps": [
+              "Go to Dashboard → Customization",
+              "Browse the theme gallery",
+              "Click a theme to preview",
+              "Click Apply to save"
+            ],
+            "customColors": "Can I use custom colors?",
+            "customColorsAnswer": "Yes! Use the Theme Builder to create custom color schemes. Free users get 1 custom theme, Pro gets 5, and Creator/Lifetime get 10.",
+            "customDomain": "Can I use my own domain?",
+            "customDomainAnswer": "Custom domains are on our roadmap for the Creator tier, but the feature is not available yet. Join the waitlist via support@eziox.link to get notified."
+          },
+          "premium": {
+            "title": "Premium",
+            "paymentMethods": "What payment methods do you accept?",
+            "paymentMethodsIntro": "Payments are processed securely through Stripe. We currently support:",
+            "paymentMethodsList": [
+              "Visa",
+              "Mastercard",
+              "American Express",
+              "Apple Pay / Google Pay (via Stripe)"
+            ],
+            "cancelSubscription": "Can I cancel my subscription?",
+            "cancelSubscriptionAnswer": "Yes, cancel anytime from Dashboard → Subscription. You'll keep access until the end of your billing period.",
+            "refunds": "Do you offer refunds?",
+            "refundsAnswer": "Refunds are handled manually according to our cancellation policy. Email support@eziox.link with your subscription details and we'll review your request.",
+            "lifetimeIncludes": "What's included in Lifetime?",
+            "lifetimeIncludesIntro": "Everything in Creator tier, forever:",
+            "lifetimeIncludesList": [
+              "All current features",
+              "All future features",
+              "No recurring payments",
+              "Exclusive Lifetime badge"
+            ]
+          },
+          "technical": {
+            "title": "Technical",
+            "browsers": "What browsers are supported?",
+            "browsersList": [
+              "Chrome 90+",
+              "Firefox 90+",
+              "Safari 14+",
+              "Edge 90+"
+            ],
+            "mobileApp": "Is there a mobile app?",
+            "mobileAppAnswer": "Not yet, but our website is fully mobile-optimized. A PWA is planned for the future.",
+            "hasApi": "Do you have an API?",
+            "hasApiAnswer": "Yes! Generate API keys in Dashboard → API Access. See our API Documentation for details."
+          },
+          "support": {
+            "title": "Support",
+            "contactSupport": "How do I contact support?",
+            "contactSupportOptions": [
+              "Email: support@eziox.link",
+              "Contact Form: eziox.link/contact",
+              "Discord: Coming soon"
+            ],
+            "foundBug": "I found a bug!",
+            "foundBugIntro": "Report bugs via:",
+            "foundBugOptions": [
+              "GitHub Issues: github.com/Eziox-Development",
+              "Email: bugs@eziox.link"
+            ],
+            "featureRequest": "I have a feature request",
+            "featureRequestIntro": "We love feedback! Submit feature requests via:",
+            "featureRequestOptions": [
+              "GitHub Discussions",
+              "Email: feedback@eziox.link"
+            ]
+          },
+          "stillQuestions": {
+            "title": "Still have questions?",
+            "text": "Contact us and we'll be happy to help!"
+          }
+        }
+      }
+    },
+    "help": {
+      "title": "Need More Help?",
+      "contactSupport": "Contact Support",
+      "apiReference": "API Reference",
+      "viewPricing": "View Pricing"
+    },
+    "meta": {
+      "readTime": "{{minutes}} min read",
+      "lastUpdated": "Last updated {{date}}",
+      "editPage": "Edit this page",
+      "reportIssue": "Report an issue"
+    },
+    "sidebar": {
+      "collapse": "Collapse sidebar",
+      "expand": "Expand sidebar"
+    }
+  }
+}

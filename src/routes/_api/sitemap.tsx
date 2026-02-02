@@ -8,8 +8,9 @@ export const Route = createFileRoute('/_api/sitemap')({
         const baseUrl = siteConfig.metadata.url
         const currentDate = new Date().toISOString()
 
-        // Static pages for Eziox platform
-        const staticPages = [
+        // Only PUBLIC pages that should be indexed by search engines
+        // DO NOT include: auth pages, protected pages, API routes, admin pages
+        const publicPages = [
           {
             url: '',
             changefreq: 'daily',
@@ -28,18 +29,7 @@ export const Route = createFileRoute('/_api/sitemap')({
             priority: '0.8',
             lastmod: currentDate,
           },
-          {
-            url: '/sign-in',
-            changefreq: 'monthly',
-            priority: '0.6',
-            lastmod: currentDate,
-          },
-          {
-            url: '/sign-up',
-            changefreq: 'monthly',
-            priority: '0.9',
-            lastmod: currentDate,
-          },
+          // Documentation pages (public knowledge base)
           {
             url: '/docs',
             changefreq: 'weekly',
@@ -94,12 +84,31 @@ export const Route = createFileRoute('/_api/sitemap')({
             priority: '0.7',
             lastmod: currentDate,
           },
+          // Legal pages
+          {
+            url: '/terms',
+            changefreq: 'monthly',
+            priority: '0.3',
+            lastmod: currentDate,
+          },
+          {
+            url: '/privacy',
+            changefreq: 'monthly',
+            priority: '0.3',
+            lastmod: currentDate,
+          },
+          {
+            url: '/imprint',
+            changefreq: 'yearly',
+            priority: '0.2',
+            lastmod: currentDate,
+          },
         ]
 
         // Generate sitemap XML
         const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${staticPages
+${publicPages
   .map(
     ({ url, lastmod, changefreq, priority }) => `  <url>
     <loc>${baseUrl}${url}</loc>

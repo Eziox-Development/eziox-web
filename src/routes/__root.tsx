@@ -1,8 +1,10 @@
 import {
   HeadContent,
+  Outlet,
   Scripts,
   createRootRouteWithContext,
   redirect,
+  useRouteContext,
 } from '@tanstack/react-router'
 import appCss from '../styles.css?url'
 
@@ -10,6 +12,7 @@ import type { QueryClient } from '@tanstack/react-query'
 import { Analytics } from '@vercel/analytics/react'
 import { Toaster } from '@/components/ui/sonner'
 import { CookieConsent } from '@/components/CookieConsent'
+import { EmailVerificationBanner } from '@/components/EmailVerificationBanner'
 import { ThemeProvider as PortfolioThemeProvider } from '@/components/layout/ThemeProvider'
 import { siteConfig } from '@/lib/site-config'
 import { authMiddleware } from '@/server/functions/auth'
@@ -18,9 +21,18 @@ import {
   canBypassMaintenanceFn,
 } from '@/server/functions/maintenance'
 import { disableDevTools } from '@/lib/disable-devtools'
+import '@/lib/license-guard'
+import '@/lib/i18n'
 
 interface MyRouterContext {
   queryClient: QueryClient
+  currentUser?: {
+    id: string
+    email: string
+    username: string
+    emailVerified: boolean
+    [key: string]: unknown
+  } | null
 }
 
 const scripts: React.DetailedHTMLProps<
@@ -39,17 +51,16 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
   loader: async ({ location }) => {
     const { currentUser } = await authMiddleware()
 
-    // Skip maintenance check for maintenance page itself
-    if (!location.pathname.startsWith('/maintenance')) {
+    if (location.pathname !== '/maintenance') {
       const maintenanceStatus = await getMaintenanceStatusFn()
 
       if (maintenanceStatus.enabled) {
-        // Check if user can bypass maintenance
         const { canBypass } = await canBypassMaintenanceFn()
 
         if (!canBypass) {
-          // Redirect to maintenance page
-          throw redirect({ to: '/maintenance' })
+          throw redirect({
+            to: '/maintenance',
+          })
         }
       }
     }
@@ -184,7 +195,25 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
   },
 
   shellComponent: RootDocument,
+  component: RootComponent,
 })
+
+function RootComponent() {
+  const { currentUser } = useRouteContext({ from: '__root__' })
+
+  // Show email verification banner for logged-in users with unverified email
+  const showVerificationBanner =
+    currentUser && !currentUser.emailVerified && currentUser.email
+
+  return (
+    <>
+      {showVerificationBanner && (
+        <EmailVerificationBanner email={currentUser.email} />
+      )}
+      <Outlet />
+    </>
+  )
+}
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   // Disable DevTools in production (runs once on mount)

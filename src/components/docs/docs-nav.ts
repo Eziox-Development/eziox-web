@@ -1,0 +1,68 @@
+import type { DocNavItem } from './DocsLayout'
+
+export const DOCS_NAV: DocNavItem[] = [
+  {
+    slug: 'getting-started',
+    titleKey: 'docs.pages.gettingStarted.title',
+    descriptionKey: 'docs.pages.gettingStarted.description',
+    category: 'basics',
+    icon: 'Rocket',
+    readTime: 5,
+  },
+  {
+    slug: 'customization',
+    titleKey: 'docs.pages.customization.title',
+    descriptionKey: 'docs.pages.customization.description',
+    category: 'basics',
+    icon: 'Palette',
+    readTime: 8,
+  },
+  {
+    slug: 'analytics',
+    titleKey: 'docs.pages.analytics.title',
+    descriptionKey: 'docs.pages.analytics.description',
+    category: 'features',
+    icon: 'BarChart3',
+    readTime: 6,
+  },
+  {
+    slug: 'api',
+    titleKey: 'docs.pages.api.title',
+    descriptionKey: 'docs.pages.api.description',
+    category: 'features',
+    icon: 'Key',
+    readTime: 10,
+  },
+  {
+    slug: 'premium',
+    titleKey: 'docs.pages.premium.title',
+    descriptionKey: 'docs.pages.premium.description',
+    category: 'features',
+    icon: 'Crown',
+    readTime: 4,
+  },
+  {
+    slug: 'spotify-integration',
+    titleKey: 'docs.pages.spotifyIntegration.title',
+    descriptionKey: 'docs.pages.spotifyIntegration.description',
+    category: 'integrations',
+    icon: 'Music',
+    readTime: 7,
+  },
+  {
+    slug: 'security',
+    titleKey: 'docs.pages.security.title',
+    descriptionKey: 'docs.pages.security.description',
+    category: 'account',
+    icon: 'Shield',
+    readTime: 5,
+  },
+  {
+    slug: 'faq',
+    titleKey: 'docs.pages.faq.title',
+    descriptionKey: 'docs.pages.faq.description',
+    category: 'support',
+    icon: 'HelpCircle',
+    readTime: 3,
+  },
+]

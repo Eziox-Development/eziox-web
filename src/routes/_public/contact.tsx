@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { useMutation } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
+import { useTranslation } from 'react-i18next'
 import { submitContactFormFn } from '@/server/functions/contact'
 import { useTheme } from '@/components/layout/ThemeProvider'
 import { useAuth } from '@/hooks/use-auth'
@@ -14,7 +15,8 @@ import {
   User,
   HelpCircle,
   Bug,
-  Handshake,
+  CreditCard,
+  UserCog,
   Sparkles,
   Shield,
   CheckCircle2,
@@ -43,103 +45,19 @@ export const Route = createFileRoute('/_public/contact')({
   component: ContactPage,
 })
 
-const CONTACT_CATEGORIES = [
-  {
-    id: 'general',
-    label: 'General Inquiry',
-    icon: HelpCircle,
-    color: '#6366f1',
-    description: 'Questions about Eziox',
-    responseTime: '24-48h',
-  },
-  {
-    id: 'support',
-    label: 'Technical Support',
-    icon: Bug,
-    color: '#ef4444',
-    description: 'Report bugs or issues',
-    responseTime: '12-24h',
-  },
-  {
-    id: 'partnership',
-    label: 'Partnership',
-    icon: Handshake,
-    color: '#22c55e',
-    description: 'Business opportunities',
-    responseTime: '48-72h',
-  },
-  {
-    id: 'feature',
-    label: 'Feature Request',
-    icon: Sparkles,
-    color: '#f59e0b',
-    description: 'Suggest new features',
-    responseTime: '24-48h',
-  },
-  {
-    id: 'security',
-    label: 'Security',
-    icon: Shield,
-    color: '#8b5cf6',
-    description: 'Report vulnerabilities',
-    responseTime: 'Priority',
-  },
-] as const
+type CategoryId =
+  | 'general'
+  | 'support'
+  | 'billing'
+  | 'account'
+  | 'feature'
+  | 'security'
 
-type CategoryId = (typeof CONTACT_CATEGORIES)[number]['id']
-
-const QUICK_LINKS = [
-  {
-    icon: SiDiscord,
-    label: 'Discord Community',
-    href: 'https://discord.com/invite/KD84DmNA89',
-    description: 'Join 1,000+ members',
-    color: '#5865F2',
-  },
-  {
-    icon: SiGithub,
-    label: 'GitHub Issues',
-    href: 'https://github.com/Eziox-Development/eziox-web/issues',
-    description: 'Report bugs',
-    color: '#ffffff',
-  },
-  {
-    icon: Mail,
-    label: 'Email Us',
-    href: 'mailto:support@eziox.link',
-    description: 'support@eziox.link',
-    color: '#22c55e',
-  },
-]
-
-const FAQ_ITEMS = [
-  {
-    q: 'How quickly will I get a response?',
-    a: 'We typically respond within 24-48 hours for general inquiries. Support tickets are prioritized and usually answered within 12-24 hours. Security reports receive immediate attention.',
-    icon: Clock,
-  },
-  {
-    q: 'Can I report security vulnerabilities?',
-    a: 'Yes! Please select the "Security" category for responsible disclosure. Security reports are treated with highest priority and you may be eligible for our bug bounty program.',
-    icon: Shield,
-  },
-  {
-    q: 'How can I become a partner?',
-    a: 'Select "Partnership" and tell us about your platform, audience, and collaboration ideas. We\'re always looking for creators and businesses to work with.',
-    icon: Handshake,
-  },
-  {
-    q: 'Is there a Discord community?',
-    a: "Yes! Join our Discord server for instant help from the community and team. It's the fastest way to get answers and connect with other creators.",
-    icon: MessageSquare,
-  },
-]
-
-function ContactPage() {
+export function ContactPage() {
+  const { t } = useTranslation()
   const { theme } = useTheme()
   const { currentUser } = useAuth()
   const submitContact = useServerFn(submitContactFormFn)
-
   const [category, setCategory] = useState<CategoryId>('general')
   const [name, setName] = useState(currentUser?.name || '')
   const [email, setEmail] = useState(currentUser?.email || '')
@@ -149,26 +67,118 @@ function ContactPage() {
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null)
   const [formErrors, setFormErrors] = useState<Record<string, string>>({})
 
-  const borderRadius =
-    theme.effects.borderRadius === 'pill'
-      ? '9999px'
-      : theme.effects.borderRadius === 'sharp'
-        ? '8px'
-        : '16px'
-  const cardRadius =
-    theme.effects.borderRadius === 'pill'
-      ? '24px'
-      : theme.effects.borderRadius === 'sharp'
-        ? '8px'
-        : '16px'
-  const glowOpacity =
-    theme.effects.glowIntensity === 'strong'
-      ? 0.4
-      : theme.effects.glowIntensity === 'medium'
-        ? 0.25
-        : theme.effects.glowIntensity === 'subtle'
-          ? 0.15
-          : 0
+  const cardRadius = useMemo(
+    () =>
+      theme.effects.borderRadius === 'pill'
+        ? '24px'
+        : theme.effects.borderRadius === 'sharp'
+          ? '8px'
+          : '16px',
+    [theme.effects.borderRadius],
+  )
+
+  const glowOpacity = useMemo(
+    () =>
+      theme.effects.glowIntensity === 'strong'
+        ? 0.4
+        : theme.effects.glowIntensity === 'medium'
+          ? 0.25
+          : theme.effects.glowIntensity === 'subtle'
+            ? 0.15
+            : 0,
+    [theme.effects.glowIntensity],
+  )
+
+  const categories = useMemo(
+    () => [
+      {
+        id: 'general' as const,
+        label: t('contact.categories.general.label'),
+        icon: HelpCircle,
+        color: '#6366f1',
+        description: t('contact.categories.general.description'),
+        responseTime: t('contact.responseTime.24-48h'),
+      },
+      {
+        id: 'support' as const,
+        label: t('contact.categories.support.label'),
+        icon: Bug,
+        color: '#ef4444',
+        description: t('contact.categories.support.description'),
+        responseTime: t('contact.responseTime.12-24h'),
+      },
+      {
+        id: 'billing' as const,
+        label: t('contact.categories.billing.label'),
+        icon: CreditCard,
+        color: '#22c55e',
+        description: t('contact.categories.billing.description'),
+        responseTime: t('contact.responseTime.24-48h'),
+      },
+      {
+        id: 'account' as const,
+        label: t('contact.categories.account.label'),
+        icon: UserCog,
+        color: '#06b6d4',
+        description: t('contact.categories.account.description'),
+        responseTime: t('contact.responseTime.1-3d'),
+      },
+      {
+        id: 'feature' as const,
+        label: t('contact.categories.feature.label'),
+        icon: Sparkles,
+        color: '#f59e0b',
+        description: t('contact.categories.feature.description'),
+        responseTime: t('contact.responseTime.24-48h'),
+      },
+      {
+        id: 'security' as const,
+        label: t('contact.categories.security.label'),
+        icon: Shield,
+        color: '#8b5cf6',
+        description: t('contact.categories.security.description'),
+        responseTime: t('contact.responseTime.priority'),
+      },
+    ],
+    [t],
+  )
+
+  const quickLinks = useMemo(
+    () => [
+      {
+        icon: SiDiscord,
+        label: t('contact.quickLinks.discord.title'),
+        href: 'https://discord.com/invite/KD84DmNA89',
+        description: t('contact.quickLinks.discord.description'),
+        color: '#5865F2',
+      },
+      {
+        icon: SiGithub,
+        label: t('contact.quickLinks.github.title'),
+        href: 'https://github.com/Eziox-Development/eziox-web/issues',
+        description: t('contact.quickLinks.github.description'),
+        color: '#ffffff',
+      },
+      {
+        icon: Mail,
+        label: t('contact.quickLinks.email.title'),
+        href: 'mailto:contact@eziox.link',
+        description: t('contact.quickLinks.email.description'),
+        color: '#22c55e',
+      },
+    ],
+    [t],
+  )
+
+  const faqItems = useMemo(
+    () => [
+      { q: t('contact.faq.q1'), a: t('contact.faq.a1'), icon: Clock },
+      { q: t('contact.faq.q2'), a: t('contact.faq.a2'), icon: Shield },
+      { q: t('contact.faq.q3'), a: t('contact.faq.a3'), icon: CreditCard },
+      { q: t('contact.faq.q4'), a: t('contact.faq.a4'), icon: MessageSquare },
+    ],
+    [t],
+  )
 
   useEffect(() => {
     if (currentUser?.name) setName(currentUser.name)
@@ -182,43 +192,48 @@ function ContactPage() {
       }),
     onSuccess: () => {
       setSubmitted(true)
-      toast.success('Message sent successfully!')
+      toast.success(t('contact.success.title'))
     },
     onError: (error: Error) => {
       toast.error(error.message || 'Failed to send message')
     },
   })
 
-  const validateForm = (): boolean => {
+  const validateForm = useCallback((): boolean => {
     const errors: Record<string, string> = {}
 
-    if (!name.trim()) errors.name = 'Name is required'
-    if (!email.trim()) errors.email = 'Email is required'
+    if (!name.trim()) errors.name = t('contact.validation.nameRequired')
+    if (!email.trim()) errors.email = t('contact.validation.emailRequired')
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
-      errors.email = 'Invalid email format'
-    if (!subject.trim()) errors.subject = 'Subject is required'
+      errors.email = t('contact.validation.emailInvalid')
+    if (!subject.trim())
+      errors.subject = t('contact.validation.subjectRequired')
     else if (subject.length < 5)
-      errors.subject = 'Subject too short (min 5 chars)'
-    if (!message.trim()) errors.message = 'Message is required'
+      errors.subject = t('contact.validation.subjectTooShort')
+    if (!message.trim())
+      errors.message = t('contact.validation.messageRequired')
     else if (message.length < 20)
-      errors.message = 'Message too short (min 20 chars)'
+      errors.message = t('contact.validation.messageTooShort')
     else if (message.length > 2000)
-      errors.message = 'Message too long (max 2000 chars)'
+      errors.message = t('contact.validation.messageTooLong')
 
     setFormErrors(errors)
     return Object.keys(errors).length === 0
-  }
+  }, [name, email, subject, message, t])
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!validateForm()) {
-      toast.error('Please fix the errors in the form')
-      return
-    }
-    submitMutation.mutate()
-  }
+  const handleSubmit = useCallback(
+    (e: React.FormEvent) => {
+      e.preventDefault()
+      if (!validateForm()) {
+        toast.error(t('contact.validation.fixErrors'))
+        return
+      }
+      submitMutation.mutate()
+    },
+    [validateForm, submitMutation, t],
+  )
 
-  const selectedCategory = CONTACT_CATEGORIES.find((c) => c.id === category)
+  const selectedCategory = categories.find((c) => c.id === category)
 
   if (submitted) {
     return (
@@ -234,25 +249,19 @@ function ContactPage() {
           animate={{ opacity: 1, scale: 1 }}
           className="max-w-lg w-full text-center p-10"
           style={{
-            background:
-              theme.effects.cardStyle === 'glass'
-                ? `${theme.colors.card}80`
-                : theme.colors.card,
+            background: theme.colors.card,
             border: `1px solid ${theme.colors.border}`,
             borderRadius: cardRadius,
-            backdropFilter:
-              theme.effects.cardStyle === 'glass' ? 'blur(10px)' : undefined,
           }}
         >
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
-            className="w-24 h-24 mx-auto mb-8 flex items-center justify-center"
+            className="w-24 h-24 mx-auto mb-8 flex items-center justify-center rounded-full"
             style={{
               background:
                 'linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(34, 197, 94, 0.1))',
-              borderRadius: '50%',
             }}
           >
             <CheckCircle2 size={48} className="text-green-500" />
@@ -265,18 +274,19 @@ function ContactPage() {
               fontFamily: theme.typography.displayFont,
             }}
           >
-            Message Sent!
+            {t('contact.success.title')}
           </h1>
           <p
             className="text-lg mb-2"
             style={{ color: theme.colors.foregroundMuted }}
           >
-            Thank you for reaching out to us.
+            {t('contact.success.subtitle')}
           </p>
           <p className="mb-8" style={{ color: theme.colors.foregroundMuted }}>
-            We'll get back to you within{' '}
+            {t('contact.success.responseTime')}{' '}
             <strong style={{ color: theme.colors.foreground }}>
-              {selectedCategory?.responseTime || '24-48h'}
+              {selectedCategory?.responseTime ||
+                t('contact.responseTime.24-48h')}
             </strong>
             .
           </p>
@@ -288,26 +298,31 @@ function ContactPage() {
                 style={{
                   background: theme.colors.backgroundSecondary,
                   border: `1px solid ${theme.colors.border}`,
-                  borderRadius,
+                  borderRadius: cardRadius,
                   color: theme.colors.foreground,
                 }}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-                <Home size={18} /> Back to Home
+                <Home size={18} /> {t('contact.success.backHome')}
               </motion.button>
             </Link>
-            <button
-              onClick={() => setSubmitted(false)}
-              className="flex items-center gap-2 px-6 py-3 font-medium"
+            <motion.button
+              onClick={() => {
+                setSubmitted(false)
+                setSubject('')
+                setMessage('')
+              }}
+              className="flex items-center gap-2 px-6 py-3 font-medium text-white"
               style={{
                 background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
-                borderRadius,
-                color: '#fff',
+                borderRadius: cardRadius,
               }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
             >
-              <Send size={18} /> Send Another
-            </button>
+              <Send size={18} /> {t('contact.success.sendAnother')}
+            </motion.button>
           </div>
         </motion.div>
       </div>
@@ -322,29 +337,25 @@ function ContactPage() {
         fontFamily: theme.typography.bodyFont,
       }}
     >
-      {/* Background Effects */}
-      <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
-        <motion.div
-          className="absolute top-20 left-1/4 w-[600px] h-[600px] rounded-full blur-[150px]"
+      {/* Background */}
+      <div className="fixed inset-0 pointer-events-none -z-10">
+        <div
+          className="absolute top-20 left-1/4 w-[600px] h-[600px] rounded-full blur-[200px]"
           style={{
             background: theme.colors.primary,
-            opacity: glowOpacity * 0.5,
+            opacity: glowOpacity * 0.3,
           }}
-          animate={{ scale: [1, 1.1, 1], x: [0, 30, 0] }}
-          transition={{ duration: 20, repeat: Infinity }}
         />
-        <motion.div
-          className="absolute bottom-40 right-1/4 w-[500px] h-[500px] rounded-full blur-[120px]"
+        <div
+          className="absolute bottom-40 right-1/4 w-[500px] h-[500px] rounded-full blur-[150px]"
           style={{
             background: theme.colors.accent,
-            opacity: glowOpacity * 0.4,
+            opacity: glowOpacity * 0.2,
           }}
-          animate={{ scale: [1.1, 1, 1.1], y: [0, -30, 0] }}
-          transition={{ duration: 25, repeat: Infinity }}
         />
       </div>
 
-      {/* Hero Section */}
+      {/* Hero */}
       <section className="relative pt-28 pb-12 px-4">
         <div className="max-w-5xl mx-auto text-center">
           <motion.div
@@ -352,11 +363,10 @@ function ContactPage() {
             animate={{ opacity: 1, y: 0 }}
           >
             <motion.div
-              className="inline-flex items-center gap-2 px-5 py-2.5 mb-6"
+              className="inline-flex items-center gap-2 px-5 py-2.5 mb-6 rounded-full"
               style={{
                 background: `${theme.colors.primary}15`,
                 border: `1px solid ${theme.colors.primary}30`,
-                borderRadius,
               }}
             >
               <MessageSquare
@@ -367,7 +377,7 @@ function ContactPage() {
                 className="text-sm font-semibold"
                 style={{ color: theme.colors.foreground }}
               >
-                Get in Touch
+                {t('contact.badge')}
               </span>
             </motion.div>
 
@@ -378,18 +388,17 @@ function ContactPage() {
                 fontFamily: theme.typography.displayFont,
               }}
             >
-              How Can We{' '}
+              {t('contact.hero.title')}{' '}
               <span
-                className="bg-clip-text text-transparent"
                 style={{
-                  backgroundImage: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
+                  color: theme.colors.primary,
                   textShadow:
                     glowOpacity > 0
-                      ? `0 0 40px ${theme.colors.primary}40`
+                      ? `0 0 40px ${theme.colors.primary}60`
                       : undefined,
                 }}
               >
-                Help
+                {t('contact.hero.titleHighlight')}
               </span>
               ?
             </h1>
@@ -397,8 +406,7 @@ function ContactPage() {
               className="text-lg max-w-2xl mx-auto"
               style={{ color: theme.colors.foregroundMuted }}
             >
-              Have a question, feedback, or want to partner with us? We'd love
-              to hear from you.
+              {t('contact.hero.subtitle')}
             </p>
           </motion.div>
         </div>
@@ -408,7 +416,7 @@ function ContactPage() {
       <section className="py-8 px-4">
         <div className="max-w-5xl mx-auto">
           <div className="grid md:grid-cols-3 gap-4">
-            {QUICK_LINKS.map((link, i) => (
+            {quickLinks.map((link, i) => (
               <motion.a
                 key={link.label}
                 href={link.href}
@@ -417,30 +425,17 @@ function ContactPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 + i * 0.05 }}
-                className="group p-5 flex items-center gap-4 transition-all"
+                className="group p-5 flex items-center gap-4"
                 style={{
-                  background:
-                    theme.effects.cardStyle === 'glass'
-                      ? `${theme.colors.card}80`
-                      : theme.colors.card,
+                  background: theme.colors.card,
                   border: `1px solid ${theme.colors.border}`,
                   borderRadius: cardRadius,
-                  backdropFilter:
-                    theme.effects.cardStyle === 'glass'
-                      ? 'blur(10px)'
-                      : undefined,
                 }}
-                whileHover={{
-                  y: -4,
-                  boxShadow: `0 20px 40px ${theme.colors.primary}15`,
-                }}
+                whileHover={{ y: -4 }}
               >
                 <div
-                  className="w-12 h-12 flex items-center justify-center shrink-0"
-                  style={{
-                    background: `${link.color}15`,
-                    borderRadius: '12px',
-                  }}
+                  className="w-12 h-12 flex items-center justify-center shrink-0 rounded-xl"
+                  style={{ background: `${link.color}15` }}
                 >
                   <link.icon size={24} style={{ color: link.color }} />
                 </div>
@@ -482,16 +477,9 @@ function ContactPage() {
               <div
                 className="sticky top-24 p-6"
                 style={{
-                  background:
-                    theme.effects.cardStyle === 'glass'
-                      ? `${theme.colors.card}80`
-                      : theme.colors.card,
+                  background: theme.colors.card,
                   border: `1px solid ${theme.colors.border}`,
                   borderRadius: cardRadius,
-                  backdropFilter:
-                    theme.effects.cardStyle === 'glass'
-                      ? 'blur(10px)'
-                      : undefined,
                 }}
               >
                 <h2
@@ -502,11 +490,11 @@ function ContactPage() {
                   }}
                 >
                   <FileText size={20} style={{ color: theme.colors.primary }} />
-                  Select Category
+                  {t('contact.categories.title')}
                 </h2>
 
                 <div className="space-y-2">
-                  {CONTACT_CATEGORIES.map((cat) => (
+                  {categories.map((cat) => (
                     <motion.button
                       key={cat.id}
                       onClick={() => setCategory(cat.id)}
@@ -523,11 +511,8 @@ function ContactPage() {
                       whileTap={{ scale: 0.99 }}
                     >
                       <div
-                        className="w-10 h-10 flex items-center justify-center shrink-0"
-                        style={{
-                          background: `${cat.color}20`,
-                          borderRadius: '10px',
-                        }}
+                        className="w-10 h-10 flex items-center justify-center shrink-0 rounded-xl"
+                        style={{ background: `${cat.color}20` }}
                       >
                         <cat.icon size={20} style={{ color: cat.color }} />
                       </div>
@@ -550,17 +535,14 @@ function ContactPage() {
                           <motion.div
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
-                            className="w-5 h-5 flex items-center justify-center"
-                            style={{
-                              background: cat.color,
-                              borderRadius: '50%',
-                            }}
+                            className="w-5 h-5 flex items-center justify-center rounded-full"
+                            style={{ background: cat.color }}
                           >
                             <CheckCircle2 size={12} className="text-white" />
                           </motion.div>
                         )}
                         <span
-                          className="text-[10px] font-medium px-2 py-0.5"
+                          className="text-[10px] font-medium px-2 py-0.5 rounded"
                           style={{
                             background:
                               cat.id === 'security'
@@ -570,7 +552,6 @@ function ContactPage() {
                               cat.id === 'security'
                                 ? '#ef4444'
                                 : theme.colors.foregroundMuted,
-                            borderRadius: '4px',
                           }}
                         >
                           {cat.responseTime}
@@ -580,13 +561,10 @@ function ContactPage() {
                   ))}
                 </div>
 
-                {/* Response Time Info */}
+                {/* Tips */}
                 <div
-                  className="mt-6 p-4"
-                  style={{
-                    background: theme.colors.backgroundSecondary,
-                    borderRadius: cardRadius,
-                  }}
+                  className="mt-6 p-4 rounded-xl"
+                  style={{ background: theme.colors.backgroundSecondary }}
                 >
                   <div className="flex items-center gap-2 mb-3">
                     <Zap size={16} style={{ color: theme.colors.primary }} />
@@ -594,7 +572,7 @@ function ContactPage() {
                       className="text-sm font-semibold"
                       style={{ color: theme.colors.foreground }}
                     >
-                      Quick Tips
+                      {t('contact.tips.title')}
                     </span>
                   </div>
                   <ul
@@ -603,15 +581,15 @@ function ContactPage() {
                   >
                     <li className="flex items-start gap-2">
                       <span style={{ color: theme.colors.primary }}>•</span>
-                      Be specific about your issue or question
+                      {t('contact.tips.tip1')}
                     </li>
                     <li className="flex items-start gap-2">
                       <span style={{ color: theme.colors.primary }}>•</span>
-                      Include relevant details (browser, device, etc.)
+                      {t('contact.tips.tip2')}
                     </li>
                     <li className="flex items-start gap-2">
                       <span style={{ color: theme.colors.primary }}>•</span>
-                      Check Discord for faster community support
+                      {t('contact.tips.tip3')}
                     </li>
                   </ul>
                 </div>
@@ -628,16 +606,9 @@ function ContactPage() {
                 onSubmit={handleSubmit}
                 className="p-6 lg:p-8"
                 style={{
-                  background:
-                    theme.effects.cardStyle === 'glass'
-                      ? `${theme.colors.card}80`
-                      : theme.colors.card,
+                  background: theme.colors.card,
                   border: `1px solid ${theme.colors.border}`,
                   borderRadius: cardRadius,
-                  backdropFilter:
-                    theme.effects.cardStyle === 'glass'
-                      ? 'blur(10px)'
-                      : undefined,
                 }}
               >
                 {/* Form Header */}
@@ -648,11 +619,8 @@ function ContactPage() {
                   {selectedCategory && (
                     <>
                       <div
-                        className="w-12 h-12 flex items-center justify-center"
-                        style={{
-                          background: `${selectedCategory.color}20`,
-                          borderRadius: '14px',
-                        }}
+                        className="w-12 h-12 flex items-center justify-center rounded-xl"
+                        style={{ background: `${selectedCategory.color}20` }}
                       >
                         <selectedCategory.icon
                           size={24}
@@ -674,10 +642,9 @@ function ContactPage() {
                         </p>
                       </div>
                       <div
-                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium"
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg"
                         style={{
                           background: theme.colors.backgroundSecondary,
-                          borderRadius,
                           color: theme.colors.foregroundMuted,
                         }}
                       >
@@ -689,41 +656,50 @@ function ContactPage() {
                 </div>
 
                 <div className="space-y-5">
-                  {/* Name & Email Row */}
+                  {/* Name & Email */}
                   <div className="grid md:grid-cols-2 gap-4">
                     <FormField
-                      label="Your Name"
+                      label={t('contact.form.name')}
                       icon={User}
                       value={name}
                       onChange={setName}
-                      placeholder="John Doe"
+                      placeholder={t('contact.form.namePlaceholder')}
                       error={formErrors.name}
                       theme={theme}
-                      borderRadius={borderRadius}
+                      cardRadius={cardRadius}
+                      onClearError={() =>
+                        setFormErrors((prev) => ({ ...prev, name: '' }))
+                      }
                     />
                     <FormField
-                      label="Email Address"
+                      label={t('contact.form.email')}
                       icon={Mail}
                       type="email"
                       value={email}
                       onChange={setEmail}
-                      placeholder="john@example.com"
+                      placeholder={t('contact.form.emailPlaceholder')}
                       error={formErrors.email}
                       theme={theme}
-                      borderRadius={borderRadius}
+                      cardRadius={cardRadius}
+                      onClearError={() =>
+                        setFormErrors((prev) => ({ ...prev, email: '' }))
+                      }
                     />
                   </div>
 
                   {/* Subject */}
                   <FormField
-                    label="Subject"
+                    label={t('contact.form.subject')}
                     icon={MessageSquare}
                     value={subject}
                     onChange={setSubject}
-                    placeholder="Brief description of your inquiry"
+                    placeholder={t('contact.form.subjectPlaceholder')}
                     error={formErrors.subject}
                     theme={theme}
-                    borderRadius={borderRadius}
+                    cardRadius={cardRadius}
+                    onClearError={() =>
+                      setFormErrors((prev) => ({ ...prev, subject: '' }))
+                    }
                   />
 
                   {/* Message */}
@@ -736,7 +712,7 @@ function ContactPage() {
                         size={14}
                         style={{ color: theme.colors.primary }}
                       />
-                      Message
+                      {t('contact.form.message')}
                     </label>
                     <textarea
                       value={message}
@@ -744,7 +720,7 @@ function ContactPage() {
                         setMessage(e.target.value)
                         setFormErrors((prev) => ({ ...prev, message: '' }))
                       }}
-                      placeholder="Please describe your question, issue, or feedback in detail..."
+                      placeholder={t('contact.form.messagePlaceholder')}
                       rows={6}
                       className="w-full px-4 py-3 outline-none transition-all resize-none"
                       style={{
@@ -776,17 +752,17 @@ function ContactPage() {
                     </div>
                   </div>
 
-                  {/* Submit Button */}
+                  {/* Submit */}
                   <motion.button
                     type="submit"
                     disabled={submitMutation.isPending}
-                    className="w-full flex items-center justify-center gap-3 px-6 py-4 font-semibold text-white transition-all disabled:opacity-50"
+                    className="w-full flex items-center justify-center gap-3 px-6 py-4 font-semibold text-white disabled:opacity-50"
                     style={{
                       background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
-                      borderRadius,
+                      borderRadius: cardRadius,
                       boxShadow:
                         glowOpacity > 0
-                          ? `0 8px 32px ${theme.colors.primary}40`
+                          ? `0 15px 40px ${theme.colors.primary}40`
                           : undefined,
                     }}
                     whileHover={{ scale: 1.02, y: -2 }}
@@ -795,12 +771,12 @@ function ContactPage() {
                     {submitMutation.isPending ? (
                       <>
                         <Loader2 size={20} className="animate-spin" />
-                        Sending...
+                        {t('contact.form.sending')}
                       </>
                     ) : (
                       <>
                         <Send size={20} />
-                        Send Message
+                        {t('contact.form.submit')}
                       </>
                     )}
                   </motion.button>
@@ -810,15 +786,15 @@ function ContactPage() {
                     className="text-xs text-center"
                     style={{ color: theme.colors.foregroundMuted }}
                   >
-                    By submitting this form, you agree to our{' '}
+                    {t('contact.form.privacyNote')}{' '}
                     <Link
                       to="/privacy"
                       className="underline hover:no-underline"
                       style={{ color: theme.colors.primary }}
                     >
-                      Privacy Policy
+                      {t('contact.form.privacyLink')}
                     </Link>
-                    . We'll never share your information with third parties.
+                    {t('contact.form.privacyNote2')}
                   </p>
                 </div>
               </form>
@@ -827,7 +803,7 @@ function ContactPage() {
         </div>
       </section>
 
-      {/* FAQ Section */}
+      {/* FAQ */}
       <section
         className="py-20 px-4"
         style={{ background: theme.colors.backgroundSecondary }}
@@ -846,16 +822,18 @@ function ContactPage() {
                 fontFamily: theme.typography.displayFont,
               }}
             >
-              Frequently Asked{' '}
-              <span style={{ color: theme.colors.primary }}>Questions</span>
+              {t('contact.faq.title')}{' '}
+              <span style={{ color: theme.colors.primary }}>
+                {t('contact.faq.titleHighlight')}
+              </span>
             </h2>
             <p style={{ color: theme.colors.foregroundMuted }}>
-              Quick answers to common questions
+              {t('contact.faq.subtitle')}
             </p>
           </motion.div>
 
           <div className="space-y-3">
-            {FAQ_ITEMS.map((faq, i) => (
+            {faqItems.map((faq, i) => (
               <motion.div
                 key={faq.q}
                 initial={{ opacity: 0, y: 10 }}
@@ -874,11 +852,8 @@ function ContactPage() {
                   className="w-full p-5 flex items-center gap-4 text-left"
                 >
                   <div
-                    className="w-10 h-10 shrink-0 flex items-center justify-center"
-                    style={{
-                      background: `${theme.colors.primary}15`,
-                      borderRadius: '10px',
-                    }}
+                    className="w-10 h-10 shrink-0 flex items-center justify-center rounded-xl"
+                    style={{ background: `${theme.colors.primary}15` }}
                   >
                     <faq.icon
                       size={18}
@@ -893,12 +868,9 @@ function ContactPage() {
                   </span>
                   <motion.div
                     animate={{ rotate: expandedFaq === i ? 180 : 0 }}
-                    transition={{ duration: 0.2 }}
+                    style={{ color: theme.colors.foregroundMuted }}
                   >
-                    <ChevronDown
-                      size={20}
-                      style={{ color: theme.colors.foregroundMuted }}
-                    />
+                    <ChevronDown size={18} />
                   </motion.div>
                 </button>
                 <AnimatePresence>
@@ -907,16 +879,14 @@ function ContactPage() {
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: 'auto', opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.2 }}
+                      className="overflow-hidden"
                     >
-                      <div className="px-5 pb-5 pl-[72px]">
-                        <p
-                          className="text-sm leading-relaxed"
-                          style={{ color: theme.colors.foregroundMuted }}
-                        >
-                          {faq.a}
-                        </p>
-                      </div>
+                      <p
+                        className="px-5 pb-5 pl-[72px]"
+                        style={{ color: theme.colors.foregroundMuted }}
+                      >
+                        {faq.a}
+                      </p>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -929,27 +899,31 @@ function ContactPage() {
   )
 }
 
+interface FormFieldProps {
+  label: string
+  icon: React.ElementType
+  value: string
+  onChange: (value: string) => void
+  placeholder: string
+  error?: string
+  type?: string
+  theme: ReturnType<typeof useTheme>['theme']
+  cardRadius: string
+  onClearError: () => void
+}
+
 function FormField({
   label,
   icon: Icon,
-  type = 'text',
   value,
   onChange,
   placeholder,
   error,
+  type = 'text',
   theme,
-  borderRadius,
-}: {
-  label: string
-  icon: typeof User
-  type?: string
-  value: string
-  onChange: (v: string) => void
-  placeholder: string
-  error?: string
-  theme: ReturnType<typeof useTheme>['theme']
-  borderRadius: string
-}) {
+  cardRadius,
+  onClearError,
+}: FormFieldProps) {
   return (
     <div>
       <label
@@ -962,13 +936,16 @@ function FormField({
       <input
         type={type}
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(e) => {
+          onChange(e.target.value)
+          onClearError()
+        }}
         placeholder={placeholder}
         className="w-full px-4 py-3 outline-none transition-all"
         style={{
           background: theme.colors.backgroundSecondary,
           border: `1px solid ${error ? '#ef4444' : theme.colors.border}`,
-          borderRadius,
+          borderRadius: cardRadius,
           color: theme.colors.foreground,
         }}
       />

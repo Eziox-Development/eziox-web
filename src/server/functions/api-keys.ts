@@ -382,9 +382,7 @@ export const getApiKeyStatsFn = createServerFn({ method: 'POST' })
 /**
  * Validate API key (for middleware use)
  */
-export async function validateApiKey(
-  key: string,
-): Promise<{
+export async function validateApiKey(key: string): Promise<{
   valid: boolean
   apiKey?: typeof apiKeys.$inferSelect
   error?: string

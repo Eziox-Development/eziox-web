@@ -1,196 +1,242 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import {
-  Shield,
-  Eye,
-  EyeOff,
-  Mail,
-  AtSign,
-  User,
-  Calendar,
-  Sparkles,
-  Check,
-  Copy,
-  Music,
-  Bell,
-  UserPlus,
-  Trophy,
-  Megaphone,
-  Smartphone,
-  Loader2,
-  KeyRound,
-  X,
-  Trash2,
-  AlertTriangle,
-  Download,
-} from 'lucide-react'
-import { SpotifyConnect } from '@/components/spotify'
-import { useTheme } from '@/components/layout/ThemeProvider'
-import { useServerFn } from '@tanstack/react-start'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { useNavigate } from '@tanstack/react-router'
+import { useServerFn } from '@tanstack/react-start'
+import { useTranslation } from 'react-i18next'
 import {
-  getNotificationSettingsFn,
-  updateNotificationSettingsFn,
-} from '@/server/functions/notifications'
-import {
+  requestEmailChangeFn,
+  deleteAccountFn,
+  exportUserDataFn,
+  resendVerificationEmailFn,
   setupTwoFactorFn,
   enableTwoFactorFn,
   disableTwoFactorFn,
   getTwoFactorStatusFn,
-  deleteAccountFn,
-  exportUserDataFn,
   regenerateRecoveryCodesFn,
+  getUserSessionsFn,
+  deleteSessionFn,
+  deleteAllOtherSessionsFn,
+  getNotificationSettingsFn,
+  updateNotificationSettingsFn,
 } from '@/server/functions/auth'
+import {
+  Mail,
+  Lock,
+  Shield,
+  Trash2,
+  AlertTriangle,
+  Loader2,
+  Check,
+  Monitor,
+  Smartphone,
+  Bell,
+  Download,
+  LogOut,
+  CheckCircle,
+  XCircle,
+  Key,
+  Copy,
+} from 'lucide-react'
+import type { ProfileUser } from '../types'
 
 interface SettingsTabProps {
-  currentUser: {
-    id: string
-    email: string | null
-    username: string
-    role: string | null
-    createdAt: string
-  }
-  copyToClipboard: (text: string, field: string) => void
-  copiedField: string | null
+  currentUser: ProfileUser
 }
 
-export function SettingsTab({
-  currentUser,
-  copyToClipboard,
-  copiedField,
-}: SettingsTabProps) {
-  const [isInfoBlurred, setIsInfoBlurred] = useState(true)
-  const [show2FASetup, setShow2FASetup] = useState(false)
-  const [twoFactorCode, setTwoFactorCode] = useState('')
-  const [twoFactorError, setTwoFactorError] = useState('')
-  const [recoveryCodes, setRecoveryCodes] = useState<string[] | null>(null)
-  const [showRecoveryCodes, setShowRecoveryCodes] = useState(false)
-  const [regenerateCode, setRegenerateCode] = useState('')
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
-  const [deletePassword, setDeletePassword] = useState('')
-  const [deleteError, setDeleteError] = useState('')
-  const { theme } = useTheme()
-  const queryClient = useQueryClient()
-  const navigate = useNavigate()
+type SettingsSection = 'account' | 'security' | 'notifications' | 'danger'
 
-  const getSettings = useServerFn(getNotificationSettingsFn)
-  const updateSettings = useServerFn(updateNotificationSettingsFn)
+export function SettingsTab({ currentUser }: SettingsTabProps) {
+  const { t } = useTranslation()
+  const queryClient = useQueryClient()
+  const [activeSection, setActiveSection] = useState<SettingsSection>('account')
+  const [showEmailChange, setShowEmailChange] = useState(false)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [show2FASetup, setShow2FASetup] = useState(false)
+  const [show2FADisable, setShow2FADisable] = useState(false)
+  const [showRecoveryCodes, setShowRecoveryCodes] = useState(false)
+  const [newEmail, setNewEmail] = useState('')
+  const [currentPassword, setCurrentPassword] = useState('')
+  const [deleteConfirmText, setDeleteConfirmText] = useState('')
+  const [twoFactorCode, setTwoFactorCode] = useState('')
+  const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null)
+  const [recoveryCodes, setRecoveryCodes] = useState<string[]>([])
+  const [copiedCode, setCopiedCode] = useState<string | null>(null)
+
+  // Server functions
+  const requestEmailChange = useServerFn(requestEmailChangeFn)
+  const deleteAccount = useServerFn(deleteAccountFn)
+  const exportUserData = useServerFn(exportUserDataFn)
+  const resendVerification = useServerFn(resendVerificationEmailFn)
   const setup2FA = useServerFn(setupTwoFactorFn)
   const enable2FA = useServerFn(enableTwoFactorFn)
   const disable2FA = useServerFn(disableTwoFactorFn)
   const get2FAStatus = useServerFn(getTwoFactorStatusFn)
-  const deleteAccount = useServerFn(deleteAccountFn)
-  const exportData = useServerFn(exportUserDataFn)
   const regenerateCodes = useServerFn(regenerateRecoveryCodesFn)
-
-  const { data: notificationSettings, isLoading: settingsLoading } = useQuery({
-    queryKey: ['notificationSettings'],
-    queryFn: () => getSettings(),
-  })
-
-  const { data: twoFactorStatus, isLoading: twoFactorLoading } = useQuery({
-    queryKey: ['twoFactorStatus'],
+  const getUserSessions = useServerFn(getUserSessionsFn)
+  const deleteSession = useServerFn(deleteSessionFn)
+  const deleteAllOtherSessions = useServerFn(deleteAllOtherSessionsFn)
+  const getNotificationSettings = useServerFn(getNotificationSettingsFn)
+  const updateNotificationSettings = useServerFn(updateNotificationSettingsFn)
+  
+  // Queries
+  const { data: twoFactorStatus } = useQuery({
+    queryKey: ['2fa-status'],
     queryFn: () => get2FAStatus(),
   })
 
-  const { data: twoFactorSetup, isLoading: setupLoading } = useQuery({
-    queryKey: ['twoFactorSetup'],
-    queryFn: () => setup2FA(),
-    enabled: show2FASetup && !twoFactorStatus?.enabled,
+  const { data: sessionsData, isLoading: sessionsLoading } = useQuery({
+    queryKey: ['user-sessions'],
+    queryFn: () => getUserSessions(),
+  })
+
+  const { data: notificationData } = useQuery({
+    queryKey: ['notification-settings'],
+    queryFn: () => getNotificationSettings(),
+  })
+
+  
+  // Mutations
+  const emailMutation = useMutation({
+    mutationFn: () => requestEmailChange({ data: { newEmail, password: currentPassword } }),
+    onSuccess: () => {
+      setShowEmailChange(false)
+      setNewEmail('')
+      setCurrentPassword('')
+    },
+  })
+
+  const deleteMutation = useMutation({
+    mutationFn: () => deleteAccount({ data: { password: currentPassword } }),
+    onSuccess: () => {
+      window.location.href = '/'
+    },
+  })
+
+  const resendVerificationMutation = useMutation({
+    mutationFn: () => resendVerification(),
+  })
+
+  const exportDataMutation = useMutation({
+    mutationFn: () => exportUserData(),
+    onSuccess: (data) => {
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `eziox-data-${new Date().toISOString().split('T')[0]}.json`
+      a.click()
+      URL.revokeObjectURL(url)
+    },
+  })
+
+  const setup2FAMutation = useMutation({
+    mutationFn: () => setup2FA(),
+    onSuccess: (data) => {
+      setQrCodeUrl(data.qrCodeUrl)
+      setShow2FASetup(true)
+    },
   })
 
   const enable2FAMutation = useMutation({
-    mutationFn: (token: string) => enable2FA({ data: { token } }),
+    mutationFn: () => enable2FA({ data: { token: twoFactorCode } }),
     onSuccess: (data) => {
-      void queryClient.invalidateQueries({ queryKey: ['twoFactorStatus'] })
+      if (data.recoveryCodes) {
+        setRecoveryCodes(data.recoveryCodes)
+        setShowRecoveryCodes(true)
+      }
       setShow2FASetup(false)
       setTwoFactorCode('')
-      setTwoFactorError('')
-      // Show recovery codes after enabling 2FA
-      if (data.recoveryCodes) {
-        setRecoveryCodes(data.recoveryCodes)
-        setShowRecoveryCodes(true)
-      }
-    },
-    onError: (error: { message?: string }) => {
-      setTwoFactorError(error.message || 'Invalid code')
-    },
-  })
-
-  const regenerateCodesMutation = useMutation({
-    mutationFn: (token: string) => regenerateCodes({ data: { token } }),
-    onSuccess: (data) => {
-      if (data.recoveryCodes) {
-        setRecoveryCodes(data.recoveryCodes)
-        setShowRecoveryCodes(true)
-      }
-      setRegenerateCode('')
-      void queryClient.invalidateQueries({ queryKey: ['twoFactorStatus'] })
-    },
-    onError: (error: { message?: string }) => {
-      setTwoFactorError(error.message || 'Invalid code')
+      setQrCodeUrl(null)
+      void queryClient.invalidateQueries({ queryKey: ['2fa-status'] })
     },
   })
 
   const disable2FAMutation = useMutation({
-    mutationFn: (token: string) => disable2FA({ data: { token } }),
+    mutationFn: () => disable2FA({ data: { token: twoFactorCode } }),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ['twoFactorStatus'] })
+      setShow2FADisable(false)
       setTwoFactorCode('')
-      setTwoFactorError('')
-    },
-    onError: (error: { message?: string }) => {
-      setTwoFactorError(error.message || 'Invalid code')
+      void queryClient.invalidateQueries({ queryKey: ['2fa-status'] })
     },
   })
 
-  const deleteAccountMutation = useMutation({
-    mutationFn: (password: string) => deleteAccount({ data: { password } }),
-    onSuccess: async () => {
-      await navigate({ to: '/' })
-    },
-    onError: (error: { message?: string }) => {
-      setDeleteError(error.message || 'Failed to delete account')
-    },
-  })
+  // regenerateCodesMutation available for future use if needed
+  void regenerateCodes
 
-  const updateSettingsMutation = useMutation({
-    mutationFn: (data: {
-      notifyNewFollower?: boolean
-      notifyMilestones?: boolean
-      notifySystemUpdates?: boolean
-      emailLoginAlerts?: boolean
-      emailSecurityAlerts?: boolean
-      emailWeeklyDigest?: boolean
-      emailProductUpdates?: boolean
-    }) => updateSettings({ data }),
+  const deleteSessionMutation = useMutation({
+    mutationFn: (sessionId: string) => deleteSession({ data: { sessionId } }),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ['notificationSettings'] })
+      void queryClient.invalidateQueries({ queryKey: ['user-sessions'] })
     },
   })
 
-  const handleToggleSetting = (
-    key:
-      | 'notifyNewFollower'
-      | 'notifyMilestones'
-      | 'notifySystemUpdates'
-      | 'emailLoginAlerts'
-      | 'emailSecurityAlerts'
-      | 'emailWeeklyDigest'
-      | 'emailProductUpdates',
-  ) => {
-    if (!notificationSettings) return
-    updateSettingsMutation.mutate({ [key]: !notificationSettings[key] })
+  const deleteAllSessionsMutation = useMutation({
+    mutationFn: () => deleteAllOtherSessions(),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['user-sessions'] })
+    },
+  })
+
+  const notificationMutation = useMutation({
+    mutationFn: (settings: Record<string, boolean>) => updateNotificationSettings({ data: settings }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['notification-settings'] })
+    },
+  })
+
+  
+  const copyCode = async (code: string) => {
+    await navigator.clipboard.writeText(code)
+    setCopiedCode(code)
+    setTimeout(() => setCopiedCode(null), 2000)
   }
 
-  const memberSince = currentUser.createdAt
-    ? new Date(currentUser.createdAt).toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-      })
-    : 'Unknown'
+  const downloadRecoveryCodes = () => {
+    const content = `Eziox Recovery Codes\n${'='.repeat(30)}\n\nSave these codes in a safe place.\nEach code can only be used once.\n\n${recoveryCodes.join('\n')}\n\nGenerated: ${new Date().toISOString()}`
+    const blob = new Blob([content], { type: 'text/plain' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'eziox-recovery-codes.txt'
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  const getDeviceIcon = (userAgent: string | null) => {
+    if (!userAgent) return <Monitor size={20} />
+    const ua = userAgent.toLowerCase()
+    if (ua.includes('mobile') || ua.includes('android') || ua.includes('iphone')) {
+      return <Smartphone size={20} />
+    }
+    return <Monitor size={20} />
+  }
+
+  const formatUserAgent = (userAgent: string | null) => {
+    if (!userAgent) return 'Unknown device'
+    const ua = userAgent.toLowerCase()
+    let browser = 'Unknown'
+    let os = 'Unknown'
+    
+    if (ua.includes('chrome')) browser = 'Chrome'
+    else if (ua.includes('firefox')) browser = 'Firefox'
+    else if (ua.includes('safari')) browser = 'Safari'
+    else if (ua.includes('edge')) browser = 'Edge'
+    
+    if (ua.includes('windows')) os = 'Windows'
+    else if (ua.includes('mac')) os = 'macOS'
+    else if (ua.includes('linux')) os = 'Linux'
+    else if (ua.includes('android')) os = 'Android'
+    else if (ua.includes('iphone') || ua.includes('ipad')) os = 'iOS'
+    
+    return `${browser} on ${os}`
+  }
+
+  const sections: { id: SettingsSection; icon: React.ReactNode; label: string }[] = [
+    { id: 'account', icon: <Mail size={18} />, label: t('dashboard.settings.account') },
+    { id: 'security', icon: <Shield size={18} />, label: t('dashboard.settings.security') },
+    { id: 'notifications', icon: <Bell size={18} />, label: t('dashboard.settings.notifications') },
+    { id: 'danger', icon: <AlertTriangle size={18} />, label: t('dashboard.settings.dangerZone') },
+  ]
 
   return (
     <motion.div
@@ -200,1047 +246,588 @@ export function SettingsTab({
       exit={{ opacity: 0, y: -20 }}
       className="space-y-6"
     >
-      {/* Recovery Codes Modal */}
-      <AnimatePresence>
-        {showRecoveryCodes && recoveryCodes && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
-            style={{ background: 'rgba(0, 0, 0, 0.8)' }}
-            onClick={() => setShowRecoveryCodes(false)}
+      {/* Header */}
+      <div>
+        <h2 className="text-xl font-bold text-foreground">{t('dashboard.settings.title')}</h2>
+        <p className="text-sm text-foreground-muted">{t('dashboard.settings.subtitle')}</p>
+      </div>
+
+      {/* Section Navigation */}
+      <div className="flex flex-wrap gap-2">
+        {sections.map((section) => (
+          <button
+            key={section.id}
+            onClick={() => setActiveSection(section.id)}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-colors duration-(--animation-speed) ${
+              activeSection === section.id
+                ? section.id === 'danger'
+                  ? 'bg-red-500/20 text-red-400'
+                  : 'bg-primary/20 text-primary'
+                : 'bg-background-secondary/50 text-foreground-muted hover:bg-background-secondary'
+            }`}
           >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="w-full max-w-md rounded-2xl p-6 space-y-4"
-              style={{
-                background: 'var(--card)',
-                border: '1px solid var(--border)',
-              }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <KeyRound size={20} style={{ color: theme.colors.primary }} />
-                  <h3
-                    className="text-lg font-bold"
-                    style={{ color: 'var(--foreground)' }}
-                  >
-                    Recovery Codes
-                  </h3>
-                </div>
-                <button
-                  onClick={() => setShowRecoveryCodes(false)}
-                  className="p-2 rounded-lg hover:bg-white/10"
-                >
-                  <X size={18} style={{ color: 'var(--foreground-muted)' }} />
-                </button>
-              </div>
+            {section.icon}
+            {section.label}
+          </button>
+        ))}
+      </div>
 
-              <div
-                className="p-3 rounded-lg"
-                style={{
-                  background: 'rgba(239, 68, 68, 0.1)',
-                  border: '1px solid rgba(239, 68, 68, 0.2)',
-                }}
-              >
-                <p className="text-xs" style={{ color: '#ef4444' }}>
-                  <strong>Important:</strong> Save these codes in a secure
-                  place. Each code can only be used once. You won't be able to
-                  see them again!
-                </p>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2">
-                {recoveryCodes.map((code, i) => (
-                  <button
-                    key={i}
-                    onClick={() =>
-                      copyToClipboard(code, `Recovery Code ${i + 1}`)
-                    }
-                    className="flex items-center justify-between px-3 py-2 rounded-lg font-mono text-sm"
-                    style={{
-                      background: 'var(--background-secondary)',
-                      border: '1px solid var(--border)',
-                      color: 'var(--foreground)',
-                    }}
-                  >
-                    {code}
-                    {copiedField === `Recovery Code ${i + 1}` ? (
-                      <Check size={12} className="text-green-500" />
-                    ) : (
-                      <Copy
-                        size={12}
-                        style={{ color: 'var(--foreground-muted)' }}
-                      />
-                    )}
-                  </button>
-                ))}
-              </div>
-
-              <div className="flex gap-2">
-                <button
-                  onClick={() =>
-                    copyToClipboard(
-                      recoveryCodes.join('\n'),
-                      'All Recovery Codes',
-                    )
-                  }
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-medium"
-                  style={{ background: theme.colors.primary, color: 'white' }}
-                >
-                  {copiedField === 'All Recovery Codes' ? (
-                    <Check size={16} />
-                  ) : (
-                    <Copy size={16} />
-                  )}
-                  {copiedField === 'All Recovery Codes'
-                    ? 'Copied!'
-                    : 'Copy All'}
-                </button>
-                <button
-                  onClick={() => {
-                    const content = `Eziox Recovery Codes\n${'='.repeat(30)}\nGenerated: ${new Date().toLocaleString()}\nUsername: ${currentUser.username}\n\nKeep these codes safe! Each code can only be used once.\n\n${recoveryCodes.map((code, i) => `${i + 1}. ${code}`).join('\n')}\n\n${'='.repeat(30)}\nIf you lose access to your authenticator app,\nuse one of these codes to sign in.\n`
-                    const blob = new Blob([content], { type: 'text/plain' })
-                    const url = URL.createObjectURL(blob)
-                    const a = document.createElement('a')
-                    a.href = url
-                    a.download = `eziox-recovery-codes-${currentUser.username}.txt`
-                    document.body.appendChild(a)
-                    a.click()
-                    document.body.removeChild(a)
-                    URL.revokeObjectURL(url)
-                  }}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-medium"
-                  style={{
-                    background: 'var(--background-secondary)',
-                    border: '1px solid var(--border)',
-                    color: 'var(--foreground)',
-                  }}
-                >
-                  <Download size={16} />
-                  Download .txt
-                </button>
-              </div>
-
-              <p
-                className="text-xs text-center"
-                style={{ color: 'var(--foreground-muted)' }}
-              >
-                Store these codes securely. They are your backup if you lose
-                access to your authenticator app.
-              </p>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-      <div
-        className="rounded-2xl overflow-hidden"
-        style={{ background: 'var(--card)', border: '1px solid var(--border)' }}
-      >
-        <div className="p-5 border-b" style={{ borderColor: 'var(--border)' }}>
-          <div className="flex items-center gap-2">
-            <Smartphone size={20} style={{ color: theme.colors.primary }} />
-            <h2
-              className="text-lg font-bold"
-              style={{ color: 'var(--foreground)' }}
-            >
-              Two-Factor Authentication
-            </h2>
-          </div>
-          <p
-            className="text-sm mt-1"
-            style={{ color: 'var(--foreground-muted)' }}
-          >
-            Add an extra layer of security to your account
-          </p>
-        </div>
-        <div className="p-5">
-          {twoFactorLoading ? (
-            <div className="flex items-center justify-center py-4">
-              <Loader2
-                className="w-6 h-6 animate-spin"
-                style={{ color: theme.colors.primary }}
-              />
-            </div>
-          ) : twoFactorStatus?.enabled ? (
-            <div className="space-y-4">
-              <div
-                className="flex items-center gap-3 p-4 rounded-xl"
-                style={{
-                  background: 'rgba(34, 197, 94, 0.1)',
-                  border: '1px solid rgba(34, 197, 94, 0.2)',
-                }}
-              >
-                <Check className="w-5 h-5" style={{ color: '#22c55e' }} />
-                <div className="flex-1">
-                  <p
-                    className="font-medium text-sm"
-                    style={{ color: 'var(--foreground)' }}
-                  >
-                    2FA is enabled
-                  </p>
-                  <p
-                    className="text-xs"
-                    style={{ color: 'var(--foreground-muted)' }}
-                  >
-                    Your account is protected with authenticator app
-                  </p>
-                </div>
-                <div className="text-right">
-                  <p
-                    className="text-xs font-medium"
-                    style={{ color: 'var(--foreground-muted)' }}
-                  >
-                    Recovery codes
-                  </p>
-                  <p
-                    className="text-sm font-bold"
-                    style={{
-                      color:
-                        twoFactorStatus.recoveryCodesCount > 3
-                          ? '#22c55e'
-                          : twoFactorStatus.recoveryCodesCount > 0
-                            ? '#f59e0b'
-                            : '#ef4444',
-                    }}
-                  >
-                    {twoFactorStatus.recoveryCodesCount} remaining
-                  </p>
-                </div>
-              </div>
-
-              {/* Recovery Codes Section */}
-              <div
-                className="space-y-3 p-4 rounded-xl"
-                style={{
-                  background: 'var(--background-secondary)',
-                  border: '1px solid var(--border)',
-                }}
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p
-                      className="text-sm font-medium"
-                      style={{ color: 'var(--foreground)' }}
-                    >
-                      Recovery Codes
-                    </p>
-                    <p
-                      className="text-xs"
-                      style={{ color: 'var(--foreground-muted)' }}
-                    >
-                      Use these if you lose access to your authenticator
-                    </p>
-                  </div>
-                  <KeyRound size={18} style={{ color: theme.colors.primary }} />
-                </div>
-                {twoFactorStatus.recoveryCodesCount < 3 && (
-                  <div
-                    className="flex items-center gap-2 p-3 rounded-lg"
-                    style={{
-                      background: 'rgba(239, 68, 68, 0.1)',
-                      border: '1px solid rgba(239, 68, 68, 0.2)',
-                    }}
-                  >
-                    <AlertTriangle size={16} style={{ color: '#ef4444' }} />
-                    <p className="text-xs" style={{ color: '#ef4444' }}>
-                      Low recovery codes! Consider regenerating new ones.
-                    </p>
-                  </div>
-                )}
-                <div className="space-y-2">
-                  <p
-                    className="text-xs"
-                    style={{ color: 'var(--foreground-muted)' }}
-                  >
-                    Enter 2FA code to regenerate recovery codes:
-                  </p>
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={regenerateCode}
-                      onChange={(e) => {
-                        setRegenerateCode(
-                          e.target.value.replace(/\D/g, '').slice(0, 6),
-                        )
-                        setTwoFactorError('')
-                      }}
-                      placeholder="000000"
-                      className="flex-1 px-4 py-2 rounded-xl text-center font-mono tracking-widest"
-                      style={{
-                        background: 'var(--card)',
-                        border: '1px solid var(--border)',
-                        color: 'var(--foreground)',
-                      }}
-                      maxLength={6}
-                    />
-                    <button
-                      onClick={() =>
-                        regenerateCode.length === 6 &&
-                        regenerateCodesMutation.mutate(regenerateCode)
-                      }
-                      disabled={
-                        regenerateCode.length !== 6 ||
-                        regenerateCodesMutation.isPending
-                      }
-                      className="px-4 py-2 rounded-xl font-medium text-white disabled:opacity-50"
-                      style={{ background: theme.colors.primary }}
-                    >
-                      {regenerateCodesMutation.isPending ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                      ) : (
-                        'Regenerate'
-                      )}
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <p
-                  className="text-sm font-medium"
-                  style={{ color: 'var(--foreground)' }}
-                >
-                  Disable 2FA
-                </p>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={twoFactorCode}
-                    onChange={(e) => {
-                      setTwoFactorCode(
-                        e.target.value.replace(/\D/g, '').slice(0, 6),
-                      )
-                      setTwoFactorError('')
-                    }}
-                    placeholder="Enter 6-digit code"
-                    className="flex-1 px-4 py-3 rounded-xl text-center font-mono text-lg tracking-widest"
-                    style={{
-                      background: 'var(--background-secondary)',
-                      border: '1px solid var(--border)',
-                      color: 'var(--foreground)',
-                    }}
-                    maxLength={6}
-                  />
-                  <button
-                    onClick={() =>
-                      twoFactorCode.length === 6 &&
-                      disable2FAMutation.mutate(twoFactorCode)
-                    }
-                    disabled={
-                      twoFactorCode.length !== 6 || disable2FAMutation.isPending
-                    }
-                    className="px-4 py-3 rounded-xl font-medium text-white disabled:opacity-50"
-                    style={{ background: '#ef4444' }}
-                  >
-                    {disable2FAMutation.isPending ? (
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                    ) : (
-                      'Disable'
-                    )}
-                  </button>
-                </div>
-                {twoFactorError && (
-                  <p className="text-xs text-red-400">{twoFactorError}</p>
-                )}
-              </div>
-            </div>
-          ) : show2FASetup ? (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <p
-                  className="font-medium"
-                  style={{ color: 'var(--foreground)' }}
-                >
-                  Setup Authenticator
-                </p>
-                <button
-                  onClick={() => {
-                    setShow2FASetup(false)
-                    setTwoFactorCode('')
-                    setTwoFactorError('')
-                  }}
-                  className="p-2 rounded-lg hover:bg-white/10"
-                >
-                  <X size={18} style={{ color: 'var(--foreground-muted)' }} />
-                </button>
-              </div>
-              {setupLoading ? (
-                <div className="flex items-center justify-center py-8">
-                  <Loader2
-                    className="w-8 h-8 animate-spin"
-                    style={{ color: theme.colors.primary }}
-                  />
-                </div>
-              ) : twoFactorSetup ? (
-                <>
-                  <div className="text-center space-y-3">
-                    <p
-                      className="text-sm"
-                      style={{ color: 'var(--foreground-muted)' }}
-                    >
-                      Scan this QR code with your authenticator app
-                    </p>
-                    <div className="inline-block p-4 rounded-xl bg-white">
-                      <img
-                        src={twoFactorSetup.qrCodeUrl}
-                        alt="2FA QR Code"
-                        className="w-48 h-48"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <p
-                        className="text-xs"
-                        style={{ color: 'var(--foreground-muted)' }}
-                      >
-                        Or enter this code manually:
-                      </p>
-                      <button
-                        onClick={() =>
-                          copyToClipboard(twoFactorSetup.secret, '2FA Secret')
-                        }
-                        className="inline-flex items-center gap-2 px-3 py-2 rounded-lg font-mono text-sm"
-                        style={{
-                          background: 'var(--background-secondary)',
-                          color: 'var(--foreground)',
-                        }}
-                      >
-                        {twoFactorSetup.secret}
-                        {copiedField === '2FA Secret' ? (
-                          <Check size={14} className="text-green-500" />
-                        ) : (
-                          <Copy size={14} />
-                        )}
-                      </button>
-                    </div>
-                  </div>
-                  <div
-                    className="space-y-3 pt-4 border-t"
-                    style={{ borderColor: 'var(--border)' }}
-                  >
-                    <p
-                      className="text-sm font-medium"
-                      style={{ color: 'var(--foreground)' }}
-                    >
-                      Enter verification code
-                    </p>
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        value={twoFactorCode}
-                        onChange={(e) => {
-                          setTwoFactorCode(
-                            e.target.value.replace(/\D/g, '').slice(0, 6),
-                          )
-                          setTwoFactorError('')
-                        }}
-                        placeholder="000000"
-                        className="flex-1 px-4 py-3 rounded-xl text-center font-mono text-lg tracking-widest"
-                        style={{
-                          background: 'var(--background-secondary)',
-                          border: '1px solid var(--border)',
-                          color: 'var(--foreground)',
-                        }}
-                        maxLength={6}
-                      />
-                      <button
-                        onClick={() =>
-                          twoFactorCode.length === 6 &&
-                          enable2FAMutation.mutate(twoFactorCode)
-                        }
-                        disabled={
-                          twoFactorCode.length !== 6 ||
-                          enable2FAMutation.isPending
-                        }
-                        className="px-4 py-3 rounded-xl font-medium text-white disabled:opacity-50"
-                        style={{ background: theme.colors.primary }}
-                      >
-                        {enable2FAMutation.isPending ? (
-                          <Loader2 className="w-5 h-5 animate-spin" />
-                        ) : (
-                          'Verify'
-                        )}
-                      </button>
-                    </div>
-                    {twoFactorError && (
-                      <p className="text-xs text-red-400">{twoFactorError}</p>
-                    )}
-                  </div>
-                </>
-              ) : null}
-            </div>
-          ) : (
-            <div
-              className="flex items-center justify-between p-4 rounded-xl"
-              style={{ background: 'var(--background-secondary)' }}
-            >
-              <div className="flex items-center gap-3">
-                <div
-                  className="w-10 h-10 rounded-xl flex items-center justify-center"
-                  style={{ background: `${theme.colors.primary}20` }}
-                >
-                  <KeyRound size={20} style={{ color: theme.colors.primary }} />
+      {/* Account Section */}
+      {activeSection === 'account' && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="space-y-4"
+        >
+          {/* Email */}
+          <div className="rounded-lg overflow-hidden bg-card/50 border border-border p-5">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-blue-500/20">
+                  <Mail size={24} className="text-blue-400" />
                 </div>
                 <div>
-                  <p
-                    className="font-medium text-sm"
-                    style={{ color: 'var(--foreground)' }}
+                  <div className="flex items-center gap-2">
+                    <p className="font-medium text-foreground">{t('dashboard.settings.email')}</p>
+                    {currentUser.emailVerified ? (
+                      <span className="flex items-center gap-1 text-xs text-green-400 bg-green-500/20 px-2 py-0.5 rounded-full">
+                        <CheckCircle size={12} />
+                        {t('dashboard.settings.emailVerified')}
+                      </span>
+                    ) : (
+                      <span className="flex items-center gap-1 text-xs text-yellow-400 bg-yellow-500/20 px-2 py-0.5 rounded-full">
+                        <XCircle size={12} />
+                        {t('dashboard.settings.emailNotVerified')}
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-sm text-foreground-muted">{currentUser.email}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                {!currentUser.emailVerified && (
+                  <button
+                    onClick={() => resendVerificationMutation.mutate()}
+                    disabled={resendVerificationMutation.isPending}
+                    className="px-3 py-2 rounded-xl text-sm bg-yellow-500/20 text-yellow-400 hover:bg-yellow-500/30 transition-colors duration-(--animation-speed)"
                   >
-                    Authenticator App
-                  </p>
-                  <p
-                    className="text-xs"
-                    style={{ color: 'var(--foreground-muted)' }}
-                  >
-                    Use Google Authenticator or similar
-                  </p>
+                    {resendVerificationMutation.isPending ? <Loader2 size={14} className="animate-spin" /> : t('dashboard.settings.resendVerification')}
+                  </button>
+                )}
+                <button
+                  onClick={() => setShowEmailChange(!showEmailChange)}
+                  className="px-4 py-2 rounded-xl bg-background-secondary text-foreground-muted hover:bg-background-secondary/80 transition-colors duration-(--animation-speed)"
+                >
+                  {t('dashboard.settings.changeEmail')}
+                </button>
+              </div>
+            </div>
+
+            <AnimatePresence>
+              {showEmailChange && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="mt-4 pt-4 border-t border-border space-y-3"
+                >
+                  <input
+                    type="email"
+                    value={newEmail}
+                    onChange={(e) => setNewEmail(e.target.value)}
+                    placeholder={t('dashboard.settings.newEmail')}
+                    className="w-full px-4 py-3 rounded-xl bg-background-secondary border border-border text-foreground placeholder-foreground-muted/50 focus:outline-none focus:border-primary/50 transition-colors duration-(--animation-speed)"
+                  />
+                  <input
+                    type="password"
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    placeholder={t('dashboard.settings.currentPassword')}
+                    className="w-full px-4 py-3 rounded-xl bg-background-secondary border border-border text-foreground placeholder-foreground-muted/50 focus:outline-none focus:border-primary/50 transition-colors duration-(--animation-speed)"
+                  />
+                  {emailMutation.isSuccess && (
+                    <p className="text-sm text-green-400">{t('dashboard.settings.emailChangeSuccess')}</p>
+                  )}
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setShowEmailChange(false)}
+                      className="flex-1 py-3 rounded-xl font-medium text-foreground-muted bg-background-secondary hover:bg-background-secondary/80 transition-colors duration-(--animation-speed)"
+                    >
+                      {t('dashboard.cancel')}
+                    </button>
+                    <button
+                      onClick={() => emailMutation.mutate()}
+                      disabled={!newEmail || !currentPassword || emailMutation.isPending}
+                      className="flex-1 py-3 rounded-xl font-medium text-primary-foreground bg-linear-to-r from-primary to-accent disabled:opacity-50 flex items-center justify-center gap-2"
+                    >
+                      {emailMutation.isPending ? <Loader2 size={18} className="animate-spin" /> : <Check size={18} />}
+                      {t('dashboard.save')}
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* Password */}
+          <div className="rounded-lg overflow-hidden bg-card/50 border border-border p-5">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-primary/20">
+                  <Lock size={24} className="text-primary" />
+                </div>
+                <div>
+                  <p className="font-medium text-foreground">{t('dashboard.settings.password')}</p>
+                  <p className="text-sm text-foreground-muted">••••••••••••</p>
+                </div>
+              </div>
+              <a
+                href="/forgot-password"
+                className="px-4 py-2 rounded-xl bg-background-secondary text-foreground-muted hover:bg-background-secondary/80 transition-colors duration-(--animation-speed)"
+              >
+                {t('dashboard.settings.resetPassword')}
+              </a>
+            </div>
+          </div>
+
+          {/* Data Export */}
+          <div className="rounded-lg overflow-hidden bg-card/50 border border-border p-5">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-purple-500/20">
+                  <Download size={24} className="text-purple-400" />
+                </div>
+                <div>
+                  <p className="font-medium text-foreground">{t('dashboard.settings.dataExport')}</p>
+                  <p className="text-sm text-foreground-muted">{t('dashboard.settings.dataExportDesc')}</p>
                 </div>
               </div>
               <button
-                onClick={() => setShow2FASetup(true)}
-                className="px-4 py-2 rounded-xl font-medium text-white text-sm"
-                style={{ background: theme.colors.primary }}
+                onClick={() => exportDataMutation.mutate()}
+                disabled={exportDataMutation.isPending}
+                className="px-4 py-2 rounded-xl bg-purple-500/20 text-purple-400 hover:bg-purple-500/30 transition-colors duration-(--animation-speed) flex items-center gap-2"
               >
-                Setup
+                {exportDataMutation.isPending ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />}
+                {exportDataMutation.isPending ? t('dashboard.settings.exportingData') : t('dashboard.settings.exportData')}
               </button>
             </div>
-          )}
-        </div>
-      </div>
-
-      <div
-        className="rounded-2xl overflow-hidden"
-        style={{ background: 'var(--card)', border: '1px solid var(--border)' }}
-      >
-        <div className="p-5 border-b" style={{ borderColor: 'var(--border)' }}>
-          <div className="flex items-center gap-2">
-            <Music size={20} style={{ color: '#1DB954' }} />
-            <h2
-              className="text-lg font-bold"
-              style={{ color: 'var(--foreground)' }}
-            >
-              Integrations
-            </h2>
           </div>
-        </div>
-        <div className="p-5">
-          <SpotifyConnect theme={theme} />
-        </div>
-      </div>
+        </motion.div>
+      )}
 
-      {/* Notifications */}
-      <div
-        className="rounded-2xl overflow-hidden"
-        style={{ background: 'var(--card)', border: '1px solid var(--border)' }}
-      >
-        <div className="p-5 border-b" style={{ borderColor: 'var(--border)' }}>
-          <div className="flex items-center gap-2">
-            <Bell size={20} style={{ color: theme.colors.primary }} />
-            <h2
-              className="text-lg font-bold"
-              style={{ color: 'var(--foreground)' }}
-            >
-              Notifications
-            </h2>
-          </div>
-          <p
-            className="text-sm mt-1"
-            style={{ color: 'var(--foreground-muted)' }}
-          >
-            Choose what you want to be notified about
-          </p>
-        </div>
-        <div className="p-5 space-y-4">
-          {settingsLoading ? (
-            <div className="flex items-center justify-center py-4">
-              <div
-                className="w-6 h-6 border-2 border-t-transparent rounded-full animate-spin"
-                style={{
-                  borderColor: theme.colors.primary,
-                  borderTopColor: 'transparent',
-                }}
-              />
-            </div>
-          ) : (
-            <>
-              <NotificationToggle
-                icon={UserPlus}
-                title="New Followers"
-                description="Get notified when someone follows you"
-                enabled={notificationSettings?.notifyNewFollower ?? true}
-                onToggle={() => handleToggleSetting('notifyNewFollower')}
-                accentColor={theme.colors.primary}
-                isPending={updateSettingsMutation.isPending}
-              />
-              <NotificationToggle
-                icon={Trophy}
-                title="Milestones"
-                description="Profile views and link click milestones"
-                enabled={notificationSettings?.notifyMilestones ?? true}
-                onToggle={() => handleToggleSetting('notifyMilestones')}
-                accentColor={theme.colors.primary}
-                isPending={updateSettingsMutation.isPending}
-              />
-              <NotificationToggle
-                icon={Megaphone}
-                title="System Updates"
-                description="Platform updates and announcements"
-                enabled={notificationSettings?.notifySystemUpdates ?? true}
-                onToggle={() => handleToggleSetting('notifySystemUpdates')}
-                accentColor={theme.colors.primary}
-                isPending={updateSettingsMutation.isPending}
-              />
-            </>
-          )}
-        </div>
-      </div>
-
-      {/* Email Preferences */}
-      <div
-        className="rounded-2xl overflow-hidden"
-        style={{ background: 'var(--card)', border: '1px solid var(--border)' }}
-      >
-        <div className="p-5 border-b" style={{ borderColor: 'var(--border)' }}>
-          <div className="flex items-center gap-2">
-            <Mail size={20} style={{ color: theme.colors.primary }} />
-            <h2
-              className="text-lg font-bold"
-              style={{ color: 'var(--foreground)' }}
-            >
-              Email Preferences
-            </h2>
-          </div>
-          <p
-            className="text-sm mt-1"
-            style={{ color: 'var(--foreground-muted)' }}
-          >
-            Control which emails you receive
-          </p>
-        </div>
-        <div className="p-5 space-y-4">
-          {settingsLoading ? (
-            <div className="flex items-center justify-center py-4">
-              <div
-                className="w-6 h-6 border-2 border-t-transparent rounded-full animate-spin"
-                style={{
-                  borderColor: theme.colors.primary,
-                  borderTopColor: 'transparent',
-                }}
-              />
-            </div>
-          ) : (
-            <>
-              <NotificationToggle
-                icon={Shield}
-                title="Login Alerts"
-                description="Get notified when someone logs into your account"
-                enabled={notificationSettings?.emailLoginAlerts ?? true}
-                onToggle={() => handleToggleSetting('emailLoginAlerts')}
-                accentColor={theme.colors.primary}
-                isPending={updateSettingsMutation.isPending}
-              />
-              <NotificationToggle
-                icon={AlertTriangle}
-                title="Security Alerts"
-                description="Password changes, 2FA updates, and security events"
-                enabled={notificationSettings?.emailSecurityAlerts ?? true}
-                onToggle={() => handleToggleSetting('emailSecurityAlerts')}
-                accentColor={theme.colors.primary}
-                isPending={updateSettingsMutation.isPending}
-              />
-              <NotificationToggle
-                icon={Calendar}
-                title="Weekly Digest"
-                description="Weekly summary of your profile stats and activity"
-                enabled={notificationSettings?.emailWeeklyDigest ?? true}
-                onToggle={() => handleToggleSetting('emailWeeklyDigest')}
-                accentColor={theme.colors.primary}
-                isPending={updateSettingsMutation.isPending}
-              />
-              <NotificationToggle
-                icon={Sparkles}
-                title="Product Updates"
-                description="New features, improvements, and platform news"
-                enabled={notificationSettings?.emailProductUpdates ?? true}
-                onToggle={() => handleToggleSetting('emailProductUpdates')}
-                accentColor={theme.colors.primary}
-                isPending={updateSettingsMutation.isPending}
-              />
-            </>
-          )}
-        </div>
-      </div>
-
-      {/* Account */}
-      <div
-        className="rounded-2xl overflow-hidden"
-        style={{ background: 'var(--card)', border: '1px solid var(--border)' }}
-      >
-        <div
-          className="p-5 border-b flex items-center justify-between"
-          style={{ borderColor: 'var(--border)' }}
+      {/* Security Section */}
+      {activeSection === 'security' && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="space-y-4"
         >
-          <div className="flex items-center gap-2">
-            <Shield size={20} style={{ color: theme.colors.primary }} />
-            <h2
-              className="text-lg font-bold"
-              style={{ color: 'var(--foreground)' }}
-            >
-              Account Details
-            </h2>
-          </div>
-          <button
-            onClick={() => setIsInfoBlurred(!isInfoBlurred)}
-            className="flex items-center gap-2 px-3 py-2 rounded-lg"
-            style={{ background: 'var(--background-secondary)' }}
-          >
-            {isInfoBlurred ? <Eye size={16} /> : <EyeOff size={16} />}
-            <span className="text-sm">{isInfoBlurred ? 'Show' : 'Hide'}</span>
-          </button>
-        </div>
-        <div className="p-5 space-y-3">
-          {[
-            {
-              label: 'Email',
-              value: currentUser.email || '',
-              icon: Mail,
-              sensitive: true,
-            },
-            {
-              label: 'Username',
-              value: `@${currentUser.username}`,
-              icon: AtSign,
-              sensitive: false,
-            },
-            {
-              label: 'User ID',
-              value: currentUser.id,
-              icon: User,
-              sensitive: true,
-            },
-            {
-              label: 'Member Since',
-              value: memberSince,
-              icon: Calendar,
-              sensitive: false,
-            },
-            {
-              label: 'Account Type',
-              value: currentUser.role === 'admin' ? 'Admin' : 'Standard',
-              icon: Sparkles,
-              sensitive: false,
-            },
-          ].map((item) => (
-            <button
-              key={item.label}
-              onClick={() => copyToClipboard(item.value, item.label)}
-              className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-white/5 group"
-              style={{ background: 'var(--background-secondary)' }}
-            >
-              <div className="flex items-center gap-3">
-                <div
-                  className="w-9 h-9 rounded-lg flex items-center justify-center"
-                  style={{ background: 'var(--card)' }}
-                >
-                  <item.icon
-                    size={16}
-                    style={{ color: theme.colors.primary }}
-                  />
+          {/* 2FA */}
+          <div className="rounded-lg overflow-hidden bg-card/50 border border-border p-5">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${twoFactorStatus?.enabled ? 'bg-green-500/20' : 'bg-yellow-500/20'}`}>
+                  <Shield size={24} className={twoFactorStatus?.enabled ? 'text-green-400' : 'text-yellow-400'} />
                 </div>
-                <div className="text-left">
-                  <p
-                    className="text-xs"
-                    style={{ color: 'var(--foreground-muted)' }}
-                  >
-                    {item.label}
-                  </p>
-                  <p
-                    className="font-medium text-sm"
-                    style={{
-                      color: 'var(--foreground)',
-                      filter:
-                        item.sensitive && isInfoBlurred ? 'blur(5px)' : 'none',
-                    }}
-                  >
-                    {item.value}
-                  </p>
-                </div>
-              </div>
-              <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                {copiedField === item.label ? (
-                  <Check size={16} className="text-green-500" />
-                ) : (
-                  <Copy
-                    size={16}
-                    style={{ color: 'var(--foreground-muted)' }}
-                  />
-                )}
-              </div>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Privacy & Data */}
-      <div
-        className="rounded-2xl overflow-hidden"
-        style={{ background: 'var(--card)', border: '1px solid var(--border)' }}
-      >
-        <div
-          className="p-5 border-b flex items-center gap-2"
-          style={{ borderColor: 'var(--border)' }}
-        >
-          <Download size={20} style={{ color: theme.colors.primary }} />
-          <h2
-            className="text-lg font-bold"
-            style={{ color: 'var(--foreground)' }}
-          >
-            Privacy & Data
-          </h2>
-        </div>
-        <div className="p-5 space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p
-                className="font-medium text-sm"
-                style={{ color: 'var(--foreground)' }}
-              >
-                Export Your Data
-              </p>
-              <p
-                className="text-xs"
-                style={{ color: 'var(--foreground-muted)' }}
-              >
-                Download all your personal data (GDPR)
-              </p>
-            </div>
-            <button
-              onClick={async () => {
-                try {
-                  const data = await exportData()
-                  const blob = new Blob([JSON.stringify(data, null, 2)], {
-                    type: 'application/json',
-                  })
-                  const url = URL.createObjectURL(blob)
-                  const a = document.createElement('a')
-                  a.href = url
-                  a.download = `eziox-data-export-${new Date().toISOString().split('T')[0]}.json`
-                  document.body.appendChild(a)
-                  a.click()
-                  document.body.removeChild(a)
-                  URL.revokeObjectURL(url)
-                } catch (error) {
-                  console.error('Export failed:', error)
-                }
-              }}
-              className="px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-              style={{ background: theme.colors.primary, color: 'white' }}
-            >
-              <Download size={16} className="inline mr-2" />
-              Export
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Danger Zone */}
-      <div
-        className="rounded-2xl overflow-hidden"
-        style={{
-          background: 'var(--card)',
-          border: '1px solid rgba(239, 68, 68, 0.3)',
-        }}
-      >
-        <div
-          className="p-5 border-b flex items-center gap-2"
-          style={{ borderColor: 'rgba(239, 68, 68, 0.2)' }}
-        >
-          <AlertTriangle size={20} className="text-red-500" />
-          <h2 className="text-lg font-bold text-red-500">Danger Zone</h2>
-        </div>
-        <div className="p-5 space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p
-                className="font-medium text-sm"
-                style={{ color: 'var(--foreground)' }}
-              >
-                Delete Account
-              </p>
-              <p
-                className="text-xs"
-                style={{ color: 'var(--foreground-muted)' }}
-              >
-                Permanently delete your account and all data
-              </p>
-            </div>
-            <button
-              onClick={() => setShowDeleteConfirm(true)}
-              className="px-4 py-2 rounded-lg text-sm font-medium text-white bg-red-500 hover:bg-red-600 transition-colors"
-            >
-              <Trash2 size={16} className="inline mr-2" />
-              Delete
-            </button>
-          </div>
-
-          <AnimatePresence>
-            {showDeleteConfirm && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                className="p-4 rounded-xl space-y-4"
-                style={{
-                  background: 'rgba(239, 68, 68, 0.1)',
-                  border: '1px solid rgba(239, 68, 68, 0.2)',
-                }}
-              >
-                <div className="flex items-start gap-3">
-                  <AlertTriangle
-                    size={20}
-                    className="text-red-500 shrink-0 mt-0.5"
-                  />
-                  <div>
-                    <p className="font-medium text-sm text-red-500">
-                      This action cannot be undone
-                    </p>
-                    <p
-                      className="text-xs mt-1"
-                      style={{ color: 'var(--foreground-muted)' }}
-                    >
-                      All your data including profile, links, analytics, and
-                      connected services will be permanently deleted.
-                    </p>
-                  </div>
-                </div>
-
-                {deleteError && (
-                  <p className="text-xs text-red-500 bg-red-500/10 p-2 rounded">
-                    {deleteError}
-                  </p>
-                )}
-
                 <div>
-                  <label
-                    className="block text-xs font-medium mb-2"
-                    style={{ color: 'var(--foreground)' }}
+                  <p className="font-medium text-foreground">{t('dashboard.settings.twoFactor')}</p>
+                  <p className="text-sm text-foreground-muted">{t('dashboard.settings.twoFactorDesc')}</p>
+                  <p className={`text-xs mt-1 ${twoFactorStatus?.enabled ? 'text-green-400' : 'text-yellow-400'}`}>
+                    {twoFactorStatus?.enabled ? t('dashboard.settings.twoFactorEnabled') : t('dashboard.settings.twoFactorDisabled')}
+                  </p>
+                </div>
+              </div>
+              {twoFactorStatus?.enabled ? (
+                <button
+                  onClick={() => setShow2FADisable(true)}
+                  className="px-4 py-2 rounded-xl bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors duration-(--animation-speed)"
+                >
+                  {t('dashboard.settings.disable2FA')}
+                </button>
+              ) : (
+                <button
+                  onClick={() => setup2FAMutation.mutate()}
+                  disabled={setup2FAMutation.isPending}
+                  className="px-4 py-2 rounded-xl bg-green-500/20 text-green-400 hover:bg-green-500/30 transition-colors duration-(--animation-speed) flex items-center gap-2"
+                >
+                  {setup2FAMutation.isPending ? <Loader2 size={16} className="animate-spin" /> : <Key size={16} />}
+                  {t('dashboard.settings.setup2FA')}
+                </button>
+              )}
+            </div>
+
+            {/* 2FA Setup Modal */}
+            <AnimatePresence>
+              {show2FASetup && qrCodeUrl && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="mt-4 pt-4 border-t border-border space-y-4"
+                >
+                  <p className="text-sm text-foreground-muted">{t('dashboard.settings.scan2FACode')}</p>
+                  <div className="flex justify-center">
+                    <img src={qrCodeUrl} alt="2FA QR Code" className="w-48 h-48 rounded-lg bg-white p-2" />
+                  </div>
+                  <p className="text-sm text-foreground-muted">{t('dashboard.settings.enter2FACode')}</p>
+                  <input
+                    type="text"
+                    value={twoFactorCode}
+                    onChange={(e) => setTwoFactorCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                    placeholder="000000"
+                    maxLength={6}
+                    className="w-full px-4 py-3 rounded-xl bg-background-secondary border border-border text-foreground text-center text-2xl tracking-widest font-mono placeholder-foreground-muted/50 focus:outline-none focus:border-primary/50 transition-colors duration-(--animation-speed)"
+                  />
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => { setShow2FASetup(false); setQrCodeUrl(null); setTwoFactorCode('') }}
+                      className="flex-1 py-3 rounded-xl font-medium text-foreground-muted bg-background-secondary hover:bg-background-secondary/80 transition-colors duration-(--animation-speed)"
+                    >
+                      {t('dashboard.cancel')}
+                    </button>
+                    <button
+                      onClick={() => enable2FAMutation.mutate()}
+                      disabled={twoFactorCode.length !== 6 || enable2FAMutation.isPending}
+                      className="flex-1 py-3 rounded-xl font-medium text-primary-foreground bg-linear-to-r from-primary to-accent disabled:opacity-50 flex items-center justify-center gap-2"
+                    >
+                      {enable2FAMutation.isPending ? <Loader2 size={18} className="animate-spin" /> : <Check size={18} />}
+                      {t('dashboard.settings.enable2FA')}
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* 2FA Disable Modal */}
+            <AnimatePresence>
+              {show2FADisable && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="mt-4 pt-4 border-t border-border space-y-4"
+                >
+                  <p className="text-sm text-foreground-muted">{t('dashboard.settings.enter2FACode')}</p>
+                  <input
+                    type="text"
+                    value={twoFactorCode}
+                    onChange={(e) => setTwoFactorCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                    placeholder="000000"
+                    maxLength={6}
+                    className="w-full px-4 py-3 rounded-xl bg-background-secondary border border-border text-foreground text-center text-2xl tracking-widest font-mono placeholder-foreground-muted/50 focus:outline-none focus:border-primary/50 transition-colors duration-(--animation-speed)"
+                  />
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => { setShow2FADisable(false); setTwoFactorCode('') }}
+                      className="flex-1 py-3 rounded-xl font-medium text-foreground-muted bg-background-secondary hover:bg-background-secondary/80 transition-colors duration-(--animation-speed)"
+                    >
+                      {t('dashboard.cancel')}
+                    </button>
+                    <button
+                      onClick={() => disable2FAMutation.mutate()}
+                      disabled={twoFactorCode.length !== 6 || disable2FAMutation.isPending}
+                      className="flex-1 py-3 rounded-xl font-medium text-white bg-red-500 disabled:opacity-50 flex items-center justify-center gap-2"
+                    >
+                      {disable2FAMutation.isPending ? <Loader2 size={18} className="animate-spin" /> : <Shield size={18} />}
+                      {t('dashboard.settings.disable2FA')}
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Recovery Codes Display */}
+            <AnimatePresence>
+              {showRecoveryCodes && recoveryCodes.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="mt-4 pt-4 border-t border-border space-y-4"
+                >
+                  <div className="flex items-center justify-between">
+                    <p className="font-medium text-foreground">{t('dashboard.settings.recoveryCodes')}</p>
+                    <button
+                      onClick={downloadRecoveryCodes}
+                      className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm bg-background-secondary text-foreground-muted hover:bg-background-secondary/80 transition-colors"
+                    >
+                      <Download size={14} />
+                      {t('dashboard.settings.downloadCodes')}
+                    </button>
+                  </div>
+                  <p className="text-sm text-yellow-400">{t('dashboard.settings.recoveryCodesDesc')}</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    {recoveryCodes.map((code, index) => (
+                      <button
+                        key={index}
+                        onClick={() => copyCode(code)}
+                        className="flex items-center justify-between px-3 py-2 rounded-lg bg-background-secondary/50 font-mono text-sm text-foreground hover:bg-background-secondary transition-colors"
+                      >
+                        {code}
+                        {copiedCode === code ? <Check size={14} className="text-green-400" /> : <Copy size={14} className="text-foreground-muted" />}
+                      </button>
+                    ))}
+                  </div>
+                  <button
+                    onClick={() => setShowRecoveryCodes(false)}
+                    className="w-full py-2 rounded-xl font-medium text-foreground-muted bg-background-secondary hover:bg-background-secondary/80 transition-colors duration-(--animation-speed)"
                   >
-                    Enter your password to confirm
-                  </label>
+                    {t('dashboard.close')}
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* Active Sessions */}
+          <div className="rounded-lg overflow-hidden bg-card/50 border border-border p-5">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-cyan-500/20">
+                  <Monitor size={24} className="text-cyan-400" />
+                </div>
+                <div>
+                  <p className="font-medium text-foreground">{t('dashboard.settings.sessions')}</p>
+                  <p className="text-sm text-foreground-muted">{t('dashboard.settings.sessionsDesc')}</p>
+                </div>
+              </div>
+              {sessionsData && sessionsData.sessions.filter(s => !s.isCurrent).length > 0 && (
+                <button
+                  onClick={() => deleteAllSessionsMutation.mutate()}
+                  disabled={deleteAllSessionsMutation.isPending}
+                  className="px-4 py-2 rounded-xl bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors duration-(--animation-speed) flex items-center gap-2"
+                >
+                  {deleteAllSessionsMutation.isPending ? <Loader2 size={16} className="animate-spin" /> : <LogOut size={16} />}
+                  {t('dashboard.settings.logoutAll')}
+                </button>
+              )}
+            </div>
+
+            {sessionsLoading ? (
+              <div className="flex justify-center py-8">
+                <Loader2 size={24} className="animate-spin text-primary" />
+              </div>
+            ) : sessionsData?.sessions.length === 0 ? (
+              <p className="text-sm text-foreground-muted text-center py-4">{t('dashboard.settings.noOtherSessions')}</p>
+            ) : (
+              <div className="space-y-2">
+                {sessionsData?.sessions.map((session) => (
+                  <div
+                    key={session.id}
+                    className={`flex items-center justify-between p-3 rounded-lg ${session.isCurrent ? 'bg-primary/10 border border-primary/30' : 'bg-background-secondary/50'}`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="text-foreground-muted">
+                        {getDeviceIcon(session.userAgent)}
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-foreground">
+                          {formatUserAgent(session.userAgent)}
+                          {session.isCurrent && (
+                            <span className="ml-2 text-xs text-primary">({t('dashboard.settings.currentSession')})</span>
+                          )}
+                        </p>
+                        <p className="text-xs text-foreground-muted">
+                          {session.ipAddress} • {t('dashboard.settings.lastActive')}: {session.lastActivityAt ? new Date(session.lastActivityAt).toLocaleDateString() : 'N/A'}
+                        </p>
+                      </div>
+                    </div>
+                    {!session.isCurrent && (
+                      <button
+                        onClick={() => deleteSessionMutation.mutate(session.id)}
+                        disabled={deleteSessionMutation.isPending}
+                        className="p-2 rounded-lg hover:bg-red-500/20 transition-colors"
+                      >
+                        <LogOut size={16} className="text-red-400" />
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </motion.div>
+      )}
+
+      {/* Notifications Section */}
+      {activeSection === 'notifications' && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="space-y-4"
+        >
+          <div className="rounded-lg overflow-hidden bg-card/50 border border-border p-5">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-amber-500/20">
+                <Bell size={24} className="text-amber-400" />
+              </div>
+              <div>
+                <p className="font-medium text-foreground">{t('dashboard.settings.notifications')}</p>
+                <p className="text-sm text-foreground-muted">{t('dashboard.settings.notificationsDesc')}</p>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              {[
+                { key: 'notifyNewFollower', label: t('dashboard.settings.notifyNewFollower') },
+                { key: 'notifyMilestones', label: t('dashboard.settings.notifyMilestones') },
+                { key: 'notifySystemUpdates', label: t('dashboard.settings.notifySystemUpdates') },
+              ].map((item) => {
+                const isEnabled = notificationData?.settings?.[item.key as keyof typeof notificationData.settings] ?? true
+                return (
+                  <div key={item.key} className="flex items-center justify-between p-3 rounded-lg bg-background-secondary/50 hover:bg-background-secondary/70 transition-all duration-(--animation-speed) group">
+                    <span className="text-sm text-foreground">{item.label}</span>
+                    <button
+                      onClick={() => notificationMutation.mutate({ [item.key]: !isEnabled })}
+                      className={`relative w-14 h-7 rounded-full transition-all duration-300 ease-out ${
+                        isEnabled 
+                          ? 'bg-linear-to-r from-primary to-accent shadow-lg shadow-primary/25' 
+                          : 'bg-background-secondary border border-border/50'
+                      }`}
+                    >
+                      <div
+                        className={`absolute top-0.5 w-6 h-6 rounded-full bg-white shadow-md transition-all duration-300 ease-out ${
+                          isEnabled 
+                            ? 'translate-x-7 scale-95' 
+                            : 'translate-x-0.5 scale-100'
+                        }`}
+                      >
+                        <div className={`absolute inset-0 rounded-full transition-opacity duration-300 ${
+                          isEnabled 
+                            ? 'bg-linear-to-br from-white to-gray-100' 
+                            : 'bg-linear-to-br from-gray-100 to-gray-200'
+                        }`} />
+                      </div>
+                      {/* Glow effect when enabled */}
+                      {isEnabled && (
+                        <div className="absolute inset-0 rounded-full bg-linear-to-r from-primary/20 to-accent/20 animate-pulse" />
+                      )}
+                    </button>
+                  </div>
+                )
+              })}
+            </div>
+
+            <div className="mt-6 pt-4 border-t border-border">
+              <p className="font-medium text-foreground mb-3">{t('dashboard.settings.emailNotifications')}</p>
+              <div className="space-y-3">
+                {[
+                  { key: 'emailLoginAlerts', label: t('dashboard.settings.emailLoginAlerts') },
+                  { key: 'emailSecurityAlerts', label: t('dashboard.settings.emailSecurityAlerts') },
+                  { key: 'emailWeeklyDigest', label: t('dashboard.settings.emailWeeklyDigest') },
+                  { key: 'emailProductUpdates', label: t('dashboard.settings.emailProductUpdates') },
+                ].map((item) => {
+                  const isEnabled = notificationData?.settings?.[item.key as keyof typeof notificationData.settings] ?? true
+                  return (
+                    <div key={item.key} className="flex items-center justify-between p-3 rounded-lg bg-background-secondary/50 hover:bg-background-secondary/70 transition-all duration-(--animation-speed) group">
+                      <span className="text-sm text-foreground">{item.label}</span>
+                      <button
+                        onClick={() => notificationMutation.mutate({ [item.key]: !isEnabled })}
+                        className={`relative w-14 h-7 rounded-full transition-all duration-300 ease-out ${
+                          isEnabled 
+                            ? 'bg-linear-to-r from-primary to-accent shadow-lg shadow-primary/25' 
+                            : 'bg-background-secondary border border-border/50'
+                        }`}
+                      >
+                        <div
+                          className={`absolute top-0.5 w-6 h-6 rounded-full bg-white shadow-md transition-all duration-300 ease-out ${
+                            isEnabled 
+                              ? 'translate-x-7 scale-95' 
+                              : 'translate-x-0.5 scale-100'
+                          }`}
+                        >
+                          <div className={`absolute inset-0 rounded-full transition-opacity duration-300 ${
+                            isEnabled 
+                              ? 'bg-linear-to-br from-white to-gray-100' 
+                              : 'bg-linear-to-br from-gray-100 to-gray-200'
+                          }`} />
+                        </div>
+                        {/* Glow effect when enabled */}
+                        {isEnabled && (
+                          <div className="absolute inset-0 rounded-full bg-linear-to-r from-primary/20 to-accent/20 animate-pulse" />
+                        )}
+                      </button>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      
+      {/* Danger Zone Section */}
+      {activeSection === 'danger' && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="space-y-4"
+        >
+          <div className="rounded-lg overflow-hidden bg-red-500/5 border border-red-500/20 p-5">
+            <h3 className="font-bold text-red-400 mb-4 flex items-center gap-2">
+              <AlertTriangle size={18} />
+              {t('dashboard.settings.dangerZone')}
+            </h3>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium text-foreground">{t('dashboard.settings.deleteAccount')}</p>
+                <p className="text-sm text-foreground-muted">{t('dashboard.settings.deleteWarning')}</p>
+              </div>
+              <button
+                onClick={() => setShowDeleteConfirm(!showDeleteConfirm)}
+                className="px-4 py-2 rounded-xl bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors duration-(--animation-speed) flex items-center gap-2"
+              >
+                <Trash2 size={16} />
+                {t('dashboard.settings.deleteAccount')}
+              </button>
+            </div>
+
+            <AnimatePresence>
+              {showDeleteConfirm && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="mt-4 pt-4 border-t border-red-500/20 space-y-3"
+                >
+                  <p className="text-sm text-red-400">{t('dashboard.settings.deleteConfirmText')}</p>
+                  <input
+                    type="text"
+                    value={deleteConfirmText}
+                    onChange={(e) => setDeleteConfirmText(e.target.value)}
+                    placeholder="DELETE"
+                    className="w-full px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/30 text-foreground placeholder-red-400/50 focus:outline-none focus:border-red-500/50 transition-colors duration-(--animation-speed)"
+                  />
                   <input
                     type="password"
-                    value={deletePassword}
-                    onChange={(e) => {
-                      setDeletePassword(e.target.value)
-                      setDeleteError('')
-                    }}
-                    placeholder="Your password"
-                    className="w-full px-3 py-2 rounded-lg text-sm outline-none"
-                    style={{
-                      background: 'var(--background)',
-                      border: '1px solid var(--border)',
-                      color: 'var(--foreground)',
-                    }}
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    placeholder={t('dashboard.settings.yourPassword')}
+                    className="w-full px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/30 text-foreground placeholder-red-400/50 focus:outline-none focus:border-red-500/50 transition-colors duration-(--animation-speed)"
                   />
-                </div>
-
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => {
-                      setShowDeleteConfirm(false)
-                      setDeletePassword('')
-                      setDeleteError('')
-                    }}
-                    className="flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-                    style={{
-                      background: 'var(--background-secondary)',
-                      color: 'var(--foreground)',
-                    }}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={() => deleteAccountMutation.mutate(deletePassword)}
-                    disabled={
-                      !deletePassword || deleteAccountMutation.isPending
-                    }
-                    className="flex-1 px-4 py-2 rounded-lg text-sm font-medium text-white bg-red-500 hover:bg-red-600 transition-colors disabled:opacity-50"
-                  >
-                    {deleteAccountMutation.isPending ? (
-                      <Loader2 size={16} className="inline animate-spin" />
-                    ) : (
-                      'Delete Forever'
-                    )}
-                  </button>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => { setShowDeleteConfirm(false); setDeleteConfirmText('') }}
+                      className="flex-1 py-3 rounded-xl font-medium text-foreground-muted bg-background-secondary hover:bg-background-secondary/80 transition-colors duration-(--animation-speed)"
+                    >
+                      {t('dashboard.cancel')}
+                    </button>
+                    <button
+                      onClick={() => deleteMutation.mutate()}
+                      disabled={deleteConfirmText !== 'DELETE' || !currentPassword || deleteMutation.isPending}
+                      className="flex-1 py-3 rounded-xl font-medium text-white bg-red-500 disabled:opacity-50 flex items-center justify-center gap-2"
+                    >
+                      {deleteMutation.isPending ? <Loader2 size={18} className="animate-spin" /> : <Trash2 size={18} />}
+                      {t('dashboard.settings.deleteAccount')}
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </motion.div>
+      )}
     </motion.div>
-  )
-}
-
-interface NotificationToggleProps {
-  icon: React.ElementType
-  title: string
-  description: string
-  enabled: boolean
-  onToggle: () => void
-  accentColor: string
-  isPending: boolean
-}
-
-function NotificationToggle({
-  icon: Icon,
-  title,
-  description,
-  enabled,
-  onToggle,
-  accentColor,
-  isPending,
-}: NotificationToggleProps) {
-  return (
-    <div
-      className="flex items-center justify-between p-4 rounded-xl"
-      style={{ background: 'var(--background-secondary)' }}
-    >
-      <div className="flex items-center gap-3">
-        <div
-          className="w-10 h-10 rounded-xl flex items-center justify-center"
-          style={{ background: `${accentColor}20` }}
-        >
-          <Icon size={20} style={{ color: accentColor }} />
-        </div>
-        <div>
-          <p
-            className="font-medium text-sm"
-            style={{ color: 'var(--foreground)' }}
-          >
-            {title}
-          </p>
-          <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>
-            {description}
-          </p>
-        </div>
-      </div>
-      <button
-        onClick={onToggle}
-        disabled={isPending}
-        className="relative w-12 h-7 rounded-full transition-all duration-300"
-        style={{ background: enabled ? accentColor : 'var(--border)' }}
-      >
-        <motion.div
-          className="absolute top-1 w-5 h-5 rounded-full bg-white shadow-md"
-          animate={{ left: enabled ? '1.5rem' : '0.25rem' }}
-          transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-        />
-      </button>
-    </div>
   )
 }

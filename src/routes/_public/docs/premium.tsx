@@ -1,4 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
+import { Check, X } from 'lucide-react'
 import {
   DocsLayout,
   DocSection,
@@ -10,6 +12,7 @@ import {
   DocLink,
   DocBlockquote,
 } from '@/components/docs/DocsLayout'
+import { useTheme } from '@/components/layout/ThemeProvider'
 
 export const Route = createFileRoute('/_public/docs/premium')({
   head: () => ({
@@ -25,172 +28,143 @@ export const Route = createFileRoute('/_public/docs/premium')({
   component: PremiumDoc,
 })
 
-function PremiumDoc() {
+// Feature availability matrix: [Free, Pro, Creator, Lifetime]
+const FEATURE_MATRIX: boolean[][] = [
+  [true, true, true, true], // Unlimited Links
+  [true, true, true, true], // All 31+ Themes
+  [true, true, true, true], // All Backgrounds
+  [true, true, true, true], // Media Embeds
+  [true, true, true, true], // Full Analytics
+  [false, true, true, true], // Custom CSS
+  [false, true, true, true], // Custom Fonts
+  [false, true, true, true], // Remove Branding
+  [false, true, true, true], // Profile Backups
+  [false, true, true, true], // Export Analytics
+  [false, false, true, true], // Custom Domain
+  [false, false, true, true], // Password Links
+  [false, false, true, true], // Email Collection
+  [false, false, true, true], // Priority Support
+]
+
+export function PremiumDoc() {
+  const { t } = useTranslation()
+  const { theme } = useTheme()
+  const s = 'docs.pages.premium.sections'
+
+  const features = t(`${s}.comparison.features`, {
+    returnObjects: true,
+  }) as string[]
+  const headers = t(`${s}.comparison.headers`, {
+    returnObjects: true,
+  }) as string[]
+  const pricingRows = t(`${s}.pricing.rows`, {
+    returnObjects: true,
+  }) as string[][]
+
+  // Build comparison rows with icons
+  const comparisonRows = features.map((feature, idx) => {
+    const availability = FEATURE_MATRIX[idx] || [false, false, false, false]
+    return [
+      feature,
+      ...availability.map((available) =>
+        available ? (
+          <Check
+            size={18}
+            style={{ color: theme.colors.primary }}
+            strokeWidth={3}
+          />
+        ) : (
+          <X
+            size={18}
+            style={{ color: theme.colors.foregroundMuted }}
+            strokeWidth={2}
+          />
+        )
+      ),
+    ]
+  })
+
   return (
     <DocsLayout
-      title="Premium Features"
-      description="Unlock advanced features with Eziox Pro, Creator, and Lifetime plans."
+      title={t('docs.pages.premium.title')}
+      description={t('docs.pages.premium.description')}
       category="Features"
       icon="Crown"
     >
-      <DocSection title="Philosophy">
-        <DocBlockquote>
-          Free is fully usable. Paid tiers improve comfort, control, and polish
-          — not access.
-        </DocBlockquote>
-        <DocParagraph>
-          Everyone gets the core experience. Premium is about refinement, not
-          restriction.
-        </DocParagraph>
+      <DocSection title={t(`${s}.philosophy.title`)}>
+        <DocBlockquote>{t(`${s}.philosophy.quote`)}</DocBlockquote>
+        <DocParagraph>{t(`${s}.philosophy.text`)}</DocParagraph>
       </DocSection>
 
-      <DocSection title="Tier Comparison">
+      <DocSection title={t(`${s}.comparison.title`)}>
+        <DocTable headers={headers} rows={comparisonRows} />
+      </DocSection>
+
+      <DocSection title={t(`${s}.pricing.title`)}>
         <DocTable
-          headers={['Feature', 'Free', 'Pro', 'Creator', 'Lifetime']}
-          rows={[
-            ['Unlimited Links', '✅', '✅', '✅', '✅'],
-            ['All 31+ Themes', '✅', '✅', '✅', '✅'],
-            ['All Backgrounds', '✅', '✅', '✅', '✅'],
-            ['Media Embeds', '✅', '✅', '✅', '✅'],
-            ['Full Analytics', '✅', '✅', '✅', '✅'],
-            ['Custom CSS', '❌', '✅', '✅', '✅'],
-            ['Custom Fonts', '❌', '✅', '✅', '✅'],
-            ['Remove Branding', '❌', '✅', '✅', '✅'],
-            ['Profile Backups', '❌', '✅', '✅', '✅'],
-            ['Export Analytics', '❌', '✅', '✅', '✅'],
-            ['Custom Domain', '❌', '❌', '✅', '✅'],
-            ['Password Links', '❌', '❌', '✅', '✅'],
-            ['Email Collection', '❌', '❌', '✅', '✅'],
-            ['Priority Support', '❌', '❌', '✅', '✅'],
-          ]}
+          headers={t(`${s}.pricing.headers`, { returnObjects: true }) as string[]}
+          rows={pricingRows}
         />
       </DocSection>
 
-      <DocSection title="Pricing">
-        <DocTable
-          headers={['Tier', 'Price', 'Billing']}
-          rows={[
-            ['Free', '€0', 'Forever'],
-            ['Pro', '€2.99', 'Monthly'],
-            ['Creator', '€5.99', 'Monthly'],
-            ['Lifetime', '€29', 'One-time'],
-          ]}
-        />
-      </DocSection>
-
-      <DocSection title="Free Tier (Eziox Core)">
-        <DocParagraph>
-          Everything you need to create a beautiful bio page:
-        </DocParagraph>
+      <DocSection title={t(`${s}.free.title`)}>
+        <DocParagraph>{t(`${s}.free.intro`)}</DocParagraph>
         <DocList
-          items={[
-            'Unlimited links and short links',
-            'All 31+ themes and color schemes',
-            'All backgrounds (solid, gradient, image, video, animated)',
-            'All animations and effects',
-            'Spotify, SoundCloud & YouTube embeds',
-            'Social media icons and integrations',
-            'Profile picture & banner customization',
-            'Full analytics dashboard (30-day retention)',
-            'Mobile-optimized responsive design',
-          ]}
+          items={t(`${s}.free.features`, { returnObjects: true }) as string[]}
         />
-        <DocParagraph>Limitations:</DocParagraph>
-        <DocList
-          items={[
-            'Subtle "Powered by Eziox" branding',
-            'No custom CSS or fonts',
-            'No analytics export',
-          ]}
-        />
-      </DocSection>
-
-      <DocSection title="Pro Tier">
-        <DocParagraph>
-          Essential power features for customization enthusiasts:
-        </DocParagraph>
-
-        <DocSubSection title="Custom CSS">
-          <DocParagraph>
-            Write your own styles to override any element:
-          </DocParagraph>
-          <DocCode>
-            {`/* Make links glow on hover */
-.link-card:hover {
-  box-shadow: 0 0 30px var(--primary);
-}`}
-          </DocCode>
-        </DocSubSection>
-
-        <DocSubSection title="Other Pro Features">
+        <DocSubSection title={t(`${s}.free.limitationsTitle`)}>
           <DocList
-            items={[
-              'Custom Fonts - Upload up to 4 fonts',
-              'Remove Branding - Hide the footer link',
-              'Profile Backups - Automatic with restore',
-              'Export Analytics - CSV or JSON',
-              'Pro Badge - Show your support',
-            ]}
+            items={t(`${s}.free.limitations`, { returnObjects: true }) as string[]}
           />
         </DocSubSection>
       </DocSection>
 
-      <DocSection title="Creator Tier">
-        <DocParagraph>Professional toolkit for serious creators:</DocParagraph>
+      <DocSection title={t(`${s}.pro.title`)}>
+        <DocParagraph>{t(`${s}.pro.intro`)}</DocParagraph>
 
-        <DocSubSection title="Custom Domain">
-          <DocParagraph>
-            Use your own domain (e.g., links.yourdomain.com):
-          </DocParagraph>
-          <DocList
-            items={[
-              'Add your domain in Dashboard → Creator',
-              'Configure DNS (CNAME to cname.eziox.link)',
-              'Wait for SSL certificate (automatic)',
-            ]}
-          />
+        <DocSubSection title={t(`${s}.pro.cssTitle`)}>
+          <DocParagraph>{t(`${s}.pro.cssText`)}</DocParagraph>
+          <DocCode>{t(`${s}.pro.cssExample`)}</DocCode>
         </DocSubSection>
 
-        <DocSubSection title="Other Creator Features">
+        <DocSubSection title={t(`${s}.pro.otherTitle`)}>
           <DocList
-            items={[
-              'Password-Protected Links',
-              'Link Expiration',
-              'Email Collection with GDPR-compliant forms',
-              'Custom Open Graph images',
-              'Priority Support',
-              'Early Access to new features',
-              'Creator Badge',
-            ]}
+            items={t(`${s}.pro.otherFeatures`, { returnObjects: true }) as string[]}
           />
         </DocSubSection>
       </DocSection>
 
-      <DocSection title="Lifetime Tier">
-        <DocParagraph>Everything in Creator, forever:</DocParagraph>
+      <DocSection title={t(`${s}.creator.title`)}>
+        <DocParagraph>{t(`${s}.creator.intro`)}</DocParagraph>
+
+        <DocSubSection title={t(`${s}.creator.domainTitle`)}>
+          <DocParagraph>{t(`${s}.creator.domainText`)}</DocParagraph>
+        </DocSubSection>
+
+        <DocSubSection title={t(`${s}.creator.otherTitle`)}>
+          <DocList
+            items={
+              t(`${s}.creator.otherFeatures`, { returnObjects: true }) as string[]
+            }
+          />
+        </DocSubSection>
+      </DocSection>
+
+      <DocSection title={t(`${s}.lifetime.title`)}>
+        <DocParagraph>{t(`${s}.lifetime.intro`)}</DocParagraph>
         <DocList
-          items={[
-            'One-time payment - No recurring charges',
-            'All future features included',
-            'Exclusive Lifetime badge',
-            'Priority support forever',
-            'Never pay again',
-          ]}
+          items={t(`${s}.lifetime.features`, { returnObjects: true }) as string[]}
         />
       </DocSection>
 
-      <DocSection title="How to Upgrade">
+      <DocSection title={t(`${s}.upgrade.title`)}>
         <DocList
-          items={[
-            'Go to Pricing',
-            'Choose your plan',
-            'Complete payment via Stripe',
-            'Features activate instantly',
-          ]}
+          items={t(`${s}.upgrade.steps`, { returnObjects: true }) as string[]}
         />
         <DocParagraph>
-          Ready to upgrade? Visit our{' '}
-          <DocLink href="/pricing">Pricing Page</DocLink> to get started.
+          {t(`${s}.upgrade.ctaPrefix`)}{' '}
+          <DocLink href="/pricing">{t(`${s}.upgrade.ctaLink`)}</DocLink>{' '}
+          {t(`${s}.upgrade.ctaSuffix`)}
         </DocParagraph>
       </DocSection>
     </DocsLayout>

@@ -32,6 +32,11 @@ export const users = pgTable('users', {
   passwordResetExpires: timestamp('password_reset_expires'),
   emailVerificationToken: text('email_verification_token'),
   emailVerificationExpires: timestamp('email_verification_expires'),
+  // Pending email change fields
+  pendingEmail: varchar('pending_email', { length: 255 }),
+  pendingEmailToken: text('pending_email_token'),
+  pendingEmailExpires: timestamp('pending_email_expires'),
+  lastEmailChangeAt: timestamp('last_email_change_at'),
   lastLoginAt: timestamp('last_login_at'),
   lastLoginIp: varchar('last_login_ip', { length: 45 }),
   createdAt: timestamp('created_at').defaultNow().notNull(),
@@ -63,12 +68,28 @@ export interface CustomBackground {
 }
 
 export interface LayoutSettings {
+  cardLayout?: 'default' | 'tilt' | 'stack' | 'grid' | 'minimal'
   cardSpacing: number
   cardBorderRadius: number
-  cardShadow: 'none' | 'sm' | 'md' | 'lg' | 'xl'
+  cardShadow: 'none' | 'sm' | 'md' | 'lg' | 'xl' | 'glow'
   cardPadding: number
-  profileLayout: 'default' | 'compact' | 'expanded'
-  linkStyle: 'default' | 'minimal' | 'bold' | 'glass'
+  cardTiltDegree?: number
+  profileLayout:
+    | 'default'
+    | 'compact'
+    | 'expanded'
+    | 'centered'
+    | 'minimal'
+    | 'hero'
+  linkStyle:
+    | 'default'
+    | 'minimal'
+    | 'bold'
+    | 'glass'
+    | 'outline'
+    | 'gradient'
+    | 'neon'
+  maxWidth?: number
 }
 
 export interface ProfileBackup {
@@ -95,10 +116,33 @@ export interface CustomFont {
 
 export interface AnimatedProfileSettings {
   enabled: boolean
-  avatarAnimation: 'none' | 'pulse' | 'glow' | 'bounce' | 'rotate' | 'shake'
-  bannerAnimation: 'none' | 'parallax' | 'gradient-shift' | 'particles'
-  linkHoverEffect: 'none' | 'scale' | 'glow' | 'slide' | 'shake' | 'flip'
-  pageTransition: 'none' | 'fade' | 'slide' | 'zoom'
+  avatarAnimation:
+    | 'none'
+    | 'pulse'
+    | 'glow'
+    | 'bounce'
+    | 'rotate'
+    | 'shake'
+    | 'float'
+  bannerAnimation:
+    | 'none'
+    | 'parallax'
+    | 'gradient-shift'
+    | 'particles'
+    | 'wave'
+    | 'aurora'
+  linkHoverEffect:
+    | 'none'
+    | 'scale'
+    | 'glow'
+    | 'slide'
+    | 'shake'
+    | 'flip'
+    | 'tilt'
+    | 'lift'
+  pageTransition: 'none' | 'fade' | 'slide' | 'zoom' | 'blur'
+  particleColor?: string
+  glowColor?: string
 }
 
 export interface OpenGraphSettings {
@@ -467,6 +511,101 @@ export const sessions = pgTable('sessions', {
 export const sessionsRelations = relations(sessions, ({ one }) => ({
   user: one(users, {
     fields: [sessions.userId],
+    references: [users.id],
+  }),
+}))
+
+// PROFILE COMMENTS TABLE
+export const profileComments = pgTable('profile_comments', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  profileUserId: uuid('profile_user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  authorId: uuid('author_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  content: text('content').notNull(),
+  isHidden: boolean('is_hidden').default(false),
+  isDeleted: boolean('is_deleted').default(false),
+  isPinned: boolean('is_pinned').default(false),
+  likes: integer('likes').default(0),
+  reportCount: integer('report_count').default(0),
+  moderationStatus: varchar('moderation_status', { length: 20 }).default('approved'),
+  moderationReason: text('moderation_reason'),
+  parentId: uuid('parent_id'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+})
+
+export const profileCommentsRelations = relations(profileComments, ({ one }) => ({
+  profileUser: one(users, {
+    fields: [profileComments.profileUserId],
+    references: [users.id],
+    relationName: 'profileComments',
+  }),
+  author: one(users, {
+    fields: [profileComments.authorId],
+    references: [users.id],
+    relationName: 'authoredComments',
+  }),
+  parent: one(profileComments, {
+    fields: [profileComments.parentId],
+    references: [profileComments.id],
+    relationName: 'replies',
+  }),
+}))
+
+// COMMENT LIKES TABLE
+export const commentLikes = pgTable('comment_likes', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  commentId: uuid('comment_id')
+    .notNull()
+    .references(() => profileComments.id, { onDelete: 'cascade' }),
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+})
+
+export const commentLikesRelations = relations(commentLikes, ({ one }) => ({
+  comment: one(profileComments, {
+    fields: [commentLikes.commentId],
+    references: [profileComments.id],
+  }),
+  user: one(users, {
+    fields: [commentLikes.userId],
+    references: [users.id],
+  }),
+}))
+
+// COMMENT REPORTS TABLE
+export const commentReports = pgTable('comment_reports', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  commentId: uuid('comment_id')
+    .notNull()
+    .references(() => profileComments.id, { onDelete: 'cascade' }),
+  reporterId: uuid('reporter_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  reason: varchar('reason', { length: 50 }).notNull(),
+  description: text('description'),
+  status: varchar('status', { length: 20 }).default('pending'),
+  reviewedBy: uuid('reviewed_by').references(() => users.id, { onDelete: 'set null' }),
+  reviewedAt: timestamp('reviewed_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+})
+
+export const commentReportsRelations = relations(commentReports, ({ one }) => ({
+  comment: one(profileComments, {
+    fields: [commentReports.commentId],
+    references: [profileComments.id],
+  }),
+  reporter: one(users, {
+    fields: [commentReports.reporterId],
+    references: [users.id],
+  }),
+  reviewer: one(users, {
+    fields: [commentReports.reviewedBy],
     references: [users.id],
   }),
 }))
@@ -1003,6 +1142,39 @@ export const contactMessagesRelations = relations(
   }),
 )
 
+// ABUSE ALERTS TABLE (Fair Use Policy Monitoring)
+export const abuseAlerts = pgTable('abuse_alerts', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  alertType: varchar('alert_type', { length: 50 }).notNull(), // 'link_spam', 'rate_limit', 'large_data', 'suspicious_activity'
+  severity: varchar('severity', { length: 20 }).notNull().default('warning'), // 'info', 'warning', 'critical'
+  title: varchar('title', { length: 200 }).notNull(),
+  description: text('description').notNull(),
+  metadata: jsonb('metadata'), // Additional context (link count, data size, etc.)
+  status: varchar('status', { length: 20 }).notNull().default('new'), // 'new', 'reviewed', 'resolved', 'false_positive'
+  reviewedBy: uuid('reviewed_by').references(() => users.id, {
+    onDelete: 'set null',
+  }),
+  reviewedAt: timestamp('reviewed_at'),
+  reviewNotes: text('review_notes'),
+  emailSent: boolean('email_sent').default(false),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+})
+
+export const abuseAlertsRelations = relations(abuseAlerts, ({ one }) => ({
+  user: one(users, {
+    fields: [abuseAlerts.userId],
+    references: [users.id],
+  }),
+  reviewer: one(users, {
+    fields: [abuseAlerts.reviewedBy],
+    references: [users.id],
+  }),
+}))
+
 // TYPE EXPORTS
 export type User = typeof users.$inferSelect
 export type NewUser = typeof users.$inferInsert
@@ -1059,3 +1231,7 @@ export type ApiRequestLog = typeof apiRequestLogs.$inferSelect
 export type NewApiRequestLog = typeof apiRequestLogs.$inferInsert
 export type SiteSetting = typeof siteSettings.$inferSelect
 export type NewSiteSetting = typeof siteSettings.$inferInsert
+export type AbuseAlert = typeof abuseAlerts.$inferSelect
+export type NewAbuseAlert = typeof abuseAlerts.$inferInsert
+export type ProfileComment = typeof profileComments.$inferSelect
+export type NewProfileComment = typeof profileComments.$inferInsert

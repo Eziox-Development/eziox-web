@@ -1,67 +1,47 @@
 import { useState } from 'react'
-import { motion, AnimatePresence } from 'motion/react'
+import { motion, AnimatePresence, Reorder } from 'motion/react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
+import { useTranslation } from 'react-i18next'
 import {
   getMyLinksFn,
   createLinkFn,
   updateLinkFn,
   deleteLinkFn,
+  reorderLinksFn,
 } from '@/server/functions/links'
 import {
   Link as LinkIcon,
-  Eye,
-  EyeOff,
-  MousePointerClick,
-  TrendingUp,
   Plus,
-  X,
-  Save,
-  Loader2,
-  Edit3,
-  Trash2,
   GripVertical,
-  Settings2,
-  Star,
+  ExternalLink,
+  Trash2,
+  Edit3,
+  X,
+  Loader2,
+  MousePointerClick,
 } from 'lucide-react'
-import { LinkAdvancedSettings } from '@/components/profile/LinkAdvancedSettings'
-import { useAuth } from '@/hooks/use-auth'
-import { useTheme } from '@/components/layout/ThemeProvider'
 
-const linkSchema = z.object({
-  title: z.string().min(1, 'Title is required').max(100),
-  url: z.string().url('Invalid URL'),
-  description: z.string().max(255).optional(),
-})
-
-type LinkFormData = z.infer<typeof linkSchema>
+type LinkItem = {
+  id: string
+  title: string
+  url: string
+  description?: string | null
+  clicks?: number | null
+}
 
 export function LinksTab() {
-  const { theme } = useTheme()
-  const accentColor = theme.colors.primary
+  const { t } = useTranslation()
   const queryClient = useQueryClient()
+  const [isAddingLink, setIsAddingLink] = useState(false)
+  const [editingLink, setEditingLink] = useState<LinkItem | null>(null)
+  const [newLink, setNewLink] = useState({ title: '', url: '', description: '' })
+
   const getMyLinks = useServerFn(getMyLinksFn)
   const createLink = useServerFn(createLinkFn)
   const updateLink = useServerFn(updateLinkFn)
   const deleteLink = useServerFn(deleteLinkFn)
-
-  const { currentUser } = useAuth()
-  const [isCreating, setIsCreating] = useState(false)
-  const [editingId, setEditingId] = useState<string | null>(null)
-  const [advancedSettingsLink, setAdvancedSettingsLink] = useState<
-    (typeof links)[0] | null
-  >(null)
-
-  const userTier = (currentUser?.tier || 'free') as string
-  const isCreator = ['creator', 'lifetime'].includes(userTier)
-
-  const form = useForm<LinkFormData>({
-    resolver: zodResolver(linkSchema),
-    defaultValues: { title: '', url: '', description: '' },
-  })
+  const reorderLinks = useServerFn(reorderLinksFn)
 
   const { data: links = [], isLoading } = useQuery({
     queryKey: ['my-links'],
@@ -69,48 +49,61 @@ export function LinksTab() {
   })
 
   const createMutation = useMutation({
-    mutationFn: (data: LinkFormData) => createLink({ data }),
+    mutationFn: (data: { title: string; url: string; description?: string }) =>
+      createLink({ data }),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['my-links'] })
-      setIsCreating(false)
-      form.reset()
+      setIsAddingLink(false)
+      setNewLink({ title: '', url: '', description: '' })
     },
   })
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<LinkFormData> }) =>
-      updateLink({ data: { id, ...data } }),
+    mutationFn: (data: { id: string; title?: string; url?: string; description?: string }) =>
+      updateLink({ data }),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['my-links'] })
-      setEditingId(null)
-      setIsCreating(false)
-      form.reset()
+      setEditingLink(null)
     },
   })
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => deleteLink({ data: { id } }),
-    onSuccess: () =>
-      void queryClient.invalidateQueries({ queryKey: ['my-links'] }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['my-links'] })
+    },
   })
 
-  const toggleMutation = useMutation({
-    mutationFn: ({ id, isActive }: { id: string; isActive: boolean }) =>
-      updateLink({ data: { id, isActive: !isActive } }),
-    onSuccess: () =>
-      void queryClient.invalidateQueries({ queryKey: ['my-links'] }),
+  const reorderMutation = useMutation({
+    mutationFn: (reorderData: { id: string; order: number }[]) =>
+      reorderLinks({ data: { links: reorderData } }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['my-links'] })
+    },
   })
 
-  const onSubmit = form.handleSubmit((data) => {
-    if (editingId) {
-      updateMutation.mutate({ id: editingId, data })
-    } else {
-      createMutation.mutate(data)
-    }
-  })
+  const handleReorder = (newOrder: typeof links) => {
+    reorderMutation.mutate(newOrder.map((l, i) => ({ id: l.id, order: i })))
+  }
 
-  const totalClicks = links.reduce((sum, link) => sum + (link.clicks || 0), 0)
-  const activeLinks = links.filter((link) => link.isActive).length
+  const handleAddLink = () => {
+    if (!newLink.title || !newLink.url) return
+    createMutation.mutate({
+      title: newLink.title,
+      url: newLink.url.startsWith('http') ? newLink.url : `https://${newLink.url}`,
+      description: newLink.description || undefined,
+    })
+  }
+
+  const handleUpdateLink = () => {
+    if (!editingLink) return
+    updateMutation.mutate({
+      id: editingLink.id,
+      title: editingLink.title,
+      url: editingLink.url,
+      description: editingLink.description || undefined,
+    })
+  }
 
   return (
     <motion.div
@@ -120,346 +113,198 @@ export function LinksTab() {
       exit={{ opacity: 0, y: -20 }}
       className="space-y-6"
     >
-      {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        {[
-          {
-            label: 'Total Links',
-            value: links.length,
-            icon: LinkIcon,
-            gradient: 'from-indigo-500 to-purple-500',
-          },
-          {
-            label: 'Active',
-            value: activeLinks,
-            icon: Eye,
-            gradient: 'from-green-500 to-emerald-500',
-          },
-          {
-            label: 'Clicks',
-            value: totalClicks,
-            icon: MousePointerClick,
-            gradient: 'from-amber-500 to-orange-500',
-          },
-          {
-            label: 'Avg CTR',
-            value:
-              links.length > 0 ? Math.round(totalClicks / links.length) : 0,
-            icon: TrendingUp,
-            gradient: 'from-pink-500 to-rose-500',
-          },
-        ].map((stat) => (
-          <div
-            key={stat.label}
-            className="p-4 rounded-xl text-center"
-            style={{
-              background: 'var(--card)',
-              border: '1px solid var(--border)',
-            }}
-          >
-            <div
-              className={`w-10 h-10 mx-auto mb-2 rounded-lg flex items-center justify-center bg-gradient-to-br ${stat.gradient}`}
-            >
-              <stat.icon size={20} className="text-white" />
-            </div>
-            <p
-              className="text-xl font-bold"
-              style={{ color: 'var(--foreground)' }}
-            >
-              {isLoading ? '-' : stat.value}
-            </p>
-            <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>
-              {stat.label}
-            </p>
-          </div>
-        ))}
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-xl font-bold text-foreground">{t('dashboard.links.title')}</h2>
+          <p className="text-sm text-foreground-muted">{t('dashboard.links.dragToReorder')}</p>
+        </div>
+        <motion.button
+          onClick={() => setIsAddingLink(true)}
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium bg-linear-to-br from-primary to-accent text-primary-foreground"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+        >
+          <Plus size={18} />
+          {t('dashboard.links.addLink')}
+        </motion.button>
       </div>
 
-      {/* Add Link Button */}
-      <motion.button
-        onClick={() => {
-          setIsCreating(!isCreating)
-          if (isCreating) {
-            setEditingId(null)
-            form.reset()
-          }
-        }}
-        className="w-full flex items-center justify-center gap-3 py-4 rounded-2xl font-semibold"
-        style={{
-          background: isCreating
-            ? 'var(--background-secondary)'
-            : `linear-gradient(135deg, ${accentColor}, var(--accent))`,
-          color: isCreating ? 'var(--foreground)' : 'white',
-          border: isCreating ? '1px solid var(--border)' : 'none',
-        }}
-        whileHover={{ scale: 1.01 }}
-        whileTap={{ scale: 0.99 }}
-      >
-        {isCreating ? <X size={20} /> : <Plus size={20} />}
-        {isCreating ? 'Cancel' : 'Add New Link'}
-      </motion.button>
-
-      {/* Form */}
-      <AnimatePresence mode="wait">
-        {isCreating && (
+      <AnimatePresence>
+        {isAddingLink && (
           <motion.div
-            key="form"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
+            className="overflow-hidden rounded-lg bg-card/10 border border-border/20"
           >
-            <div
-              className="p-6 rounded-2xl"
-              style={{
-                background: 'var(--card)',
-                border: '1px solid var(--border)',
-              }}
-            >
-              <h3
-                className="text-lg font-semibold mb-4"
-                style={{ color: 'var(--foreground)' }}
+            <div className="p-5 flex items-center justify-between border-b border-border/20">
+              <h3 className="font-bold text-foreground">{t('dashboard.links.addLink')}</h3>
+              <button onClick={() => setIsAddingLink(false)} className="p-2 rounded-lg hover:bg-background-secondary transition-colors duration-(--animation-speed)">
+                <X size={18} className="text-foreground-muted" />
+              </button>
+            </div>
+            <div className="p-5 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-foreground-muted mb-2">{t('dashboard.links.linkTitle')}</label>
+                <input
+                  type="text"
+                  value={newLink.title}
+                  onChange={(e) => setNewLink({ ...newLink, title: e.target.value })}
+                  placeholder="My Website"
+                  className="w-full px-4 py-3 rounded-xl bg-background-secondary border border-border text-foreground placeholder-foreground-muted/50 focus:outline-none focus:border-primary/50 transition-colors duration-(--animation-speed)"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-foreground-muted mb-2">{t('dashboard.links.linkUrl')}</label>
+                <input
+                  type="url"
+                  value={newLink.url}
+                  onChange={(e) => setNewLink({ ...newLink, url: e.target.value })}
+                  placeholder="https://example.com"
+                  className="w-full px-4 py-3 rounded-xl bg-background-secondary border border-border text-foreground placeholder-foreground-muted/50 focus:outline-none focus:border-primary/50 transition-colors duration-(--animation-speed)"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-foreground-muted mb-2">{t('dashboard.links.linkDescription')}</label>
+                <input
+                  type="text"
+                  value={newLink.description}
+                  onChange={(e) => setNewLink({ ...newLink, description: e.target.value })}
+                  placeholder="Optional description"
+                  className="w-full px-4 py-3 rounded-xl bg-background-secondary border border-border text-foreground placeholder-foreground-muted/50 focus:outline-none focus:border-primary/50 transition-colors duration-(--animation-speed)"
+                />
+              </div>
+              <button
+                onClick={handleAddLink}
+                disabled={!newLink.title || !newLink.url || createMutation.isPending}
+                className="w-full py-3 rounded-xl font-medium text-primary-foreground bg-linear-to-r from-primary to-accent disabled:opacity-50 flex items-center justify-center gap-2"
               >
-                {editingId ? 'Edit Link' : 'Create New Link'}
-              </h3>
-              <form onSubmit={onSubmit} className="space-y-4">
-                <div>
-                  <label
-                    className="block text-sm font-medium mb-2"
-                    style={{ color: 'var(--foreground)' }}
-                  >
-                    Title *
-                  </label>
-                  <input
-                    {...form.register('title')}
-                    placeholder="My Website"
-                    className="w-full px-4 py-3 rounded-xl outline-none"
-                    style={{
-                      background: 'var(--background-secondary)',
-                      border: '1px solid var(--border)',
-                      color: 'var(--foreground)',
-                    }}
-                  />
-                  {form.formState.errors.title && (
-                    <p className="text-xs text-red-400 mt-1">
-                      {form.formState.errors.title.message}
-                    </p>
-                  )}
-                </div>
-                <div>
-                  <label
-                    className="block text-sm font-medium mb-2"
-                    style={{ color: 'var(--foreground)' }}
-                  >
-                    URL *
-                  </label>
-                  <input
-                    {...form.register('url')}
-                    placeholder="https://example.com"
-                    className="w-full px-4 py-3 rounded-xl outline-none"
-                    style={{
-                      background: 'var(--background-secondary)',
-                      border: '1px solid var(--border)',
-                      color: 'var(--foreground)',
-                    }}
-                  />
-                  {form.formState.errors.url && (
-                    <p className="text-xs text-red-400 mt-1">
-                      {form.formState.errors.url.message}
-                    </p>
-                  )}
-                </div>
-                <div>
-                  <label
-                    className="block text-sm font-medium mb-2"
-                    style={{ color: 'var(--foreground)' }}
-                  >
-                    Description
-                  </label>
-                  <input
-                    {...form.register('description')}
-                    placeholder="A short description"
-                    className="w-full px-4 py-3 rounded-xl outline-none"
-                    style={{
-                      background: 'var(--background-secondary)',
-                      border: '1px solid var(--border)',
-                      color: 'var(--foreground)',
-                    }}
-                  />
-                </div>
-                <button
-                  type="submit"
-                  disabled={
-                    createMutation.isPending || updateMutation.isPending
-                  }
-                  className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-medium text-white disabled:opacity-50"
-                  style={{
-                    background: `linear-gradient(135deg, ${accentColor}, var(--accent))`,
-                  }}
-                >
-                  {createMutation.isPending || updateMutation.isPending ? (
-                    <Loader2 size={18} className="animate-spin" />
-                  ) : (
-                    <Save size={18} />
-                  )}
-                  {editingId ? 'Update Link' : 'Create Link'}
-                </button>
-              </form>
+                {createMutation.isPending ? <Loader2 size={18} className="animate-spin" /> : <Plus size={18} />}
+                {t('dashboard.links.addLink')}
+              </button>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Links List */}
-      <div className="space-y-3">
-        {isLoading ? (
-          <div
-            className="text-center py-12"
-            style={{ color: 'var(--foreground-muted)' }}
-          >
-            Loading links...
-          </div>
-        ) : links.length === 0 ? (
-          <div className="text-center py-12">
-            <LinkIcon
-              size={48}
-              className="mx-auto mb-4 opacity-50"
-              style={{ color: 'var(--foreground-muted)' }}
-            />
-            <h3
-              className="text-lg font-semibold mb-2"
-              style={{ color: 'var(--foreground)' }}
-            >
-              No links yet
-            </h3>
-            <p className="text-sm" style={{ color: 'var(--foreground-muted)' }}>
-              Create your first bio link
-            </p>
-          </div>
-        ) : (
-          links.map((link) => (
-            <motion.div
+      {isLoading ? (
+        <div className="flex items-center justify-center py-12">
+          <Loader2 size={32} className="animate-spin text-primary" />
+        </div>
+      ) : links.length === 0 ? (
+        <div className="rounded-lg overflow-hidden bg-card/50 border border-border p-12 text-center">
+          <LinkIcon size={48} className="mx-auto mb-4 text-foreground-muted/30" />
+          <p className="text-foreground-muted mb-2">{t('dashboard.links.noLinks')}</p>
+          <p className="text-sm text-foreground-muted/50">{t('dashboard.links.addFirst')}</p>
+        </div>
+      ) : (
+        <Reorder.Group axis="y" values={links} onReorder={handleReorder} className="space-y-3">
+          {links.map((link) => (
+            <Reorder.Item
               key={link.id}
-              className="p-4 rounded-xl relative"
-              style={{
-                background: 'var(--card)',
-                border: link.isFeatured
-                  ? `2px solid ${accentColor}`
-                  : '1px solid var(--border)',
-                opacity: link.isActive ? 1 : 0.5,
-              }}
+              value={link}
+              className="rounded-lg overflow-hidden bg-card/50 border border-border cursor-grab active:cursor-grabbing"
             >
-              {link.isFeatured && (
-                <div
-                  className="absolute -top-2 -right-2 w-6 h-6 rounded-full flex items-center justify-center"
-                  style={{
-                    background: `linear-gradient(135deg, #ec4899, #8b5cf6)`,
-                  }}
-                >
-                  <Star size={12} className="text-white" />
-                </div>
-              )}
-              <div className="flex items-center gap-4">
-                <GripVertical
-                  size={20}
-                  className="cursor-grab"
-                  style={{ color: 'var(--foreground-muted)' }}
-                />
+              <div className="p-4 flex items-center gap-4">
+                <GripVertical size={20} className="text-foreground-muted/50 shrink-0" />
                 <div className="flex-1 min-w-0">
-                  <h4
-                    className="font-semibold truncate"
-                    style={{ color: 'var(--foreground)' }}
-                  >
-                    {link.title}
-                  </h4>
-                  <p
-                    className="text-xs truncate"
-                    style={{ color: 'var(--foreground-muted)' }}
-                  >
-                    {link.url}
-                  </p>
-                  <div className="flex items-center gap-2 mt-1">
-                    {(link.clicks ?? 0) > 0 && (
-                      <span className="text-xs" style={{ color: accentColor }}>
-                        {link.clicks} clicks
-                      </span>
-                    )}
-                    {link.schedule?.enabled && (
-                      <span
-                        className="text-xs px-1.5 py-0.5 rounded"
-                        style={{
-                          background: 'rgba(34, 197, 94, 0.15)',
-                          color: '#22c55e',
-                        }}
-                      >
-                        Scheduled
-                      </span>
-                    )}
-                  </div>
+                  <p className="font-medium text-foreground truncate">{link.title}</p>
+                  <p className="text-sm text-foreground-muted truncate">{link.url}</p>
+                </div>
+                <div className="flex items-center gap-2 text-foreground-muted">
+                  <MousePointerClick size={14} />
+                  <span className="text-sm">{link.clicks || 0}</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <button
-                    onClick={() => setAdvancedSettingsLink(link)}
-                    className="p-2 rounded-lg hover:bg-white/5"
-                    style={{ color: 'var(--foreground-muted)' }}
-                    title="Advanced Settings"
+                  <a
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 rounded-lg hover:bg-background-secondary transition-colors duration-(--animation-speed)"
+                    onClick={(e) => e.stopPropagation()}
                   >
-                    <Settings2 size={18} />
+                    <ExternalLink size={16} className="text-foreground-muted" />
+                  </a>
+                  <button
+                    onClick={() => setEditingLink(link)}
+                    className="p-2 rounded-lg hover:bg-background-secondary transition-colors duration-(--animation-speed)"
+                  >
+                    <Edit3 size={16} className="text-foreground-muted" />
                   </button>
                   <button
-                    onClick={() =>
-                      toggleMutation.mutate({
-                        id: link.id,
-                        isActive: link.isActive ?? true,
-                      })
-                    }
-                    className="p-2 rounded-lg hover:bg-white/5"
-                    style={{
-                      color: link.isActive
-                        ? accentColor
-                        : 'var(--foreground-muted)',
-                    }}
+                    onClick={() => deleteMutation.mutate(link.id)}
+                    className="p-2 rounded-lg hover:bg-red-500/20 transition-colors duration-(--animation-speed)"
                   >
-                    {link.isActive ? <Eye size={18} /> : <EyeOff size={18} />}
-                  </button>
-                  <button
-                    onClick={() => {
-                      setEditingId(link.id)
-                      setIsCreating(true)
-                      form.reset({
-                        title: link.title,
-                        url: link.url,
-                        description: link.description || '',
-                      })
-                    }}
-                    className="p-2 rounded-lg hover:bg-white/5"
-                    style={{ color: 'var(--foreground-muted)' }}
-                  >
-                    <Edit3 size={18} />
-                  </button>
-                  <button
-                    onClick={() => {
-                      if (confirm('Delete this link?'))
-                        deleteMutation.mutate(link.id)
-                    }}
-                    className="p-2 rounded-lg hover:bg-red-500/10"
-                    style={{ color: '#ef4444' }}
-                  >
-                    <Trash2 size={18} />
+                    <Trash2 size={16} className="text-red-400" />
                   </button>
                 </div>
               </div>
-            </motion.div>
-          ))
-        )}
-      </div>
+            </Reorder.Item>
+          ))}
+        </Reorder.Group>
+      )}
 
       <AnimatePresence>
-        {advancedSettingsLink && (
-          <LinkAdvancedSettings
-            link={advancedSettingsLink}
-            isCreator={isCreator}
-            onClose={() => setAdvancedSettingsLink(null)}
-          />
+        {editingLink && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+            onClick={() => setEditingLink(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="w-full max-w-md p-6 rounded-lg bg-card border border-border"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-bold text-foreground">{t('dashboard.links.editLink')}</h3>
+                <button onClick={() => setEditingLink(null)} className="p-2 rounded-lg hover:bg-background-secondary transition-colors duration-(--animation-speed)">
+                  <X size={18} className="text-foreground-muted" />
+                </button>
+              </div>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-foreground-muted mb-2">{t('dashboard.links.linkTitle')}</label>
+                  <input
+                    type="text"
+                    value={editingLink.title}
+                    onChange={(e) => setEditingLink({ ...editingLink, title: e.target.value })}
+                    className="w-full px-4 py-3 rounded-xl bg-background-secondary border border-border text-foreground focus:outline-none focus:border-primary/50 transition-colors duration-(--animation-speed)"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-foreground-muted mb-2">{t('dashboard.links.linkUrl')}</label>
+                  <input
+                    type="url"
+                    value={editingLink.url}
+                    onChange={(e) => setEditingLink({ ...editingLink, url: e.target.value })}
+                    className="w-full px-4 py-3 rounded-xl bg-background-secondary border border-border text-foreground focus:outline-none focus:border-primary/50 transition-colors duration-(--animation-speed)"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-foreground-muted mb-2">{t('dashboard.links.linkDescription')}</label>
+                  <input
+                    type="text"
+                    value={editingLink.description || ''}
+                    onChange={(e) => setEditingLink({ ...editingLink, description: e.target.value })}
+                    className="w-full px-4 py-3 rounded-xl bg-background-secondary border border-border text-foreground focus:outline-none focus:border-primary/50 transition-colors duration-(--animation-speed)"
+                  />
+                </div>
+                <button
+                  onClick={handleUpdateLink}
+                  disabled={updateMutation.isPending}
+                  className="w-full py-3 rounded-xl font-medium text-primary-foreground bg-linear-to-r from-primary to-accent disabled:opacity-50 flex items-center justify-center gap-2"
+                >
+                  {updateMutation.isPending ? <Loader2 size={18} className="animate-spin" /> : null}
+                  {t('dashboard.save')}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
     </motion.div>

@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
 import {
   DocsLayout,
   DocSection,
@@ -21,250 +22,225 @@ export const Route = createFileRoute('/_public/docs/faq')({
   component: FaqDoc,
 })
 
-function FaqDoc() {
+export function FaqDoc() {
+  const { t } = useTranslation()
+  const s = 'docs.pages.faq.sections'
+
   return (
     <DocsLayout
-      title="FAQ"
-      description="Frequently asked questions about Eziox."
+      title={t('docs.pages.faq.title')}
+      description={t('docs.pages.faq.description')}
       category="Support"
       icon="HelpCircle"
     >
-      <DocSection title="General">
-        <DocSubSection title="What is Eziox?">
-          <DocParagraph>
-            Eziox is a modern bio link platform that lets you create a
-            personalized page with all your important links in one place. Share
-            one link instead of many.
-          </DocParagraph>
+      <DocSection title={t(`${s}.general.title`)}>
+        <DocSubSection title={t(`${s}.general.whatIsEziox`)}>
+          <DocParagraph>{t(`${s}.general.whatIsEzioxAnswer`)}</DocParagraph>
         </DocSubSection>
 
-        <DocSubSection title="Is Eziox free?">
-          <DocParagraph>
-            Yes! Eziox Core is completely free with unlimited links, all themes,
-            full analytics, and more. Premium tiers offer additional
-            customization options.
-          </DocParagraph>
+        <DocSubSection title={t(`${s}.general.isFree`)}>
+          <DocParagraph>{t(`${s}.general.isFreeAnswer`)}</DocParagraph>
         </DocSubSection>
 
-        <DocSubSection title="How is Eziox different from Linktree?">
+        <DocSubSection title={t(`${s}.general.vsLinktree`)}>
           <DocList
             items={[
-              'No paywalls on core features - All themes and analytics are free',
-              'Modern design - 31+ themes with animated backgrounds',
-              'Better privacy - No third-party tracking, GDPR compliant',
-              'Open development - Transparent about our features and roadmap',
+              t(`${s}.general.vsLinktreeFeatures.0`),
+              t(`${s}.general.vsLinktreeFeatures.1`),
+              t(`${s}.general.vsLinktreeFeatures.2`),
+              t(`${s}.general.vsLinktreeFeatures.3`),
             ]}
           />
         </DocSubSection>
       </DocSection>
 
-      <DocSection title="Account">
-        <DocSubSection title="How do I change my username?">
+      <DocSection title={t(`${s}.account.title`)}>
+        <DocSubSection title={t(`${s}.account.changeUsername`)}>
           <DocList
             items={[
-              'Go to Dashboard → Profile',
-              'Edit the Username field',
-              'Click Save Changes',
+              t(`${s}.account.changeUsernameSteps.0`),
+              t(`${s}.account.changeUsernameSteps.1`),
+              t(`${s}.account.changeUsernameSteps.2`),
             ]}
           />
-          <DocParagraph>
-            Note: Your old username becomes available for others immediately.
-          </DocParagraph>
+          <DocParagraph>{t(`${s}.account.changeUsernameNote`)}</DocParagraph>
         </DocSubSection>
 
-        <DocSubSection title="How do I delete my account?">
+        <DocSubSection title={t(`${s}.account.deleteAccount`)}>
           <DocList
             items={[
-              'Go to Dashboard → Settings → Danger Zone',
-              'Click Delete Account',
-              'Confirm with your password',
+              t(`${s}.account.deleteAccountSteps.0`),
+              t(`${s}.account.deleteAccountSteps.1`),
+              t(`${s}.account.deleteAccountSteps.2`),
             ]}
           />
-          <DocParagraph>
-            All your data will be permanently deleted within 30 days.
-          </DocParagraph>
+          <DocParagraph>{t(`${s}.account.deleteAccountNote`)}</DocParagraph>
         </DocSubSection>
 
-        <DocSubSection title="I forgot my password">
+        <DocSubSection title={t(`${s}.account.forgotPassword`)}>
           <DocList
             items={[
-              'Go to Sign In',
-              'Click Forgot Password',
-              'Enter your email address',
-              'Check your inbox for a reset link',
+              t(`${s}.account.forgotPasswordSteps.0`),
+              t(`${s}.account.forgotPasswordSteps.1`),
+              t(`${s}.account.forgotPasswordSteps.2`),
+              t(`${s}.account.forgotPasswordSteps.3`),
             ]}
           />
         </DocSubSection>
 
-        <DocSubSection title="Why can't I log in?">
-          <DocParagraph>Common reasons:</DocParagraph>
+        <DocSubSection title={t(`${s}.account.cantLogin`)}>
+          <DocParagraph>{t(`${s}.account.cantLoginIntro`)}</DocParagraph>
           <DocList
             items={[
-              'Wrong password - Try the password reset',
-              'Account locked - Wait 30 minutes after 5 failed attempts',
-              '2FA required - Enter your authenticator code',
-              'Email not verified - Check your inbox for verification email',
+              t(`${s}.account.cantLoginReasons.0`),
+              t(`${s}.account.cantLoginReasons.1`),
+              t(`${s}.account.cantLoginReasons.2`),
+              t(`${s}.account.cantLoginReasons.3`),
             ]}
           />
         </DocSubSection>
       </DocSection>
 
-      <DocSection title="Links">
-        <DocSubSection title="How many links can I add?">
-          <DocParagraph>
-            Unlimited! There's no limit on the number of links.
-          </DocParagraph>
+      <DocSection title={t(`${s}.links.title`)}>
+        <DocSubSection title={t(`${s}.links.howManyLinks`)}>
+          <DocParagraph>{t(`${s}.links.howManyLinksAnswer`)}</DocParagraph>
         </DocSubSection>
 
-        <DocSubSection title="Can I reorder my links?">
-          <DocParagraph>
-            Yes! Drag and drop links in the Dashboard to reorder them.
-          </DocParagraph>
+        <DocSubSection title={t(`${s}.links.reorderLinks`)}>
+          <DocParagraph>{t(`${s}.links.reorderLinksAnswer`)}</DocParagraph>
         </DocSubSection>
 
-        <DocSubSection title="Can I schedule links?">
-          <DocParagraph>
-            Yes! Set start and end dates for links to appear/disappear
-            automatically. Available for all users.
-          </DocParagraph>
+        <DocSubSection title={t(`${s}.links.scheduleLinks`)}>
+          <DocParagraph>{t(`${s}.links.scheduleLinksAnswer`)}</DocParagraph>
         </DocSubSection>
 
-        <DocSubSection title="Can I track link clicks?">
-          <DocParagraph>
-            Yes! Every link has detailed analytics including:
-          </DocParagraph>
+        <DocSubSection title={t(`${s}.links.trackClicks`)}>
+          <DocParagraph>{t(`${s}.links.trackClicksIntro`)}</DocParagraph>
           <DocList
             items={[
-              'Total clicks',
-              'Device breakdown',
-              'Geographic data',
-              'Click heatmap by hour',
+              t(`${s}.links.trackClicksFeatures.0`),
+              t(`${s}.links.trackClicksFeatures.1`),
+              t(`${s}.links.trackClicksFeatures.2`),
+              t(`${s}.links.trackClicksFeatures.3`),
             ]}
           />
         </DocSubSection>
       </DocSection>
 
-      <DocSection title="Customization">
-        <DocSubSection title="How do I change my theme?">
+      <DocSection title={t(`${s}.customization.title`)}>
+        <DocSubSection title={t(`${s}.customization.changeTheme`)}>
           <DocList
             items={[
-              'Go to Dashboard → Customization',
-              'Browse the theme gallery',
-              'Click a theme to preview',
-              'Click Apply to save',
+              t(`${s}.customization.changeThemeSteps.0`),
+              t(`${s}.customization.changeThemeSteps.1`),
+              t(`${s}.customization.changeThemeSteps.2`),
+              t(`${s}.customization.changeThemeSteps.3`),
             ]}
           />
         </DocSubSection>
 
-        <DocSubSection title="Can I use custom colors?">
-          <DocParagraph>
-            Yes! Use the Theme Builder to create custom color schemes, or use
-            Custom CSS (Pro+) for full control.
-          </DocParagraph>
+        <DocSubSection title={t(`${s}.customization.customColors`)}>
+          <DocParagraph>{t(`${s}.customization.customColorsAnswer`)}</DocParagraph>
         </DocSubSection>
 
-        <DocSubSection title="Can I use my own domain?">
-          <DocParagraph>
-            Yes, with Creator tier! Add your domain in Dashboard → Creator and
-            configure DNS.
-          </DocParagraph>
+        <DocSubSection title={t(`${s}.customization.customDomain`)}>
+          <DocParagraph>{t(`${s}.customization.customDomainAnswer`)}</DocParagraph>
         </DocSubSection>
       </DocSection>
 
-      <DocSection title="Premium">
-        <DocSubSection title="What payment methods do you accept?">
-          <DocParagraph>
-            We accept all major credit cards via Stripe:
-          </DocParagraph>
+      <DocSection title={t(`${s}.premium.title`)}>
+        <DocSubSection title={t(`${s}.premium.paymentMethods`)}>
+          <DocParagraph>{t(`${s}.premium.paymentMethodsIntro`)}</DocParagraph>
           <DocList
-            items={['Visa', 'Mastercard', 'American Express', 'And more']}
+            items={[
+              t(`${s}.premium.paymentMethodsList.0`),
+              t(`${s}.premium.paymentMethodsList.1`),
+              t(`${s}.premium.paymentMethodsList.2`),
+              t(`${s}.premium.paymentMethodsList.3`),
+            ]}
           />
         </DocSubSection>
 
-        <DocSubSection title="Can I cancel my subscription?">
-          <DocParagraph>
-            Yes, cancel anytime from Dashboard → Subscription. You'll keep
-            access until the end of your billing period.
-          </DocParagraph>
+        <DocSubSection title={t(`${s}.premium.cancelSubscription`)}>
+          <DocParagraph>{t(`${s}.premium.cancelSubscriptionAnswer`)}</DocParagraph>
         </DocSubSection>
 
-        <DocSubSection title="Do you offer refunds?">
-          <DocParagraph>
-            We offer a 7-day money-back guarantee for first-time subscribers.
-            Contact support@eziox.link.
-          </DocParagraph>
+        <DocSubSection title={t(`${s}.premium.refunds`)}>
+          <DocParagraph>{t(`${s}.premium.refundsAnswer`)}</DocParagraph>
         </DocSubSection>
 
-        <DocSubSection title="What's included in Lifetime?">
-          <DocParagraph>Everything in Creator tier, forever:</DocParagraph>
+        <DocSubSection title={t(`${s}.premium.lifetimeIncludes`)}>
+          <DocParagraph>{t(`${s}.premium.lifetimeIncludesIntro`)}</DocParagraph>
           <DocList
             items={[
-              'All current features',
-              'All future features',
-              'No recurring payments',
-              'Exclusive Lifetime badge',
+              t(`${s}.premium.lifetimeIncludesList.0`),
+              t(`${s}.premium.lifetimeIncludesList.1`),
+              t(`${s}.premium.lifetimeIncludesList.2`),
+              t(`${s}.premium.lifetimeIncludesList.3`),
             ]}
           />
         </DocSubSection>
       </DocSection>
 
-      <DocSection title="Technical">
-        <DocSubSection title="What browsers are supported?">
+      <DocSection title={t(`${s}.technical.title`)}>
+        <DocSubSection title={t(`${s}.technical.browsers`)}>
           <DocList
-            items={['Chrome 90+', 'Firefox 90+', 'Safari 14+', 'Edge 90+']}
+            items={[
+              t(`${s}.technical.browsersList.0`),
+              t(`${s}.technical.browsersList.1`),
+              t(`${s}.technical.browsersList.2`),
+              t(`${s}.technical.browsersList.3`),
+            ]}
           />
         </DocSubSection>
 
-        <DocSubSection title="Is there a mobile app?">
-          <DocParagraph>
-            Not yet, but our website is fully mobile-optimized. A PWA is planned
-            for the future.
-          </DocParagraph>
+        <DocSubSection title={t(`${s}.technical.mobileApp`)}>
+          <DocParagraph>{t(`${s}.technical.mobileAppAnswer`)}</DocParagraph>
         </DocSubSection>
 
-        <DocSubSection title="Do you have an API?">
+        <DocSubSection title={t(`${s}.technical.hasApi`)}>
           <DocParagraph>
-            Yes! Generate API keys in Dashboard → API Access. See our{' '}
+            {t(`${s}.technical.hasApiAnswer`)}{' '}
             <DocLink href="/docs/api">API Documentation</DocLink>.
           </DocParagraph>
         </DocSubSection>
       </DocSection>
 
-      <DocSection title="Support">
-        <DocSubSection title="How do I contact support?">
+      <DocSection title={t(`${s}.support.title`)}>
+        <DocSubSection title={t(`${s}.support.contactSupport`)}>
           <DocList
             items={[
-              'Email: support@eziox.link',
-              'Contact Form: eziox.link/contact',
-              'Discord: Coming soon',
+              t(`${s}.support.contactSupportOptions.0`),
+              t(`${s}.support.contactSupportOptions.1`),
+              t(`${s}.support.contactSupportOptions.2`),
             ]}
           />
         </DocSubSection>
 
-        <DocSubSection title="I found a bug!">
-          <DocParagraph>Report bugs via:</DocParagraph>
+        <DocSubSection title={t(`${s}.support.foundBug`)}>
+          <DocParagraph>{t(`${s}.support.foundBugIntro`)}</DocParagraph>
           <DocList
             items={[
-              'GitHub Issues: github.com/Eziox-Development',
-              'Email: bugs@eziox.link',
+              t(`${s}.support.foundBugOptions.0`),
+              t(`${s}.support.foundBugOptions.1`),
             ]}
           />
         </DocSubSection>
 
-        <DocSubSection title="I have a feature request">
-          <DocParagraph>
-            We love feedback! Submit feature requests via:
-          </DocParagraph>
+        <DocSubSection title={t(`${s}.support.featureRequest`)}>
+          <DocParagraph>{t(`${s}.support.featureRequestIntro`)}</DocParagraph>
           <DocList
-            items={['GitHub Discussions', 'Email: feedback@eziox.link']}
+            items={[
+              t(`${s}.support.featureRequestOptions.0`),
+              t(`${s}.support.featureRequestOptions.1`),
+            ]}
           />
         </DocSubSection>
       </DocSection>
 
-      <DocSection title="Still have questions?">
+      <DocSection title={t(`${s}.stillQuestions.title`)}>
         <DocParagraph>
-          <DocLink href="/contact">Contact us</DocLink> and we'll be happy to
-          help!
+          <DocLink href="/contact">{t(`${s}.stillQuestions.text`)}</DocLink>
         </DocParagraph>
       </DocSection>
     </DocsLayout>

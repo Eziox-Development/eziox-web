@@ -1,10 +1,10 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useState, useMemo } from 'react'
-import { motion } from 'motion/react'
+import { motion, AnimatePresence } from 'motion/react'
+import { useTranslation } from 'react-i18next'
 import { useQuery } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
 import { getCreatorsFn, getCreatorStatsFn } from '@/server/functions/creators'
-import type { Creator } from '@/server/functions/creators'
 import { BadgeDisplay } from '@/components/ui/badge-display'
 import { useTheme } from '@/components/layout/ThemeProvider'
 import {
@@ -15,7 +15,7 @@ import {
   Star,
   Eye,
   Heart,
-  ArrowRight,
+  ChevronRight,
   Video,
   Radio,
   Brush,
@@ -24,21 +24,14 @@ import {
   Code2,
   MoreHorizontal,
   Crown,
-  ExternalLink,
-  ArrowUpDown,
-  Zap,
-  Globe,
+  ChevronLeft,
+  Trophy,
+  Medal,
+  Award,
+  Filter,
+  X,
+  type LucideIcon,
 } from 'lucide-react'
-
-type SortOption = 'name_asc' | 'name_desc' | 'views' | 'followers' | 'newest'
-
-const SORT_OPTIONS: { id: SortOption; label: string }[] = [
-  { id: 'name_asc', label: 'Name A → Z' },
-  { id: 'name_desc', label: 'Name Z → A' },
-  { id: 'views', label: 'Most Views' },
-  { id: 'followers', label: 'Most Followers' },
-  { id: 'newest', label: 'Newest First' },
-]
 
 export const Route = createFileRoute('/_public/creators')({
   head: () => ({
@@ -54,937 +47,771 @@ export const Route = createFileRoute('/_public/creators')({
   component: CreatorsPage,
 })
 
-const CATEGORIES = [
-  {
-    id: 'all',
-    label: 'All',
-    icon: Users2,
-    color: '#8b5cf6',
-    description: 'Browse all creators',
-  },
-  {
-    id: 'vtuber',
-    label: 'VTubers',
-    icon: Video,
-    color: '#ec4899',
-    description: 'Virtual content creators',
-  },
-  {
-    id: 'streamer',
-    label: 'Streamers',
-    icon: Radio,
-    color: '#8b5cf6',
-    description: 'Live streamers',
-  },
-  {
-    id: 'artist',
-    label: 'Artists',
-    icon: Brush,
-    color: '#14b8a6',
-    description: 'Digital & traditional artists',
-  },
-  {
-    id: 'musician',
-    label: 'Musicians',
-    icon: Music,
-    color: '#f59e0b',
-    description: 'Music producers & artists',
-  },
-  {
-    id: 'gamer',
-    label: 'Gamers',
-    icon: Gamepad2,
-    color: '#22c55e',
-    description: 'Gaming content creators',
-  },
-  {
-    id: 'developer',
-    label: 'Developers',
-    icon: Code2,
-    color: '#3b82f6',
-    description: 'Coders & tech creators',
-  },
-  {
-    id: 'other',
-    label: 'Other',
-    icon: MoreHorizontal,
-    color: '#6b7280',
-    description: 'Other creators',
-  },
-] as const
+type SortOption = 'views' | 'followers' | 'newest' | 'name'
+type CategoryId =
+  | 'all'
+  | 'vtuber'
+  | 'streamer'
+  | 'artist'
+  | 'musician'
+  | 'gamer'
+  | 'developer'
+  | 'other'
 
-function CreatorsPage() {
+interface CategoryConfig {
+  id: CategoryId
+  icon: LucideIcon
+  color: string
+}
+
+const CATEGORY_CONFIGS: CategoryConfig[] = [
+  { id: 'all', icon: Users2, color: '#8b5cf6' },
+  { id: 'vtuber', icon: Video, color: '#ec4899' },
+  { id: 'streamer', icon: Radio, color: '#8b5cf6' },
+  { id: 'artist', icon: Brush, color: '#14b8a6' },
+  { id: 'musician', icon: Music, color: '#f59e0b' },
+  { id: 'gamer', icon: Gamepad2, color: '#22c55e' },
+  { id: 'developer', icon: Code2, color: '#3b82f6' },
+  { id: 'other', icon: MoreHorizontal, color: '#6b7280' },
+]
+
+const DEFAULT_CATEGORY: CategoryConfig = {
+  id: 'all',
+  icon: Users2,
+  color: '#8b5cf6',
+}
+const ITEMS_PER_PAGE = 20
+
+function getCategoryById(id: string | null | undefined): CategoryConfig {
+  return CATEGORY_CONFIGS.find((c) => c.id === id) ?? DEFAULT_CATEGORY
+}
+
+export function CreatorsPage() {
+  const { t } = useTranslation()
   const { theme } = useTheme()
   const getCreators = useServerFn(getCreatorsFn)
   const getStats = useServerFn(getCreatorStatsFn)
 
   const [searchQuery, setSearchQuery] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState('all')
-  const [sortBy, setSortBy] = useState<SortOption>('name_asc')
+  const [selectedCategory, setSelectedCategory] = useState<CategoryId>('all')
+  const [sortBy, setSortBy] = useState<SortOption>('views')
+  const [currentPage, setCurrentPage] = useState(1)
+  const [showFilters, setShowFilters] = useState(false)
 
-  const cardRadius =
-    theme.effects.borderRadius === 'pill'
-      ? '24px'
-      : theme.effects.borderRadius === 'sharp'
-        ? '8px'
-        : '16px'
-  const glowOpacity =
-    theme.effects.glowIntensity === 'strong'
-      ? 0.5
-      : theme.effects.glowIntensity === 'medium'
-        ? 0.35
-        : theme.effects.glowIntensity === 'subtle'
-          ? 0.2
-          : 0
+  const categories = useMemo(
+    () =>
+      CATEGORY_CONFIGS.map((cfg) => ({
+        ...cfg,
+        label: t(`creators.categories.${cfg.id}.label`),
+      })),
+    [t],
+  )
 
-  const {
-    data: creatorsData,
-    isLoading,
-    dataUpdatedAt,
-  } = useQuery({
+  const sortOptions = useMemo(
+    () => [
+      { id: 'views' as const, label: t('creators.sort.views'), icon: Eye },
+      {
+        id: 'followers' as const,
+        label: t('creators.sort.followers'),
+        icon: Heart,
+      },
+      {
+        id: 'newest' as const,
+        label: t('creators.sort.newest'),
+        icon: Sparkles,
+      },
+      { id: 'name' as const, label: t('creators.sort.nameAsc'), icon: Users2 },
+    ],
+    [t],
+  )
+
+  const { data: creatorsData, isLoading } = useQuery({
     queryKey: ['creators', selectedCategory],
     queryFn: () =>
       getCreators({
         data: {
           category: selectedCategory === 'all' ? undefined : selectedCategory,
-          limit: 100,
+          limit: 50,
         },
       }),
-    refetchInterval: 30000,
+    refetchInterval: 60000,
   })
 
   const { data: statsData } = useQuery({
     queryKey: ['creator-stats'],
-    queryFn: () => getStats({}),
-    refetchInterval: 30000,
+    queryFn: () => getStats(),
+    refetchInterval: 60000,
   })
 
-  const creators = creatorsData?.creators || []
+  const creators = creatorsData?.creators ?? []
 
-  const filteredCreators = useMemo(() => {
-    return creators.filter(
+  const filteredAndSortedCreators = useMemo(() => {
+    const filtered = creators.filter(
       (c) =>
         c.user.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (c.user.name?.toLowerCase() || '').includes(
-          searchQuery.toLowerCase(),
-        ) ||
-        (c.profile.bio?.toLowerCase() || '').includes(
-          searchQuery.toLowerCase(),
-        ),
+        (c.user.name?.toLowerCase() ?? '').includes(searchQuery.toLowerCase()),
     )
-  }, [creators, searchQuery])
 
-  const sortCreators = <T extends (typeof filteredCreators)[0]>(
-    list: T[],
-  ): T[] => {
-    return [...list].sort((a, b) => {
+    return [...filtered].sort((a, b) => {
       switch (sortBy) {
-        case 'name_asc':
-          return (a.user.name || a.user.username).localeCompare(
-            b.user.name || b.user.username,
-          )
-        case 'name_desc':
-          return (b.user.name || b.user.username).localeCompare(
-            a.user.name || a.user.username,
-          )
         case 'views':
-          return (b.stats?.profileViews || 0) - (a.stats?.profileViews || 0)
+          return (b.stats?.profileViews ?? 0) - (a.stats?.profileViews ?? 0)
         case 'followers':
-          return (b.stats?.followers || 0) - (a.stats?.followers || 0)
+          return (b.stats?.followers ?? 0) - (a.stats?.followers ?? 0)
         case 'newest':
           return (
-            new Date(b.user.createdAt || 0).getTime() -
-            new Date(a.user.createdAt || 0).getTime()
+            new Date(b.user.createdAt ?? 0).getTime() -
+            new Date(a.user.createdAt ?? 0).getTime()
+          )
+        case 'name':
+          return (a.user.name ?? a.user.username).localeCompare(
+            b.user.name ?? b.user.username,
           )
         default:
           return 0
       }
     })
-  }
+  }, [creators, searchQuery, sortBy])
 
-  const featuredCreators = useMemo(
-    () => sortCreators(filteredCreators.filter((c) => c.profile.isFeatured)),
-    [filteredCreators, sortBy],
+  const totalPages = Math.ceil(
+    filteredAndSortedCreators.length / ITEMS_PER_PAGE,
   )
-  const regularCreators = useMemo(
-    () => sortCreators(filteredCreators.filter((c) => !c.profile.isFeatured)),
-    [filteredCreators, sortBy],
-  )
+  const paginatedCreators = useMemo(() => {
+    const start = (currentPage - 1) * ITEMS_PER_PAGE
+    return filteredAndSortedCreators.slice(start, start + ITEMS_PER_PAGE)
+  }, [filteredAndSortedCreators, currentPage])
 
   const stats = {
-    total: statsData?.totalCreators || 0,
-    featured: statsData?.featuredCount || 0,
-    categories: statsData?.categoryCount || 0,
-    referred: statsData?.referredCreators || 0,
+    total: statsData?.totalCreators ?? 0,
+    featured: statsData?.featuredCount ?? 0,
   }
 
-  const getCategoryConfig = (type: string | null | undefined) => {
-    const cat = CATEGORIES.find((c) => c.id === type)
-    return cat || CATEGORIES[0]
+  const selectedCatConfig = getCategoryById(selectedCategory)
+  const selectedCatLabel =
+    categories.find((c) => c.id === selectedCategory)?.label ??
+    t('creators.categories.all.label')
+
+  const handleCategoryChange = (cat: CategoryId) => {
+    setSelectedCategory(cat)
+    setCurrentPage(1)
   }
 
-  const selectedCategoryConfig = getCategoryConfig(selectedCategory)
+  const handleSearch = (value: string) => {
+    setSearchQuery(value)
+    setCurrentPage(1)
+  }
+
+  const handleSortChange = (sort: SortOption) => {
+    setSortBy(sort)
+    setCurrentPage(1)
+  }
+
+  const getRankDisplay = (rank: number) => {
+    if (rank === 1) return <Trophy size={18} className="text-yellow-400" />
+    if (rank === 2) return <Medal size={18} className="text-gray-300" />
+    if (rank === 3) return <Award size={18} className="text-amber-600" />
+    return (
+      <span
+        className="text-sm font-medium"
+        style={{ color: theme.colors.foregroundMuted }}
+      >
+        {rank}
+      </span>
+    )
+  }
 
   return (
     <div
-      className="min-h-screen"
+      className="min-h-screen pb-12"
       style={{
         background: theme.colors.background,
         fontFamily: theme.typography.bodyFont,
       }}
     >
-      {/* Animated Background */}
-      <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
-        {/* Primary glow */}
-        <motion.div
-          className="absolute -top-40 -left-40 w-[800px] h-[800px] rounded-full blur-[200px]"
-          style={{
-            background: theme.colors.primary,
-            opacity: glowOpacity * 0.4,
-          }}
-          animate={{
-            scale: [1, 1.2, 1],
-            x: [0, 100, 0],
-            y: [0, 50, 0],
-          }}
-          transition={{ duration: 25, repeat: Infinity, ease: 'easeInOut' }}
-        />
-        {/* Accent glow */}
-        <motion.div
-          className="absolute -bottom-40 -right-40 w-[700px] h-[700px] rounded-full blur-[180px]"
-          style={{
-            background: theme.colors.accent,
-            opacity: glowOpacity * 0.35,
-          }}
-          animate={{
-            scale: [1.2, 1, 1.2],
-            x: [0, -80, 0],
-            y: [0, -60, 0],
-          }}
-          transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
-        />
-        {/* Center glow */}
-        <motion.div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full blur-[150px]"
-          style={{
-            background: `${theme.colors.primary}50`,
-            opacity: glowOpacity * 0.2,
-          }}
-          animate={{
-            scale: [1, 1.3, 1],
-            rotate: [0, 180, 360],
-          }}
-          transition={{ duration: 30, repeat: Infinity, ease: 'linear' }}
-        />
-        {/* Floating particles */}
-        {[...Array(6)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-2 h-2 rounded-full"
-            style={{
-              background:
-                i % 2 === 0 ? theme.colors.primary : theme.colors.accent,
-              left: `${15 + i * 15}%`,
-              top: `${20 + (i % 3) * 25}%`,
-              opacity: 0.4,
-            }}
-            animate={{
-              y: [0, -30, 0],
-              x: [0, i % 2 === 0 ? 20 : -20, 0],
-              scale: [1, 1.5, 1],
-              opacity: [0.4, 0.8, 0.4],
-            }}
-            transition={{
-              duration: 4 + i,
-              repeat: Infinity,
-              delay: i * 0.5,
-            }}
-          />
-        ))}
-      </div>
-
-      {/* Hero Section */}
-      <div className="relative overflow-hidden">
+      {/* Hero */}
+      <section className="relative pt-24 pb-8 overflow-hidden">
         <div
-          className="absolute inset-0"
+          className="absolute inset-0 pointer-events-none"
           style={{
-            background: `linear-gradient(135deg, ${theme.colors.primary}15, ${theme.colors.accent}10, transparent)`,
+            background: `radial-gradient(ellipse 60% 40% at 50% 0%, ${theme.colors.primary}15, transparent)`,
           }}
         />
-        <div className="max-w-7xl mx-auto px-4 pt-28 pb-16 relative">
+
+        <div className="max-w-5xl mx-auto px-4 relative">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-12"
+            className="text-center"
           >
-            {/* Animated badge */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2 }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6"
+            <div
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-4"
               style={{
-                background: `linear-gradient(135deg, ${theme.colors.primary}20, ${theme.colors.accent}15)`,
-                border: `1px solid ${theme.colors.primary}30`,
+                background: `${theme.colors.primary}15`,
+                border: `1px solid ${theme.colors.primary}25`,
               }}
             >
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
-              >
-                <Sparkles size={16} style={{ color: theme.colors.primary }} />
-              </motion.div>
+              <Sparkles size={14} style={{ color: theme.colors.primary }} />
               <span
-                className="text-sm font-medium"
+                className="text-xs font-medium"
                 style={{ color: theme.colors.primary }}
               >
-                Creator Community
+                {t('creators.badge')}
               </span>
-              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-            </motion.div>
+            </div>
 
-            {/* Main title */}
             <h1
-              className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6"
-              style={{ fontFamily: theme.typography.displayFont }}
+              className="text-3xl md:text-4xl font-bold mb-3"
+              style={{
+                fontFamily: theme.typography.displayFont,
+                color: theme.colors.foreground,
+              }}
             >
-              <span style={{ color: theme.colors.foreground }}>Discover </span>
+              {t('creators.hero.title')}{' '}
               <span
-                className="bg-clip-text text-transparent relative"
+                className="bg-clip-text text-transparent"
                 style={{
                   backgroundImage: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
                 }}
               >
-                Amazing
-                <motion.span
-                  className="absolute -right-8 -top-4"
-                  animate={{ rotate: [0, 15, -15, 0], scale: [1, 1.2, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                >
-                  <Zap size={24} style={{ color: theme.colors.accent }} />
-                </motion.span>
+                {t('creators.hero.titleHighlight')}
               </span>
-              <br />
-              <span style={{ color: theme.colors.foreground }}>Creators</span>
             </h1>
 
             <p
-              className="text-xl md:text-2xl max-w-2xl mx-auto mb-8"
+              className="text-sm max-w-lg mx-auto"
               style={{ color: theme.colors.foregroundMuted }}
             >
-              Connect with talented VTubers, Streamers, Artists, Musicians, and
-              more from around the world
+              {t('creators.hero.subtitle')}
             </p>
 
-            {/* Quick stats */}
-            <div className="flex flex-wrap justify-center gap-6 mb-8">
-              {[
-                {
-                  icon: Users2,
-                  value: stats.total,
-                  label: 'Creators',
-                  color: theme.colors.primary,
-                },
-                {
-                  icon: Star,
-                  value: stats.featured,
-                  label: 'Featured',
-                  color: '#f59e0b',
-                },
-                {
-                  icon: Globe,
-                  value: stats.categories,
-                  label: 'Categories',
-                  color: theme.colors.accent,
-                },
-              ].map((stat, i) => (
-                <motion.div
-                  key={stat.label}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 + i * 0.1 }}
-                  className="flex items-center gap-3 px-5 py-3 rounded-2xl"
-                  style={{
-                    background: `${theme.colors.card}80`,
-                    backdropFilter: 'blur(10px)',
-                    border: `1px solid ${theme.colors.border}`,
-                  }}
+            {/* Quick Stats */}
+            <div className="flex justify-center gap-6 mt-6">
+              <div className="text-center">
+                <p
+                  className="text-2xl font-bold"
+                  style={{ color: theme.colors.foreground }}
                 >
-                  <div
-                    className="w-10 h-10 rounded-xl flex items-center justify-center"
-                    style={{ background: `${stat.color}20` }}
-                  >
-                    <stat.icon size={20} style={{ color: stat.color }} />
-                  </div>
-                  <div className="text-left">
-                    <p
-                      className="text-2xl font-bold"
-                      style={{ color: theme.colors.foreground }}
-                    >
-                      {stat.value}
-                    </p>
-                    <p
-                      className="text-xs"
-                      style={{ color: theme.colors.foregroundMuted }}
-                    >
-                      {stat.label}
-                    </p>
-                  </div>
-                </motion.div>
-              ))}
+                  {stats.total}
+                </p>
+                <p
+                  className="text-xs"
+                  style={{ color: theme.colors.foregroundMuted }}
+                >
+                  {t('creators.stats.creators')}
+                </p>
+              </div>
+              <div className="text-center">
+                <p
+                  className="text-2xl font-bold"
+                  style={{ color: theme.colors.primary }}
+                >
+                  {stats.featured}
+                </p>
+                <p
+                  className="text-xs"
+                  style={{ color: theme.colors.foregroundMuted }}
+                >
+                  {t('creators.stats.featured')}
+                </p>
+              </div>
             </div>
-
-            {/* Live indicator */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.6 }}
-              className="flex items-center justify-center gap-2 text-sm"
-              style={{ color: theme.colors.foregroundMuted }}
-            >
-              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-              <span>
-                Live · Updated {new Date(dataUpdatedAt).toLocaleTimeString()}
-              </span>
-            </motion.div>
           </motion.div>
+        </div>
+      </section>
 
-          {/* Category Cards */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-            className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 mb-8"
-          >
-            {CATEGORIES.map((cat, i) => {
-              const isActive = selectedCategory === cat.id
-              return (
-                <motion.button
-                  key={cat.id}
-                  onClick={() => setSelectedCategory(cat.id)}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 + i * 0.05 }}
-                  whileHover={{ scale: 1.05, y: -4 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="relative p-4 rounded-2xl text-center transition-all overflow-hidden group"
-                  style={{
-                    background: isActive
-                      ? `linear-gradient(135deg, ${cat.color}30, ${cat.color}15)`
-                      : theme.effects.cardStyle === 'glass'
-                        ? `${theme.colors.card}60`
-                        : theme.colors.card,
-                    border: `2px solid ${isActive ? cat.color : theme.colors.border}`,
-                    backdropFilter: 'blur(10px)',
-                  }}
-                >
-                  {/* Hover glow */}
-                  <motion.div
-                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                    style={{
-                      background: `radial-gradient(circle at 50% 50%, ${cat.color}20, transparent 70%)`,
-                    }}
-                  />
-
-                  <div
-                    className="w-12 h-12 mx-auto mb-2 rounded-xl flex items-center justify-center relative"
-                    style={{
-                      background: isActive ? cat.color : `${cat.color}20`,
-                      boxShadow: isActive
-                        ? `0 4px 20px ${cat.color}40`
-                        : undefined,
-                    }}
-                  >
-                    <cat.icon
-                      size={24}
-                      style={{ color: isActive ? '#fff' : cat.color }}
-                    />
-                  </div>
-                  <p
-                    className="text-sm font-semibold"
-                    style={{
-                      color: isActive ? cat.color : theme.colors.foreground,
-                    }}
-                  >
-                    {cat.label}
-                  </p>
-                </motion.button>
-              )
-            })}
-          </motion.div>
-
-          {/* Search and Sort Bar */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="flex flex-col sm:flex-row gap-4 max-w-2xl mx-auto"
-          >
+      {/* Main Content */}
+      <section className="max-w-5xl mx-auto px-4">
+        {/* Controls */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="mb-6"
+        >
+          {/* Search & Filter Toggle */}
+          <div className="flex gap-3 mb-4">
             <div className="relative flex-1">
               <Search
-                size={20}
-                className="absolute left-4 top-1/2 -translate-y-1/2"
+                size={16}
+                className="absolute left-3 top-1/2 -translate-y-1/2"
                 style={{ color: theme.colors.foregroundMuted }}
               />
               <input
                 type="text"
-                placeholder="Search creators by name, username, or bio..."
+                placeholder={t('creators.search.placeholder')}
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-4 rounded-2xl text-base transition-all focus:ring-2 outline-none"
+                onChange={(e) => handleSearch(e.target.value)}
+                className="w-full pl-9 pr-9 py-2.5 rounded-lg text-sm outline-none transition-all"
                 style={{
-                  background:
-                    theme.effects.cardStyle === 'glass'
-                      ? `${theme.colors.card}80`
-                      : theme.colors.card,
-                  border: `1px solid ${theme.colors.border}`,
-                  color: theme.colors.foreground,
-                  backdropFilter: 'blur(10px)',
-                }}
-              />
-            </div>
-            <div className="relative">
-              <ArrowUpDown
-                size={18}
-                className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"
-                style={{ color: theme.colors.foregroundMuted }}
-              />
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as SortOption)}
-                className="pl-12 pr-6 py-4 rounded-2xl text-base appearance-none cursor-pointer min-w-[180px]"
-                style={{
-                  background:
-                    theme.effects.cardStyle === 'glass'
-                      ? `${theme.colors.card}80`
-                      : theme.colors.card,
+                  background: theme.colors.card,
                   border: `1px solid ${theme.colors.border}`,
                   color: theme.colors.foreground,
                 }}
-              >
-                {SORT_OPTIONS.map((opt) => (
-                  <option key={opt.id} value={opt.id}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => handleSearch('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 rounded hover:bg-white/10"
+                >
+                  <X
+                    size={14}
+                    style={{ color: theme.colors.foregroundMuted }}
+                  />
+                </button>
+              )}
             </div>
-          </motion.div>
-        </div>
-      </div>
 
-      {/* Results Section */}
-      <div className="max-w-7xl mx-auto px-4 pt-8 pb-12">
-        {/* Section Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-          className="flex items-center justify-between mb-8"
-        >
-          <div className="flex items-center gap-4">
-            <div
-              className="w-12 h-12 rounded-2xl flex items-center justify-center"
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all"
               style={{
-                background: `linear-gradient(135deg, ${selectedCategoryConfig.color}30, ${selectedCategoryConfig.color}15)`,
-                border: `1px solid ${selectedCategoryConfig.color}40`,
+                background: showFilters
+                  ? theme.colors.primary
+                  : theme.colors.card,
+                border: `1px solid ${showFilters ? theme.colors.primary : theme.colors.border}`,
+                color: showFilters ? '#fff' : theme.colors.foreground,
               }}
             >
-              <selectedCategoryConfig.icon
-                size={24}
-                style={{ color: selectedCategoryConfig.color }}
-              />
-            </div>
-            <div>
-              <h2
-                className="text-2xl font-bold"
-                style={{
-                  color: theme.colors.foreground,
-                  fontFamily: theme.typography.displayFont,
-                }}
-              >
-                {selectedCategoryConfig.label === 'All'
-                  ? 'All Creators'
-                  : selectedCategoryConfig.label}
-              </h2>
-              <p
-                className="text-sm"
-                style={{ color: theme.colors.foregroundMuted }}
-              >
-                {filteredCreators.length} creator
-                {filteredCreators.length !== 1 ? 's' : ''} found
-              </p>
-            </div>
+              <Filter size={16} />
+              <span className="hidden sm:inline">Filter</span>
+            </button>
           </div>
 
-          {featuredCreators.length > 0 && (
-            <div
-              className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl"
-              style={{
-                background: `${theme.colors.primary}15`,
-                border: `1px solid ${theme.colors.primary}30`,
-              }}
-            >
-              <Star size={16} style={{ color: theme.colors.primary }} />
-              <span
-                className="text-sm font-medium"
-                style={{ color: theme.colors.primary }}
+          {/* Expandable Filters */}
+          <AnimatePresence>
+            {showFilters && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="overflow-hidden"
               >
-                {featuredCreators.length} Featured
-              </span>
+                <div
+                  className="p-4 rounded-xl mb-4"
+                  style={{
+                    background: theme.colors.card,
+                    border: `1px solid ${theme.colors.border}`,
+                  }}
+                >
+                  {/* Categories */}
+                  <div className="mb-4">
+                    <p
+                      className="text-xs font-medium mb-2"
+                      style={{ color: theme.colors.foregroundMuted }}
+                    >
+                      {t('creators.categories.all.label')}
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {categories.map((cat) => {
+                        const isActive = selectedCategory === cat.id
+                        const Icon = cat.icon
+                        return (
+                          <button
+                            key={cat.id}
+                            onClick={() => handleCategoryChange(cat.id)}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+                            style={{
+                              background: isActive
+                                ? cat.color
+                                : `${cat.color}15`,
+                              color: isActive ? '#fff' : cat.color,
+                            }}
+                          >
+                            <Icon size={14} />
+                            {cat.label}
+                          </button>
+                        )
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Sort */}
+                  <div>
+                    <p
+                      className="text-xs font-medium mb-2"
+                      style={{ color: theme.colors.foregroundMuted }}
+                    >
+                      {t('creators.sort.views')}
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {sortOptions.map((opt) => {
+                        const isActive = sortBy === opt.id
+                        const Icon = opt.icon
+                        return (
+                          <button
+                            key={opt.id}
+                            onClick={() => handleSortChange(opt.id)}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+                            style={{
+                              background: isActive
+                                ? theme.colors.primary
+                                : theme.colors.backgroundSecondary,
+                              color: isActive
+                                ? '#fff'
+                                : theme.colors.foreground,
+                            }}
+                          >
+                            <Icon size={14} />
+                            {opt.label}
+                          </button>
+                        )
+                      })}
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Active Filters Summary */}
+          {(selectedCategory !== 'all' || searchQuery) && (
+            <div className="flex items-center gap-2 flex-wrap">
+              {selectedCategory !== 'all' && (
+                <div
+                  className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs"
+                  style={{
+                    background: `${selectedCatConfig.color}20`,
+                    color: selectedCatConfig.color,
+                  }}
+                >
+                  <selectedCatConfig.icon size={12} />
+                  {selectedCatLabel}
+                  <button
+                    onClick={() => handleCategoryChange('all')}
+                    className="ml-1 hover:opacity-70"
+                  >
+                    <X size={12} />
+                  </button>
+                </div>
+              )}
+              {searchQuery && (
+                <div
+                  className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs"
+                  style={{
+                    background: theme.colors.backgroundSecondary,
+                    color: theme.colors.foreground,
+                  }}
+                >
+                  <Search size={12} />"{searchQuery}"
+                  <button
+                    onClick={() => handleSearch('')}
+                    className="ml-1 hover:opacity-70"
+                  >
+                    <X size={12} />
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </motion.div>
 
-        {/* Loading State */}
-        {isLoading && (
-          <div className="py-20 text-center">
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-              className="inline-block"
-            >
-              <Loader2
-                className="w-12 h-12"
-                style={{ color: theme.colors.primary }}
-              />
-            </motion.div>
-            <p
-              className="mt-4 text-lg"
+        {/* Results Header */}
+        <div
+          className="flex items-center justify-between py-3 px-4 rounded-t-xl"
+          style={{
+            background: theme.colors.card,
+            borderBottom: `1px solid ${theme.colors.border}`,
+          }}
+        >
+          <div className="flex items-center gap-4">
+            <span
+              className="text-xs font-medium w-12"
               style={{ color: theme.colors.foregroundMuted }}
             >
-              Discovering amazing creators...
+              Rank
+            </span>
+            <span
+              className="text-xs font-medium"
+              style={{ color: theme.colors.foregroundMuted }}
+            >
+              User
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Eye size={14} style={{ color: theme.colors.foregroundMuted }} />
+            <span
+              className="text-xs font-medium"
+              style={{ color: theme.colors.foregroundMuted }}
+            >
+              {sortBy === 'followers'
+                ? t('creators.sort.followers')
+                : t('creators.sort.views')}
+            </span>
+          </div>
+        </div>
+
+        {/* Loading */}
+        {isLoading && (
+          <div
+            className="py-16 text-center rounded-b-xl"
+            style={{
+              background: theme.colors.card,
+              border: `1px solid ${theme.colors.border}`,
+              borderTop: 'none',
+            }}
+          >
+            <Loader2
+              className="w-8 h-8 mx-auto animate-spin"
+              style={{ color: theme.colors.primary }}
+            />
+            <p
+              className="mt-3 text-sm"
+              style={{ color: theme.colors.foregroundMuted }}
+            >
+              {t('creators.loading')}
             </p>
           </div>
         )}
 
-        {/* Empty State */}
-        {!isLoading && filteredCreators.length === 0 && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="py-20 text-center"
+        {/* Empty */}
+        {!isLoading && filteredAndSortedCreators.length === 0 && (
+          <div
+            className="py-16 text-center rounded-b-xl"
+            style={{
+              background: theme.colors.card,
+              border: `1px solid ${theme.colors.border}`,
+              borderTop: 'none',
+            }}
           >
-            <div
-              className="w-24 h-24 mx-auto mb-6 rounded-3xl flex items-center justify-center"
-              style={{
-                background: `linear-gradient(135deg, ${theme.colors.primary}20, ${theme.colors.accent}15)`,
-                border: `1px solid ${theme.colors.primary}30`,
-              }}
-            >
-              <Users2
-                size={48}
-                style={{ color: theme.colors.primary, opacity: 0.6 }}
-              />
-            </div>
-            <h3
-              className="text-2xl font-bold mb-3"
-              style={{
-                color: theme.colors.foreground,
-                fontFamily: theme.typography.displayFont,
-              }}
-            >
-              No creators found
-            </h3>
+            <Users2
+              size={40}
+              className="mx-auto mb-3 opacity-30"
+              style={{ color: theme.colors.foregroundMuted }}
+            />
             <p
-              className="text-lg mb-6"
+              className="font-medium mb-1"
+              style={{ color: theme.colors.foreground }}
+            >
+              {t('creators.empty.title')}
+            </p>
+            <p
+              className="text-sm mb-4"
               style={{ color: theme.colors.foregroundMuted }}
             >
-              Try adjusting your search or explore different categories
+              {t('creators.empty.subtitle')}
             </p>
             <button
               onClick={() => {
-                setSearchQuery('')
-                setSelectedCategory('all')
+                handleSearch('')
+                handleCategoryChange('all')
               }}
-              className="px-6 py-3 rounded-xl font-medium transition-all hover:scale-105"
-              style={{
-                background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
-                color: '#fff',
-              }}
+              className="px-4 py-2 rounded-lg text-sm font-medium"
+              style={{ background: theme.colors.primary, color: '#fff' }}
             >
-              Clear Filters
+              {t('creators.empty.clearFilters')}
             </button>
-          </motion.div>
-        )}
-
-        {/* Creator Cards Grid */}
-        {!isLoading && filteredCreators.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-            {/* Featured Creators First */}
-            {featuredCreators.map((creator, index) => (
-              <CreatorCard
-                key={creator.user.id}
-                creator={creator}
-                index={index}
-                isFeatured={true}
-                theme={theme}
-                cardRadius={cardRadius}
-                getCategoryConfig={getCategoryConfig}
-              />
-            ))}
-
-            {/* Regular Creators */}
-            {regularCreators.map((creator, index) => (
-              <CreatorCard
-                key={creator.user.id}
-                creator={creator}
-                index={featuredCreators.length + index}
-                isFeatured={false}
-                theme={theme}
-                cardRadius={cardRadius}
-                getCategoryConfig={getCategoryConfig}
-              />
-            ))}
           </div>
         )}
-      </div>
-    </div>
-  )
-}
 
-// Creator Card Component
-interface CreatorCardProps {
-  creator: Creator
-  index: number
-  isFeatured: boolean
-  theme: ReturnType<typeof useTheme>['theme']
-  cardRadius: string
-  getCategoryConfig: (
-    type: string | null | undefined,
-  ) => (typeof CATEGORIES)[number]
-}
-
-function CreatorCard({
-  creator,
-  index,
-  isFeatured,
-  theme,
-  cardRadius,
-  getCategoryConfig,
-}: CreatorCardProps) {
-  const creatorTypes = (creator.profile.creatorTypes as string[]) || []
-  const catConfig = getCategoryConfig(creatorTypes[0])
-  const accentColor = creator.profile.accentColor || catConfig.color
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: Math.min(index * 0.03, 0.5) }}
-      whileHover={{ y: -8, scale: 1.02 }}
-      className="group"
-    >
-      <Link
-        to="/$username"
-        params={{ username: creator.user.username }}
-        className="block h-full relative overflow-hidden"
-        style={{
-          background:
-            theme.effects.cardStyle === 'glass'
-              ? `${theme.colors.card}90`
-              : theme.colors.card,
-          backdropFilter:
-            theme.effects.cardStyle === 'glass' ? 'blur(20px)' : undefined,
-          border: isFeatured
-            ? `2px solid ${theme.colors.primary}50`
-            : `1px solid ${theme.colors.border}`,
-          borderRadius: cardRadius,
-        }}
-      >
-        {/* Featured Badge */}
-        {isFeatured && (
+        {/* Creator List */}
+        {!isLoading && paginatedCreators.length > 0 && (
           <div
-            className="absolute top-3 right-3 z-10 flex items-center gap-1.5 px-3 py-1.5 rounded-full"
             style={{
-              background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
-              boxShadow: `0 4px 15px ${theme.colors.primary}40`,
+              background: theme.colors.card,
+              border: `1px solid ${theme.colors.border}`,
+              borderTop: 'none',
             }}
+            className="rounded-b-xl overflow-hidden"
           >
-            <Star size={12} className="text-white" />
-            <span className="text-xs font-bold text-white">Featured</span>
-          </div>
-        )}
+            {paginatedCreators.map((creator, index) => {
+              const globalRank = (currentPage - 1) * ITEMS_PER_PAGE + index + 1
+              const creatorTypes =
+                (creator.profile.creatorTypes as string[]) ?? []
+              const catConfig = getCategoryById(creatorTypes[0])
+              const accentColor = creator.profile.accentColor ?? catConfig.color
 
-        {/* Owner Badge */}
-        {creator.user.role === 'owner' && (
-          <div
-            className="absolute top-3 left-3 z-10 flex items-center gap-1.5 px-3 py-1.5 rounded-full"
-            style={{ background: '#fbbf24' }}
-          >
-            <Crown size={12} className="text-black" />
-            <span className="text-xs font-bold text-black">Owner</span>
-          </div>
-        )}
-
-        {/* Banner / Gradient Background */}
-        <div className="relative h-24 overflow-hidden">
-          {creator.profile.banner ? (
-            <img
-              src={creator.profile.banner}
-              alt=""
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-            />
-          ) : (
-            <div
-              className="w-full h-full"
-              style={{
-                background: `linear-gradient(135deg, ${accentColor}60, ${catConfig.color}30, ${theme.colors.primary}20)`,
-              }}
-            />
-          )}
-          {/* Gradient overlay */}
-          <div
-            className="absolute inset-0"
-            style={{
-              background: `linear-gradient(to top, ${theme.colors.card}, transparent 60%)`,
-            }}
-          />
-        </div>
-
-        {/* Content */}
-        <div className="p-5 -mt-10 relative">
-          {/* Avatar */}
-          <div className="flex items-end gap-4 mb-4">
-            <div className="relative">
-              <div
-                className="w-20 h-20 rounded-2xl flex items-center justify-center text-white font-bold text-2xl overflow-hidden transition-transform duration-300 group-hover:scale-105"
-                style={{
-                  background: creator.profile.avatar
-                    ? `url(${creator.profile.avatar}) center/cover`
-                    : `linear-gradient(135deg, ${accentColor}, ${catConfig.color})`,
-                  boxShadow: `0 4px 20px ${accentColor}40, 0 0 0 4px ${theme.colors.card}`,
-                }}
-              >
-                {!creator.profile.avatar &&
-                  (creator.user.name ?? creator.user.username)
-                    .charAt(0)
-                    .toUpperCase()}
-              </div>
-              {/* Category indicator */}
-              <div
-                className="absolute -bottom-1 -right-1 w-7 h-7 rounded-lg flex items-center justify-center"
-                style={{
-                  background: catConfig.color,
-                  boxShadow: `0 2px 8px ${catConfig.color}50`,
-                }}
-              >
-                <catConfig.icon size={14} className="text-white" />
-              </div>
-            </div>
-
-            <div className="flex-1 min-w-0 pb-1">
-              <div className="flex items-center gap-2 flex-wrap mb-1">
-                <span
-                  className="font-bold text-lg truncate"
-                  style={{ color: theme.colors.foreground }}
+              return (
+                <Link
+                  key={creator.user.id}
+                  to="/$username"
+                  params={{ username: creator.user.username }}
+                  className="flex items-center justify-between px-4 py-3 transition-all hover:bg-white/5 group"
+                  style={{
+                    borderBottom:
+                      index < paginatedCreators.length - 1
+                        ? `1px solid ${theme.colors.border}`
+                        : 'none',
+                  }}
                 >
-                  {creator.user.name || creator.user.username}
-                </span>
-                {creator.profile.badges &&
-                  creator.profile.badges.length > 0 && (
-                    <BadgeDisplay
-                      badges={creator.profile.badges}
-                      size="sm"
-                      maxDisplay={3}
-                    />
-                  )}
-              </div>
-              <p
-                className="text-sm"
-                style={{ color: theme.colors.foregroundMuted }}
-              >
-                @{creator.user.username}
-              </p>
-            </div>
-          </div>
+                  <div className="flex items-center gap-4">
+                    {/* Rank */}
+                    <div className="w-12 flex items-center justify-center">
+                      {getRankDisplay(globalRank)}
+                    </div>
 
-          {/* Bio */}
-          {creator.profile.bio ? (
+                    {/* Avatar & Info */}
+                    <div className="flex items-center gap-3">
+                      <div className="relative">
+                        <div
+                          className="w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold text-sm overflow-hidden"
+                          style={{
+                            background: creator.profile.avatar
+                              ? `url(${creator.profile.avatar}) center/cover`
+                              : `linear-gradient(135deg, ${accentColor}, ${catConfig.color})`,
+                          }}
+                        >
+                          {!creator.profile.avatar &&
+                            (creator.user.name ?? creator.user.username)
+                              .charAt(0)
+                              .toUpperCase()}
+                        </div>
+
+                        {/* Featured/Owner Badge */}
+                        {(creator.profile.isFeatured ||
+                          creator.user.role === 'owner') && (
+                          <div
+                            className="absolute -top-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center"
+                            style={{
+                              background:
+                                creator.user.role === 'owner'
+                                  ? '#fbbf24'
+                                  : theme.colors.primary,
+                            }}
+                          >
+                            {creator.user.role === 'owner' ? (
+                              <Crown size={10} className="text-black" />
+                            ) : (
+                              <Star size={10} className="text-white" />
+                            )}
+                          </div>
+                        )}
+                      </div>
+
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span
+                            className="font-medium text-sm"
+                            style={{ color: theme.colors.foreground }}
+                          >
+                            {creator.user.name ?? creator.user.username}
+                          </span>
+                          {creator.profile.badges &&
+                            creator.profile.badges.length > 0 && (
+                              <BadgeDisplay
+                                badges={creator.profile.badges}
+                                size="sm"
+                                maxDisplay={2}
+                              />
+                            )}
+                        </div>
+                        <span
+                          className="text-xs"
+                          style={{ color: theme.colors.foregroundMuted }}
+                        >
+                          @{creator.user.username}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Stats */}
+                  <div className="flex items-center gap-4">
+                    <span
+                      className="font-semibold text-sm"
+                      style={{ color: theme.colors.foreground }}
+                    >
+                      {(sortBy === 'followers'
+                        ? creator.stats?.followers
+                        : creator.stats?.profileViews) ?? 0}
+                    </span>
+                    <ChevronRight
+                      size={16}
+                      className="opacity-0 group-hover:opacity-100 transition-opacity"
+                      style={{ color: theme.colors.foregroundMuted }}
+                    />
+                  </div>
+                </Link>
+              )
+            })}
+          </div>
+        )}
+
+        {/* Pagination */}
+        {!isLoading && totalPages > 1 && (
+          <div className="flex items-center justify-between mt-4">
             <p
-              className="text-sm line-clamp-2 mb-4 min-h-10"
+              className="text-xs"
               style={{ color: theme.colors.foregroundMuted }}
             >
-              {creator.profile.bio}
+              Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1}-
+              {Math.min(
+                currentPage * ITEMS_PER_PAGE,
+                filteredAndSortedCreators.length,
+              )}{' '}
+              of {filteredAndSortedCreators.length}
             </p>
-          ) : (
-            <div className="mb-4 min-h-10" />
-          )}
 
-          {/* Stats & Action */}
-          <div
-            className="flex items-center justify-between pt-4"
-            style={{ borderTop: `1px solid ${theme.colors.border}` }}
-          >
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-1.5">
-                <Eye
-                  size={14}
-                  style={{ color: theme.colors.foregroundMuted }}
-                />
-                <span
-                  className="text-sm font-medium"
-                  style={{ color: theme.colors.foregroundMuted }}
-                >
-                  {creator.stats?.profileViews || 0}
-                </span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <Heart
-                  size={14}
-                  style={{ color: theme.colors.foregroundMuted }}
-                />
-                <span
-                  className="text-sm font-medium"
-                  style={{ color: theme.colors.foregroundMuted }}
-                >
-                  {creator.stats?.followers || 0}
-                </span>
-              </div>
-            </div>
-
-            <motion.div
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium text-sm transition-all"
-              style={{
-                background: `${theme.colors.primary}15`,
-                color: theme.colors.primary,
-              }}
-              whileHover={{ gap: '0.75rem' }}
-            >
-              <span>View</span>
-              <ArrowRight size={14} />
-            </motion.div>
-          </div>
-
-          {/* Referrer */}
-          {creator.referrer && (
-            <div
-              className="flex items-center gap-1.5 mt-3 pt-3"
-              style={{ borderTop: `1px solid ${theme.colors.border}` }}
-            >
-              <ExternalLink
-                size={12}
-                style={{ color: theme.colors.foregroundMuted }}
-              />
-              <span
-                className="text-xs"
-                style={{ color: theme.colors.foregroundMuted }}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="p-2 rounded-lg transition-all disabled:opacity-30"
+                style={{
+                  background: theme.colors.card,
+                  border: `1px solid ${theme.colors.border}`,
+                }}
               >
-                Invited by @{creator.referrer.username}
-              </span>
-            </div>
-          )}
-        </div>
+                <ChevronLeft
+                  size={16}
+                  style={{ color: theme.colors.foreground }}
+                />
+              </button>
 
-        {/* Hover glow effect */}
-        <motion.div
-          className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-          style={{
-            background: `radial-gradient(circle at 50% 0%, ${accentColor}15, transparent 60%)`,
-          }}
-        />
-      </Link>
-    </motion.div>
+              <div className="flex items-center gap-1">
+                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                  let pageNum: number
+                  if (totalPages <= 5) {
+                    pageNum = i + 1
+                  } else if (currentPage <= 3) {
+                    pageNum = i + 1
+                  } else if (currentPage >= totalPages - 2) {
+                    pageNum = totalPages - 4 + i
+                  } else {
+                    pageNum = currentPage - 2 + i
+                  }
+
+                  return (
+                    <button
+                      key={pageNum}
+                      onClick={() => setCurrentPage(pageNum)}
+                      className="w-8 h-8 rounded-lg text-xs font-medium transition-all"
+                      style={{
+                        background:
+                          currentPage === pageNum
+                            ? theme.colors.primary
+                            : 'transparent',
+                        color:
+                          currentPage === pageNum
+                            ? '#fff'
+                            : theme.colors.foreground,
+                      }}
+                    >
+                      {pageNum}
+                    </button>
+                  )
+                })}
+              </div>
+
+              <button
+                onClick={() =>
+                  setCurrentPage((p) => Math.min(totalPages, p + 1))
+                }
+                disabled={currentPage === totalPages}
+                className="p-2 rounded-lg transition-all disabled:opacity-30"
+                style={{
+                  background: theme.colors.card,
+                  border: `1px solid ${theme.colors.border}`,
+                }}
+              >
+                <ChevronRight
+                  size={16}
+                  style={{ color: theme.colors.foreground }}
+                />
+              </button>
+            </div>
+          </div>
+        )}
+      </section>
+    </div>
   )
 }

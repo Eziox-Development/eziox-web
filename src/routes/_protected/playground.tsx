@@ -1,10 +1,10 @@
 import { useState, useEffect, useMemo } from 'react'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { motion, AnimatePresence } from 'motion/react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
-import { useTheme } from '@/components/layout/ThemeProvider'
 import { useAuth } from '@/hooks/use-auth'
+import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import {
   ImageIcon,
@@ -13,27 +13,36 @@ import {
   Sparkles,
   Save,
   Loader2,
-  Wand2,
   Code2,
-  Share2,
   History,
   Trash2,
   Plus,
   Crown,
   Lock,
-  Smartphone,
+  Layers,
+  Grid3X3,
+  Rows3,
+  Minimize2,
+  Move3D,
+  Zap,
+  Play,
+  Pause,
+  RotateCcw,
+  Image,
+  Video,
+  RotateCw,
   ExternalLink,
+  Palette,
+  ChevronRight,
+  Eye,
+  Wand2,
   Monitor,
-  Laptop,
-  Tablet,
 } from 'lucide-react'
-import { Link } from '@tanstack/react-router'
 import type {
   CustomBackground,
   LayoutSettings,
   AnimatedProfileSettings,
   CustomFont,
-  OpenGraphSettings,
 } from '@/server/db/schema'
 import {
   getProfileSettingsFn,
@@ -49,96 +58,254 @@ import {
   addCustomFontFn,
   removeCustomFontFn,
   updateAnimatedProfileFn,
-  updateOpenGraphFn,
 } from '@/server/functions/creator-features'
 import { ANIMATED_PRESETS } from '@/components/backgrounds/AnimatedBackgrounds'
 
 export const Route = createFileRoute('/_protected/playground')({
   component: PlaygroundPage,
+  head: () => ({
+    meta: [
+      { title: 'Playground | Eziox' },
+      { name: 'robots', content: 'noindex, nofollow' },
+    ],
+  }),
 })
 
+const CARD_LAYOUTS = [
+  {
+    id: 'default',
+    label: 'Default',
+    icon: Rows3,
+    description: 'Classic vertical list',
+  },
+  {
+    id: 'tilt',
+    label: 'Tilt 3D',
+    icon: Move3D,
+    description: 'Interactive 3D effect',
+  },
+  { id: 'grid', label: 'Grid', icon: Grid3X3, description: 'Two-column grid' },
+  { id: 'stack', label: 'Bento', icon: Layers, description: 'Bento box style' },
+  {
+    id: 'minimal',
+    label: 'Minimal',
+    icon: Minimize2,
+    description: 'Clean and simple',
+  },
+] as const
+
+const LINK_STYLES = [
+  { id: 'default', label: 'Default' },
+  { id: 'minimal', label: 'Minimal' },
+  { id: 'bold', label: 'Bold' },
+  { id: 'glass', label: 'Glass' },
+  { id: 'outline', label: 'Outline' },
+  { id: 'neon', label: 'Neon' },
+] as const
+
 const SHADOW_OPTIONS = [
-  { value: 'none', label: 'None' },
-  { value: 'sm', label: 'Subtle' },
-  { value: 'md', label: 'Medium' },
-  { value: 'lg', label: 'Large' },
-  { value: 'xl', label: 'Dramatic' },
+  { id: 'none', label: 'None' },
+  { id: 'sm', label: 'Subtle' },
+  { id: 'md', label: 'Medium' },
+  { id: 'lg', label: 'Large' },
+  { id: 'xl', label: 'Dramatic' },
+  { id: 'glow', label: 'Glow' },
 ] as const
-const LINK_STYLE_OPTIONS = [
-  { value: 'default', label: 'Default' },
-  { value: 'minimal', label: 'Minimal' },
-  { value: 'bold', label: 'Bold' },
-  { value: 'glass', label: 'Glass' },
-] as const
+
 const AVATAR_ANIMATIONS = [
-  { value: 'none', label: 'None' },
-  { value: 'pulse', label: 'Pulse' },
-  { value: 'glow', label: 'Glow' },
-  { value: 'bounce', label: 'Bounce' },
-  { value: 'rotate', label: 'Rotate' },
-  { value: 'shake', label: 'Shake' },
+  { id: 'none', label: 'None', icon: Pause },
+  { id: 'pulse', label: 'Pulse', icon: Zap },
+  { id: 'glow', label: 'Glow', icon: Sparkles },
+  { id: 'bounce', label: 'Bounce', icon: Play },
+  { id: 'rotate', label: 'Rotate', icon: RotateCcw },
+  { id: 'shake', label: 'Shake', icon: Move3D },
 ] as const
-const BANNER_ANIMATIONS = [
-  { value: 'none', label: 'None' },
-  { value: 'parallax', label: 'Parallax' },
-  { value: 'gradient-shift', label: 'Gradient' },
-  { value: 'particles', label: 'Particles' },
-] as const
+
 const LINK_HOVER_EFFECTS = [
-  { value: 'none', label: 'None' },
-  { value: 'scale', label: 'Scale' },
-  { value: 'glow', label: 'Glow' },
-  { value: 'slide', label: 'Slide' },
-  { value: 'shake', label: 'Shake' },
-  { value: 'flip', label: 'Flip' },
+  { id: 'none', label: 'None' },
+  { id: 'scale', label: 'Scale' },
+  { id: 'glow', label: 'Glow' },
+  { id: 'slide', label: 'Slide' },
+  { id: 'tilt', label: 'Tilt' },
+  { id: 'lift', label: 'Lift' },
 ] as const
-const PAGE_TRANSITIONS = [
-  { value: 'none', label: 'None' },
-  { value: 'fade', label: 'Fade' },
-  { value: 'slide', label: 'Slide' },
-  { value: 'zoom', label: 'Zoom' },
+
+const BACKGROUND_TYPES = [
+  {
+    id: 'solid',
+    label: 'Solid',
+    icon: Palette,
+    premium: false,
+    description: 'Single color',
+  },
+  {
+    id: 'gradient',
+    label: 'Gradient',
+    icon: Layers,
+    premium: false,
+    description: 'Color blend',
+  },
+  {
+    id: 'image',
+    label: 'Image',
+    icon: Image,
+    premium: false,
+    description: 'Custom image',
+  },
+  {
+    id: 'video',
+    label: 'Video',
+    icon: Video,
+    premium: true,
+    description: 'Video background',
+  },
+  {
+    id: 'animated',
+    label: 'Animated',
+    icon: Sparkles,
+    premium: true,
+    description: 'Dynamic effects',
+  },
 ] as const
+
+const ANIMATED_CATEGORIES = [
+  { id: 'all', label: 'All' },
+  { id: 'vtuber', label: 'VTuber' },
+  { id: 'gamer', label: 'Gamer' },
+  { id: 'developer', label: 'Developer' },
+  { id: 'nature', label: 'Nature' },
+  { id: 'abstract', label: 'Abstract' },
+] as const
+
+const DEFAULT_LAYOUT: LayoutSettings = {
+  cardLayout: 'default',
+  cardSpacing: 12,
+  cardBorderRadius: 16,
+  cardShadow: 'md',
+  cardPadding: 16,
+  profileLayout: 'default',
+  linkStyle: 'default',
+}
+
+const DEFAULT_ANIMATED: AnimatedProfileSettings = {
+  enabled: false,
+  avatarAnimation: 'none',
+  bannerAnimation: 'none',
+  linkHoverEffect: 'scale',
+  pageTransition: 'fade',
+}
+
+type TabType =
+  | 'background'
+  | 'layout'
+  | 'animations'
+  | 'fonts'
+  | 'css'
+  | 'backups'
+
+const TABS: {
+  id: TabType
+  label: string
+  icon: typeof ImageIcon
+  premium?: boolean
+  description: string
+}[] = [
+  {
+    id: 'background',
+    label: 'Background',
+    icon: ImageIcon,
+    description: 'Customize your page background',
+  },
+  {
+    id: 'layout',
+    label: 'Layout',
+    icon: LayoutGrid,
+    description: 'Arrange your links and cards',
+  },
+  {
+    id: 'animations',
+    label: 'Animations',
+    icon: Sparkles,
+    premium: true,
+    description: 'Add motion effects',
+  },
+  {
+    id: 'fonts',
+    label: 'Fonts',
+    icon: Type,
+    premium: true,
+    description: 'Custom typography',
+  },
+  {
+    id: 'css',
+    label: 'CSS',
+    icon: Code2,
+    premium: true,
+    description: 'Advanced styling',
+  },
+  {
+    id: 'backups',
+    label: 'Backups',
+    icon: History,
+    description: 'Save and restore',
+  },
+]
 
 const PRESET_FONTS = [
   {
     name: 'Inter',
     url: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap',
-    category: 'sans-serif',
-  },
-  {
-    name: 'Poppins',
-    url: 'https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap',
-    category: 'sans-serif',
-  },
-  {
-    name: 'Montserrat',
-    url: 'https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap',
-    category: 'sans-serif',
-  },
-  {
-    name: 'Roboto',
-    url: 'https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap',
-    category: 'sans-serif',
-  },
-  {
-    name: 'Open Sans',
-    url: 'https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&display=swap',
-    category: 'sans-serif',
-  },
-  {
-    name: 'Nunito',
-    url: 'https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap',
-    category: 'sans-serif',
-  },
-  {
-    name: 'Raleway',
-    url: 'https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700&display=swap',
-    category: 'sans-serif',
+    category: 'sans',
   },
   {
     name: 'Space Grotesk',
     url: 'https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap',
-    category: 'sans-serif',
+    category: 'sans',
+  },
+  {
+    name: 'Plus Jakarta Sans',
+    url: 'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap',
+    category: 'sans',
+  },
+  {
+    name: 'Outfit',
+    url: 'https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap',
+    category: 'sans',
+  },
+  {
+    name: 'Sora',
+    url: 'https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap',
+    category: 'sans',
+  },
+  {
+    name: 'Manrope',
+    url: 'https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap',
+    category: 'sans',
+  },
+  {
+    name: 'DM Sans',
+    url: 'https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap',
+    category: 'sans',
+  },
+  {
+    name: 'Orbitron',
+    url: 'https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&display=swap',
+    category: 'display',
+  },
+  {
+    name: 'Chakra Petch',
+    url: 'https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&display=swap',
+    category: 'display',
+  },
+  {
+    name: 'Audiowide',
+    url: 'https://fonts.googleapis.com/css2?family=Audiowide&display=swap',
+    category: 'display',
+  },
+  {
+    name: 'Bebas Neue',
+    url: 'https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap',
+    category: 'display',
   },
   {
     name: 'Playfair Display',
@@ -146,14 +313,14 @@ const PRESET_FONTS = [
     category: 'serif',
   },
   {
-    name: 'Merriweather',
-    url: 'https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&display=swap',
-    category: 'serif',
-  },
-  {
     name: 'Lora',
     url: 'https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&display=swap',
     category: 'serif',
+  },
+  {
+    name: 'Caveat',
+    url: 'https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&display=swap',
+    category: 'handwriting',
   },
   {
     name: 'JetBrains Mono',
@@ -165,84 +332,16 @@ const PRESET_FONTS = [
     url: 'https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&display=swap',
     category: 'mono',
   },
-  {
-    name: 'Space Mono',
-    url: 'https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap',
-    category: 'mono',
-  },
-  {
-    name: 'Bebas Neue',
-    url: 'https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap',
-    category: 'display',
-  },
-  {
-    name: 'Righteous',
-    url: 'https://fonts.googleapis.com/css2?family=Righteous&display=swap',
-    category: 'display',
-  },
-  {
-    name: 'Pacifico',
-    url: 'https://fonts.googleapis.com/css2?family=Pacifico&display=swap',
-    category: 'display',
-  },
-  {
-    name: 'Orbitron',
-    url: 'https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&display=swap',
-    category: 'display',
-  },
-]
-
-const DEFAULT_LAYOUT: LayoutSettings = {
-  cardSpacing: 12,
-  cardBorderRadius: 16,
-  cardShadow: 'md',
-  cardPadding: 16,
-  profileLayout: 'default',
-  linkStyle: 'default',
-}
-const DEFAULT_ANIMATED: AnimatedProfileSettings = {
-  enabled: false,
-  avatarAnimation: 'none',
-  bannerAnimation: 'none',
-  linkHoverEffect: 'scale',
-  pageTransition: 'none',
-}
-const DEFAULT_OG: OpenGraphSettings = {
-  useCustom: false,
-  title: '',
-  description: '',
-  image: '',
-}
-
-type TabType =
-  | 'background'
-  | 'layout'
-  | 'animations'
-  | 'fonts'
-  | 'css'
-  | 'opengraph'
-  | 'backups'
-const TABS: {
-  id: TabType
-  label: string
-  icon: typeof ImageIcon
-  creatorOnly?: boolean
-}[] = [
-  { id: 'background', label: 'Background', icon: ImageIcon },
-  { id: 'layout', label: 'Layout', icon: LayoutGrid },
-  { id: 'animations', label: 'Animations', icon: Sparkles, creatorOnly: true },
-  { id: 'fonts', label: 'Fonts', icon: Type, creatorOnly: true },
-  { id: 'css', label: 'CSS', icon: Code2, creatorOnly: true },
-  { id: 'opengraph', label: 'OG', icon: Share2, creatorOnly: true },
-  { id: 'backups', label: 'Backups', icon: History },
 ]
 
 function PlaygroundPage() {
-  const { theme } = useTheme()
+  const { t } = useTranslation()
   const { currentUser } = useAuth()
   const queryClient = useQueryClient()
   const [activeTab, setActiveTab] = useState<TabType>('background')
   const [backupName, setBackupName] = useState('')
+  const [animatedCategory, setAnimatedCategory] = useState<string>('all')
+  const [fontCategory, setFontCategory] = useState<string>('all')
 
   const getSettings = useServerFn(getProfileSettingsFn)
   const getCreatorSettings = useServerFn(getCreatorSettingsFn)
@@ -252,16 +351,15 @@ function PlaygroundPage() {
   const addFont = useServerFn(addCustomFontFn)
   const removeFont = useServerFn(removeCustomFontFn)
   const updateAnimated = useServerFn(updateAnimatedProfileFn)
-  const updateOG = useServerFn(updateOpenGraphFn)
   const createBackup = useServerFn(createProfileBackupFn)
   const restoreBackup = useServerFn(restoreProfileBackupFn)
   const deleteBackup = useServerFn(deleteProfileBackupFn)
 
-  const { data: settings, isLoading: settingsLoading } = useQuery({
+  const { data: settings } = useQuery({
     queryKey: ['profileSettings'],
     queryFn: () => getSettings(),
   })
-  const { data: creatorSettings, isLoading: creatorLoading } = useQuery({
+  const { data: creatorSettings } = useQuery({
     queryKey: ['creatorSettings'],
     queryFn: () => getCreatorSettings(),
   })
@@ -271,31 +369,10 @@ function PlaygroundPage() {
   const [localLayout, setLocalLayout] = useState<LayoutSettings>(DEFAULT_LAYOUT)
   const [localAnimated, setLocalAnimated] =
     useState<AnimatedProfileSettings>(DEFAULT_ANIMATED)
-  const [localOG, setLocalOG] = useState<OpenGraphSettings>(DEFAULT_OG)
   const [cssInput, setCssInput] = useState('')
-  const [cssErrors, setCssErrors] = useState<string[]>([])
   const [newFontName, setNewFontName] = useState('')
   const [newFontUrl, setNewFontUrl] = useState('')
   const [newFontType, setNewFontType] = useState<'display' | 'body'>('display')
-  const [fontCategory, setFontCategory] = useState<string>('all')
-  const [previewDevice, setPreviewDevice] = useState<
-    'desktop' | 'laptop' | 'tablet' | 'mobile'
-  >('desktop')
-  const [previewFont, setPreviewFont] = useState<string | null>(null)
-
-  // Auto-detect screen size and set preview device accordingly
-  useEffect(() => {
-    const detectDevice = () => {
-      const width = window.innerWidth
-      if (width >= 1536) setPreviewDevice('desktop')
-      else if (width >= 1280) setPreviewDevice('laptop')
-      else if (width >= 768) setPreviewDevice('tablet')
-      else setPreviewDevice('mobile')
-    }
-    detectDevice()
-    window.addEventListener('resize', detectDevice)
-    return () => window.removeEventListener('resize', detectDevice)
-  }, [])
 
   useEffect(() => {
     if (settings?.customBackground)
@@ -307,333 +384,343 @@ function PlaygroundPage() {
     if (creatorSettings?.customCSS) setCssInput(creatorSettings.customCSS)
     if (creatorSettings?.animatedProfile)
       setLocalAnimated(creatorSettings.animatedProfile)
-    if (creatorSettings?.openGraphSettings)
-      setLocalOG(creatorSettings.openGraphSettings)
   }, [creatorSettings])
 
   const userTier = (currentUser?.tier || 'free') as string
+  const isPremium = ['pro', 'creator', 'lifetime'].includes(userTier)
   const isCreator =
     creatorSettings?.isCreator || ['creator', 'lifetime'].includes(userTier)
-  const filteredFonts = useMemo(
-    () =>
-      fontCategory === 'all'
-        ? PRESET_FONTS
-        : PRESET_FONTS.filter((f) => f.category === fontCategory),
-    [fontCategory],
-  )
 
-  const backgroundMutation = useMutation({
+  const filteredAnimatedPresets = useMemo(() => {
+    if (animatedCategory === 'all') return ANIMATED_PRESETS
+    return ANIMATED_PRESETS.filter((p) => p.category === animatedCategory)
+  }, [animatedCategory])
+
+  const filteredFonts = useMemo(() => {
+    if (fontCategory === 'all') return PRESET_FONTS
+    return PRESET_FONTS.filter((f) => f.category === fontCategory)
+  }, [fontCategory])
+
+  const bgMutation = useMutation({
     mutationFn: (bg: CustomBackground | null) => updateBackground({ data: bg }),
     onSuccess: () => {
-      toast.success('Background saved!')
+      toast.success(t('playground.saved'))
       void queryClient.invalidateQueries({ queryKey: ['profileSettings'] })
-      void queryClient.invalidateQueries({ queryKey: ['publicProfile'] })
     },
-    onError: () => toast.error('Failed to save'),
   })
+
   const layoutMutation = useMutation({
-    mutationFn: (layout: Partial<LayoutSettings>) =>
-      updateLayout({ data: layout }),
+    mutationFn: (l: Partial<LayoutSettings>) => updateLayout({ data: l }),
     onSuccess: () => {
-      toast.success('Layout saved!')
+      toast.success(t('playground.saved'))
       void queryClient.invalidateQueries({ queryKey: ['profileSettings'] })
-      void queryClient.invalidateQueries({ queryKey: ['publicProfile'] })
     },
-    onError: () => toast.error('Failed to save'),
   })
+
+  const animMutation = useMutation({
+    mutationFn: (a: AnimatedProfileSettings) => updateAnimated({ data: a }),
+    onSuccess: () => {
+      toast.success(t('playground.saved'))
+      void queryClient.invalidateQueries({ queryKey: ['creatorSettings'] })
+    },
+  })
+
   const cssMutation = useMutation({
     mutationFn: (css: string) => updateCSS({ data: { css } }),
-    onSuccess: (result: {
-      success: boolean
-      sanitized: string
-      valid: boolean
-      errors: string[]
-    }) => {
-      if (result.errors?.length) {
-        setCssErrors(result.errors)
-        toast.warning('CSS saved with warnings')
-      } else {
-        setCssErrors([])
-        toast.success('CSS saved!')
-      }
-      void queryClient.invalidateQueries({ queryKey: ['creatorSettings'] })
-      void queryClient.invalidateQueries({ queryKey: ['publicProfile'] })
-    },
-    onError: () => toast.error('Failed to save'),
-  })
-  const fontMutation = useMutation({
-    mutationFn: (font: {
-      name: string
-      url: string
-      type: 'display' | 'body'
-    }) => addFont({ data: { id: crypto.randomUUID(), ...font } }),
     onSuccess: () => {
-      toast.success('Font added!')
+      toast.success(t('playground.saved'))
+      void queryClient.invalidateQueries({ queryKey: ['creatorSettings'] })
+    },
+  })
+
+  const fontMutation = useMutation({
+    mutationFn: (f: { name: string; url: string; type: 'display' | 'body' }) =>
+      addFont({ data: { ...f, id: crypto.randomUUID() } }),
+    onSuccess: () => {
+      toast.success(t('playground.fontAdded'))
+      void queryClient.invalidateQueries({ queryKey: ['creatorSettings'] })
       setNewFontName('')
       setNewFontUrl('')
-      void queryClient.invalidateQueries({ queryKey: ['creatorSettings'] })
     },
-    onError: () => toast.error('Failed to add font'),
   })
+
   const removeFontMutation = useMutation({
-    mutationFn: (fontId: string) => removeFont({ data: { fontId } }),
+    mutationFn: (id: string) => removeFont({ data: { fontId: id } }),
     onSuccess: () => {
-      toast.success('Font removed')
+      toast.success(t('playground.fontRemoved'))
       void queryClient.invalidateQueries({ queryKey: ['creatorSettings'] })
     },
-    onError: () => toast.error('Failed to remove'),
   })
-  const animatedMutation = useMutation({
-    mutationFn: (data: AnimatedProfileSettings) => updateAnimated({ data }),
-    onSuccess: () => {
-      toast.success('Animations saved!')
-      void queryClient.invalidateQueries({ queryKey: ['creatorSettings'] })
-      void queryClient.invalidateQueries({ queryKey: ['publicProfile'] })
-    },
-    onError: () => toast.error('Failed to save'),
-  })
-  const ogMutation = useMutation({
-    mutationFn: (data: OpenGraphSettings) => updateOG({ data }),
-    onSuccess: () => {
-      toast.success('Open Graph saved!')
-      void queryClient.invalidateQueries({ queryKey: ['creatorSettings'] })
-    },
-    onError: () => toast.error('Failed to save'),
-  })
+
   const backupMutation = useMutation({
     mutationFn: (name: string) => createBackup({ data: { name } }),
     onSuccess: () => {
-      toast.success('Backup created!')
+      toast.success(t('playground.backupCreated'))
+      void queryClient.invalidateQueries({ queryKey: ['profileSettings'] })
       setBackupName('')
-      void queryClient.invalidateQueries({ queryKey: ['profileSettings'] })
     },
-    onError: () => toast.error('Failed to create backup'),
   })
+
   const restoreMutation = useMutation({
-    mutationFn: (backupId: string) => restoreBackup({ data: { backupId } }),
+    mutationFn: (id: string) => restoreBackup({ data: { backupId: id } }),
     onSuccess: () => {
-      toast.success('Backup restored!')
+      toast.success(t('playground.backupRestored'))
       void queryClient.invalidateQueries({ queryKey: ['profileSettings'] })
-      void queryClient.invalidateQueries({ queryKey: ['publicProfile'] })
     },
-    onError: () => toast.error('Failed to restore'),
   })
+
   const deleteMutation = useMutation({
-    mutationFn: (backupId: string) => deleteBackup({ data: { backupId } }),
+    mutationFn: (id: string) => deleteBackup({ data: { backupId: id } }),
     onSuccess: () => {
-      toast.success('Backup deleted')
+      toast.success(t('playground.backupDeleted'))
       void queryClient.invalidateQueries({ queryKey: ['profileSettings'] })
     },
-    onError: () => toast.error('Failed to delete'),
   })
 
-  if (settingsLoading || creatorLoading)
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2
-          className="w-10 h-10 animate-spin"
-          style={{ color: theme.colors.primary }}
-        />
-      </div>
-    )
-
-  const getPreviewBg = () => {
-    if (!localBackground) return { background: theme.colors.background }
-    if (localBackground.type === 'solid')
-      return { background: localBackground.value || theme.colors.background }
-    if (localBackground.type === 'gradient') {
-      const c = localBackground.gradientColors || ['#8b5cf6', '#ec4899']
-      return {
-        background: `linear-gradient(${localBackground.gradientAngle || 135}deg, ${c[0]}, ${c[1]})`,
-      }
-    }
-    if (localBackground.type === 'image')
-      return {
-        backgroundImage: `url(${localBackground.imageUrl})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-      }
-    return { background: theme.colors.background }
+  const handleResetToDefault = () => {
+    setLocalBackground(null)
+    setLocalLayout(DEFAULT_LAYOUT)
+    setLocalAnimated(DEFAULT_ANIMATED)
+    setCssInput('')
+    toast.success(t('playground.resetSuccess'))
   }
 
-  return (
-    <div
-      className="min-h-screen pt-20 pb-8"
-      style={{ background: theme.colors.background }}
-    >
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6">
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex items-center justify-between mb-6"
-        >
-          <div>
-            <h1
-              className="text-2xl font-bold"
-              style={{ color: theme.colors.foreground }}
-            >
-              Playground
-            </h1>
-            <p
-              className="text-sm mt-1"
-              style={{ color: theme.colors.foregroundMuted }}
-            >
-              Customize and preview your bio page in real-time
-            </p>
-          </div>
-          <a
-            href={`/${currentUser?.username}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all hover:scale-105"
-            style={{ background: theme.colors.primary, color: '#fff' }}
-          >
-            <ExternalLink size={16} />
-            View Live
-          </a>
-        </motion.div>
+  const activeTabData = TABS.find((tab) => tab.id === activeTab)
 
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr,420px] gap-6">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="space-y-4 order-2 lg:order-1"
-          >
-            <div
-              className="flex gap-1 p-1.5 rounded-xl overflow-x-auto"
-              style={{ background: theme.colors.backgroundSecondary }}
-            >
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-background-secondary">
+      {/* Sidebar + Content Layout */}
+      <div className="flex min-h-screen pt-16">
+        {/* Sidebar Navigation */}
+        <aside className="w-72 border-r border-border/50 bg-background/80 backdrop-blur-xl fixed left-0 top-16 bottom-0 overflow-y-auto">
+          <div className="p-6">
+            {/* Header */}
+            <div className="mb-8">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+                  <Wand2 size={20} className="text-white" />
+                </div>
+                <div>
+                  <h1 className="text-lg font-bold text-foreground">
+                    {t('playground.title')}
+                  </h1>
+                  <p className="text-xs text-foreground-muted">
+                    {t('playground.subtitle')}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Navigation Tabs */}
+            <nav className="space-y-1">
               {TABS.map((tab) => {
-                const isActive = activeTab === tab.id,
-                  isLocked = tab.creatorOnly && !isCreator,
-                  Icon = tab.icon
+                const isLocked = tab.premium && !isCreator
+                const isActive = activeTab === tab.id
                 return (
-                  <button
+                  <motion.button
                     key={tab.id}
                     onClick={() => !isLocked && setActiveTab(tab.id)}
                     disabled={isLocked}
-                    className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all"
-                    style={{
-                      background: isActive
-                        ? theme.colors.primary
-                        : 'transparent',
-                      color: isActive
-                        ? '#fff'
-                        : isLocked
-                          ? theme.colors.foregroundMuted
-                          : theme.colors.foreground,
-                      opacity: isLocked ? 0.5 : 1,
-                    }}
+                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all group ${
+                      isActive
+                        ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/25'
+                        : 'hover:bg-background-secondary text-foreground-muted hover:text-foreground'
+                    } ${isLocked ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    whileHover={!isLocked ? { x: 4 } : {}}
+                    whileTap={!isLocked ? { scale: 0.98 } : {}}
                   >
-                    {isLocked ? <Lock size={14} /> : <Icon size={14} />}
-                    {tab.label}
-                  </button>
-                )
-              })}
-            </div>
-
-            <div
-              className="rounded-xl p-6"
-              style={{
-                background: theme.colors.card,
-                border: `1px solid ${theme.colors.border}`,
-              }}
-            >
-              <AnimatePresence mode="wait">
-                {activeTab === 'background' && (
-                  <motion.div
-                    key="background"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    className="space-y-6"
-                  >
-                    <div>
-                      <h3
-                        className="text-lg font-semibold mb-4"
-                        style={{ color: theme.colors.foreground }}
+                    <tab.icon size={18} />
+                    <div className="flex-1">
+                      <div className="font-medium text-sm">{tab.label}</div>
+                      <div
+                        className={`text-xs ${isActive ? 'text-primary-foreground/70' : 'text-foreground-muted'}`}
                       >
-                        Background Type
-                      </h3>
-                      <div className="grid grid-cols-4 gap-2">
-                        {(
-                          ['solid', 'gradient', 'image', 'animated'] as const
-                        ).map((type) => (
-                          <button
-                            key={type}
-                            onClick={() =>
-                              setLocalBackground({
-                                ...localBackground,
-                                type,
-                                value: localBackground?.value || '',
-                              } as CustomBackground)
-                            }
-                            className="px-4 py-3 rounded-lg text-sm font-medium transition-all capitalize"
-                            style={{
-                              background:
-                                localBackground?.type === type
-                                  ? theme.colors.primary
-                                  : theme.colors.backgroundSecondary,
-                              color:
-                                localBackground?.type === type
-                                  ? '#fff'
-                                  : theme.colors.foreground,
-                            }}
-                          >
-                            {type}
-                          </button>
-                        ))}
+                        {tab.description}
                       </div>
                     </div>
-                    {localBackground?.type === 'solid' && (
-                      <div>
-                        <label
-                          className="text-sm font-medium mb-2 block"
-                          style={{ color: theme.colors.foreground }}
-                        >
-                          Color
-                        </label>
-                        <div className="flex gap-3">
-                          <input
-                            type="color"
-                            value={localBackground.value || '#000000'}
-                            onChange={(e) =>
-                              setLocalBackground({
-                                ...localBackground,
-                                value: e.target.value,
-                              })
-                            }
-                            className="w-14 h-12 rounded-lg cursor-pointer border-0"
-                          />
-                          <input
-                            type="text"
-                            value={localBackground.value || '#000000'}
-                            onChange={(e) =>
-                              setLocalBackground({
-                                ...localBackground,
-                                value: e.target.value,
-                              })
-                            }
-                            className="flex-1 px-4 py-2 rounded-lg text-sm"
-                            style={{
-                              background: theme.colors.backgroundSecondary,
-                              color: theme.colors.foreground,
-                              border: `1px solid ${theme.colors.border}`,
-                            }}
-                          />
-                        </div>
-                      </div>
+                    {isLocked ? (
+                      <Lock size={14} />
+                    ) : (
+                      <ChevronRight
+                        size={14}
+                        className={`transition-transform ${isActive ? 'rotate-90' : ''}`}
+                      />
                     )}
-                    {localBackground?.type === 'gradient' && (
-                      <div className="space-y-4">
-                        <div className="grid grid-cols-2 gap-4">
-                          <div>
-                            <label
-                              className="text-sm font-medium mb-2 block"
-                              style={{ color: theme.colors.foreground }}
+                    {tab.premium && !isLocked && (
+                      <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-gradient-to-r from-amber-500 to-orange-500 text-white">
+                        PRO
+                      </span>
+                    )}
+                  </motion.button>
+                )
+              })}
+            </nav>
+
+            {/* Quick Actions */}
+            <div className="mt-8 pt-6 border-t border-border/50 space-y-2">
+              <a
+                href={`/${currentUser?.username}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20 text-foreground hover:border-primary/40 transition-colors"
+              >
+                <Eye size={18} className="text-primary" />
+                <span className="font-medium text-sm">
+                  {t('playground.preview')}
+                </span>
+                <ExternalLink
+                  size={14}
+                  className="ml-auto text-foreground-muted"
+                />
+              </a>
+              <button
+                onClick={handleResetToDefault}
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 hover:bg-red-500/20 transition-colors"
+              >
+                <RotateCw size={18} />
+                <span className="font-medium text-sm">
+                  {t('playground.reset')}
+                </span>
+              </button>
+            </div>
+          </div>
+        </aside>
+
+        {/* Main Content */}
+        <main className="flex-1 ml-72 p-8">
+          <div className="max-w-4xl mx-auto">
+            {/* Content Header */}
+            <motion.div
+              key={activeTab}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-8"
+            >
+              <div className="flex items-center gap-4 mb-2">
+                {activeTabData && (
+                  <activeTabData.icon size={28} className="text-primary" />
+                )}
+                <h2 className="text-2xl font-bold text-foreground">
+                  {activeTabData?.label}
+                </h2>
+              </div>
+              <p className="text-foreground-muted">
+                {activeTabData?.description}
+              </p>
+            </motion.div>
+
+            {/* Content Panels */}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeTab}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.2 }}
+              >
+                {/* Background Tab */}
+                {activeTab === 'background' && (
+                  <div className="space-y-8">
+                    {/* Background Type Selection */}
+                    <div className="grid grid-cols-5 gap-4">
+                      {BACKGROUND_TYPES.map((type) => {
+                        const isLocked = type.premium && !isPremium
+                        const isActive = localBackground?.type === type.id
+                        return (
+                          <motion.button
+                            key={type.id}
+                            onClick={() =>
+                              !isLocked &&
+                              setLocalBackground({
+                                ...localBackground,
+                                type: type.id,
+                              } as CustomBackground)
+                            }
+                            disabled={isLocked}
+                            className={`relative p-6 rounded-2xl border-2 flex flex-col items-center gap-3 transition-all ${
+                              isActive
+                                ? 'border-primary bg-primary/10 shadow-lg shadow-primary/20'
+                                : 'border-border bg-card hover:border-primary/50'
+                            } ${isLocked ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            whileHover={!isLocked ? { y: -4, scale: 1.02 } : {}}
+                            whileTap={!isLocked ? { scale: 0.98 } : {}}
+                          >
+                            <div
+                              className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                                isActive
+                                  ? 'bg-primary text-primary-foreground'
+                                  : 'bg-background-secondary text-foreground-muted'
+                              }`}
                             >
-                              Start
-                            </label>
+                              <type.icon size={24} />
+                            </div>
+                            <div className="text-center">
+                              <div className="font-semibold text-sm text-foreground">
+                                {type.label}
+                              </div>
+                              <div className="text-xs text-foreground-muted">
+                                {type.description}
+                              </div>
+                            </div>
+                            {isLocked && (
+                              <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-background-secondary flex items-center justify-center">
+                                <Lock
+                                  size={12}
+                                  className="text-foreground-muted"
+                                />
+                              </div>
+                            )}
+                            {type.premium && !isLocked && (
+                              <div className="absolute top-2 right-2 px-1.5 py-0.5 rounded text-[10px] font-bold bg-gradient-to-r from-amber-500 to-orange-500 text-white">
+                                PRO
+                              </div>
+                            )}
+                          </motion.button>
+                        )
+                      })}
+                    </div>
+
+                    {/* Background Options */}
+                    <div className="bg-card border border-border rounded-2xl p-6">
+                      {localBackground?.type === 'solid' && (
+                        <div className="space-y-4">
+                          <label className="text-sm font-medium text-foreground">
+                            Color
+                          </label>
+                          <div className="flex gap-4">
+                            <input
+                              type="color"
+                              value={localBackground.value || '#000000'}
+                              onChange={(e) =>
+                                setLocalBackground({
+                                  ...localBackground,
+                                  value: e.target.value,
+                                })
+                              }
+                              className="w-16 h-16 rounded-xl cursor-pointer border-2 border-border"
+                            />
+                            <input
+                              type="text"
+                              value={localBackground.value || ''}
+                              onChange={(e) =>
+                                setLocalBackground({
+                                  ...localBackground,
+                                  value: e.target.value,
+                                })
+                              }
+                              placeholder="#000000"
+                              className="flex-1 px-4 py-3 rounded-xl bg-background-secondary border border-border text-foreground font-mono"
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      {localBackground?.type === 'gradient' && (
+                        <div className="space-y-4">
+                          <label className="text-sm font-medium text-foreground">
+                            Gradient Colors
+                          </label>
+                          <div className="flex gap-4 items-center">
                             <input
                               type="color"
                               value={
@@ -645,24 +732,25 @@ function PlaygroundPage() {
                                   gradientColors: [
                                     e.target.value,
                                     localBackground.gradientColors?.[1] ||
-                                      '#ec4899',
+                                      '#06b6d4',
                                   ],
+                                  value: `linear-gradient(135deg, ${e.target.value}, ${localBackground.gradientColors?.[1] || '#06b6d4'})`,
                                 })
                               }
-                              className="w-full h-12 rounded-lg cursor-pointer border-0"
+                              className="w-16 h-16 rounded-xl cursor-pointer border-2 border-border"
                             />
-                          </div>
-                          <div>
-                            <label
-                              className="text-sm font-medium mb-2 block"
-                              style={{ color: theme.colors.foreground }}
-                            >
-                              End
-                            </label>
+                            <div
+                              className="flex-1 h-16 rounded-xl"
+                              style={{
+                                background:
+                                  localBackground.value ||
+                                  'linear-gradient(135deg, #8b5cf6, #06b6d4)',
+                              }}
+                            />
                             <input
                               type="color"
                               value={
-                                localBackground.gradientColors?.[1] || '#ec4899'
+                                localBackground.gradientColors?.[1] || '#06b6d4'
                               }
                               onChange={(e) =>
                                 setLocalBackground({
@@ -672,46 +760,22 @@ function PlaygroundPage() {
                                       '#8b5cf6',
                                     e.target.value,
                                   ],
+                                  value: `linear-gradient(135deg, ${localBackground.gradientColors?.[0] || '#8b5cf6'}, ${e.target.value})`,
                                 })
                               }
-                              className="w-full h-12 rounded-lg cursor-pointer border-0"
+                              className="w-16 h-16 rounded-xl cursor-pointer border-2 border-border"
                             />
                           </div>
                         </div>
-                        <div>
-                          <label
-                            className="text-sm font-medium mb-2 block"
-                            style={{ color: theme.colors.foreground }}
-                          >
-                            Angle: {localBackground.gradientAngle || 135}°
+                      )}
+
+                      {localBackground?.type === 'image' && (
+                        <div className="space-y-4">
+                          <label className="text-sm font-medium text-foreground">
+                            {t('playground.imageUrl')}
                           </label>
                           <input
-                            type="range"
-                            min="0"
-                            max="360"
-                            value={localBackground.gradientAngle || 135}
-                            onChange={(e) =>
-                              setLocalBackground({
-                                ...localBackground,
-                                gradientAngle: parseInt(e.target.value),
-                              })
-                            }
-                            className="w-full"
-                          />
-                        </div>
-                      </div>
-                    )}
-                    {localBackground?.type === 'image' && (
-                      <div className="space-y-4">
-                        <div>
-                          <label
-                            className="text-sm font-medium mb-2 block"
-                            style={{ color: theme.colors.foreground }}
-                          >
-                            Image URL
-                          </label>
-                          <input
-                            type="text"
+                            type="url"
                             value={localBackground.imageUrl || ''}
                             onChange={(e) =>
                               setLocalBackground({
@@ -719,674 +783,502 @@ function PlaygroundPage() {
                                 imageUrl: e.target.value,
                               })
                             }
-                            placeholder="https://..."
-                            className="w-full px-4 py-3 rounded-lg text-sm"
-                            style={{
-                              background: theme.colors.backgroundSecondary,
-                              color: theme.colors.foreground,
-                              border: `1px solid ${theme.colors.border}`,
-                            }}
+                            placeholder="https://example.com/image.jpg"
+                            className="w-full px-4 py-3 rounded-xl bg-background-secondary border border-border text-foreground"
                           />
+                          {localBackground.imageUrl && (
+                            <div className="aspect-video rounded-xl overflow-hidden border border-border">
+                              <img
+                                src={localBackground.imageUrl}
+                                alt="Preview"
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          )}
                         </div>
-                        <div>
-                          <label
-                            className="text-sm font-medium mb-2 block"
-                            style={{ color: theme.colors.foreground }}
-                          >
-                            Opacity:{' '}
-                            {Math.round(
-                              (localBackground.imageOpacity ?? 0.5) * 100,
-                            )}
-                            %
+                      )}
+
+                      {localBackground?.type === 'video' && isPremium && (
+                        <div className="space-y-4">
+                          <label className="text-sm font-medium text-foreground">
+                            {t('playground.videoUrl')}
                           </label>
                           <input
-                            type="range"
-                            min="0"
-                            max="100"
-                            value={(localBackground.imageOpacity ?? 0.5) * 100}
+                            type="url"
+                            value={localBackground.videoUrl || ''}
                             onChange={(e) =>
                               setLocalBackground({
                                 ...localBackground,
-                                imageOpacity: parseInt(e.target.value) / 100,
+                                videoUrl: e.target.value,
                               })
                             }
-                            className="w-full"
+                            placeholder="https://example.com/video.mp4"
+                            className="w-full px-4 py-3 rounded-xl bg-background-secondary border border-border text-foreground"
                           />
+                          <div className="flex gap-6">
+                            <label className="flex items-center gap-3 cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={localBackground.videoLoop ?? true}
+                                onChange={(e) =>
+                                  setLocalBackground({
+                                    ...localBackground,
+                                    videoLoop: e.target.checked,
+                                  })
+                                }
+                                className="w-5 h-5 accent-primary rounded"
+                              />
+                              <span className="text-sm text-foreground">
+                                {t('playground.videoLoop')}
+                              </span>
+                            </label>
+                            <label className="flex items-center gap-3 cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={localBackground.videoMuted ?? true}
+                                onChange={(e) =>
+                                  setLocalBackground({
+                                    ...localBackground,
+                                    videoMuted: e.target.checked,
+                                  })
+                                }
+                                className="w-5 h-5 accent-primary rounded"
+                              />
+                              <span className="text-sm text-foreground">
+                                {t('playground.videoMuted')}
+                              </span>
+                            </label>
+                          </div>
                         </div>
-                      </div>
-                    )}
-                    {localBackground?.type === 'animated' && (
-                      <div>
-                        <label
-                          className="text-sm font-medium mb-3 block"
-                          style={{ color: theme.colors.foreground }}
-                        >
-                          Preset
-                        </label>
-                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                          {ANIMATED_PRESETS.map((preset) => (
-                            <button
-                              key={preset.id}
-                              onClick={() =>
-                                setLocalBackground({
-                                  ...localBackground,
-                                  animatedPreset: preset.id,
-                                })
-                              }
-                              className="px-4 py-3 rounded-lg text-sm font-medium transition-all text-left"
-                              style={{
-                                background:
-                                  localBackground.animatedPreset === preset.id
-                                    ? theme.colors.primary
-                                    : theme.colors.backgroundSecondary,
-                                color:
-                                  localBackground.animatedPreset === preset.id
-                                    ? '#fff'
-                                    : theme.colors.foreground,
-                              }}
-                            >
-                              {preset.name}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    <button
-                      onClick={() => backgroundMutation.mutate(localBackground)}
-                      disabled={backgroundMutation.isPending}
-                      className="w-full flex items-center justify-center gap-2 py-3 rounded-lg font-medium"
-                      style={{
-                        background: theme.colors.primary,
-                        color: '#fff',
-                      }}
-                    >
-                      {backgroundMutation.isPending ? (
-                        <Loader2 size={18} className="animate-spin" />
-                      ) : (
-                        <Save size={18} />
                       )}
-                      Save Background
-                    </button>
-                  </motion.div>
+
+                      {localBackground?.type === 'animated' && isPremium && (
+                        <div className="space-y-6">
+                          {/* Category Filter */}
+                          <div className="flex gap-2 flex-wrap">
+                            {ANIMATED_CATEGORIES.map((cat) => (
+                              <button
+                                key={cat.id}
+                                onClick={() => setAnimatedCategory(cat.id)}
+                                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+                                  animatedCategory === cat.id
+                                    ? 'bg-primary text-primary-foreground'
+                                    : 'bg-background-secondary text-foreground-muted hover:text-foreground'
+                                }`}
+                              >
+                                {cat.label}
+                              </button>
+                            ))}
+                          </div>
+
+                          {/* Presets Grid */}
+                          <div className="grid grid-cols-3 gap-3 max-h-96 overflow-y-auto pr-2">
+                            {filteredAnimatedPresets.map((preset) => (
+                              <motion.button
+                                key={preset.id}
+                                onClick={() =>
+                                  setLocalBackground({
+                                    ...localBackground,
+                                    animatedPreset: preset.id,
+                                  })
+                                }
+                                className={`p-4 rounded-xl border-2 text-left transition-all ${
+                                  localBackground.animatedPreset === preset.id
+                                    ? 'border-primary bg-primary/10'
+                                    : 'border-border bg-background-secondary hover:border-primary/50'
+                                }`}
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                              >
+                                <div className="font-medium text-sm text-foreground">
+                                  {preset.name}
+                                </div>
+                                <div className="text-xs text-foreground-muted mt-1">
+                                  {preset.description}
+                                </div>
+                                <div className="text-[10px] text-primary mt-2 uppercase font-bold">
+                                  {preset.category}
+                                </div>
+                              </motion.button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {!localBackground?.type && (
+                        <div className="text-center py-12 text-foreground-muted">
+                          <Monitor
+                            size={48}
+                            className="mx-auto mb-4 opacity-50"
+                          />
+                          <p>Select a background type above to get started</p>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Save Button */}
+                    <motion.button
+                      onClick={() => bgMutation.mutate(localBackground)}
+                      disabled={bgMutation.isPending}
+                      className="w-full py-4 rounded-2xl bg-gradient-to-r from-primary to-accent text-white font-semibold flex items-center justify-center gap-3 shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 transition-shadow"
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.99 }}
+                    >
+                      {bgMutation.isPending ? (
+                        <Loader2 size={20} className="animate-spin" />
+                      ) : (
+                        <Save size={20} />
+                      )}
+                      {t('common.save')}
+                    </motion.button>
+                  </div>
                 )}
 
+                {/* Layout Tab */}
                 {activeTab === 'layout' && (
-                  <motion.div
-                    key="layout"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    className="space-y-6"
-                  >
+                  <div className="space-y-8">
+                    {/* Card Layout */}
                     <div>
-                      <label
-                        className="text-sm font-medium mb-2 block"
-                        style={{ color: theme.colors.foreground }}
-                      >
-                        Card Spacing: {localLayout.cardSpacing}px
-                      </label>
-                      <input
-                        type="range"
-                        min="4"
-                        max="24"
-                        value={localLayout.cardSpacing}
-                        onChange={(e) =>
-                          setLocalLayout({
-                            ...localLayout,
-                            cardSpacing: parseInt(e.target.value),
-                          })
-                        }
-                        className="w-full"
-                      />
-                    </div>
-                    <div>
-                      <label
-                        className="text-sm font-medium mb-2 block"
-                        style={{ color: theme.colors.foreground }}
-                      >
-                        Border Radius: {localLayout.cardBorderRadius}px
-                      </label>
-                      <input
-                        type="range"
-                        min="0"
-                        max="32"
-                        value={localLayout.cardBorderRadius}
-                        onChange={(e) =>
-                          setLocalLayout({
-                            ...localLayout,
-                            cardBorderRadius: parseInt(e.target.value),
-                          })
-                        }
-                        className="w-full"
-                      />
-                    </div>
-                    <div>
-                      <label
-                        className="text-sm font-medium mb-2 block"
-                        style={{ color: theme.colors.foreground }}
-                      >
-                        Card Padding: {localLayout.cardPadding}px
-                      </label>
-                      <input
-                        type="range"
-                        min="8"
-                        max="32"
-                        value={localLayout.cardPadding}
-                        onChange={(e) =>
-                          setLocalLayout({
-                            ...localLayout,
-                            cardPadding: parseInt(e.target.value),
-                          })
-                        }
-                        className="w-full"
-                      />
-                    </div>
-                    <div>
-                      <label
-                        className="text-sm font-medium mb-3 block"
-                        style={{ color: theme.colors.foreground }}
-                      >
-                        Shadow
-                      </label>
-                      <div className="grid grid-cols-5 gap-2">
-                        {SHADOW_OPTIONS.map((opt) => (
-                          <button
-                            key={opt.value}
+                      <h3 className="text-lg font-semibold text-foreground mb-4">
+                        {t('playground.cardLayout')}
+                      </h3>
+                      <div className="grid grid-cols-5 gap-4">
+                        {CARD_LAYOUTS.map((layout) => (
+                          <motion.button
+                            key={layout.id}
                             onClick={() =>
                               setLocalLayout({
                                 ...localLayout,
-                                cardShadow: opt.value,
+                                cardLayout: layout.id,
                               })
                             }
-                            className="px-3 py-2 rounded-lg text-xs font-medium transition-all"
-                            style={{
-                              background:
-                                localLayout.cardShadow === opt.value
-                                  ? theme.colors.primary
-                                  : theme.colors.backgroundSecondary,
-                              color:
-                                localLayout.cardShadow === opt.value
-                                  ? '#fff'
-                                  : theme.colors.foreground,
-                            }}
+                            className={`p-6 rounded-2xl border-2 flex flex-col items-center gap-3 transition-all ${
+                              localLayout.cardLayout === layout.id
+                                ? 'border-primary bg-primary/10 shadow-lg shadow-primary/20'
+                                : 'border-border bg-card hover:border-primary/50'
+                            }`}
+                            whileHover={{ y: -4, scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
                           >
-                            {opt.label}
-                          </button>
+                            <div
+                              className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                                localLayout.cardLayout === layout.id
+                                  ? 'bg-primary text-primary-foreground'
+                                  : 'bg-background-secondary text-foreground-muted'
+                              }`}
+                            >
+                              <layout.icon size={24} />
+                            </div>
+                            <div className="text-center">
+                              <div className="font-semibold text-sm text-foreground">
+                                {layout.label}
+                              </div>
+                              <div className="text-xs text-foreground-muted">
+                                {layout.description}
+                              </div>
+                            </div>
+                          </motion.button>
                         ))}
                       </div>
                     </div>
-                    <div>
-                      <label
-                        className="text-sm font-medium mb-3 block"
-                        style={{ color: theme.colors.foreground }}
-                      >
+
+                    {/* Link Style */}
+                    <div className="bg-card border border-border rounded-2xl p-6">
+                      <h3 className="text-lg font-semibold text-foreground mb-4">
                         Link Style
-                      </label>
-                      <div className="grid grid-cols-4 gap-2">
-                        {LINK_STYLE_OPTIONS.map((opt) => (
+                      </h3>
+                      <div className="flex flex-wrap gap-3">
+                        {LINK_STYLES.map((style) => (
                           <button
-                            key={opt.value}
+                            key={style.id}
                             onClick={() =>
                               setLocalLayout({
                                 ...localLayout,
-                                linkStyle: opt.value,
+                                linkStyle: style.id,
                               })
                             }
-                            className="px-3 py-2 rounded-lg text-xs font-medium transition-all"
-                            style={{
-                              background:
-                                localLayout.linkStyle === opt.value
-                                  ? theme.colors.primary
-                                  : theme.colors.backgroundSecondary,
-                              color:
-                                localLayout.linkStyle === opt.value
-                                  ? '#fff'
-                                  : theme.colors.foreground,
-                            }}
+                            className={`px-6 py-3 rounded-xl text-sm font-medium transition-all ${
+                              localLayout.linkStyle === style.id
+                                ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/25'
+                                : 'bg-background-secondary text-foreground-muted hover:text-foreground'
+                            }`}
                           >
-                            {opt.label}
+                            {style.label}
                           </button>
                         ))}
                       </div>
                     </div>
-                    <button
+
+                    {/* Spacing & Radius */}
+                    <div className="grid grid-cols-2 gap-6">
+                      <div className="bg-card border border-border rounded-2xl p-6">
+                        <div className="flex items-center justify-between mb-4">
+                          <h3 className="font-semibold text-foreground">
+                            Spacing
+                          </h3>
+                          <span className="text-sm text-primary font-mono">
+                            {localLayout.cardSpacing}px
+                          </span>
+                        </div>
+                        <input
+                          type="range"
+                          min="4"
+                          max="32"
+                          value={localLayout.cardSpacing}
+                          onChange={(e) =>
+                            setLocalLayout({
+                              ...localLayout,
+                              cardSpacing: parseInt(e.target.value),
+                            })
+                          }
+                          className="w-full accent-primary h-2 rounded-full"
+                        />
+                      </div>
+                      <div className="bg-card border border-border rounded-2xl p-6">
+                        <div className="flex items-center justify-between mb-4">
+                          <h3 className="font-semibold text-foreground">
+                            Border Radius
+                          </h3>
+                          <span className="text-sm text-primary font-mono">
+                            {localLayout.cardBorderRadius}px
+                          </span>
+                        </div>
+                        <input
+                          type="range"
+                          min="0"
+                          max="32"
+                          value={localLayout.cardBorderRadius}
+                          onChange={(e) =>
+                            setLocalLayout({
+                              ...localLayout,
+                              cardBorderRadius: parseInt(e.target.value),
+                            })
+                          }
+                          className="w-full accent-primary h-2 rounded-full"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Shadow */}
+                    <div className="bg-card border border-border rounded-2xl p-6">
+                      <h3 className="text-lg font-semibold text-foreground mb-4">
+                        Shadow
+                      </h3>
+                      <div className="flex flex-wrap gap-3">
+                        {SHADOW_OPTIONS.map((shadow) => (
+                          <button
+                            key={shadow.id}
+                            onClick={() =>
+                              setLocalLayout({
+                                ...localLayout,
+                                cardShadow: shadow.id,
+                              })
+                            }
+                            className={`px-6 py-3 rounded-xl text-sm font-medium transition-all ${
+                              localLayout.cardShadow === shadow.id
+                                ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/25'
+                                : 'bg-background-secondary text-foreground-muted hover:text-foreground'
+                            }`}
+                          >
+                            {shadow.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Save Button */}
+                    <motion.button
                       onClick={() => layoutMutation.mutate(localLayout)}
                       disabled={layoutMutation.isPending}
-                      className="w-full flex items-center justify-center gap-2 py-3 rounded-lg font-medium"
-                      style={{
-                        background: theme.colors.primary,
-                        color: '#fff',
-                      }}
+                      className="w-full py-4 rounded-2xl bg-gradient-to-r from-primary to-accent text-white font-semibold flex items-center justify-center gap-3 shadow-lg shadow-primary/25"
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.99 }}
                     >
                       {layoutMutation.isPending ? (
-                        <Loader2 size={18} className="animate-spin" />
+                        <Loader2 size={20} className="animate-spin" />
                       ) : (
-                        <Save size={18} />
+                        <Save size={20} />
                       )}
-                      Save Layout
-                    </button>
-                  </motion.div>
+                      {t('common.save')}
+                    </motion.button>
+                  </div>
                 )}
 
-                {activeTab === 'animations' && isCreator && (
-                  <motion.div
-                    key="animations"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    className="space-y-6"
-                  >
-                    <div className="flex items-center justify-between">
-                      <label
-                        className="text-sm font-medium"
-                        style={{ color: theme.colors.foreground }}
-                      >
-                        Enable Animations
-                      </label>
-                      <button
-                        onClick={() =>
-                          setLocalAnimated({
-                            ...localAnimated,
-                            enabled: !localAnimated.enabled,
-                          })
-                        }
-                        className="w-12 h-6 rounded-full transition-all relative"
-                        style={{
-                          background: localAnimated.enabled
-                            ? theme.colors.primary
-                            : theme.colors.backgroundSecondary,
-                        }}
-                      >
-                        <div
-                          className="absolute top-1 w-4 h-4 rounded-full bg-white transition-all"
-                          style={{
-                            left: localAnimated.enabled ? '26px' : '4px',
-                          }}
-                        />
-                      </button>
-                    </div>
-                    {localAnimated.enabled && (
-                      <>
+                {/* Animations Tab */}
+                {activeTab === 'animations' &&
+                  (isCreator ? (
+                    <div className="space-y-8">
+                      {/* Enable Toggle */}
+                      <div className="bg-card border border-border rounded-2xl p-6 flex items-center justify-between">
                         <div>
-                          <label
-                            className="text-sm font-medium mb-3 block"
-                            style={{ color: theme.colors.foreground }}
-                          >
-                            Avatar Animation
-                          </label>
-                          <div className="grid grid-cols-3 gap-2">
-                            {AVATAR_ANIMATIONS.map((opt) => (
-                              <button
-                                key={opt.value}
-                                onClick={() =>
-                                  setLocalAnimated({
-                                    ...localAnimated,
-                                    avatarAnimation: opt.value,
-                                  })
-                                }
-                                className="px-3 py-2 rounded-lg text-xs font-medium transition-all"
-                                style={{
-                                  background:
-                                    localAnimated.avatarAnimation === opt.value
-                                      ? theme.colors.primary
-                                      : theme.colors.backgroundSecondary,
-                                  color:
-                                    localAnimated.avatarAnimation === opt.value
-                                      ? '#fff'
-                                      : theme.colors.foreground,
-                                }}
-                              >
-                                {opt.label}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                        <div>
-                          <label
-                            className="text-sm font-medium mb-3 block"
-                            style={{ color: theme.colors.foreground }}
-                          >
-                            Banner Animation
-                          </label>
-                          <div className="grid grid-cols-2 gap-2">
-                            {BANNER_ANIMATIONS.map((opt) => (
-                              <button
-                                key={opt.value}
-                                onClick={() =>
-                                  setLocalAnimated({
-                                    ...localAnimated,
-                                    bannerAnimation: opt.value,
-                                  })
-                                }
-                                className="px-3 py-2 rounded-lg text-xs font-medium transition-all"
-                                style={{
-                                  background:
-                                    localAnimated.bannerAnimation === opt.value
-                                      ? theme.colors.primary
-                                      : theme.colors.backgroundSecondary,
-                                  color:
-                                    localAnimated.bannerAnimation === opt.value
-                                      ? '#fff'
-                                      : theme.colors.foreground,
-                                }}
-                              >
-                                {opt.label}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                        <div>
-                          <label
-                            className="text-sm font-medium mb-3 block"
-                            style={{ color: theme.colors.foreground }}
-                          >
-                            Link Hover Effect
-                          </label>
-                          <div className="grid grid-cols-3 gap-2">
-                            {LINK_HOVER_EFFECTS.map((opt) => (
-                              <button
-                                key={opt.value}
-                                onClick={() =>
-                                  setLocalAnimated({
-                                    ...localAnimated,
-                                    linkHoverEffect: opt.value,
-                                  })
-                                }
-                                className="px-3 py-2 rounded-lg text-xs font-medium transition-all"
-                                style={{
-                                  background:
-                                    localAnimated.linkHoverEffect === opt.value
-                                      ? theme.colors.primary
-                                      : theme.colors.backgroundSecondary,
-                                  color:
-                                    localAnimated.linkHoverEffect === opt.value
-                                      ? '#fff'
-                                      : theme.colors.foreground,
-                                }}
-                              >
-                                {opt.label}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                        <div>
-                          <label
-                            className="text-sm font-medium mb-3 block"
-                            style={{ color: theme.colors.foreground }}
-                          >
-                            Page Transition
-                          </label>
-                          <div className="grid grid-cols-4 gap-2">
-                            {PAGE_TRANSITIONS.map((opt) => (
-                              <button
-                                key={opt.value}
-                                onClick={() =>
-                                  setLocalAnimated({
-                                    ...localAnimated,
-                                    pageTransition: opt.value,
-                                  })
-                                }
-                                className="px-3 py-2 rounded-lg text-xs font-medium transition-all"
-                                style={{
-                                  background:
-                                    localAnimated.pageTransition === opt.value
-                                      ? theme.colors.primary
-                                      : theme.colors.backgroundSecondary,
-                                  color:
-                                    localAnimated.pageTransition === opt.value
-                                      ? '#fff'
-                                      : theme.colors.foreground,
-                                }}
-                              >
-                                {opt.label}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      </>
-                    )}
-                    <button
-                      onClick={() => animatedMutation.mutate(localAnimated)}
-                      disabled={animatedMutation.isPending}
-                      className="w-full flex items-center justify-center gap-2 py-3 rounded-lg font-medium"
-                      style={{
-                        background: theme.colors.primary,
-                        color: '#fff',
-                      }}
-                    >
-                      {animatedMutation.isPending ? (
-                        <Loader2 size={18} className="animate-spin" />
-                      ) : (
-                        <Save size={18} />
-                      )}
-                      Save Animations
-                    </button>
-                  </motion.div>
-                )}
-
-                {activeTab === 'fonts' && isCreator && (
-                  <motion.div
-                    key="fonts"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    className="space-y-6"
-                  >
-                    <div>
-                      <div className="flex items-center justify-between mb-4">
-                        <h3
-                          className="text-lg font-semibold"
-                          style={{ color: theme.colors.foreground }}
-                        >
-                          Preset Fonts
-                        </h3>
-                        <select
-                          value={fontCategory}
-                          onChange={(e) => setFontCategory(e.target.value)}
-                          className="px-3 py-1.5 rounded-lg text-sm"
-                          style={{
-                            background: theme.colors.backgroundSecondary,
-                            color: theme.colors.foreground,
-                            border: `1px solid ${theme.colors.border}`,
-                          }}
-                        >
-                          <option value="all">All</option>
-                          <option value="sans-serif">Sans Serif</option>
-                          <option value="serif">Serif</option>
-                          <option value="mono">Monospace</option>
-                          <option value="display">Display</option>
-                        </select>
-                      </div>
-                      {/* Load all preset fonts for live preview */}
-                      {filteredFonts.map((font) => (
-                        <link
-                          key={font.name}
-                          href={font.url}
-                          rel="stylesheet"
-                        />
-                      ))}
-                      <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto">
-                        {filteredFonts.map((font) => (
-                          <button
-                            key={font.name}
-                            onClick={() => {
-                              setNewFontName(font.name)
-                              setNewFontUrl(font.url)
-                              setPreviewFont(font.name)
-                            }}
-                            onMouseEnter={() => setPreviewFont(font.name)}
-                            className="px-3 py-3 rounded-lg transition-all text-left group"
-                            style={{
-                              background:
-                                newFontName === font.name
-                                  ? theme.colors.primary
-                                  : theme.colors.backgroundSecondary,
-                              color:
-                                newFontName === font.name
-                                  ? '#fff'
-                                  : theme.colors.foreground,
-                            }}
-                          >
-                            <span
-                              className="block text-base truncate"
-                              style={{
-                                fontFamily: `'${font.name}', ${font.category}`,
-                              }}
-                            >
-                              {font.name}
-                            </span>
-                            <span
-                              className="block text-xs mt-1 opacity-60"
-                              style={{
-                                fontFamily: `'${font.name}', ${font.category}`,
-                              }}
-                            >
-                              Aa Bb Cc 123
-                            </span>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                    <div
-                      className="space-y-3 pt-4 border-t"
-                      style={{ borderColor: theme.colors.border }}
-                    >
-                      <h3
-                        className="text-sm font-semibold"
-                        style={{ color: theme.colors.foreground }}
-                      >
-                        Add Custom Font
-                      </h3>
-                      <input
-                        type="text"
-                        value={newFontName}
-                        onChange={(e) => setNewFontName(e.target.value)}
-                        placeholder="Font Name"
-                        className="w-full px-4 py-2.5 rounded-lg text-sm"
-                        style={{
-                          background: theme.colors.backgroundSecondary,
-                          color: theme.colors.foreground,
-                          border: `1px solid ${theme.colors.border}`,
-                        }}
-                      />
-                      <input
-                        type="text"
-                        value={newFontUrl}
-                        onChange={(e) => setNewFontUrl(e.target.value)}
-                        placeholder="Google Fonts URL"
-                        className="w-full px-4 py-2.5 rounded-lg text-sm"
-                        style={{
-                          background: theme.colors.backgroundSecondary,
-                          color: theme.colors.foreground,
-                          border: `1px solid ${theme.colors.border}`,
-                        }}
-                      />
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => setNewFontType('display')}
-                          className="flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-all"
-                          style={{
-                            background:
-                              newFontType === 'display'
-                                ? theme.colors.primary
-                                : theme.colors.backgroundSecondary,
-                            color:
-                              newFontType === 'display'
-                                ? '#fff'
-                                : theme.colors.foreground,
-                          }}
-                        >
-                          Display
-                        </button>
-                        <button
-                          onClick={() => setNewFontType('body')}
-                          className="flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-all"
-                          style={{
-                            background:
-                              newFontType === 'body'
-                                ? theme.colors.primary
-                                : theme.colors.backgroundSecondary,
-                            color:
-                              newFontType === 'body'
-                                ? '#fff'
-                                : theme.colors.foreground,
-                          }}
-                        >
-                          Body
-                        </button>
-                      </div>
-                      <button
-                        onClick={() =>
-                          fontMutation.mutate({
-                            name: newFontName,
-                            url: newFontUrl,
-                            type: newFontType,
-                          })
-                        }
-                        disabled={
-                          !newFontName || !newFontUrl || fontMutation.isPending
-                        }
-                        className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg font-medium transition-all disabled:opacity-50"
-                        style={{
-                          background: theme.colors.primary,
-                          color: '#fff',
-                        }}
-                      >
-                        {fontMutation.isPending ? (
-                          <Loader2 size={16} className="animate-spin" />
-                        ) : (
-                          <Plus size={16} />
-                        )}
-                        Add Font
-                      </button>
-                    </div>
-                    {creatorSettings?.customFonts &&
-                      creatorSettings.customFonts.length > 0 && (
-                        <div
-                          className="pt-4 border-t"
-                          style={{ borderColor: theme.colors.border }}
-                        >
-                          <h3
-                            className="text-sm font-semibold mb-3"
-                            style={{ color: theme.colors.foreground }}
-                          >
-                            Your Fonts
+                          <h3 className="font-semibold text-foreground">
+                            Enable Animations
                           </h3>
-                          <div className="space-y-2">
-                            {creatorSettings.customFonts.map(
+                          <p className="text-sm text-foreground-muted">
+                            Add motion effects to your profile
+                          </p>
+                        </div>
+                        <button
+                          onClick={() =>
+                            setLocalAnimated({
+                              ...localAnimated,
+                              enabled: !localAnimated.enabled,
+                            })
+                          }
+                          className={`w-14 h-8 rounded-full transition-colors relative ${
+                            localAnimated.enabled ? 'bg-primary' : 'bg-border'
+                          }`}
+                        >
+                          <div
+                            className={`w-6 h-6 rounded-full bg-white shadow-lg transition-transform absolute top-1 ${
+                              localAnimated.enabled
+                                ? 'translate-x-7'
+                                : 'translate-x-1'
+                            }`}
+                          />
+                        </button>
+                      </div>
+
+                      {localAnimated.enabled && (
+                        <>
+                          {/* Avatar Animation */}
+                          <div className="bg-card border border-border rounded-2xl p-6">
+                            <h3 className="text-lg font-semibold text-foreground mb-4">
+                              Avatar Animation
+                            </h3>
+                            <div className="grid grid-cols-6 gap-3">
+                              {AVATAR_ANIMATIONS.map((anim) => (
+                                <motion.button
+                                  key={anim.id}
+                                  onClick={() =>
+                                    setLocalAnimated({
+                                      ...localAnimated,
+                                      avatarAnimation: anim.id,
+                                    })
+                                  }
+                                  className={`p-4 rounded-xl border-2 flex flex-col items-center gap-2 transition-all ${
+                                    localAnimated.avatarAnimation === anim.id
+                                      ? 'border-primary bg-primary/10'
+                                      : 'border-border bg-background-secondary hover:border-primary/50'
+                                  }`}
+                                  whileHover={{ scale: 1.05 }}
+                                  whileTap={{ scale: 0.95 }}
+                                >
+                                  <anim.icon
+                                    size={20}
+                                    className={
+                                      localAnimated.avatarAnimation === anim.id
+                                        ? 'text-primary'
+                                        : 'text-foreground-muted'
+                                    }
+                                  />
+                                  <span className="text-xs font-medium">
+                                    {anim.label}
+                                  </span>
+                                </motion.button>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Link Hover Effect */}
+                          <div className="bg-card border border-border rounded-2xl p-6">
+                            <h3 className="text-lg font-semibold text-foreground mb-4">
+                              Link Hover Effect
+                            </h3>
+                            <div className="flex flex-wrap gap-3">
+                              {LINK_HOVER_EFFECTS.map((effect) => (
+                                <button
+                                  key={effect.id}
+                                  onClick={() =>
+                                    setLocalAnimated({
+                                      ...localAnimated,
+                                      linkHoverEffect: effect.id,
+                                    })
+                                  }
+                                  className={`px-6 py-3 rounded-xl text-sm font-medium transition-all ${
+                                    localAnimated.linkHoverEffect === effect.id
+                                      ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/25'
+                                      : 'bg-background-secondary text-foreground-muted hover:text-foreground'
+                                  }`}
+                                >
+                                  {effect.label}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        </>
+                      )}
+
+                      {/* Save Button */}
+                      <motion.button
+                        onClick={() => animMutation.mutate(localAnimated)}
+                        disabled={animMutation.isPending}
+                        className="w-full py-4 rounded-2xl bg-gradient-to-r from-primary to-accent text-white font-semibold flex items-center justify-center gap-3 shadow-lg shadow-primary/25"
+                        whileHover={{ scale: 1.01 }}
+                        whileTap={{ scale: 0.99 }}
+                      >
+                        {animMutation.isPending ? (
+                          <Loader2 size={20} className="animate-spin" />
+                        ) : (
+                          <Save size={20} />
+                        )}
+                        {t('common.save')}
+                      </motion.button>
+                    </div>
+                  ) : (
+                    <div className="bg-card border border-border rounded-2xl p-12 text-center">
+                      <Lock
+                        size={48}
+                        className="mx-auto mb-4 text-foreground-muted"
+                      />
+                      <h3 className="text-xl font-semibold text-foreground mb-2">
+                        {t('playground.creatorOnly')}
+                      </h3>
+                      <p className="text-foreground-muted mb-6">
+                        {t('playground.upgradeToCreator')}
+                      </p>
+                      <Link
+                        to="/pricing"
+                        className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-primary to-accent text-white font-semibold"
+                      >
+                        <Crown size={20} />
+                        {t('playground.upgradePlan')}
+                      </Link>
+                    </div>
+                  ))}
+
+                {/* Fonts Tab */}
+                {activeTab === 'fonts' &&
+                  (isCreator ? (
+                    <div className="space-y-8">
+                      {/* Current Fonts */}
+                      {(creatorSettings?.customFonts?.length ?? 0) > 0 && (
+                        <div className="bg-card border border-border rounded-2xl p-6">
+                          <h3 className="text-lg font-semibold text-foreground mb-4">
+                            Current Fonts
+                          </h3>
+                          <div className="space-y-3">
+                            {creatorSettings?.customFonts?.map(
                               (font: CustomFont) => (
                                 <div
                                   key={font.id}
-                                  className="flex items-center justify-between px-3 py-2 rounded-lg"
-                                  style={{
-                                    background:
-                                      theme.colors.backgroundSecondary,
-                                  }}
+                                  className="flex items-center justify-between p-4 rounded-xl bg-background-secondary border border-border"
                                 >
                                   <div>
-                                    <p
-                                      className="text-sm font-medium"
-                                      style={{ color: theme.colors.foreground }}
-                                    >
+                                    <span className="font-medium text-foreground">
                                       {font.name}
-                                    </p>
-                                    <p
-                                      className="text-xs"
-                                      style={{
-                                        color: theme.colors.foregroundMuted,
-                                      }}
-                                    >
-                                      {font.type}
-                                    </p>
+                                    </span>
+                                    <span className="text-xs text-foreground-muted ml-2">
+                                      ({font.type})
+                                    </span>
                                   </div>
                                   <button
                                     onClick={() =>
                                       removeFontMutation.mutate(font.id)
                                     }
-                                    className="p-1.5 rounded-lg transition-colors hover:bg-red-500/20"
-                                    style={{ color: '#ef4444' }}
+                                    className="p-2 text-red-500 hover:bg-red-500/10 rounded-lg transition-colors"
                                   >
-                                    <Trash2 size={14} />
+                                    <Trash2 size={16} />
                                   </button>
                                 </div>
                               ),
@@ -1394,692 +1286,288 @@ function PlaygroundPage() {
                           </div>
                         </div>
                       )}
-                  </motion.div>
-                )}
 
-                {activeTab === 'css' && isCreator && (
-                  <motion.div
-                    key="css"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    className="space-y-4"
-                  >
-                    <div>
-                      <h3
-                        className="text-lg font-semibold mb-2"
-                        style={{ color: theme.colors.foreground }}
-                      >
-                        Custom CSS
-                      </h3>
-                      <p
-                        className="text-xs mb-4"
-                        style={{ color: theme.colors.foregroundMuted }}
-                      >
-                        Add custom styles. Some patterns are restricted for
-                        security.
-                      </p>
-                      <textarea
-                        value={cssInput}
-                        onChange={(e) => setCssInput(e.target.value)}
-                        placeholder=".my-class { color: red; }"
-                        rows={12}
-                        className="w-full px-4 py-3 rounded-lg text-sm font-mono resize-none"
-                        style={{
-                          background: theme.colors.backgroundSecondary,
-                          color: theme.colors.foreground,
-                          border: `1px solid ${theme.colors.border}`,
-                        }}
-                      />
-                      {cssErrors.length > 0 && (
-                        <div className="mt-2 p-3 rounded-lg bg-red-500/10 border border-red-500/30">
-                          <p className="text-xs font-medium text-red-400 mb-1">
-                            Warnings:
-                          </p>
-                          {cssErrors.map((err, i) => (
-                            <p key={i} className="text-xs text-red-300">
-                              {err}
-                            </p>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                    <button
-                      onClick={() => cssMutation.mutate(cssInput)}
-                      disabled={cssMutation.isPending}
-                      className="w-full flex items-center justify-center gap-2 py-3 rounded-lg font-medium"
-                      style={{
-                        background: theme.colors.primary,
-                        color: '#fff',
-                      }}
-                    >
-                      {cssMutation.isPending ? (
-                        <Loader2 size={18} className="animate-spin" />
-                      ) : (
-                        <Save size={18} />
-                      )}
-                      Save CSS
-                    </button>
-                  </motion.div>
-                )}
+                      {/* Font Category Filter */}
+                      <div className="flex gap-2 flex-wrap">
+                        {[
+                          'all',
+                          'sans',
+                          'display',
+                          'serif',
+                          'handwriting',
+                          'mono',
+                        ].map((cat) => (
+                          <button
+                            key={cat}
+                            onClick={() => setFontCategory(cat)}
+                            className={`px-4 py-2 rounded-xl text-sm font-medium transition-all capitalize ${
+                              fontCategory === cat
+                                ? 'bg-primary text-primary-foreground'
+                                : 'bg-background-secondary text-foreground-muted hover:text-foreground'
+                            }`}
+                          >
+                            {cat}
+                          </button>
+                        ))}
+                      </div>
 
-                {activeTab === 'opengraph' && isCreator && (
-                  <motion.div
-                    key="opengraph"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    className="space-y-6"
-                  >
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h3
-                          className="text-lg font-semibold"
-                          style={{ color: theme.colors.foreground }}
-                        >
-                          Custom Open Graph
+                      {/* Preset Fonts */}
+                      <div className="grid grid-cols-4 gap-3">
+                        {filteredFonts.map((font) => (
+                          <motion.button
+                            key={font.name}
+                            onClick={() => {
+                              setNewFontName(font.name)
+                              setNewFontUrl(font.url)
+                            }}
+                            className={`p-4 rounded-xl border-2 text-left transition-all ${
+                              newFontName === font.name
+                                ? 'border-primary bg-primary/10'
+                                : 'border-border bg-card hover:border-primary/50'
+                            }`}
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                          >
+                            <div className="font-medium text-sm text-foreground">
+                              {font.name}
+                            </div>
+                            <div className="text-xs text-foreground-muted capitalize">
+                              {font.category}
+                            </div>
+                          </motion.button>
+                        ))}
+                      </div>
+
+                      {/* Add Font Form */}
+                      <div className="bg-card border border-border rounded-2xl p-6 space-y-4">
+                        <h3 className="font-semibold text-foreground">
+                          Add Font
                         </h3>
-                        <p
-                          className="text-xs"
-                          style={{ color: theme.colors.foregroundMuted }}
-                        >
-                          Customize how your page appears when shared
-                        </p>
-                      </div>
-                      <button
-                        onClick={() =>
-                          setLocalOG({
-                            ...localOG,
-                            useCustom: !localOG.useCustom,
-                          })
-                        }
-                        className="w-12 h-6 rounded-full transition-all relative"
-                        style={{
-                          background: localOG.useCustom
-                            ? theme.colors.primary
-                            : theme.colors.backgroundSecondary,
-                        }}
-                      >
-                        <div
-                          className="absolute top-1 w-4 h-4 rounded-full bg-white transition-all"
-                          style={{ left: localOG.useCustom ? '26px' : '4px' }}
+                        <div className="grid grid-cols-2 gap-4">
+                          <input
+                            type="text"
+                            value={newFontName}
+                            onChange={(e) => setNewFontName(e.target.value)}
+                            placeholder="Font name"
+                            className="px-4 py-3 rounded-xl bg-background-secondary border border-border text-foreground"
+                          />
+                          <select
+                            value={newFontType}
+                            onChange={(e) =>
+                              setNewFontType(
+                                e.target.value as 'display' | 'body',
+                              )
+                            }
+                            className="px-4 py-3 rounded-xl bg-background-secondary border border-border text-foreground"
+                          >
+                            <option value="display">Display</option>
+                            <option value="body">Body</option>
+                          </select>
+                        </div>
+                        <input
+                          type="url"
+                          value={newFontUrl}
+                          onChange={(e) => setNewFontUrl(e.target.value)}
+                          placeholder="Font URL (Google Fonts)"
+                          className="w-full px-4 py-3 rounded-xl bg-background-secondary border border-border text-foreground"
                         />
-                      </button>
-                    </div>
-                    {localOG.useCustom && (
-                      <div className="space-y-4">
-                        <div>
-                          <label
-                            className="text-sm font-medium mb-2 block"
-                            style={{ color: theme.colors.foreground }}
-                          >
-                            Title
-                          </label>
-                          <input
-                            type="text"
-                            value={localOG.title || ''}
-                            onChange={(e) =>
-                              setLocalOG({ ...localOG, title: e.target.value })
-                            }
-                            placeholder="My Bio Page"
-                            className="w-full px-4 py-2.5 rounded-lg text-sm"
-                            style={{
-                              background: theme.colors.backgroundSecondary,
-                              color: theme.colors.foreground,
-                              border: `1px solid ${theme.colors.border}`,
-                            }}
-                          />
-                        </div>
-                        <div>
-                          <label
-                            className="text-sm font-medium mb-2 block"
-                            style={{ color: theme.colors.foreground }}
-                          >
-                            Description
-                          </label>
-                          <textarea
-                            value={localOG.description || ''}
-                            onChange={(e) =>
-                              setLocalOG({
-                                ...localOG,
-                                description: e.target.value,
-                              })
-                            }
-                            placeholder="Check out my links..."
-                            rows={3}
-                            className="w-full px-4 py-2.5 rounded-lg text-sm resize-none"
-                            style={{
-                              background: theme.colors.backgroundSecondary,
-                              color: theme.colors.foreground,
-                              border: `1px solid ${theme.colors.border}`,
-                            }}
-                          />
-                        </div>
-                        <div>
-                          <label
-                            className="text-sm font-medium mb-2 block"
-                            style={{ color: theme.colors.foreground }}
-                          >
-                            Image URL
-                          </label>
-                          <input
-                            type="text"
-                            value={localOG.image || ''}
-                            onChange={(e) =>
-                              setLocalOG({ ...localOG, image: e.target.value })
-                            }
-                            placeholder="https://..."
-                            className="w-full px-4 py-2.5 rounded-lg text-sm"
-                            style={{
-                              background: theme.colors.backgroundSecondary,
-                              color: theme.colors.foreground,
-                              border: `1px solid ${theme.colors.border}`,
-                            }}
-                          />
-                        </div>
+                        <motion.button
+                          onClick={() =>
+                            fontMutation.mutate({
+                              name: newFontName,
+                              url: newFontUrl,
+                              type: newFontType,
+                            })
+                          }
+                          disabled={
+                            !newFontName ||
+                            !newFontUrl ||
+                            fontMutation.isPending
+                          }
+                          className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-medium flex items-center justify-center gap-2 disabled:opacity-50"
+                          whileTap={{ scale: 0.99 }}
+                        >
+                          {fontMutation.isPending ? (
+                            <Loader2 size={18} className="animate-spin" />
+                          ) : (
+                            <Plus size={18} />
+                          )}
+                          Add Font
+                        </motion.button>
                       </div>
-                    )}
-                    <button
-                      onClick={() => ogMutation.mutate(localOG)}
-                      disabled={ogMutation.isPending}
-                      className="w-full flex items-center justify-center gap-2 py-3 rounded-lg font-medium"
-                      style={{
-                        background: theme.colors.primary,
-                        color: '#fff',
-                      }}
-                    >
-                      {ogMutation.isPending ? (
-                        <Loader2 size={18} className="animate-spin" />
-                      ) : (
-                        <Save size={18} />
-                      )}
-                      Save Open Graph
-                    </button>
-                  </motion.div>
-                )}
-
-                {activeTab === 'backups' && (
-                  <motion.div
-                    key="backups"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    className="space-y-6"
-                  >
-                    <div>
-                      <h3
-                        className="text-lg font-semibold mb-4"
-                        style={{ color: theme.colors.foreground }}
+                    </div>
+                  ) : (
+                    <div className="bg-card border border-border rounded-2xl p-12 text-center">
+                      <Lock
+                        size={48}
+                        className="mx-auto mb-4 text-foreground-muted"
+                      />
+                      <h3 className="text-xl font-semibold text-foreground mb-2">
+                        {t('playground.creatorOnly')}
+                      </h3>
+                      <p className="text-foreground-muted mb-6">
+                        {t('playground.upgradeToCreator')}
+                      </p>
+                      <Link
+                        to="/pricing"
+                        className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-primary to-accent text-white font-semibold"
                       >
+                        <Crown size={20} />
+                        {t('playground.upgradePlan')}
+                      </Link>
+                    </div>
+                  ))}
+
+                {/* CSS Tab */}
+                {activeTab === 'css' &&
+                  (isCreator ? (
+                    <div className="space-y-6">
+                      <div className="bg-card border border-border rounded-2xl p-6">
+                        <div className="flex items-center justify-between mb-4">
+                          <h3 className="font-semibold text-foreground">
+                            Custom CSS
+                          </h3>
+                          <span className="text-xs text-foreground-muted font-mono">
+                            {cssInput.length}/10000
+                          </span>
+                        </div>
+                        <textarea
+                          value={cssInput}
+                          onChange={(e) => setCssInput(e.target.value)}
+                          placeholder="/* Your custom CSS */&#10;.profile-card {&#10;  background: rgba(0, 0, 0, 0.5);&#10;}"
+                          className="w-full h-80 px-4 py-3 rounded-xl bg-background-secondary border border-border text-foreground font-mono text-sm resize-none"
+                          maxLength={10000}
+                        />
+                      </div>
+
+                      <motion.button
+                        onClick={() => cssMutation.mutate(cssInput)}
+                        disabled={cssMutation.isPending}
+                        className="w-full py-4 rounded-2xl bg-gradient-to-r from-primary to-accent text-white font-semibold flex items-center justify-center gap-3 shadow-lg shadow-primary/25"
+                        whileHover={{ scale: 1.01 }}
+                        whileTap={{ scale: 0.99 }}
+                      >
+                        {cssMutation.isPending ? (
+                          <Loader2 size={20} className="animate-spin" />
+                        ) : (
+                          <Save size={20} />
+                        )}
+                        {t('common.save')}
+                      </motion.button>
+                    </div>
+                  ) : (
+                    <div className="bg-card border border-border rounded-2xl p-12 text-center">
+                      <Lock
+                        size={48}
+                        className="mx-auto mb-4 text-foreground-muted"
+                      />
+                      <h3 className="text-xl font-semibold text-foreground mb-2">
+                        {t('playground.creatorOnly')}
+                      </h3>
+                      <p className="text-foreground-muted mb-6">
+                        {t('playground.upgradeToCreator')}
+                      </p>
+                      <Link
+                        to="/pricing"
+                        className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-primary to-accent text-white font-semibold"
+                      >
+                        <Crown size={20} />
+                        {t('playground.upgradePlan')}
+                      </Link>
+                    </div>
+                  ))}
+
+                {/* Backups Tab */}
+                {activeTab === 'backups' && (
+                  <div className="space-y-8">
+                    {/* Create Backup */}
+                    <div className="bg-card border border-border rounded-2xl p-6">
+                      <h3 className="font-semibold text-foreground mb-4">
                         Create Backup
                       </h3>
-                      <div className="flex gap-2">
+                      <div className="flex gap-4">
                         <input
                           type="text"
                           value={backupName}
                           onChange={(e) => setBackupName(e.target.value)}
-                          placeholder="Backup name..."
-                          className="flex-1 px-4 py-2.5 rounded-lg text-sm"
-                          style={{
-                            background: theme.colors.backgroundSecondary,
-                            color: theme.colors.foreground,
-                            border: `1px solid ${theme.colors.border}`,
-                          }}
+                          placeholder="Backup name"
+                          className="flex-1 px-4 py-3 rounded-xl bg-background-secondary border border-border text-foreground"
                         />
-                        <button
+                        <motion.button
                           onClick={() => backupMutation.mutate(backupName)}
                           disabled={!backupName || backupMutation.isPending}
-                          className="px-4 py-2.5 rounded-lg font-medium transition-all disabled:opacity-50"
-                          style={{
-                            background: theme.colors.primary,
-                            color: '#fff',
-                          }}
+                          className="px-6 py-3 rounded-xl bg-primary text-primary-foreground font-medium flex items-center gap-2 disabled:opacity-50"
+                          whileTap={{ scale: 0.99 }}
                         >
                           {backupMutation.isPending ? (
                             <Loader2 size={18} className="animate-spin" />
                           ) : (
                             <Plus size={18} />
                           )}
-                        </button>
+                          Create
+                        </motion.button>
                       </div>
                     </div>
-                    {settings?.profileBackups &&
-                      settings.profileBackups.length > 0 && (
-                        <div>
-                          <h3
-                            className="text-sm font-semibold mb-3"
-                            style={{ color: theme.colors.foreground }}
-                          >
-                            Your Backups
-                          </h3>
-                          <div className="space-y-2">
-                            {settings.profileBackups.map(
-                              (backup: {
-                                id: string
-                                name: string
-                                createdAt: string
-                              }) => (
-                                <div
-                                  key={backup.id}
-                                  className="flex items-center justify-between px-4 py-3 rounded-lg"
-                                  style={{
-                                    background:
-                                      theme.colors.backgroundSecondary,
-                                  }}
-                                >
-                                  <div>
-                                    <p
-                                      className="text-sm font-medium"
-                                      style={{ color: theme.colors.foreground }}
-                                    >
-                                      {backup.name}
-                                    </p>
-                                    <p
-                                      className="text-xs"
-                                      style={{
-                                        color: theme.colors.foregroundMuted,
-                                      }}
-                                    >
-                                      {new Date(
-                                        backup.createdAt,
-                                      ).toLocaleDateString()}
-                                    </p>
-                                  </div>
-                                  <div className="flex gap-2">
-                                    <button
-                                      onClick={() =>
-                                        restoreMutation.mutate(backup.id)
-                                      }
-                                      disabled={restoreMutation.isPending}
-                                      className="px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
-                                      style={{
-                                        background: theme.colors.primary,
-                                        color: '#fff',
-                                      }}
-                                    >
-                                      Restore
-                                    </button>
-                                    <button
-                                      onClick={() =>
-                                        deleteMutation.mutate(backup.id)
-                                      }
-                                      disabled={deleteMutation.isPending}
-                                      className="p-1.5 rounded-lg transition-colors hover:bg-red-500/20"
-                                      style={{ color: '#ef4444' }}
-                                    >
-                                      <Trash2 size={14} />
-                                    </button>
-                                  </div>
+
+                    {/* Backup List */}
+                    {(settings?.profileBackups?.length ?? 0) > 0 && (
+                      <div className="bg-card border border-border rounded-2xl p-6">
+                        <h3 className="font-semibold text-foreground mb-4">
+                          Your Backups
+                        </h3>
+                        <div className="space-y-3">
+                          {settings?.profileBackups?.map(
+                            (backup: {
+                              id: string
+                              name: string
+                              createdAt: string
+                            }) => (
+                              <div
+                                key={backup.id}
+                                className="flex items-center justify-between p-4 rounded-xl bg-background-secondary border border-border"
+                              >
+                                <div>
+                                  <span className="font-medium text-foreground">
+                                    {backup.name}
+                                  </span>
+                                  <span className="text-xs text-foreground-muted ml-3">
+                                    {new Date(
+                                      backup.createdAt,
+                                    ).toLocaleDateString()}
+                                  </span>
                                 </div>
-                              ),
-                            )}
-                          </div>
+                                <div className="flex gap-2">
+                                  <button
+                                    onClick={() =>
+                                      restoreMutation.mutate(backup.id)
+                                    }
+                                    disabled={restoreMutation.isPending}
+                                    className="px-4 py-2 rounded-lg bg-primary/10 text-primary text-sm font-medium hover:bg-primary/20 transition-colors"
+                                  >
+                                    Restore
+                                  </button>
+                                  <button
+                                    onClick={() =>
+                                      deleteMutation.mutate(backup.id)
+                                    }
+                                    disabled={deleteMutation.isPending}
+                                    className="p-2 text-red-500 hover:bg-red-500/10 rounded-lg transition-colors"
+                                  >
+                                    <Trash2 size={16} />
+                                  </button>
+                                </div>
+                              </div>
+                            ),
+                          )}
                         </div>
-                      )}
-                  </motion.div>
-                )}
-
-                {!isCreator &&
-                  ['animations', 'fonts', 'css', 'opengraph'].includes(
-                    activeTab,
-                  ) && (
-                    <motion.div
-                      key="locked"
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      className="text-center py-12"
-                    >
-                      <div
-                        className="w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center"
-                        style={{ background: `${theme.colors.primary}20` }}
-                      >
-                        <Wand2
-                          size={32}
-                          style={{ color: theme.colors.primary }}
-                        />
-                      </div>
-                      <h2
-                        className="text-xl font-bold mb-2"
-                        style={{ color: theme.colors.foreground }}
-                      >
-                        Creator Feature
-                      </h2>
-                      <p
-                        className="text-sm mb-6 max-w-sm mx-auto"
-                        style={{ color: theme.colors.foregroundMuted }}
-                      >
-                        Unlock custom CSS, fonts, animations, and more with
-                        Creator tier.
-                      </p>
-                      <Link
-                        to="/profile"
-                        search={{ tab: 'subscription' }}
-                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg font-medium transition-all hover:scale-105"
-                        style={{
-                          background: theme.colors.primary,
-                          color: '#fff',
-                        }}
-                      >
-                        <Crown size={16} />
-                        Upgrade
-                      </Link>
-                    </motion.div>
-                  )}
-              </AnimatePresence>
-            </div>
-          </motion.div>
-
-          {/* Live Preview Panel */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="order-1 lg:order-2"
-          >
-            {/* Load preview font if selected */}
-            {previewFont && (
-              <link
-                href={PRESET_FONTS.find((f) => f.name === previewFont)?.url}
-                rel="stylesheet"
-              />
-            )}
-            {/* Load user's custom fonts for preview */}
-            {creatorSettings?.customFonts?.map((font: CustomFont) => (
-              <link key={font.id} href={font.url} rel="stylesheet" />
-            ))}
-
-            <div
-              className="sticky top-24 rounded-xl overflow-hidden"
-              style={{
-                background: theme.colors.card,
-                border: `1px solid ${theme.colors.border}`,
-              }}
-            >
-              <div
-                className="flex items-center justify-between px-4 py-3 border-b"
-                style={{ borderColor: theme.colors.border }}
-              >
-                <span
-                  className="text-sm font-medium"
-                  style={{ color: theme.colors.foreground }}
-                >
-                  Live Preview
-                </span>
-                <div className="flex items-center gap-1">
-                  {(
-                    [
-                      { id: 'desktop', icon: Monitor, label: 'Desktop' },
-                      { id: 'laptop', icon: Laptop, label: 'Laptop' },
-                      { id: 'tablet', icon: Tablet, label: 'Tablet' },
-                      { id: 'mobile', icon: Smartphone, label: 'Mobile' },
-                    ] as const
-                  ).map(({ id, icon: Icon, label }) => (
-                    <button
-                      key={id}
-                      onClick={() => setPreviewDevice(id)}
-                      title={label}
-                      className="p-1.5 rounded-md transition-all"
-                      style={{
-                        background:
-                          previewDevice === id
-                            ? theme.colors.primary
-                            : 'transparent',
-                        color:
-                          previewDevice === id
-                            ? '#fff'
-                            : theme.colors.foregroundMuted,
-                      }}
-                    >
-                      <Icon size={14} />
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div className="p-4 flex justify-center">
-                <div
-                  className="rounded-lg overflow-hidden transition-all duration-300"
-                  style={{
-                    ...getPreviewBg(),
-                    width:
-                      previewDevice === 'desktop'
-                        ? '100%'
-                        : previewDevice === 'laptop'
-                          ? '320px'
-                          : previewDevice === 'tablet'
-                            ? '280px'
-                            : '200px',
-                    height:
-                      previewDevice === 'desktop'
-                        ? '400px'
-                        : previewDevice === 'laptop'
-                          ? '450px'
-                          : previewDevice === 'tablet'
-                            ? '500px'
-                            : '420px',
-                    fontFamily:
-                      previewFont ||
-                      (
-                        creatorSettings?.customFonts?.[0] as
-                          | CustomFont
-                          | undefined
-                      )?.name ||
-                      'inherit',
-                  }}
-                >
-                  <div
-                    className="h-full flex flex-col items-center justify-start overflow-y-auto"
-                    style={{
-                      paddingLeft:
-                        previewDevice === 'desktop'
-                          ? '24px'
-                          : previewDevice === 'laptop'
-                            ? '20px'
-                            : '16px',
-                      paddingRight:
-                        previewDevice === 'desktop'
-                          ? '24px'
-                          : previewDevice === 'laptop'
-                            ? '20px'
-                            : '16px',
-                      paddingBottom:
-                        previewDevice === 'desktop'
-                          ? '24px'
-                          : previewDevice === 'laptop'
-                            ? '20px'
-                            : '16px',
-                      paddingTop: previewDevice === 'desktop' ? '32px' : '24px',
-                    }}
-                  >
-                    {/* Avatar with animation preview */}
-                    <motion.div
-                      className="rounded-full mb-3 flex items-center justify-center font-bold"
-                      style={{
-                        background: theme.colors.primary,
-                        color: '#fff',
-                        width:
-                          previewDevice === 'desktop'
-                            ? '80px'
-                            : previewDevice === 'laptop'
-                              ? '72px'
-                              : '64px',
-                        height:
-                          previewDevice === 'desktop'
-                            ? '80px'
-                            : previewDevice === 'laptop'
-                              ? '72px'
-                              : '64px',
-                        fontSize:
-                          previewDevice === 'desktop'
-                            ? '28px'
-                            : previewDevice === 'laptop'
-                              ? '24px'
-                              : '20px',
-                      }}
-                      animate={
-                        localAnimated.enabled &&
-                        localAnimated.avatarAnimation === 'pulse'
-                          ? { scale: [1, 1.05, 1] }
-                          : localAnimated.enabled &&
-                              localAnimated.avatarAnimation === 'bounce'
-                            ? { y: [0, -8, 0] }
-                            : localAnimated.enabled &&
-                                localAnimated.avatarAnimation === 'rotate'
-                              ? { rotate: [0, 5, -5, 0] }
-                              : localAnimated.enabled &&
-                                  localAnimated.avatarAnimation === 'shake'
-                                ? { x: [0, -3, 3, -3, 0] }
-                                : {}
-                      }
-                      transition={{
-                        duration: 2,
-                        repeat: Infinity,
-                        ease: 'easeInOut',
-                      }}
-                    >
-                      {currentUser?.name?.[0] || 'U'}
-                    </motion.div>
-
-                    {/* Name */}
-                    <p
-                      className="font-bold mb-0.5 text-center"
-                      style={{
-                        color: '#fff',
-                        fontSize:
-                          previewDevice === 'desktop'
-                            ? '18px'
-                            : previewDevice === 'laptop'
-                              ? '16px'
-                              : '14px',
-                      }}
-                    >
-                      {currentUser?.name || 'Username'}
-                    </p>
-
-                    {/* Username */}
-                    <p
-                      className="opacity-70 mb-4 text-center"
-                      style={{
-                        color: '#fff',
-                        fontSize: previewDevice === 'desktop' ? '14px' : '12px',
-                      }}
-                    >
-                      @{currentUser?.username}
-                    </p>
-
-                    {/* Links with layout settings and hover effects */}
-                    <div
-                      className="w-full flex flex-col"
-                      style={{ gap: `${localLayout.cardSpacing}px` }}
-                    >
-                      {['Portfolio', 'Twitter', 'GitHub'].map((link, i) => (
-                        <motion.div
-                          key={i}
-                          className="w-full text-center font-medium cursor-pointer"
-                          style={{
-                            background:
-                              localLayout.linkStyle === 'glass'
-                                ? 'rgba(255,255,255,0.15)'
-                                : localLayout.linkStyle === 'minimal'
-                                  ? 'transparent'
-                                  : localLayout.linkStyle === 'bold'
-                                    ? theme.colors.primary
-                                    : 'rgba(255,255,255,0.1)',
-                            borderRadius: `${localLayout.cardBorderRadius}px`,
-                            padding: `${localLayout.cardPadding}px`,
-                            color: '#fff',
-                            fontSize:
-                              previewDevice === 'desktop' ? '14px' : '12px',
-                            border:
-                              localLayout.linkStyle === 'minimal'
-                                ? '1px solid rgba(255,255,255,0.3)'
-                                : 'none',
-                            backdropFilter:
-                              localLayout.linkStyle === 'glass'
-                                ? 'blur(10px)'
-                                : 'none',
-                            boxShadow:
-                              localLayout.cardShadow === 'none'
-                                ? 'none'
-                                : localLayout.cardShadow === 'sm'
-                                  ? '0 1px 2px rgba(0,0,0,0.1)'
-                                  : localLayout.cardShadow === 'md'
-                                    ? '0 4px 6px rgba(0,0,0,0.1)'
-                                    : localLayout.cardShadow === 'lg'
-                                      ? '0 10px 15px rgba(0,0,0,0.1)'
-                                      : '0 20px 25px rgba(0,0,0,0.15)',
-                          }}
-                          whileHover={
-                            localAnimated.enabled &&
-                            localAnimated.linkHoverEffect === 'scale'
-                              ? { scale: 1.03 }
-                              : localAnimated.enabled &&
-                                  localAnimated.linkHoverEffect === 'glow'
-                                ? {
-                                    boxShadow: '0 0 20px rgba(255,255,255,0.3)',
-                                  }
-                                : localAnimated.enabled &&
-                                    localAnimated.linkHoverEffect === 'slide'
-                                  ? { x: 4 }
-                                  : localAnimated.enabled &&
-                                      localAnimated.linkHoverEffect === 'shake'
-                                    ? { x: [0, -2, 2, -2, 0] }
-                                    : {}
-                          }
-                          transition={{ duration: 0.2 }}
-                        >
-                          {link}
-                        </motion.div>
-                      ))}
-                    </div>
-
-                    {/* CSS Preview indicator */}
-                    {cssInput && (
-                      <div
-                        className="mt-4 px-2 py-1 rounded text-center"
-                        style={{
-                          background: 'rgba(255,255,255,0.1)',
-                          fontSize: '10px',
-                          color: 'rgba(255,255,255,0.6)',
-                        }}
-                      >
-                        + Custom CSS active
                       </div>
                     )}
                   </div>
-                </div>
-              </div>
-
-              {/* Preview info */}
-              <div
-                className="px-4 py-2 border-t flex items-center justify-between"
-                style={{ borderColor: theme.colors.border }}
-              >
-                <span
-                  className="text-xs"
-                  style={{ color: theme.colors.foregroundMuted }}
-                >
-                  {previewDevice === 'desktop'
-                    ? '1920×1080'
-                    : previewDevice === 'laptop'
-                      ? '1366×768'
-                      : previewDevice === 'tablet'
-                        ? '768×1024'
-                        : '375×812'}
-                </span>
-                <a
-                  href={`/${currentUser?.username}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-xs flex items-center gap-1 hover:underline"
-                  style={{ color: theme.colors.primary }}
-                >
-                  <ExternalLink size={12} />
-                  Open Live
-                </a>
-              </div>
-            </div>
-          </motion.div>
-        </div>
+                )}
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        </main>
       </div>
     </div>
   )

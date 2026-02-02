@@ -24,7 +24,7 @@ const createShortLinkSchema = z.object({
     .max(20)
     .regex(/^[a-zA-Z0-9_-]+$/)
     .optional(),
-  expiresAt: z.string().datetime().optional(),
+  expiresAt: z.iso.datetime().optional(),
 })
 
 const updateShortLinkSchema = z.object({

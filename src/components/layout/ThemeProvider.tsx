@@ -12,12 +12,14 @@ import {
   getThemeById,
   getDefaultTheme,
   type Theme,
+  type ThemeCategory,
 } from '@/lib/site-config'
 
 interface ThemeContextType {
   theme: Theme
   setTheme: (themeId: string) => void
   themes: Theme[]
+  themesByCategory: Record<ThemeCategory, Theme[]>
   isTransitioning: boolean
   mounted: boolean
 }
@@ -25,12 +27,24 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
 const STORAGE_KEY = 'eziox-theme'
 const TRANSITION_MS = 250
+const GOOGLE_FONTS_PRECONNECT = 'https://fonts.googleapis.com'
+const GOOGLE_FONTS_STATIC = 'https://fonts.gstatic.com'
 
 function hexToRgb(hex: string): string {
   if (!hex.startsWith('#')) return '99, 102, 241'
   const h = hex.slice(1)
   return `${parseInt(h.slice(0, 2), 16)}, ${parseInt(h.slice(2, 4), 16)}, ${parseInt(h.slice(4, 6), 16)}`
 }
+
+// Group themes by category for easier access
+const themesByCategory = siteConfig.themes.reduce(
+  (acc, theme) => {
+    if (!acc[theme.category]) acc[theme.category] = []
+    acc[theme.category].push(theme)
+    return acc
+  },
+  {} as Record<ThemeCategory, Theme[]>,
+)
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<Theme>(getDefaultTheme())
@@ -59,13 +73,15 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       strong: '0.6',
     }
     const radiusValues = {
-      sharp: '0.25rem',
+      sharp: '0.375rem',
       rounded: '0.75rem',
-      pill: '9999px',
+      pill: '1.25rem',
     }
     const animationValues = { slow: '400ms', normal: '250ms', fast: '150ms' }
 
+    // All CSS variables for the theme
     const vars: Record<string, string> = {
+      // Colors
       '--background': colors.background,
       '--background-secondary': colors.backgroundSecondary,
       '--foreground': colors.foreground,
@@ -77,21 +93,65 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       '--border': colors.border,
       '--card': colors.card,
       '--card-foreground': colors.cardForeground,
+      // RGB values for opacity-based colors
       '--primary-rgb': hexToRgb(colors.primary),
       '--accent-rgb': hexToRgb(colors.accent),
       '--background-rgb': hexToRgb(colors.background),
+      '--background-secondary-rgb': hexToRgb(colors.backgroundSecondary),
+      '--foreground-rgb': hexToRgb(colors.foreground),
+      '--foreground-muted-rgb': hexToRgb(colors.foregroundMuted),
       '--border-rgb': hexToRgb(colors.border),
+      '--card-rgb': hexToRgb(colors.card),
+      // Typography
       '--font-display': typography.displayFont,
       '--font-body': typography.bodyFont,
+      // Effects
       '--theme-transition': `${TRANSITION_MS}ms ease-out`,
       '--glow-intensity': glowValues[effects.glowIntensity],
       '--radius': radiusValues[effects.borderRadius],
       '--card-style': effects.cardStyle,
       '--animation-speed': animationValues[effects.animationSpeed],
+      // Theme metadata
+      '--theme-id': theme.id,
+      '--theme-category': theme.category,
+      '--theme-is-premium': theme.isPremium ? '1' : '0',
     }
 
     Object.entries(vars).forEach(([k, v]) => root.style.setProperty(k, v))
 
+    // Set data attributes for CSS selectors
+    root.setAttribute('data-theme', theme.id)
+    root.setAttribute('data-theme-category', theme.category)
+    if (theme.isPremium) {
+      root.setAttribute('data-theme-premium', 'true')
+    } else {
+      root.removeAttribute('data-theme-premium')
+    }
+
+    // Update meta theme-color for browser UI
+    let metaThemeColor = document.querySelector('meta[name="theme-color"]')
+    if (!metaThemeColor) {
+      metaThemeColor = document.createElement('meta')
+      metaThemeColor.setAttribute('name', 'theme-color')
+      document.head.appendChild(metaThemeColor)
+    }
+    metaThemeColor.setAttribute('content', colors.background)
+
+    // Font loading with preconnect optimization
+    const existingPreconnects = document.querySelectorAll('link[data-theme-preconnect]')
+    if (existingPreconnects.length === 0) {
+      const preconnectUrls = [GOOGLE_FONTS_PRECONNECT, GOOGLE_FONTS_STATIC]
+      preconnectUrls.forEach((url) => {
+        const link = document.createElement('link')
+        link.rel = 'preconnect'
+        link.href = url
+        link.crossOrigin = 'anonymous'
+        link.setAttribute('data-theme-preconnect', 'true')
+        document.head.appendChild(link)
+      })
+    }
+
+    // Load theme fonts
     document
       .querySelectorAll('link[data-theme-font]')
       .forEach((l) => l.remove())
@@ -103,6 +163,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       document.head.appendChild(link)
     })
 
+    // Apply body styles with transition
     document.body.style.transition = `background-color ${TRANSITION_MS}ms, color ${TRANSITION_MS}ms`
     document.body.style.backgroundColor = colors.background
     document.body.style.color = colors.foreground
@@ -126,6 +187,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       theme,
       setTheme,
       themes: siteConfig.themes,
+      themesByCategory,
       isTransitioning,
       mounted,
     }),

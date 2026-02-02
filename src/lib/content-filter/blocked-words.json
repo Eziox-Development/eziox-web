@@ -1,0 +1,93 @@
+{
+  "version": "1.0.0",
+  "lastUpdated": "2026-02-02",
+  "categories": {
+    "insults_de": [
+      "hurensohn",
+      "wichser",
+      "arschloch",
+      "fotze",
+      "schlampe",
+      "missgeburt",
+      "spast",
+      "schwuchtel",
+      "vollidiot",
+      "depp",
+      "trottel"
+    ],
+    "insults_en": [
+      "asshole",
+      "bitch",
+      "bastard",
+      "idiot",
+      "moron",
+      "dumbass"
+    ],
+    "slurs_de": [
+      "kanake",
+      "neger",
+      "nazi",
+      "zigeuner"
+    ],
+    "slurs_en": [
+      "nigger",
+      "nigga",
+      "faggot",
+      "fag",
+      "retard",
+      "spic",
+      "chink",
+      "kike"
+    ],
+    "profanity_de": [
+      "fick",
+      "ficken",
+      "scheiße",
+      "scheisse"
+    ],
+    "profanity_en": [
+      "fuck",
+      "fucking",
+      "shit",
+      "cunt",
+      "cock",
+      "dick",
+      "pussy",
+      "whore",
+      "slut"
+    ],
+    "threats": [
+      "kill yourself",
+      "kys",
+      "die",
+      "töte dich",
+      "bring dich um",
+      "ich werde dich töten",
+      "i will kill you",
+      "go die"
+    ],
+    "harassment": [
+      "behindert",
+      "autist",
+      "mongo",
+      "spasti"
+    ]
+  },
+  "patterns": [
+    "f+u+c+k+",
+    "s+h+i+t+",
+    "b+i+t+c+h+",
+    "n+[i1]+g+[g]+[ae3]+r*",
+    "f+[a4]+g+[go0]*t*",
+    "r+[e3]+t+[a4]+r+d+",
+    "h+u+r+e+n+s+o+h+n+",
+    "w+i+c+h+s+e+r+",
+    "a+r+s+c+h+l+o+c+h+"
+  ],
+  "settings": {
+    "maxCapsRatio": 0.7,
+    "minLengthForCapsCheck": 10,
+    "maxRepeatedChars": 5,
+    "autoHideReportThreshold": 3
+  }
+}

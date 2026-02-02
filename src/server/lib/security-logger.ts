@@ -18,6 +18,8 @@ export type SecurityEventType =
   | 'auth.recovery_code_used'
   | 'auth.email_verified'
   | 'auth.email_verification_sent'
+  | 'auth.email_change_requested'
+  | 'auth.email_changed'
   | 'rate_limit.exceeded'
   | 'csrf.invalid_token'
   | 'csrf.invalid_origin'

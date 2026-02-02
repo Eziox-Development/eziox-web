@@ -4,7 +4,7 @@ import { getCookie, setResponseStatus } from '@tanstack/react-start/server'
 import { db } from '../db'
 import { users, subscriptions, profiles } from '../db/schema'
 import { eq } from 'drizzle-orm'
-import { validateSession } from '../lib/auth'
+import { validateSession, requireEmailVerification } from '../lib/auth'
 import {
   stripe,
   TIER_CONFIG,
@@ -148,6 +148,23 @@ export const createCheckoutSessionFn = createServerFn({ method: 'POST' })
     }
 
     const user = await getAuthenticatedUser()
+
+    // Require email verification before allowing subscription purchase
+    try {
+      await requireEmailVerification(user.id)
+    } catch (err) {
+      const error = err as { code?: string; message?: string; status?: number }
+      if (error.code === 'EMAIL_NOT_VERIFIED') {
+        setResponseStatus(403)
+        throw {
+          message:
+            'Please verify your email address before purchasing a subscription. Check your inbox for the verification link.',
+          status: 403,
+          code: 'EMAIL_NOT_VERIFIED',
+        }
+      }
+      throw err
+    }
 
     const [userData] = await db
       .select({

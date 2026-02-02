@@ -52,17 +52,22 @@ function loadTurnstileScript(): Promise<void> {
       return
     }
 
-    // Create script - NO async/defer for explicit mode
+    // Create script with async to avoid preload warnings
     const script = document.createElement('script')
     script.id = TURNSTILE_SCRIPT_ID
     script.src =
-      'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=onTurnstileLoad'
+      'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit'
+    script.async = true
+    script.defer = true
 
-    // Use onload callback
-    ;(window as Window & { onTurnstileLoad?: () => void }).onTurnstileLoad =
-      () => {
-        resolve()
-      }
+    script.onload = () => {
+      resolve()
+    }
+
+    script.onerror = () => {
+      console.warn('Failed to load Turnstile script')
+      resolve() // Still resolve to avoid blocking
+    }
 
     document.head.appendChild(script)
   })

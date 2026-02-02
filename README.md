@@ -31,7 +31,9 @@
 | Feature                    | Description                                                              |
 | -------------------------- | ------------------------------------------------------------------------ |
 | 🔗 **Bio Links**           | Linktree-style customizable link pages                                   |
-| 💎 **Premium Tiers**       | Free, Pro, Creator & Lifetime subscriptions                              |
+| 📝 **Profile Comments**    | Comment system with likes, pinning, and moderation                       |
+| 🌍 **Internationalization**| Full i18n support (English & German)                                     |
+| 🎨 **Premium Tiers**       | Free, Pro, Creator & Lifetime subscriptions                              |
 | 📊 **Link Analytics**      | Per-link click tracking with device, browser, geographic data & heatmaps |
 | 📅 **Link Scheduling**     | Schedule links with start/end dates and countdown timers                 |
 | 🔔 **Notifications**       | Real-time notification center with bell icon                             |
@@ -120,18 +122,19 @@ bun run db:push      # Push database schema
 
 ```
 src/
-├── components/      # React components (portfolio/, ui/)
+├── components/      # React components (bio/, profile/, ui/)
 ├── hooks/           # Custom React hooks
 ├── lib/             # Utilities & config
+├── locales/         # i18n translation files (en.json, de.json)
 ├── routes/          # TanStack Router routes
 │   ├── _public/     # Public routes
 │   ├── _auth/       # Auth routes
 │   ├── _protected/  # Protected routes
-│   └── _bio/        # Bio page routes
+│   └── $username.tsx # Bio page route
 └── server/          # Server-side code
     ├── db/          # Database schema
     ├── functions/   # Server functions
-    └── lib/         # Auth utilities
+    └── lib/         # Auth & security utilities
 ```
 
 ## 🚀 Deployment
@@ -155,12 +158,14 @@ Contributions are welcome! You can contribute by:
 This project is licensed under the **PolyForm Noncommercial License 1.0.0** - see the [LICENSE](LICENSE) file for details.
 
 ### What you CAN do:
+
 - ✅ View and study the source code
 - ✅ Use for personal, non-commercial projects
 - ✅ Contribute via Issues and Pull Requests
 - ✅ Use for educational purposes
 
 ### What you CANNOT do:
+
 - ❌ Use commercially without a license
 - ❌ Sell or monetize the software
 - ❌ Offer as a hosted service (SaaS)

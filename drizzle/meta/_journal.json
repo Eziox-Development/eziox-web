@@ -22,6 +22,27 @@
       "when": 1769528786306,
       "tag": "0002_add_site_settings",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1769617355484,
+      "tag": "0003_stormy_kinsey_walden",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1769623716308,
+      "tag": "0004_freezing_violations",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1770052233865,
+      "tag": "0005_long_gorgon",
+      "breakpoints": true
     }
   ]
 }

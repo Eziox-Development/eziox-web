@@ -13,6 +13,7 @@ import {
 import { eq } from 'drizzle-orm'
 import { validateSession } from '../lib/auth'
 import type { TierType } from '../lib/stripe'
+import { checkRateLimit, RATE_LIMITS } from '@/lib/security'
 
 async function getAuthenticatedUser() {
   const token = getCookie('session-token')
@@ -81,28 +82,48 @@ function canAccessFeature(tier: TierType, feature: FeatureKey): boolean {
 
 const customBackgroundSchema = z.object({
   type: z.enum(['solid', 'gradient', 'image', 'video', 'animated']),
-  value: z.string().default(''),
+  value: z.string().max(500).default(''),
   gradientAngle: z.number().min(0).max(360).optional(),
-  gradientColors: z.array(z.string()).optional(),
-  imageUrl: z.string().optional(),
+  gradientColors: z.array(z.string().max(20)).max(10).optional(),
+  imageUrl: z.url().max(2048).optional().or(z.literal('')),
   imageOpacity: z.number().min(0).max(1).optional(),
   imageBlur: z.number().min(0).max(20).optional(),
-  videoUrl: z.string().optional(),
+  videoUrl: z.url().max(2048).optional().or(z.literal('')),
   videoLoop: z.boolean().optional(),
   videoMuted: z.boolean().optional(),
-  animatedPreset: z.string().optional(),
+  animatedPreset: z.string().max(50).optional(),
   animatedSpeed: z.enum(['slow', 'normal', 'fast']).optional(),
   animatedIntensity: z.enum(['subtle', 'normal', 'intense']).optional(),
-  animatedColors: z.array(z.string()).optional(),
+  animatedColors: z.array(z.string().max(20)).max(10).optional(),
 })
 
 const layoutSettingsSchema = z.object({
+  cardLayout: z
+    .enum(['default', 'tilt', 'stack', 'grid', 'minimal'])
+    .optional(),
   cardSpacing: z.number().min(0).max(32),
-  cardBorderRadius: z.number().min(0).max(32),
-  cardShadow: z.enum(['none', 'sm', 'md', 'lg', 'xl']),
+  cardBorderRadius: z.number().min(0).max(50),
+  cardShadow: z.enum(['none', 'sm', 'md', 'lg', 'xl', 'glow']),
   cardPadding: z.number().min(8).max(32),
-  profileLayout: z.enum(['default', 'compact', 'expanded']),
-  linkStyle: z.enum(['default', 'minimal', 'bold', 'glass']),
+  cardTiltDegree: z.number().min(-10).max(10).optional(),
+  profileLayout: z.enum([
+    'default',
+    'compact',
+    'expanded',
+    'centered',
+    'minimal',
+    'hero',
+  ]),
+  linkStyle: z.enum([
+    'default',
+    'minimal',
+    'bold',
+    'glass',
+    'outline',
+    'gradient',
+    'neon',
+  ]),
+  maxWidth: z.number().min(320).max(800).optional(),
 })
 
 export const getProfileSettingsFn = createServerFn({ method: 'GET' }).handler(
@@ -154,6 +175,21 @@ export const updateCustomBackgroundFn = createServerFn({ method: 'POST' })
   .handler(async ({ data }) => {
     const user = await getAuthenticatedUser()
     const tier = await getUserTier(user.id)
+
+    // Rate limit settings updates (30 per minute per user)
+    const rateLimitResult = checkRateLimit(
+      `settings-update:${user.id}`,
+      RATE_LIMITS.API_SPOTIFY.maxRequests,
+      RATE_LIMITS.API_SPOTIFY.windowMs,
+    )
+    if (!rateLimitResult.allowed) {
+      setResponseStatus(429)
+      throw {
+        message: 'Too many settings updates. Please wait before trying again.',
+        status: 429,
+        code: 'RATE_LIMITED',
+      }
+    }
 
     // All background types are now available to ALL users
     void tier

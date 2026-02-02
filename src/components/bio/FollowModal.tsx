@@ -1,14 +1,9 @@
-/**
- * FollowModal Component
- * Modern modal with tabs for Followers/Following
- * Features: Real-time updates, search, animations, follow/unfollow
- */
-
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
 import { Link } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
 import {
   getFollowersFn,
   getFollowingFn,
@@ -49,6 +44,7 @@ export function FollowModal({
   currentUserId,
   accentColor = '#8b5cf6',
 }: FollowModalProps) {
+  const { t } = useTranslation()
   const [activeTab, setActiveTab] = useState<TabType>(initialTab)
   const [searchQuery, setSearchQuery] = useState('')
   const queryClient = useQueryClient()
@@ -222,7 +218,7 @@ export function FollowModal({
                   @{username}
                 </h2>
                 <p className="text-sm opacity-60">
-                  {activeTab === 'followers' ? 'Followers' : 'Following'}
+                  {activeTab === 'followers' ? t('followModal.followers') : t('followModal.following')}
                 </p>
               </div>
             </div>
@@ -242,7 +238,7 @@ export function FollowModal({
               >
                 <div className="flex items-center justify-center gap-2">
                   <Users className="w-4 h-4" />
-                  <span>Followers</span>
+                  <span>{t('followModal.followers')}</span>
                   <span
                     className="px-2 py-0.5 rounded-full text-xs"
                     style={{
@@ -270,7 +266,7 @@ export function FollowModal({
               >
                 <div className="flex items-center justify-center gap-2">
                   <Eye className="w-4 h-4" />
-                  <span>Following</span>
+                  <span>{t('followModal.following')}</span>
                   <span
                     className="px-2 py-0.5 rounded-full text-xs"
                     style={{
@@ -300,7 +296,7 @@ export function FollowModal({
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 opacity-40" />
                 <input
                   type="text"
-                  placeholder="Search users..."
+                  placeholder={t('followModal.searchPlaceholder')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full pl-10 pr-4 py-2.5 rounded-xl border transition-all focus:outline-none focus:ring-2"
@@ -319,7 +315,7 @@ export function FollowModal({
                 onClick={handleRefresh}
                 className="p-2.5 rounded-xl border transition-all hover:bg-white/5"
                 style={{ borderColor: 'var(--border)' }}
-                title="Refresh"
+                title={t('followModal.refresh')}
               >
                 <RefreshCw className="w-4 h-4" />
               </button>
@@ -327,8 +323,7 @@ export function FollowModal({
 
             {searchQuery && (
               <p className="text-xs opacity-60 mt-2">
-                {filteredUsers.length} result
-                {filteredUsers.length !== 1 ? 's' : ''} found
+                {filteredUsers.length} {t('followModal.results', { count: filteredUsers.length })}
               </p>
             )}
           </div>
@@ -344,7 +339,7 @@ export function FollowModal({
                   className="w-8 h-8 animate-spin mb-3"
                   style={{ color: accentColor }}
                 />
-                <p className="text-sm opacity-60">Loading...</p>
+                <p className="text-sm opacity-60">{t('followModal.loading')}</p>
               </div>
             ) : filteredUsers.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16 px-6">
@@ -355,14 +350,12 @@ export function FollowModal({
                   <Users className="w-8 h-8" style={{ color: accentColor }} />
                 </div>
                 <h3 className="text-lg font-semibold mb-2">
-                  {searchQuery ? 'No results found' : `No ${activeTab} yet`}
+                  {searchQuery ? t('followModal.noResults') : t(`followModal.no${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}`)}
                 </h3>
                 <p className="text-sm opacity-60 text-center max-w-sm">
                   {searchQuery
-                    ? `No users match "${searchQuery}"`
-                    : activeTab === 'followers'
-                      ? 'This user has no followers yet'
-                      : 'This user is not following anyone yet'}
+                    ? t('followModal.noUsersMatch', { query: searchQuery })
+                    : t(`followModal.no${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}Desc`)}
                 </p>
               </div>
             ) : (
@@ -485,12 +478,12 @@ export function FollowModal({
                                 {isFollowing ? (
                                   <>
                                     <UserMinus className="w-4 h-4" />
-                                    <span>Unfollow</span>
+                                    <span>{t('followModal.unfollow')}</span>
                                   </>
                                 ) : (
                                   <>
                                     <UserPlus className="w-4 h-4" />
-                                    <span>Follow</span>
+                                    <span>{t('followModal.follow')}</span>
                                   </>
                                 )}
                               </div>

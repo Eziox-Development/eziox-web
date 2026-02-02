@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
 import {
   DocsLayout,
   DocSection,
@@ -23,130 +24,125 @@ export const Route = createFileRoute('/_public/docs/getting-started')({
   component: GettingStartedDoc,
 })
 
-function GettingStartedDoc() {
+export function GettingStartedDoc() {
+  const { t } = useTranslation()
+  const s = 'docs.pages.gettingStarted.sections'
+
   return (
     <DocsLayout
-      title="Getting Started"
-      description="Learn how to create your Eziox bio page and customize it to your liking."
+      title={t('docs.pages.gettingStarted.title')}
+      description={t('docs.pages.gettingStarted.description')}
       category="Basics"
       icon="Rocket"
     >
-      <DocSection title="Creating Your Account">
-        <DocParagraph>
-          Welcome to Eziox! This guide will help you create your personalized
-          bio page in just a few minutes.
-        </DocParagraph>
+      <DocSection title={t(`${s}.account.title`)}>
+        <DocParagraph>{t(`${s}.account.intro`)}</DocParagraph>
         <DocList
           items={[
-            'Visit eziox.link/sign-up to create your account',
-            'Enter your email address and choose a secure password',
-            'Pick a unique username - this will be your bio page URL (eziox.link/yourusername)',
-            'Verify your email address by clicking the link we send you',
+            t(`${s}.account.steps.0`),
+            t(`${s}.account.steps.1`),
+            t(`${s}.account.steps.2`),
+            t(`${s}.account.steps.3`),
           ]}
         />
       </DocSection>
 
-      <DocSection title="Setting Up Your Profile">
+      <DocSection title={t(`${s}.profile.title`)}>
         <DocParagraph>
-          Once you're logged in, head to your{' '}
-          <DocLink href="/profile">Dashboard</DocLink> to customize your
-          profile.
+          {t(`${s}.profile.intro`)}{' '}
+          <DocLink href="/profile">Dashboard</DocLink>
         </DocParagraph>
 
-        <DocSubSection title="Basic Information">
+        <DocSubSection title={t(`${s}.profile.basicTitle`)}>
           <DocList
             items={[
-              'Display Name - Your public name shown on your bio page',
-              'Bio - A short description about yourself (max 160 characters)',
-              'Avatar - Upload a profile picture (recommended: 400x400px)',
-              'Banner - Add a header image (recommended: 1200x400px)',
+              t(`${s}.profile.basicList.0`),
+              t(`${s}.profile.basicList.1`),
+              t(`${s}.profile.basicList.2`),
+              t(`${s}.profile.basicList.3`),
             ]}
           />
         </DocSubSection>
 
-        <DocSubSection title="Social Links">
-          <DocParagraph>Connect your social media accounts:</DocParagraph>
+        <DocSubSection title={t(`${s}.profile.socialTitle`)}>
+          <DocParagraph>{t(`${s}.profile.socialIntro`)}</DocParagraph>
           <DocList
             items={[
-              'Twitter/X',
-              'Instagram',
-              'YouTube',
-              'TikTok',
-              'Twitch',
-              'Discord',
-              'GitHub',
-              'LinkedIn',
+              t(`${s}.profile.socialList.0`),
+              t(`${s}.profile.socialList.1`),
+              t(`${s}.profile.socialList.2`),
+              t(`${s}.profile.socialList.3`),
+              t(`${s}.profile.socialList.4`),
+              t(`${s}.profile.socialList.5`),
+              t(`${s}.profile.socialList.6`),
+              t(`${s}.profile.socialList.7`),
             ]}
           />
         </DocSubSection>
       </DocSection>
 
-      <DocSection title="Adding Links">
-        <DocParagraph>
-          Your bio page can contain unlimited links. To add a link:
-        </DocParagraph>
+      <DocSection title={t(`${s}.links.title`)}>
+        <DocParagraph>{t(`${s}.links.intro`)}</DocParagraph>
         <DocList
           items={[
-            'Go to Dashboard → Links',
-            'Click Add Link',
-            'Enter the URL and a title',
-            'Optionally add an icon and description',
-            'Drag to reorder your links',
+            t(`${s}.links.steps.0`),
+            t(`${s}.links.steps.1`),
+            t(`${s}.links.steps.2`),
+            t(`${s}.links.steps.3`),
           ]}
         />
 
-        <DocSubSection title="Link Features">
+        <DocSubSection title={t(`${s}.links.featuresTitle`)}>
           <DocList
             items={[
-              'Thumbnails - Add custom images to your links',
-              'Scheduling - Set start/end dates for time-limited links',
-              'Analytics - Track clicks on each link',
-              'Featured - Highlight important links with special styles',
+              t(`${s}.links.featuresList.0`),
+              t(`${s}.links.featuresList.1`),
+              t(`${s}.links.featuresList.2`),
+              t(`${s}.links.featuresList.3`),
             ]}
           />
         </DocSubSection>
       </DocSection>
 
-      <DocSection title="Choosing a Theme">
-        <DocParagraph>
-          Eziox offers 31+ themes across 8 categories:
-        </DocParagraph>
+      <DocSection title={t(`${s}.themes.title`)}>
+        <DocParagraph>{t(`${s}.themes.intro`)}</DocParagraph>
         <DocTable
-          headers={['Category', 'Themes']}
-          rows={[
-            ['General', 'eziox-default, obsidian, midnight, ember'],
-            ['Gamer', 'neon-green, rgb-fusion, cyberpunk'],
-            ['VTuber', 'kawaii-pink, pastel-dream, anime-night'],
-            ['Developer', 'terminal, github-dark, vscode'],
-            ['Streamer', 'twitch, youtube, kick'],
-            ['Artist', 'canvas, watercolor, gallery'],
-            ['Minimal', 'minimal-dark, minimal-light, aurora'],
-            ['Premium', 'ocean-depths, forest-night, neon-tokyo'],
+          headers={[
+            t(`${s}.themes.tableHeaders.0`),
+            t(`${s}.themes.tableHeaders.1`),
           ]}
+          rows={t(`${s}.themes.tableRows`, { returnObjects: true }) as [
+            string,
+            string,
+          ][]}
         />
-        <DocParagraph>To change your theme:</DocParagraph>
-        <DocList
-          items={[
-            'Go to Dashboard → Customization',
-            'Browse the theme gallery',
-            'Click on a theme to preview it',
-            'Click Apply to save',
-          ]}
-        />
+        <DocSubSection title={t(`${s}.themes.changeTitle`)}>
+          <DocList
+            items={[
+              t(`${s}.themes.changeSteps.0`),
+              t(`${s}.themes.changeSteps.1`),
+              t(`${s}.themes.changeSteps.2`),
+              t(`${s}.themes.changeSteps.3`),
+            ]}
+          />
+        </DocSubSection>
       </DocSection>
 
-      <DocSection title="Next Steps">
+      <DocSection title={t(`${s}.next.title`)}>
         <DocList
           items={[
-            'Customize Your Profile - Advanced styling options',
-            'Link Analytics - Track your performance',
-            'API Access - Integrate with external tools',
-            'Premium Features - Unlock advanced features',
+            t(`${s}.next.items.0`),
+            t(`${s}.next.items.1`),
+            t(`${s}.next.items.2`),
+            t(`${s}.next.items.3`),
           ]}
         />
         <DocParagraph>
-          Need help? Visit our <DocLink href="/contact">Contact Page</DocLink>{' '}
-          or check out the <DocLink href="/docs/faq">FAQ</DocLink>.
+          {t(`${s}.next.helpPrefix`)}{' '}
+          <DocLink href="/contact">{t(`${s}.next.contactLabel`)}</DocLink>{' '}
+          {t(`${s}.next.helpInfix`)}{' '}
+          <DocLink href="/docs/faq">{t(`${s}.next.faqLabel`)}</DocLink>{' '}
+          {t(`${s}.next.helpSuffix`)}
         </DocParagraph>
       </DocSection>
     </DocsLayout>

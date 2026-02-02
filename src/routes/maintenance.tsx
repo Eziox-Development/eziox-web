@@ -14,8 +14,8 @@ export const Route = createFileRoute('/maintenance')({
 })
 
 function MaintenancePage() {
-  const message = 'We are currently performing maintenance to improve your experience. Please check back soon.'
-  const eta = null
+  const message =
+    'We are currently performing maintenance to improve your experience. Please check back soon.'
 
   return (
     <div
@@ -84,24 +84,19 @@ function MaintenancePage() {
           {message}
         </p>
 
-        {eta && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.3 }}
-            className="inline-flex items-center gap-3 px-6 py-3 rounded-2xl mb-8"
-            style={{
-              background: 'rgba(139, 92, 246, 0.1)',
-              border: '1px solid rgba(139, 92, 246, 0.2)',
-            }}
-          >
-            <Clock size={20} style={{ color: '#8b5cf6' }} />
-            <span style={{ color: '#c4b5fd' }}>
-              Estimated return:{' '}
-              <strong style={{ color: '#8b5cf6' }}>{eta}</strong>
-            </span>
-          </motion.div>
-        )}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.3 }}
+          className="inline-flex items-center gap-3 px-6 py-3 rounded-2xl mb-8"
+          style={{
+            background: 'rgba(139, 92, 246, 0.1)',
+            border: '1px solid rgba(139, 92, 246, 0.2)',
+          }}
+        >
+          <Clock size={20} style={{ color: '#8b5cf6' }} />
+          <span style={{ color: '#c4b5fd' }}>We'll be back soon</span>
+        </motion.div>
 
         <div
           className="p-6 rounded-2xl"

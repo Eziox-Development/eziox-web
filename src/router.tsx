@@ -1,11 +1,12 @@
 import { createRouter } from '@tanstack/react-router'
 import { setupRouterSsrQueryIntegration } from '@tanstack/react-router-ssr-query'
 import * as TanstackQuery from './integrations/tanstack-query/root-provider'
+import './lib/license-guard'
+import { ErrorComponent } from './components/error-component'
+import { NotFoundComponent } from './components/not-found-component'
 
 // Import the generated route tree
 import { routeTree } from './routeTree.gen'
-import { ErrorComponent } from './components/error-component'
-import { NotFoundComponent } from './components/not-found-component'
 
 /**
  * Creates and configures the application router with:

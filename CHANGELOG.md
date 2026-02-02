@@ -5,34 +5,148 @@ All notable changes to Eziox will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.7.0] - 2026-02-02
 
-### Changed - License Update 📄
+### Added - Internationalization & Comment System 🌍�
 
-**New License: PolyForm Noncommercial 1.0.0**
+**Complete i18n System:**
 
-- Updated from MIT License to PolyForm Noncommercial 1.0.0
-- Source code remains visible for learning and contribution
-- Commercial use now requires explicit license
-- Updated all documentation (README, CONTRIBUTING, COMMUNITY)
-- Added license validation system (`license-guard.ts`)
-- Console warnings for unlicensed domains
+- Full internationalization with `react-i18next` and `i18next-browser-languagedetector`
+- Language files: `src/locales/en.json` and `src/locales/de.json` (2100+ keys each)
+- `LanguageSwitcher` component with flag icons and smooth transitions
+- Browser language auto-detection with localStorage persistence
+- `useLocale` hook for easy language access in components
+- All public pages, auth forms, legal pages, and UI components translated
 
-**Updated Files:**
-- `LICENSE` - PolyForm Noncommercial 1.0.0 with custom Eziox terms
-- `README.md` - License badge and usage guidelines
-- `package.json` - License field updated
-- `CONTRIBUTING.md` - License context for contributors
-- `COMMUNITY.md` - Community guidelines with license info
-- `src/lib/license-guard.ts` - License validation and warnings
-- `src/router.tsx` - License check on app load
+**Profile Comments System:**
 
-**What this means:**
-- ✅ Personal use, education, research allowed
-- ✅ Contributing via Issues and PRs allowed
-- ❌ Commercial use requires license
-- ❌ SaaS hosting requires license
-- 📧 business@eziox.link for commercial licensing
+- New `profileComments` table with full CRUD operations
+- `commentLikes` table for like/unlike functionality
+- `commentReports` table for abuse reporting
+- `ProfileComments` component with modern grid layout
+- Comment sorting (newest, oldest, popular)
+- Comment pinning for profile owners
+- Content filter library (`src/lib/content-filter/`) with:
+  - Profanity detection (300+ blocked words)
+  - Excessive caps detection
+  - Spam pattern detection
+  - Auto-hide threshold for reported comments
+
+**Email Verification Enhancements:**
+
+- `EmailVerificationBanner` component in app root
+- `EmailVerificationIndicator` for profile settings
+- Email change verification flow with new route `/verify-email-change`
+- Rate limiting: max 3 email changes per 24 hours
+- Password verification required for email changes
+- Token hashing (SHA256) for all verification tokens
+
+**Abuse Detection System:**
+
+- New `abuseAlerts` table for flagged content
+- `src/server/lib/abuse-detection.ts` with pattern matching
+- Admin panel route `/admin/abuse-alerts` for review
+- Server functions for alert management
+
+**Enhanced License Guard:**
+
+- Anti-tampering with Symbol markers and integrity checks
+- Console protection (prevents clearing, freezes console)
+- DevTools detection via window resize monitoring
+- Obfuscated domain list (Base64 encoded)
+- Styled console output with license information
+- Watermark overlay for unlicensed domains
+- Global read-only `window.EZIOX_LICENSE` object
+- Auto-initialization via `requestIdleCallback`
+
+**Password Security:**
+
+- New `src/lib/password-security.ts` with comprehensive validation
+- Common password detection (1000+ passwords)
+- Keyboard pattern detection (qwerty, asdf, etc.)
+- Sequential character detection (abc123, etc.)
+- Leet-speak bypass prevention (p@ssw0rd → password)
+- Personal info check (blocks email/username in password)
+- HaveIBeenPwned API integration with k-anonymity
+- Password entropy calculation (min 40 bits)
+- Secure password generator utility
+
+**Email Validation:**
+
+- New `src/server/lib/email-validation.ts`
+- DNS/MX record verification
+- Disposable email filter (300+ domains)
+- Typo detection for common domains
+- Email normalization (gmail dots, plus addressing)
+- Risk scoring for suspicious patterns
+- Role account detection (admin@, info@, etc.)
+
+### Changed
+
+**Bio Page Redesign (`$username.tsx`):**
+
+- Moved from `_bio/$username.tsx` to root `$username.tsx`
+- Scroll-based section navigation (Profile, Links, Comments)
+- URL parameter sync for tabs (`?tab=links`, `?tab=comments`)
+- Full-screen sections with smooth scrolling
+- Card tilt effect on profile card hover
+- Social platform colors refactored to `social-links.ts`
+
+**Authentication Improvements:**
+
+- Sign-in/Sign-up forms with i18n support
+- Enhanced Turnstile widget stability
+- Better error messages with translations
+- Password strength indicator
+
+**Documentation System:**
+
+- New `DocsLayout` component with sidebar navigation
+- `docs-nav.ts` for documentation structure
+- All doc pages updated with consistent styling
+
+**Legal Pages:**
+
+- New `/imprint` (Impressum) page
+- New `/widerruf` (Withdrawal) page
+- All legal pages with `LegalPageLayout` component
+- Consistent styling and i18n support
+
+**Navigation & Footer:**
+
+- Language switcher in navigation
+- Updated footer with all legal links
+- Improved mobile responsiveness
+
+### Fixed
+
+- TypeScript error in `$username.tsx` with `search.tab` typing
+- ESLint errors in `ProfileComments.tsx` with void operators
+- Turnstile infinite loop in auth forms
+- Session detection on bio pages using `useRouterState`
+
+### Removed
+
+- Old `_bio.tsx` and `_bio/$username.tsx` routes (consolidated)
+- Unused `ProfileHeader.tsx`, `ProfileSidebar.tsx`, `ProfileStats.tsx`
+- Deprecated `LinkAdvancedSettings.tsx`
+- Old `CreatorTab.tsx` and `CustomizationTab.tsx`
+- Unused `image-upload.tsx` component
+- Old `/referrals` route (moved to profile tab)
+
+### Database Migrations
+
+- `0003_stormy_kinsey_walden.sql` - Email verification fields
+- `0004_freezing_violations.sql` - Comment system tables
+- `0005_long_gorgon.sql` - Abuse alerts table
+
+### Security
+
+- All verification tokens now SHA256 hashed
+- Rate limiting on email verification (3/hour)
+- Rate limiting on email changes (3/24h)
+- Content filtering for user-generated content
+- Abuse detection and reporting system
 
 ---
 

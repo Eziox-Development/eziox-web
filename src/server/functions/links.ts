@@ -10,6 +10,8 @@ import { db } from '../db'
 import { userLinks, userStats, linkClickAnalytics } from '../db/schema'
 import { eq, asc, sql, desc, and, gte } from 'drizzle-orm'
 import { validateSession } from '../lib/auth'
+import { checkRateLimit, RATE_LIMITS } from '@/lib/security'
+import { checkLinkLimit, detectRapidCreation } from '../lib/abuse-detection'
 
 // ============================================================================
 // Validation Schemas
@@ -17,7 +19,9 @@ import { validateSession } from '../lib/auth'
 
 const createLinkSchema = z.object({
   title: z.string().min(1, 'Title is required').max(100),
-  url: z.url({ error: 'Invalid URL' }),
+  url: z
+    .url({ error: 'Invalid URL' })
+    .max(2048, 'URL is too long (max 2048 characters)'),
   icon: z.string().max(50).optional(),
   description: z.string().max(255).optional(),
   backgroundColor: z
@@ -45,7 +49,7 @@ const linkScheduleSchema = z
 const updateLinkSchema = z.object({
   id: z.uuid(),
   title: z.string().min(1).max(100).optional(),
-  url: z.url().optional(),
+  url: z.url().max(2048, 'URL is too long').optional(),
   icon: z.string().max(50).optional(),
   description: z.string().max(255).optional(),
   backgroundColor: z
@@ -133,6 +137,45 @@ export const createLinkFn = createServerFn({ method: 'POST' })
     if (!user) {
       setResponseStatus(401)
       throw { message: 'Not authenticated', status: 401 }
+    }
+
+    // Rate limit link creation (30 per minute per user)
+    const rateLimitResult = checkRateLimit(
+      `link-create:${user.id}`,
+      RATE_LIMITS.API_SPOTIFY.maxRequests, // 30 per minute
+      RATE_LIMITS.API_SPOTIFY.windowMs,
+    )
+    if (!rateLimitResult.allowed) {
+      setResponseStatus(429)
+      throw {
+        message: 'Too many requests. Please wait before creating more links.',
+        status: 429,
+        code: 'RATE_LIMITED',
+      }
+    }
+
+    // Fair Use Policy: Check link limit (tier-based soft limits with hard cap)
+    const linkLimitResult = await checkLinkLimit(user.id, user.tier || 'free')
+    if (!linkLimitResult.allowed) {
+      setResponseStatus(400)
+      throw {
+        message:
+          linkLimitResult.message ||
+          'Link limit reached. Please contact support.',
+        status: 400,
+        code: 'LINK_LIMIT_REACHED',
+      }
+    }
+
+    // Detect rapid creation (spam detection)
+    const isSpamming = await detectRapidCreation(user.id, 'link', 5, 20)
+    if (isSpamming) {
+      setResponseStatus(429)
+      throw {
+        message: 'Too many links created in a short time. Please slow down.',
+        status: 429,
+        code: 'RAPID_CREATION_DETECTED',
+      }
     }
 
     // Get current max order

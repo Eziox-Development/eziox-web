@@ -22,6 +22,46 @@
 - [x] Status page (`/status`)
 - [x] Pricing page (`/pricing`)
 
+### Recent Updates (2026-02-02) - v2.7.0
+
+- [x] **Complete i18n System** - Full internationalization
+  - [x] `react-i18next` and `i18next-browser-languagedetector` integration
+  - [x] Language files: `en.json` and `de.json` (2100+ keys)
+  - [x] `LanguageSwitcher` component in navigation
+  - [x] Browser language auto-detection
+  - [x] All pages translated (public, auth, legal, profile)
+
+- [x] **Profile Comments System** - User engagement feature
+  - [x] `profileComments`, `commentLikes`, `commentReports` tables
+  - [x] `ProfileComments` component with grid layout
+  - [x] Comment sorting (newest, oldest, popular)
+  - [x] Comment pinning for profile owners
+  - [x] Content filter with profanity detection
+
+- [x] **Enhanced License Guard** - Production-ready protection
+  - [x] Anti-tampering with Symbol markers
+  - [x] Console protection (prevents clearing)
+  - [x] DevTools detection
+  - [x] Obfuscated domain list (Base64)
+  - [x] Watermark for unlicensed domains
+
+- [x] **Email Verification Enhancements**
+  - [x] `EmailVerificationBanner` in app root
+  - [x] Email change verification flow
+  - [x] Rate limiting (3 changes/24h)
+  - [x] Token hashing (SHA256)
+
+- [x] **Password Security Library**
+  - [x] Common password detection
+  - [x] Keyboard pattern detection
+  - [x] HaveIBeenPwned API integration
+  - [x] Entropy calculation
+
+- [x] **Abuse Detection System**
+  - [x] `abuseAlerts` table
+  - [x] Admin panel `/admin/abuse-alerts`
+  - [x] Pattern matching detection
+
 ### Recent Updates (2026-01-22)
 
 - [x] **Profile Tab URL Persistence** - Tabs now use `?tab=` query params
@@ -359,6 +399,237 @@
 
 ---
 
+## 📋 Legal Compliance (Germany)
+
+### ✅ COMPLETED - Legal Requirements
+
+- [x] **Datenschutzerklärung** (/datenschutz) - Complete GDPR-compliant German version
+  - [x] GDPR references and legal bases (Art. 6 GDPR)
+  - [x] Specific data subject rights under Art. 15-22 GDPR
+  - [x] Data retention periods documented
+  - [x] Data processors list (Vercel, Cloudflare, Neon, Stripe, Resend)
+  - [x] Data transfers to third countries
+  - [x] Complaint right with supervisory authority (LfD Lower Saxony)
+- [x] **AGB** (/agb) - Complete German Terms of Service
+  - [x] BGB section references
+  - [x] Payment terms for paid plans
+  - [x] Jurisdiction (German law)
+  - [x] Liability disclaimer integrated
+  - [x] Contract term and termination
+- [x] **Widerrufsbelehrung** (/widerruf) - § 355 BGB compliant
+  - [x] Sample withdrawal form
+  - [x] Expiration of withdrawal right
+  - [x] Exceptions from withdrawal right
+- [x] **Cookie Policy** (/cookies) - With ePrivacy/TDDDG references
+  - [x] § 25 TDDDG legal basis
+  - [x] ePrivacy Directive (2002/58/EC)
+  - [x] Essential vs. optional cookies
+  - [x] Third-party services with privacy links
+- [x] **Impressum** (/imprint) - § 5 DDG compliant
+- [x] **Cookie Consent Banner** - Granular consent available
+- [x] **Footer Links** - All German legal pages linked
+
+### 🟡 OPTIONAL - Future Improvements
+
+- [ ] **Job descriptions** if staff available
+- [ ] **Privacy by Design** - Further data minimization
+- [ ] **Data export function** - Self-service export (already in profile settings)
+
+### ✅ AGB - Fully Aligned with Reality
+
+- [x] **Pricing and Tiers** - Current prices (Free: 0€, Pro: 2.99€, Creator: 5.99€, Lifetime: 29€)
+- [x] **Available Features** - 31+ themes, unlimited links, followers, leaderboards
+- [x] **Payment Processing** - Stripe, Apple Pay, Google Pay (no PayPal/SEPA)
+- [x] **Account Suspension** - Immediate suspension for serious violations
+- [x] **Termination** - Detailed termination periods and conditions
+- [x] **Inactivity Deletion** - 2+ years inactivity with notification
+- [x] **Content Policies** - Detailed prohibition list and consequences
+- [x] **Custom Domains** - Creator feature with specific policies
+- [x] **Maintenance and Availability** - 99.9% uptime with status page
+
+### 🔴 CRITICAL SECURITY GAPS (AGB vs. Reality)
+
+Based on Code Analysis vs. AGB:
+
+**✅ Email Validation:**
+
+- [x] **Real Email Validation** with comprehensive checks
+- [x] **DNS/MX Verification** to ensure domain can receive emails
+- [x] **Disposable Email Filter** with 300+ blocked domains
+- [x] **Typo Detection** for common domains (gmail, yahoo, hotmail, etc.)
+- [x] **Email Normalization** (handles gmail dots, plus addressing)
+- [x] **Risk Scoring** for suspicious email patterns
+- [x] **Role Account Detection** (admin@, info@, etc.)
+- Implementation: `/src/server/lib/email-validation.ts`
+
+**✅ Email Verification:**
+
+- [x] **Email Verification** sent on registration
+- [x] **requireEmailVerification()** helper function - `src/server/lib/auth.ts`
+- [x] **Enforce verification** for subscriptions/checkout - Checkout blocked for unverified users
+- [x] **UI Banner** prompting unverified users - Integrated in `__root.tsx`
+- [x] **POST-based verification** (button click required, prevents accidental activation)
+- [x] **Token Hashing** (SHA256 hash stored in DB) - All tokens now hashed
+- [x] **Resend Rate Limiting** (3 emails per hour max)
+- [x] **Email Change Verification** - Full flow with new email verification
+- [x] **Email Change Rate Limiting** - Max 3 changes per 24 hours
+- [x] **Password Required** for email change - Password verification before change
+- Implementation: `src/server/lib/auth.ts`, `src/server/functions/auth.ts`, `src/routes/_public/verify-email-change.tsx`
+
+**✅ Cookie Granularity:**
+
+- [x] **Cookie settings** properly applied
+- [x] **Vercel Analytics** only loaded with user consent
+- [x] **Cookie consent UI** with customize options
+- Implementation: `src/routes/__root.tsx` (conditionally loads Analytics based on consent)
+
+**✅ Analytics Cookie Implementation:**
+
+- [x] **Analytics Cookies** respect user consent
+- [x] **Internal Analytics** is server-side (no cookies)
+- [x] **Vercel Analytics** only loaded when `analyticsEnabled` is true
+- Implementation: `src/components/CookieConsent.tsx` + `src/routes/__root.tsx`
+
+**✅ Password Security:**
+
+- [x] **bcrypt Hashing** with cost factor 12 (✅ implemented)
+- [x] **Password Reset Token Hashing** - SHA256 hash stored in DB
+- [x] **Token Expiry** (1 hour for password reset, 24 hours for email verification)
+- [x] **Password Strength Requirements** - Min 8 chars, uppercase, lowercase, number
+- [x] **Common Password Detection** - Blocks top 1000+ common passwords
+- [x] **Keyboard Pattern Detection** - Blocks qwerty, asdf, etc.
+- [x] **Sequential Character Detection** - Blocks abc123, 123456, etc.
+- [x] **Repeated Character Detection** - Blocks aaa, 111, etc.
+- [x] **Leet-speak Bypass Prevention** - Decodes p@ssw0rd → password
+- [x] **Personal Info Check** - Blocks passwords containing email/username/name
+- [x] **Breached Password Check** - HaveIBeenPwned API with k-anonymity (SHA-1 prefix)
+- [x] **Password Entropy Calculation** - Minimum 40 bits required
+- [x] **Secure Password Generator** - `generateSecurePassword()` utility
+- Implementation: `src/lib/password-security.ts` + `src/server/functions/auth.ts`
+
+**✅ Additional Security Measures (Important):**
+
+- [x] **Turnstile Bot Protection** - Cloudflare Turnstile on sign-in/sign-up
+- [x] **Rate Limiting** - Per-IP rate limits on auth endpoints
+- [x] **Session Token Security** - Cryptographically secure random tokens
+- [x] **CSRF Protection** - Token-based CSRF validation
+- [x] **2FA Support** - TOTP-based two-factor authentication
+- [x] **Recovery Codes** - Encrypted backup codes for 2FA
+- [x] **Login Notifications** - Email alerts for new device logins
+- [x] **Security Event Logging** - Audit trail for security events
+- [x] **IP Anonymization** - GDPR-compliant IP storage
+- [x] **Secure Cookie Settings** - HttpOnly, Secure, SameSite=Lax
+- Implementation: `src/server/lib/auth.ts` + `src/lib/security.ts`
+
+**❌ Content Moderation:**
+
+- [ ] **Username Filter** against offensive names and slurs - NOT IMPLEMENTED
+- [ ] **Reserved Username Protection** - Only routing protection, NOT registration validation
+- [ ] **Leet-speak Pattern Detection** - NOT IMPLEMENTED
+- [ ] **Profile Content Moderation** for pornographic/abusive content
+- [ ] **Link Validation** for malicious URLs (VirusTotal, etc.)
+- [ ] **Automated Moderation** for suspicious activities
+- Note: `isValidUsername()` only checks format (alphanumeric), no offensive word filtering
+
+**❌ Account Suspension System:**
+
+- [x] **Login Lockout** after 5 failed attempts (30 minutes)
+- [ ] **Flexible Ban Periods** (hours, days, months, years)
+- [ ] **Admin Ban** with justification system
+- [ ] **Ban History** and logging
+
+**❌ Multi-Account Detection:**
+
+- [ ] **IP-based detection** of multiple accounts
+- [ ] **Fingerprinting** for device recognition
+- [ ] **Rule System** for allowed multi-accounts
+
+**❌ Payment System:**
+
+- [x] **Stripe Integration** implemented
+- [ ] **Yearly Subscriptions** (only monthly implemented)
+- [x] **Automatic Subscription Emails** implemented
+- [ ] **Payment Delinquency Handling** (3 failed attempts → suspension)
+- [ ] **Refund Workflow** for cancellations
+
+**❌ Copyright/License:**
+
+- [ ] **Open Source License** for Code (GitHub visible)
+- [ ] **Content License** for user content
+- [ ] **DMCA/Takedown Process** for copyright infringements
+
+**❌ Link Validation:**
+
+- [ ] **URL Format Validation** and normalization
+- [ ] **Reachability Check** for broken links
+- [ ] **Malware Scan** for malicious URLs
+- [ ] **Link Preview Generation** for better UX
+
+**❌ Security Monitoring:**
+
+- [ ] **Automatic Admin Notification** for suspicious activities
+- [ ] **Rate-Limiting** for API endpoints
+- [ ] **Security Logging** and Audit-Trail
+- [ ] **Anomaly Detection** for suspicious activities
+
+**❌ Withdrawal Rights:**
+
+- [x] **Online Withdrawal** (per E-Mail to legal@eziox.link)
+- [ ] **Ticket System** for withdrawal requests
+- [ ] **Automatic Confirmation** and logging
+- [ ] **Refund System** for withdrawal payments
+- [ ] **Immediate Consent** at checkout for digital content
+- [ ] **Withdrawal Policy in checkout process**
+
+### ⚠️ Available Legal Pages
+
+| Page              | Route        | Language | Status      |
+| ----------------- | ------------ | -------- | ----------- |
+| Impressum         | /imprint     | DE       | ✅          |
+| Privacy Policy    | /datenschutz | DE       | ✅          |
+| Terms of Service  | /agb         | DE       | ✅          |
+| Withdrawal Policy | /widerruf    | DE       | ✅          |
+| Cookie Policy     | /cookies     | DE       | ✅          |
+| Privacy Policy    | /privacy     | EN       | ✅ (Legacy) |
+| Terms of Service  | /terms       | EN       | ✅ (Legacy) |
+
+### 🌍 Multi-Language System ✅ COMPLETED
+
+**✅ i18n Infrastructure:**
+
+- [x] **Language Detection** from browser settings (`i18next-browser-languagedetector`)
+- [x] **Language Switcher** component in header (`LanguageSwitcher.tsx`)
+- [x] **Translation Management** system (JSON files in `src/locales/`)
+- [x] **Dynamic Content Loading** per language
+- [x] **Fallback Language** (English) for missing translations
+- [x] **Client-side Language Persistence** (localStorage)
+- [ ] **URL-based routing** (/de/, /en/) - Future enhancement
+- [ ] **SEO hreflang tags** - Future enhancement
+
+**✅ Content Translation:**
+
+- [x] **Legal Pages** multilingual (DE/EN)
+- [x] **UI Components** translation (buttons, labels, messages)
+- [x] **Error Messages** localized
+- [x] **Auth Forms** translated
+- [x] **Public Pages** translated
+- [x] **Profile Dashboard** translated
+- [ ] **Email Templates** multilingual - Future enhancement
+- [ ] **Additional Languages** (FR/ES/IT) - Future enhancement
+
+**✅ Technical Implementation:**
+
+- [x] **React-i18next** library integration
+- [x] **useTranslation** hook throughout app
+- [x] **2100+ translation keys** per language
+- [x] **Runtime Language Switching**
+- [x] **useLocale** custom hook
+
+**Status:** ✅ COMPLETED (EN/DE) - Q1 2026
+**Future:** Additional languages (FR/ES/IT/PT/NL) planned for Q2 2026
+
+---
+
 ## 🔒 Security Considerations
 
 ### Authentication & Sessions
@@ -523,7 +794,57 @@
 
 ---
 
-## 📱 UI/UX Improvements
+## Status Page - Coming Soon Features
+
+### Not Yet Implemented
+
+- [ ] **Status Notifications Opt-In/Out System**
+  - [ ] User preferences for status notifications
+  - [ ] Resend integration for incident emails
+  - [ ] Opt-in/opt-out toggle in UI
+  - [ ] Email templates for different incident types
+  - [ ] Notification frequency settings
+
+- [ ] **Real Incident History System**
+  - [ ] Database table for incidents (`incidents`)
+  - [ ] Database table for incident updates (`incidentUpdates`)
+  - [ ] Admin panel for incident management
+  - [ ] Real-time incident creation and updates
+  - [ ] Incident severity classification
+  - [ ] Incident status tracking (investigating → resolved)
+
+- [ ] **Advanced Status Monitoring**
+  - [ ] External service monitoring (Stripe, Resend, Cloudinary)
+  - [ ] Database performance metrics
+  - [ ] CDN health checks
+  - [ ] Automated alert thresholds
+  - [ ] Historical uptime data storage
+  - [ ] Performance degradation detection
+
+- [ ] **Status Page Enhancements**
+  - [ ] Public API for status data
+  - [ ] RSS feed for status updates
+  - [ ] Embeddable status widgets
+  - [ ] Custom status page branding
+  - [ ] Multi-language status pages
+  - [ ] Status page analytics
+
+### Current Implementation Status
+
+- [x] **Basic Status Display** - Real-time service health checks
+- [x] **Service Categories** - Core, Infrastructure, Integrations
+- [x] **Latency Monitoring** - Response time tracking
+- [x] **Uptime Simulation** - 90-day history visualization
+- [x] **Theme Integration** - Full theme support
+- [x] **i18n Support** - EN/DE translations
+- [x] **Auto-Refresh** - 30-second intervals
+- [x] **Responsive Design** - Mobile/desktop optimized
+- [ ] **Incident History** - Currently mock data (COMING SOON)
+- [ ] **Status Notifications** - Placeholder button (COMING SOON)
+
+---
+
+## UI/UX Improvements
 
 - [ ] Mobile app (React Native / PWA) - future consideration
 - [x] Accessibility improvements (semantic HTML, focus states, contrast)
@@ -624,6 +945,18 @@
 | Weekly Digest Cron          | LOW      |
 | Mobile App / PWA            | FUTURE   |
 
+### 🌐 Future Features (Internationalization)
+
+| Feature                     | Priority | Notes                                                  |
+| --------------------------- | -------- | ------------------------------------------------------ |
+| **i18n Framework**          | MEDIUM   | Professional internationalization (i18next/react-intl) |
+| **Build-time Translation**  | MEDIUM   | DeepL API integration for automatic translations       |
+| **Separate Language Files** | MEDIUM   | `/locales/de.json`, `/locales/en.json` structure       |
+| **Language Detection**      | LOW      | Browser language detection + manual override           |
+| **SEO Optimization**        | LOW      | hreflang tags, sitemap for multiple languages          |
+
+> **Note:** The inline DE/EN approach was removed for code cleanliness. A proper i18n solution should be implemented for professional multilingual support.
+
 > **Note:** Testimonials system needs to be implemented before the Home Page "What Users Say" section can display real data. This includes:
 >
 > - `testimonials` table (userId, content, rating, isApproved, isFeatured, createdAt)
@@ -632,5 +965,6 @@
 
 ---
 
-**Last Updated**: 2026-01-25  
+**Last Updated**: 2026-02-02  
+**Version**: 2.7.0  
 **Next Review**: Before each major feature release
