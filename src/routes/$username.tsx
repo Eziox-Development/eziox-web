@@ -274,6 +274,10 @@ function BioPage() {
   }
 
   const scrollToSection = (section: 'profile' | 'links' | 'comments') => {
+    // Set active section immediately to prevent scroll listener from overriding
+    setActiveSection(section)
+    
+    // Scroll to the section
     if (section === 'profile') window.scrollTo({ top: 0, behavior: 'smooth' })
     else if (section === 'links' && linksRef.current) linksRef.current.scrollIntoView({ behavior: 'smooth' })
     else if (section === 'comments' && commentsRef.current) commentsRef.current.scrollIntoView({ behavior: 'smooth' })

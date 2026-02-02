@@ -334,14 +334,12 @@ export const signInFn = createServerFn({ method: 'POST' })
     try {
       const user = await findUserByEmail(email)
       if (!user) {
-        console.log('Login failed: User not found for email:', email)
         setResponseStatus(401)
         throw { message: 'Invalid email or password', status: 401 }
       }
 
       const locked = await isAccountLocked(user.id)
       if (locked) {
-        console.log('Login failed: Account locked for user:', user.id)
         setResponseStatus(423)
         throw {
           message:
@@ -352,7 +350,6 @@ export const signInFn = createServerFn({ method: 'POST' })
 
       const valid = await verifyPassword(password, user.passwordHash)
       if (!valid) {
-        console.log('Login failed: Invalid password for user:', user.id)
         const lockResult = await recordFailedLogin(user.id)
         setResponseStatus(401)
         if (lockResult.locked) {
@@ -367,8 +364,6 @@ export const signInFn = createServerFn({ method: 'POST' })
           status: 401,
         }
       }
-
-      console.log('Login successful for user:', user.id)
 
       const session = await createSession(
         user.id,
