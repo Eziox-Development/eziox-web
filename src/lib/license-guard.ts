@@ -106,9 +106,12 @@ function protectConsole(): void {
     configurable: false,
   })
 
-  // Freeze console object to prevent modifications
+  // Freeze console object to prevent modifications (but allow React DevTools)
   try {
-    Object.freeze(console)
+    // Don't freeze console in development to allow React DevTools
+    if (import.meta.env.PROD) {
+      Object.freeze(console)
+    }
   } catch {
     // Some browsers don't allow freezing console
   }

@@ -4,6 +4,7 @@ interface TurnstileWidgetProps {
   onVerify: (token: string) => void
   onError?: () => void
   onExpire?: () => void
+  onReset?: () => void
 }
 
 declare global {
@@ -77,15 +78,33 @@ export function TurnstileWidget({
   onVerify,
   onError,
   onExpire,
+  onReset,
 }: TurnstileWidgetProps) {
   const uniqueId = useId()
   const containerId = `turnstile-${uniqueId.replace(/:/g, '-')}`
   const widgetIdRef = useRef<string | null>(null)
   const mountedRef = useRef(true)
-  const callbacksRef = useRef({ onVerify, onError, onExpire })
+  const callbacksRef = useRef({ onVerify, onError, onExpire, onReset })
 
   // Keep callbacks ref updated
-  callbacksRef.current = { onVerify, onError, onExpire }
+  callbacksRef.current = { onVerify, onError, onExpire, onReset }
+
+  // Expose reset function
+  useEffect(() => {
+    const handleReset = () => {
+      if (widgetIdRef.current && window.turnstile) {
+        window.turnstile.reset(widgetIdRef.current)
+        callbacksRef.current.onReset?.()
+      }
+    }
+
+    // Store reset function globally for access from auth components
+    ;(window as unknown as { resetTurnstileWidget?: () => void }).resetTurnstileWidget = handleReset
+
+    return () => {
+      delete (window as unknown as { resetTurnstileWidget?: () => void }).resetTurnstileWidget
+    }
+  }, [])
 
   useEffect(() => {
     mountedRef.current = true

@@ -46,7 +46,7 @@
 | 📋 **Templates**           | Browse & apply community templates                                       |
 | 💳 **Stripe Payments**     | Secure subscription & one-time payments                                  |
 | 📱 **Responsive**          | Mobile-first design                                                      |
-| ⚡ **Fast**                | Bun runtime + Vercel Edge                                                |
+| ⚡ **Fast**                | Bun runtime + Vercel Edge                                                 |
 
 ## 💎 Premium Tiers
 

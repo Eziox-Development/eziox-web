@@ -12,14 +12,14 @@ interface TurnstileResponse {
 export async function verifyTurnstileToken(
   token: string,
   ip?: string,
-): Promise<boolean> {
+): Promise<{ success: boolean; error?: string }> {
   if (!TURNSTILE_SECRET_KEY) {
     console.warn('[Turnstile] Secret key not configured, skipping verification')
-    return true
+    return { success: true }
   }
 
   if (!token) {
-    return false
+    return { success: false, error: 'Token is required' }
   }
 
   try {
@@ -40,19 +40,32 @@ export async function verifyTurnstileToken(
 
     if (!response.ok) {
       console.error('[Turnstile] Verification request failed:', response.status)
-      return false
+      return { success: false, error: 'Verification service unavailable' }
     }
 
     const data: TurnstileResponse = await response.json()
 
     if (!data.success) {
-      console.warn('[Turnstile] Verification failed:', data['error-codes'])
-      return false
+      const errorCodes = data['error-codes'] || []
+      console.warn('[Turnstile] Verification failed:', errorCodes)
+      
+      // Handle specific error cases
+      if (errorCodes.includes('timeout-or-duplicate')) {
+        return { success: false, error: 'Token expired or already used. Please refresh the page and try again.' }
+      }
+      if (errorCodes.includes('invalid-input-response')) {
+        return { success: false, error: 'Invalid verification token. Please refresh the page and try again.' }
+      }
+      if (errorCodes.includes('missing-input-response')) {
+        return { success: false, error: 'Verification required. Please complete the bot check.' }
+      }
+      
+      return { success: false, error: 'Bot verification failed. Please refresh the page and try again.' }
     }
 
-    return true
+    return { success: true }
   } catch (error) {
     console.error('[Turnstile] Verification error:', error)
-    return false
+    return { success: false, error: 'Verification service error' }
   }
 }

@@ -33,6 +33,11 @@ interface MyRouterContext {
     emailVerified: boolean
     [key: string]: unknown
   } | null
+  maintenanceStatus?: {
+    enabled: boolean
+    message?: string
+    estimatedEndTime?: string
+  }
 }
 
 const scripts: React.DetailedHTMLProps<
@@ -51,9 +56,10 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
   loader: async ({ location }) => {
     const { currentUser } = await authMiddleware()
 
-    if (location.pathname !== '/maintenance') {
-      const maintenanceStatus = await getMaintenanceStatusFn()
+    // Always check maintenance status
+    const maintenanceStatus = await getMaintenanceStatusFn()
 
+    if (location.pathname !== '/maintenance') {
       if (maintenanceStatus.enabled) {
         const { canBypass } = await canBypassMaintenanceFn()
 
@@ -67,6 +73,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 
     return {
       currentUser,
+      maintenanceStatus,
     }
   },
   head: () => {

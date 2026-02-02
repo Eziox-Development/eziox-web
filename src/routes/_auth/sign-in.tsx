@@ -110,6 +110,22 @@ function SignInPage() {
     },
   })
 
+  // Reset turnstile token on error to allow retry
+  const resetTurnstileToken = () => {
+    setTurnstileToken('')
+    // Use the proper turnstile reset function
+    try {
+      ;(window as unknown as { resetTurnstileWidget?: () => void }).resetTurnstileWidget?.()
+    } catch {
+      // Fallback: try to find and reset the widget manually
+      const turnstileElement = document.querySelector('iframe[title*="turnstile"]')
+      if (turnstileElement) {
+        const turnstileWindow = (turnstileElement as HTMLIFrameElement).contentWindow
+        turnstileWindow?.postMessage({ event: 'reset' }, '*')
+      }
+    }
+  }
+
   const signInMutation = useMutation({
     mutationFn: async (data: SignInFormData) => {
       if (!turnstileToken) {
@@ -121,12 +137,15 @@ function SignInPage() {
       await router.invalidate()
       await navigate({ to: search.redirect || '/' })
     },
-    onError: async (error: { status?: number; message?: string }) => {
-      if (error?.status === 302) {
-        await router.invalidate()
-        await navigate({ to: search.redirect || '/' })
-        return
+    onError: (error) => {
+      // Reset turnstile token on any authentication error
+      if (error.message?.includes('Bot verification failed') || 
+          error.message?.includes('Token expired') ||
+          error.message?.includes('refresh the page') ||
+          error.message?.includes('Invalid email or password')) {
+        resetTurnstileToken()
       }
+      
       form.setError('root', {
         message: error.message || t('signIn.errors.general'),
       })
@@ -563,6 +582,7 @@ function SignInPage() {
                   onVerify={(token) => setTurnstileToken(token)}
                   onError={() => setTurnstileToken('')}
                   onExpire={() => setTurnstileToken('')}
+                  onReset={() => setTurnstileToken('')}
                 />
               </motion.div>
 

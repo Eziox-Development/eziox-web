@@ -228,6 +228,21 @@ function SignUpPage() {
         await navigate({ to: search.redirect || '/' })
         return
       }
+      
+      // Reset turnstile token on bot verification errors
+      if (error.message?.includes('Bot verification failed') || 
+          error.message?.includes('Token expired') ||
+          error.message?.includes('refresh the page')) {
+        setTurnstileToken('')
+        // Trigger turnstile reset
+        const turnstileElement = document.querySelector('iframe[title*="turnstile"]')
+        if (turnstileElement) {
+          const turnstileWindow = (turnstileElement as HTMLIFrameElement).contentWindow
+          turnstileWindow?.postMessage({ event: 'reset' }, '*')
+        }
+        return
+      }
+      
       form.setError('root', {
         message: error.message || t('signUp.errors.general'),
       })

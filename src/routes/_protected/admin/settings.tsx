@@ -526,14 +526,15 @@ function AdminSettingsPage() {
                       message: e.target.value,
                     }))
                   }
-                  rows={3}
-                  className="w-full px-4 py-3 rounded-xl text-sm resize-none transition-all focus:ring-2 focus:ring-purple-500/30"
+                  rows={6}
+                  className="w-full px-4 py-3 rounded-xl text-sm resize-y transition-all focus:ring-2 focus:ring-purple-500/30"
                   style={{
                     background: 'rgba(255, 255, 255, 0.05)',
                     border: '1px solid rgba(255, 255, 255, 0.08)',
                     color: 'var(--foreground)',
+                    minHeight: '120px',
                   }}
-                  placeholder="Message shown to visitors during maintenance..."
+                  placeholder="Message shown to visitors during maintenance...&#10;&#10;You can use Markdown:&#10;## Header 2&#10;### Header 3&#10;**Bold text**&#10;*Italic text*&#10;- Bullet point&#10;&#10;Multiple lines are preserved."
                 />
               </div>
 
