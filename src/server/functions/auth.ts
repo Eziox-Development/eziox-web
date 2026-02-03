@@ -1793,20 +1793,29 @@ export const getPasskeysFn = createServerFn({ method: 'GET' }).handler(
       throw { message: 'Not authenticated', status: 401 }
     }
 
-    const userPasskeys = await db
-      .select({
-        id: passkeys.id,
-        name: passkeys.name,
-        deviceType: passkeys.deviceType,
-        backedUp: passkeys.backedUp,
-        lastUsedAt: passkeys.lastUsedAt,
-        createdAt: passkeys.createdAt,
-      })
-      .from(passkeys)
-      .where(eq(passkeys.userId, currentUser.id))
-      .orderBy(desc(passkeys.createdAt))
+    try {
+      const userPasskeys = await db
+        .select({
+          id: passkeys.id,
+          name: passkeys.name,
+          deviceType: passkeys.deviceType,
+          backedUp: passkeys.backedUp,
+          lastUsedAt: passkeys.lastUsedAt,
+          createdAt: passkeys.createdAt,
+        })
+        .from(passkeys)
+        .where(eq(passkeys.userId, currentUser.id))
+        .orderBy(desc(passkeys.createdAt))
 
-    return { passkeys: userPasskeys }
+      return { passkeys: userPasskeys }
+    } catch {
+      // Return a generic error message to the client
+      setResponseStatus(500)
+      throw { 
+        message: 'Failed to load passkeys. Please try again later.', 
+        status: 500 
+      }
+    }
   },
 )
 
@@ -1825,10 +1834,15 @@ export const getPasskeyRegistrationOptionsFn = createServerFn({ method: 'POST' }
     }
 
     // Get existing passkeys for excludeCredentials
-    const existingPasskeys = await db
-      .select({ credentialId: passkeys.credentialId })
-      .from(passkeys)
-      .where(eq(passkeys.userId, currentUser.id))
+    let existingPasskeys: { credentialId: string }[]
+    try {
+      existingPasskeys = await db
+        .select({ credentialId: passkeys.credentialId })
+        .from(passkeys)
+        .where(eq(passkeys.userId, currentUser.id))
+    } catch {
+      existingPasskeys = [] // Continue without excludeCredentials
+    }
 
     const rpName = 'Eziox'
     const rpID = process.env.APP_URL ? new URL(process.env.APP_URL).hostname : 'localhost'
@@ -1933,19 +1947,25 @@ export const verifyPasskeyRegistrationFn = createServerFn({ method: 'POST' })
     }
 
     // Store the passkey
-    const result = await db
-      .insert(passkeys)
-      .values({
-        userId: currentUser.id,
-        credentialId: credential.id,
-        publicKey: credential.response.attestationObject,
-        counter: 0,
-        deviceType: credential.authenticatorAttachment === 'platform' ? 'platform' : 'cross-platform',
-        backedUp: false,
-        transports: JSON.stringify(['internal']),
-        name: storedChallenge.name,
-      })
-      .returning()
+    let result
+    try {
+      result = await db
+        .insert(passkeys)
+        .values({
+          userId: currentUser.id,
+          credentialId: credential.id,
+          publicKey: credential.response.attestationObject,
+          counter: 0,
+          deviceType: credential.authenticatorAttachment === 'platform' ? 'platform' : 'cross-platform',
+          backedUp: false,
+          transports: JSON.stringify(['internal']),
+          name: storedChallenge.name,
+        })
+        .returning()
+    } catch {
+      setResponseStatus(500)
+      throw { message: 'Failed to save passkey. Please try again.', status: 500 }
+    }
 
     const newPasskey = result[0]
     if (!newPasskey) {
@@ -1985,10 +2005,16 @@ export const deletePasskeyFn = createServerFn({ method: 'POST' })
       throw { message: 'Not authenticated', status: 401 }
     }
 
-    const [deleted] = await db
-      .delete(passkeys)
-      .where(and(eq(passkeys.id, data.passkeyId), eq(passkeys.userId, currentUser.id)))
-      .returning()
+    let deleted
+    try {
+      [deleted] = await db
+        .delete(passkeys)
+        .where(and(eq(passkeys.id, data.passkeyId), eq(passkeys.userId, currentUser.id)))
+        .returning()
+    } catch {
+      setResponseStatus(500)
+      throw { message: 'Failed to delete passkey. Please try again.', status: 500 }
+    }
 
     if (!deleted) {
       setResponseStatus(404)
@@ -2017,11 +2043,17 @@ export const renamePasskeyFn = createServerFn({ method: 'POST' })
       throw { message: 'Not authenticated', status: 401 }
     }
 
-    const [updated] = await db
-      .update(passkeys)
-      .set({ name: data.name })
-      .where(and(eq(passkeys.id, data.passkeyId), eq(passkeys.userId, currentUser.id)))
-      .returning()
+    let updated
+    try {
+      [updated] = await db
+        .update(passkeys)
+        .set({ name: data.name })
+        .where(and(eq(passkeys.id, data.passkeyId), eq(passkeys.userId, currentUser.id)))
+        .returning()
+    } catch {
+      setResponseStatus(500)
+      throw { message: 'Failed to rename passkey. Please try again.', status: 500 }
+    }
 
     if (!updated) {
       setResponseStatus(404)
