@@ -10,6 +10,7 @@ export type TabType =
   | 'api'
   | 'settings'
   | 'privacy'
+  | 'security'
 
 export interface ProfileFormData {
   name: string

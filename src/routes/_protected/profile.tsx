@@ -15,6 +15,7 @@ const validTabs: TabType[] = [
   'api',
   'settings',
   'privacy',
+  'security',
 ]
 
 export const Route = createFileRoute('/_protected/profile')({

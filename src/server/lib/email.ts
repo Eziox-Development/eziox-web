@@ -1252,3 +1252,83 @@ export async function sendAbuseAlertEmail(params: {
     return { success: false, error: 'Failed to send email' }
   }
 }
+
+// OTP Login Email
+export async function sendOtpEmail(
+  to: string,
+  code: string,
+  username: string,
+): Promise<EmailResult> {
+  try {
+    const { error } = await getResend().emails.send({
+      from: FROM_EMAIL,
+      to,
+      subject: `${code} is your Eziox login code`,
+      html: `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; background-color: #0a0a0f; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #0a0a0f; padding: 40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 480px; background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.05)); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; overflow: hidden;">
+          <tr>
+            <td style="padding: 40px 32px; text-align: center;">
+              <img src="${APP_URL}/icon.png" alt="Eziox" width="48" height="48" style="border-radius: 12px; margin-bottom: 24px;">
+              
+              <h1 style="margin: 0 0 8px; font-size: 24px; font-weight: 700; color: #ffffff;">
+                Your Login Code
+              </h1>
+              <p style="margin: 0 0 32px; font-size: 14px; color: rgba(255, 255, 255, 0.6);">
+                Hi ${username}, use this code to sign in to your Eziox account
+              </p>
+              
+              <div style="background: rgba(99, 102, 241, 0.15); border: 2px solid rgba(99, 102, 241, 0.3); border-radius: 16px; padding: 24px; margin-bottom: 24px;">
+                <p style="margin: 0; font-size: 40px; font-weight: 700; color: #ffffff; letter-spacing: 8px; font-family: monospace;">
+                  ${code}
+                </p>
+              </div>
+              
+              <p style="margin: 0 0 24px; font-size: 14px; color: rgba(255, 255, 255, 0.6); line-height: 1.6;">
+                This code will expire in <strong style="color: #ffffff;">10 minutes</strong>.<br>
+                If you didn't request this code, you can safely ignore this email.
+              </p>
+              
+              <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 12px; padding: 16px; margin-bottom: 24px;">
+                <p style="margin: 0; font-size: 12px; color: rgba(255, 255, 255, 0.7);">
+                  ⚠️ Never share this code with anyone. Eziox will never ask for your code.
+                </p>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 24px 32px; background: rgba(0, 0, 0, 0.2); text-align: center; border-top: 1px solid rgba(255, 255, 255, 0.05);">
+              <p style="margin: 0; font-size: 12px; color: rgba(255, 255, 255, 0.4);">
+                © ${new Date().getFullYear()} Eziox. All rights reserved.
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+      `,
+    })
+
+    if (error) {
+      console.error('[Email] Failed to send OTP email:', error)
+      return { success: false, error: error.message }
+    }
+
+    return { success: true }
+  } catch (err) {
+    console.error('[Email] Error sending OTP email:', err)
+    return { success: false, error: 'Failed to send email' }
+  }
+}

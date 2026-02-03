@@ -35,6 +35,7 @@ import {
   LayoutGrid,
   Plug,
   Image,
+  Fingerprint,
 } from 'lucide-react'
 import type { TabType } from './types'
 
@@ -119,4 +120,5 @@ export const DASHBOARD_TABS: Array<{
   { id: 'api', labelKey: 'dashboard.tabs.api', descKey: 'dashboard.tabs.apiDesc', icon: Key, category: 'premium' },
   { id: 'settings', labelKey: 'dashboard.tabs.settings', descKey: 'dashboard.tabs.settingsDesc', icon: Settings, category: 'account' },
   { id: 'privacy', labelKey: 'dashboard.tabs.privacy', descKey: 'dashboard.tabs.privacyDesc', icon: Lock, category: 'account' },
+  { id: 'security', labelKey: 'dashboard.tabs.security', descKey: 'dashboard.tabs.securityDesc', icon: Fingerprint, category: 'account' },
 ]

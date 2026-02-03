@@ -6,6 +6,8 @@
 export type SecurityEventType =
   | 'auth.login_success'
   | 'auth.login_failed'
+  | 'auth.login_otp'
+  | 'auth.login_passkey'
   | 'auth.logout'
   | 'auth.signup'
   | 'auth.password_reset_request'
@@ -20,6 +22,9 @@ export type SecurityEventType =
   | 'auth.email_verification_sent'
   | 'auth.email_change_requested'
   | 'auth.email_changed'
+  | 'auth.otp_requested'
+  | 'auth.passkey_registered'
+  | 'auth.passkey_removed'
   | 'rate_limit.exceeded'
   | 'csrf.invalid_token'
   | 'csrf.invalid_origin'

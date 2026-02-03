@@ -1175,6 +1175,30 @@ export const abuseAlertsRelations = relations(abuseAlerts, ({ one }) => ({
   }),
 }))
 
+// PASSKEYS TABLE (WebAuthn Credentials)
+export const passkeys = pgTable('passkeys', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  credentialId: text('credential_id').notNull().unique(),
+  publicKey: text('public_key').notNull(),
+  counter: integer('counter').notNull().default(0),
+  deviceType: varchar('device_type', { length: 50 }), // 'singleDevice' | 'multiDevice'
+  backedUp: boolean('backed_up').default(false),
+  transports: text('transports'), // JSON array of transports
+  name: varchar('name', { length: 100 }).notNull().default('Passkey'),
+  lastUsedAt: timestamp('last_used_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+})
+
+export const passkeysRelations = relations(passkeys, ({ one }) => ({
+  user: one(users, {
+    fields: [passkeys.userId],
+    references: [users.id],
+  }),
+}))
+
 // TYPE EXPORTS
 export type User = typeof users.$inferSelect
 export type NewUser = typeof users.$inferInsert
@@ -1235,3 +1259,5 @@ export type AbuseAlert = typeof abuseAlerts.$inferSelect
 export type NewAbuseAlert = typeof abuseAlerts.$inferInsert
 export type ProfileComment = typeof profileComments.$inferSelect
 export type NewProfileComment = typeof profileComments.$inferInsert
+export type Passkey = typeof passkeys.$inferSelect
+export type NewPasskey = typeof passkeys.$inferInsert

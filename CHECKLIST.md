@@ -4,7 +4,7 @@
 
 ---
 
-## ✅ Completed Features
+## [DONE] Completed Features
 
 ### Core Platform
 
@@ -21,6 +21,37 @@
 - [x] Contact form (`/contact`)
 - [x] Status page (`/status`)
 - [x] Pricing page (`/pricing`)
+
+### Recent Updates (2026-02-03) - v2.8.0
+
+- [x] **Authentication Overhaul** - New login methods
+  - [x] Passkey/WebAuthn support for passwordless biometric login
+  - [x] `passkeys` table for credential storage
+  - [x] Server functions: registration, authentication, management
+  - [x] OTP (One-Time Password) email login system
+  - [x] 6-digit code with 10-minute expiry
+  - [x] Rate limiting: 5 requests/minute
+  - [x] Discord OAuth integration for login/registration
+
+- [x] **Redesigned Auth Pages** - Modern multi-step flows
+  - [x] Sign-in: Method selection > Credentials > Verify
+  - [x] Sign-up: Method > Details > Password > Verify
+  - [x] Animated background with gradient orbs
+  - [x] Real logo integration (`/icon.png`)
+  - [x] Minimal header with home navigation
+
+- [x] **Security Tab in Profile Dashboard**
+  - [x] `SecurityTab.tsx` component
+  - [x] Passkey management (add, rename, delete)
+  - [x] OTP login status display
+  - [x] Security tips section
+  - [x] Full i18n support (EN/DE)
+
+- [x] **Security Event Types**
+  - [x] `auth.login_otp` for OTP logins
+  - [x] `auth.login_passkey` for passkey logins
+  - [x] `auth.passkey_registered` for new passkey registrations
+  - [x] `auth.passkey_removed` for passkey deletions
 
 ### Recent Updates (2026-02-02) - v2.7.0
 
@@ -117,9 +148,9 @@
 
 ---
 
-## 🔧 Bug Fixes Completed
+## [FIXED] Bug Fixes Completed
 
-### High Priority ✅
+### High Priority [DONE]
 
 - [x] **Link Click Tracking** - Fixed with COALESCE and proper error handling
 - [x] **Session Persistence** - 7-day expiry working correctly
@@ -128,11 +159,11 @@
 
 ---
 
-## 🚀 Feature Roadmap
+## [ROADMAP] Feature Roadmap
 
-### Phase 1: Social Features (Priority: HIGH) ✅ COMPLETED
+### Phase 1: Social Features (Priority: HIGH) [DONE]
 
-#### 1. Followers System ✅ COMPLETED
+#### 1. Followers System [DONE]
 
 - [x] Follow/Unfollow button on bio pages
 - [x] Followers/Following counts in profile (real-time)
@@ -149,7 +180,7 @@
   - [x] Follow/unfollow from modal
 - [x] Follow notifications (auto-created via `createFollowerNotification`)
 
-#### 2. Referral System ✅ COMPLETED
+#### 2. Referral System [DONE]
 
 - [x] Generate unique referral codes per user
 - [x] Referral link format: `eziox.link/join/{code}`
@@ -161,7 +192,7 @@
 - [x] QR code for referral link (using `qrcode` package)
 - [ ] Premium days rewards - Future
 
-#### 3. Badge System ✅ COMPLETED
+#### 3. Badge System [DONE]
 
 - [x] Badge types:
   - [x] `owner` - Platform owner
@@ -187,9 +218,9 @@
 - [x] Auto-award badges on signup (early_adopter, premium, owner, admin)
 - [x] Server functions: assign, remove, check badges
 
-### Phase 2: Creator Features (Priority: HIGH) ✅ COMPLETED
+### Phase 2: Creator Features (Priority: HIGH) [DONE]
 
-#### 4. Creator/Partner Page ✅ COMPLETED
+#### 4. Creator/Partner Page [DONE]
 
 - [x] Routes: `/creators` and `/partners`
 - [x] Partner application system (`partnerApplications` table)
@@ -203,7 +234,7 @@
 - [x] Featured creators section
 - [x] Filter by category (VTuber, Streamer, Artist, etc.)
 
-#### 5. Spotify Integration ✅ COMPLETED
+#### 5. Spotify Integration [DONE]
 
 - [x] Spotify OAuth connection
 - [x] New table: `spotify_connections` (user_id, access_token, refresh_token, expires_at)
@@ -217,9 +248,9 @@
 - [x] Auto-refresh token handling
 - [x] Privacy toggle (show/hide activity in settings)
 
-### Phase 3: Analytics & Engagement (Priority: MEDIUM) ✅ COMPLETED
+### Phase 3: Analytics & Engagement (Priority: MEDIUM) [DONE]
 
-#### 6. Enhanced Analytics ✅ COMPLETED
+#### 6. Enhanced Analytics [DONE]
 
 - [x] Analytics dashboard (`/analytics`)
 - [x] Charts for:
@@ -233,7 +264,7 @@
 - [x] New table: `linkClickAnalytics` for detailed per-click tracking
 - [x] New table: `profileViewAnalytics` for detailed per-view tracking
 
-#### 7. Notifications System ✅ COMPLETED
+#### 7. Notifications System [DONE]
 
 - [x] New table: `notifications`
 - [x] Notification types:
@@ -249,9 +280,9 @@
 - [x] Notification preferences in settings (toggle per type)
 - [ ] Email notifications (optional) - Future
 
-### Phase 4: Premium Features (Priority: MEDIUM) ✅ COMPLETED
+### Phase 4: Premium Features (Priority: MEDIUM) [DONE]
 
-#### 8. Premium Tiers ✅ COMPLETED
+#### 8. Premium Tiers [DONE]
 
 > **Philosophy:**  
 > Free is fully usable. Paid tiers improve comfort, control, and polish — **not access**.  
@@ -299,7 +330,7 @@
 - [x] Premium badge display
 - [x] Tier-based feature gating (`canAccessFeature` helper)
 
-#### 9. Custom Themes ✅ COMPLETED
+#### 9. Custom Themes [DONE]
 
 - [x] Theme builder for premium users (`/theme-builder`)
 - [x] Custom colors, fonts, backgrounds
@@ -307,7 +338,7 @@
 - [x] Import/Export themes
 - [x] Custom theme storage (`customThemes` in profile)
 
-#### 10. Community Templates ✅ COMPLETED
+#### 10. Community Templates [DONE]
 
 - [x] Templates page (`/templates`)
 - [x] New table: `communityTemplates`
@@ -322,14 +353,14 @@
 
 ### Phase 5: Advanced Features (Priority: LOW)
 
-#### 11. Link Scheduling ✅ COMPLETED
+#### 11. Link Scheduling [DONE]
 
 - [x] Schedule links to appear/disappear (`LinkSchedule` schema with startDate/endDate)
 - [x] Time-limited links (endDate support with hideWhenExpired option)
 - [x] Countdown timer display (showCountdown, countdownStyle: minimal/detailed/badge)
 - [x] Server function: `updateLinkScheduleFn`
 
-#### 12. QR Codes ✅ COMPLETED
+#### 12. QR Codes [DONE]
 
 - [x] QR code for referral links (in ReferralsTab with modal)
 - [x] QR code for bio page URL (in ProfileSidebar)
@@ -339,7 +370,7 @@
 - [x] Custom QR colors UI (color presets + custom color pickers)
 - [x] Share button with Web Share API fallback
 
-#### 13. Link Analytics ✅ COMPLETED
+#### 13. Link Analytics [DONE]
 
 - [x] Per-link click analytics (`linkClickAnalytics` table)
 - [x] Geographic data (country, city, region fields)
@@ -347,7 +378,7 @@
 - [x] Click heatmap (hourlyClicks aggregation by day/hour)
 - [x] Referrer tracking
 
-#### 14. API Access ✅ COMPLETED
+#### 14. API Access [DONE]
 
 - [x] API keys management (`apiKeys` table, CRUD operations)
 - [x] API key generation with `ezx_` prefix and SHA-256 hashing
@@ -362,7 +393,7 @@
 
 ### Phase 6: Database Features (Schema Ready, UI Pending)
 
-#### 15. Link Groups ✅ COMPLETED
+#### 15. Link Groups [DONE]
 
 - [x] Schema: `linkGroups` table
 - [x] Fields: name, icon, color, isCollapsible, isCollapsed, order
@@ -370,7 +401,7 @@
 - [x] UI: Group links into sections (LinksTab with Groups view)
 - [x] UI: Collapsible groups on bio page
 
-#### 16. Profile Widgets ✅ COMPLETED
+#### 16. Profile Widgets [DONE]
 
 - [x] Schema: `profileWidgets` table
 - [x] Widget types defined (Spotify, Weather, Countdown, Social Feed, YouTube, SoundCloud, Twitch, GitHub)
@@ -378,7 +409,7 @@
 - [x] UI: Widget management in dashboard (WidgetsTab)
 - [x] UI: Widget display on bio page (integrated with profile)
 
-#### 17. Social Integrations (Beyond Spotify) ✅ COMPLETED
+#### 17. Social Integrations (Beyond Spotify) [DONE]
 
 - [x] Schema: `socialIntegrations` table
 - [x] Fields: platform, accessToken, refreshToken, showOnProfile
@@ -387,7 +418,7 @@
 - [x] OAuth callback route (`src/routes/api/auth/callback.$platform.ts`)
 - [x] IntegrationsTab UI component (`src/components/profile/tabs/IntegrationsTab.tsx`)
 
-#### 18. Media Library ✅ COMPLETED
+#### 18. Media Library [DONE]
 
 - [x] Schema: `mediaLibrary` table
 - [x] Fields: filename, mimeType, size, url, thumbnailUrl, folder
@@ -404,9 +435,9 @@
 
 ---
 
-## 📋 Legal Compliance (Germany)
+## [LEGAL] Legal Compliance (Germany)
 
-### ✅ COMPLETED - Legal Requirements
+### [DONE] Legal Requirements
 
 - [x] **Datenschutzerklärung** (/datenschutz) - Complete GDPR-compliant German version
   - [x] GDPR references and legal bases (Art. 6 GDPR)
@@ -434,13 +465,13 @@
 - [x] **Cookie Consent Banner** - Granular consent available
 - [x] **Footer Links** - All German legal pages linked
 
-### 🟡 OPTIONAL - Future Improvements
+### [OPTIONAL] Future Improvements
 
 - [ ] **Job descriptions** if staff available
 - [ ] **Privacy by Design** - Further data minimization
 - [ ] **Data export function** - Self-service export (already in profile settings)
 
-### ✅ AGB - Fully Aligned with Reality
+### [DONE] AGB - Fully Aligned with Reality
 
 - [x] **Pricing and Tiers** - Current prices (Free: 0€, Pro: 2.99€, Creator: 5.99€, Lifetime: 29€)
 - [x] **Available Features** - 31+ themes, unlimited links, followers, leaderboards
@@ -452,11 +483,11 @@
 - [x] **Custom Domains** - Creator feature with specific policies
 - [x] **Maintenance and Availability** - 99.9% uptime with status page
 
-### 🔴 CRITICAL SECURITY GAPS (AGB vs. Reality)
+### [GAPS] Security Gaps (AGB vs. Reality)
 
 Based on Code Analysis vs. AGB:
 
-**✅ Email Validation:**
+**[OK] Email Validation:**
 
 - [x] **Real Email Validation** with comprehensive checks
 - [x] **DNS/MX Verification** to ensure domain can receive emails
@@ -467,7 +498,7 @@ Based on Code Analysis vs. AGB:
 - [x] **Role Account Detection** (admin@, info@, etc.)
 - Implementation: `/src/server/lib/email-validation.ts`
 
-**✅ Email Verification:**
+**[OK] Email Verification:**
 
 - [x] **Email Verification** sent on registration
 - [x] **requireEmailVerification()** helper function - `src/server/lib/auth.ts`
@@ -481,21 +512,21 @@ Based on Code Analysis vs. AGB:
 - [x] **Password Required** for email change - Password verification before change
 - Implementation: `src/server/lib/auth.ts`, `src/server/functions/auth.ts`, `src/routes/_public/verify-email-change.tsx`
 
-**✅ Cookie Granularity:**
+**[OK] Cookie Granularity:**
 
 - [x] **Cookie settings** properly applied
 - [x] **Vercel Analytics** only loaded with user consent
 - [x] **Cookie consent UI** with customize options
 - Implementation: `src/routes/__root.tsx` (conditionally loads Analytics based on consent)
 
-**✅ Analytics Cookie Implementation:**
+**[OK] Analytics Cookie Implementation:**
 
 - [x] **Analytics Cookies** respect user consent
 - [x] **Internal Analytics** is server-side (no cookies)
 - [x] **Vercel Analytics** only loaded when `analyticsEnabled` is true
 - Implementation: `src/components/CookieConsent.tsx` + `src/routes/__root.tsx`
 
-**✅ Password Security:**
+**[OK] Password Security:**
 
 - [x] **bcrypt Hashing** with cost factor 12 (✅ implemented)
 - [x] **Password Reset Token Hashing** - SHA256 hash stored in DB
@@ -512,7 +543,7 @@ Based on Code Analysis vs. AGB:
 - [x] **Secure Password Generator** - `generateSecurePassword()` utility
 - Implementation: `src/lib/password-security.ts` + `src/server/functions/auth.ts`
 
-**✅ Additional Security Measures (Important):**
+**[OK] Additional Security Measures:**
 
 - [x] **Turnstile Bot Protection** - Cloudflare Turnstile on sign-in/sign-up
 - [x] **Rate Limiting** - Per-IP rate limits on auth endpoints
@@ -526,7 +557,7 @@ Based on Code Analysis vs. AGB:
 - [x] **Secure Cookie Settings** - HttpOnly, Secure, SameSite=Lax
 - Implementation: `src/server/lib/auth.ts` + `src/lib/security.ts`
 
-**❌ Content Moderation:**
+**[TODO] Content Moderation:**
 
 - [ ] **Username Filter** against offensive names and slurs - NOT IMPLEMENTED
 - [ ] **Reserved Username Protection** - Only routing protection, NOT registration validation
@@ -536,20 +567,20 @@ Based on Code Analysis vs. AGB:
 - [ ] **Automated Moderation** for suspicious activities
 - Note: `isValidUsername()` only checks format (alphanumeric), no offensive word filtering
 
-**❌ Account Suspension System:**
+**[TODO] Account Suspension System:**
 
 - [x] **Login Lockout** after 5 failed attempts (30 minutes)
 - [ ] **Flexible Ban Periods** (hours, days, months, years)
 - [ ] **Admin Ban** with justification system
 - [ ] **Ban History** and logging
 
-**❌ Multi-Account Detection:**
+**[TODO] Multi-Account Detection:**
 
 - [ ] **IP-based detection** of multiple accounts
 - [ ] **Fingerprinting** for device recognition
 - [ ] **Rule System** for allowed multi-accounts
 
-**❌ Payment System:**
+**[TODO] Payment System:**
 
 - [x] **Stripe Integration** implemented
 - [ ] **Yearly Subscriptions** (only monthly implemented)
@@ -557,27 +588,27 @@ Based on Code Analysis vs. AGB:
 - [ ] **Payment Delinquency Handling** (3 failed attempts → suspension)
 - [ ] **Refund Workflow** for cancellations
 
-**❌ Copyright/License:**
+**[TODO] Copyright/License:**
 
 - [ ] **Open Source License** for Code (GitHub visible)
 - [ ] **Content License** for user content
 - [ ] **DMCA/Takedown Process** for copyright infringements
 
-**❌ Link Validation:**
+**[TODO] Link Validation:**
 
 - [ ] **URL Format Validation** and normalization
 - [ ] **Reachability Check** for broken links
 - [ ] **Malware Scan** for malicious URLs
 - [ ] **Link Preview Generation** for better UX
 
-**❌ Security Monitoring:**
+**[TODO] Security Monitoring:**
 
 - [ ] **Automatic Admin Notification** for suspicious activities
 - [ ] **Rate-Limiting** for API endpoints
 - [ ] **Security Logging** and Audit-Trail
 - [ ] **Anomaly Detection** for suspicious activities
 
-**❌ Withdrawal Rights:**
+**[TODO] Withdrawal Rights:**
 
 - [x] **Online Withdrawal** (per E-Mail to legal@eziox.link)
 - [ ] **Ticket System** for withdrawal requests
@@ -586,7 +617,7 @@ Based on Code Analysis vs. AGB:
 - [ ] **Immediate Consent** at checkout for digital content
 - [ ] **Withdrawal Policy in checkout process**
 
-### ⚠️ Available Legal Pages
+### [INFO] Available Legal Pages
 
 | Page              | Route        | Language | Status      |
 | ----------------- | ------------ | -------- | ----------- |
@@ -598,9 +629,9 @@ Based on Code Analysis vs. AGB:
 | Privacy Policy    | /privacy     | EN       | ✅ (Legacy) |
 | Terms of Service  | /terms       | EN       | ✅ (Legacy) |
 
-### 🌍 Multi-Language System ✅ COMPLETED
+### [DONE] Multi-Language System
 
-**✅ i18n Infrastructure:**
+**[OK] i18n Infrastructure:**
 
 - [x] **Language Detection** from browser settings (`i18next-browser-languagedetector`)
 - [x] **Language Switcher** component in header (`LanguageSwitcher.tsx`)
@@ -611,7 +642,7 @@ Based on Code Analysis vs. AGB:
 - [ ] **URL-based routing** (/de/, /en/) - Future enhancement
 - [ ] **SEO hreflang tags** - Future enhancement
 
-**✅ Content Translation:**
+**[OK] Content Translation:**
 
 - [x] **Legal Pages** multilingual (DE/EN)
 - [x] **UI Components** translation (buttons, labels, messages)
@@ -622,7 +653,7 @@ Based on Code Analysis vs. AGB:
 - [ ] **Email Templates** multilingual - Future enhancement
 - [ ] **Additional Languages** (FR/ES/IT) - Future enhancement
 
-**✅ Technical Implementation:**
+**[OK] Technical Implementation:**
 
 - [x] **React-i18next** library integration
 - [x] **useTranslation** hook throughout app
@@ -630,12 +661,12 @@ Based on Code Analysis vs. AGB:
 - [x] **Runtime Language Switching**
 - [x] **useLocale** custom hook
 
-**Status:** ✅ COMPLETED (EN/DE) - Q1 2026
+**Status:** [DONE] (EN/DE) - Q1 2026
 **Future:** Additional languages (FR/ES/IT/PT/NL) planned for Q2 2026
 
 ---
 
-## 🔒 Security Considerations
+## [SECURITY] Security Considerations
 
 ### Authentication & Sessions
 
@@ -864,7 +895,7 @@ Based on Code Analysis vs. AGB:
 
 ---
 
-## 🧪 Testing
+## [TESTING] Testing
 
 - [ ] Unit tests for server functions - future
 - [ ] E2E tests with Playwright - future
@@ -875,7 +906,7 @@ Based on Code Analysis vs. AGB:
 
 ---
 
-## 📋 Pre-Deployment Checklist
+## [DEPLOY] Pre-Deployment Checklist
 
 ### Code Quality
 
@@ -905,7 +936,7 @@ Based on Code Analysis vs. AGB:
 
 ---
 
-## 📊 Implementation Summary
+## [SUMMARY] Implementation Summary
 
 ### Fully Implemented (Schema + UI + Server Functions)
 
@@ -970,6 +1001,6 @@ Based on Code Analysis vs. AGB:
 
 ---
 
-**Last Updated**: 2026-02-02  
-**Version**: 2.7.0  
+**Last Updated**: 2026-02-03  
+**Version**: 2.8.0  
 **Next Review**: Before each major feature release

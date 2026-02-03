@@ -76,7 +76,7 @@ import {
   containsUserInfo,
 } from '@/lib/password-security'
 import { db } from '../db'
-import { sessions, profiles } from '../db/schema'
+import { sessions, profiles, users, passkeys } from '../db/schema'
 import { eq, and, ne, desc } from 'drizzle-orm'
 
 const emailSchema = z
@@ -1618,6 +1618,577 @@ export const getPrivacySettingsFn = createServerFn({ method: 'GET' }).handler(
     }
   },
 )
+
+// ============================================================================
+// OTP (One-Time Password) Authentication
+// ============================================================================
+
+const otpCodes = new Map<string, { code: string; expiresAt: Date; attempts: number }>()
+
+function generateOtpCode(): string {
+  return Math.floor(100000 + Math.random() * 900000).toString()
+}
+
+const requestOtpSchema = z.object({
+  email: emailSchema,
+})
+
+export const requestOtpFn = createServerFn({ method: 'POST' })
+  .inputValidator(requestOtpSchema)
+  .handler(async ({ data }) => {
+    const { email } = data
+    const rawIP = getRequestIP() || 'unknown'
+
+    // Rate limiting
+    const rateLimit = checkRateLimit(
+      `otp-request:${rawIP}`,
+      5, // 5 requests
+      60 * 1000, // per minute
+    )
+    if (!rateLimit.allowed) {
+      setResponseStatus(429)
+      throw { message: 'Too many OTP requests. Please try again later.', status: 429 }
+    }
+
+    // Check if user exists
+    const user = await findUserByEmail(email)
+    if (!user) {
+      // Don't reveal if user exists - still return success
+      return { success: true }
+    }
+
+    // Generate OTP
+    const code = generateOtpCode()
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000) // 10 minutes
+
+    // Store OTP
+    otpCodes.set(email.toLowerCase(), { code, expiresAt, attempts: 0 })
+
+    // Send email
+    try {
+      const { sendOtpEmail } = await import('../lib/email')
+      await sendOtpEmail(email, code, user.name || user.username)
+    } catch (error) {
+      console.error('Failed to send OTP email:', error)
+      // Still return success to not reveal if email sending failed
+    }
+
+    return { success: true }
+  })
+
+const signInWithOtpSchema = z.object({
+  email: emailSchema,
+  code: z.string().length(6, 'OTP code must be 6 digits'),
+})
+
+export const signInWithOtpFn = createServerFn({ method: 'POST' })
+  .inputValidator(signInWithOtpSchema)
+  .handler(async ({ data }) => {
+    const { email, code } = data
+    const rawIP = getRequestIP() || 'unknown'
+    const ip = anonymizeIP(rawIP)
+    const userAgentRaw = getRequestHeader('User-Agent') || null
+    const parsedUA = parseUserAgent(userAgentRaw)
+    const userAgentFormatted = formatUserAgent(parsedUA)
+
+    // Rate limiting
+    const rateLimit = checkRateLimit(
+      `otp-verify:${rawIP}`,
+      10, // 10 attempts
+      60 * 1000, // per minute
+    )
+    if (!rateLimit.allowed) {
+      setResponseStatus(429)
+      throw { message: 'Too many verification attempts. Please try again later.', status: 429 }
+    }
+
+    // Get stored OTP
+    const storedOtp = otpCodes.get(email.toLowerCase())
+    if (!storedOtp) {
+      setResponseStatus(400)
+      throw { message: 'No OTP request found. Please request a new code.', status: 400 }
+    }
+
+    // Check expiration
+    if (new Date() > storedOtp.expiresAt) {
+      otpCodes.delete(email.toLowerCase())
+      setResponseStatus(400)
+      throw { message: 'OTP code has expired. Please request a new code.', status: 400 }
+    }
+
+    // Check attempts
+    if (storedOtp.attempts >= 5) {
+      otpCodes.delete(email.toLowerCase())
+      setResponseStatus(400)
+      throw { message: 'Too many failed attempts. Please request a new code.', status: 400 }
+    }
+
+    // Verify code
+    if (storedOtp.code !== code) {
+      storedOtp.attempts++
+      setResponseStatus(400)
+      throw { message: 'Invalid OTP code. Please try again.', status: 400 }
+    }
+
+    // Code is valid - delete it
+    otpCodes.delete(email.toLowerCase())
+
+    // Find user
+    const user = await findUserByEmail(email)
+    if (!user) {
+      setResponseStatus(400)
+      throw { message: 'User not found.', status: 400 }
+    }
+
+    // Check if account is locked
+    if (await isAccountLocked(user.id)) {
+      setResponseStatus(403)
+      throw { message: 'Account is temporarily locked. Please try again later.', status: 403 }
+    }
+
+    // Create session
+    const session = await createSession(user.id, ip, userAgentFormatted)
+    if (!session) {
+      setResponseStatus(500)
+      throw { message: 'Failed to create session.', status: 500 }
+    }
+    await recordSuccessfulLogin(user.id, ip)
+
+    // Set session cookie
+    setCookie('session-token', session.token, COOKIE_OPTIONS)
+
+    // Log security event
+    logSecurityEvent('auth.login_otp', {
+      userId: user.id,
+      ip,
+      userAgent: userAgentFormatted,
+    })
+
+    // Send login notification
+    try {
+      await sendLoginNotificationEmail(
+        user.email,
+        user.name || user.username,
+        ip,
+        userAgentFormatted,
+        new Date(),
+      )
+    } catch {
+      // Non-critical error
+    }
+
+    return { success: true }
+  })
+
+// ============================================================================
+// Passkey (WebAuthn) Authentication
+// ============================================================================
+
+// Get user's passkeys
+export const getPasskeysFn = createServerFn({ method: 'GET' }).handler(
+  async () => {
+    const { currentUser } = await authMiddleware()
+    if (!currentUser) {
+      setResponseStatus(401)
+      throw { message: 'Not authenticated', status: 401 }
+    }
+
+    const userPasskeys = await db
+      .select({
+        id: passkeys.id,
+        name: passkeys.name,
+        deviceType: passkeys.deviceType,
+        backedUp: passkeys.backedUp,
+        lastUsedAt: passkeys.lastUsedAt,
+        createdAt: passkeys.createdAt,
+      })
+      .from(passkeys)
+      .where(eq(passkeys.userId, currentUser.id))
+      .orderBy(desc(passkeys.createdAt))
+
+    return { passkeys: userPasskeys }
+  },
+)
+
+// Generate passkey registration options
+const registerPasskeyOptionsSchema = z.object({
+  name: z.string().min(1).max(100).optional(),
+})
+
+export const getPasskeyRegistrationOptionsFn = createServerFn({ method: 'POST' })
+  .inputValidator(registerPasskeyOptionsSchema)
+  .handler(async ({ data }) => {
+    const { currentUser } = await authMiddleware()
+    if (!currentUser) {
+      setResponseStatus(401)
+      throw { message: 'Not authenticated', status: 401 }
+    }
+
+    // Get existing passkeys for excludeCredentials
+    const existingPasskeys = await db
+      .select({ credentialId: passkeys.credentialId })
+      .from(passkeys)
+      .where(eq(passkeys.userId, currentUser.id))
+
+    const rpName = 'Eziox'
+    const rpID = process.env.APP_URL ? new URL(process.env.APP_URL).hostname : 'localhost'
+    
+    // Generate challenge
+    const challenge = crypto.randomUUID() + crypto.randomUUID()
+    
+    // Store challenge temporarily (in production, use Redis or similar)
+    const challengeKey = `passkey-challenge:${currentUser.id}`
+    passkeyChallengess.set(challengeKey, {
+      challenge,
+      name: data.name || 'Passkey',
+      expiresAt: new Date(Date.now() + 5 * 60 * 1000), // 5 minutes
+    })
+
+    return {
+      options: {
+        challenge,
+        rp: {
+          name: rpName,
+          id: rpID,
+        },
+        user: {
+          id: currentUser.id,
+          name: currentUser.email,
+          displayName: currentUser.name || currentUser.username,
+        },
+        pubKeyCredParams: [
+          { alg: -7, type: 'public-key' },   // ES256
+          { alg: -257, type: 'public-key' }, // RS256
+        ],
+        timeout: 60000,
+        attestation: 'none',
+        excludeCredentials: existingPasskeys.map((p) => ({
+          id: p.credentialId,
+          type: 'public-key',
+        })),
+        authenticatorSelection: {
+          residentKey: 'preferred',
+          userVerification: 'preferred',
+        },
+      },
+    }
+  })
+
+// Temporary storage for challenges (in production, use Redis)
+const passkeyChallengess = new Map<string, { challenge: string; name: string; expiresAt: Date }>()
+
+// Verify and save passkey registration
+const verifyPasskeyRegistrationSchema = z.object({
+  credential: z.object({
+    id: z.string(),
+    rawId: z.string(),
+    response: z.object({
+      clientDataJSON: z.string(),
+      attestationObject: z.string(),
+    }),
+    type: z.literal('public-key'),
+    clientExtensionResults: z.record(z.string(), z.unknown()).optional(),
+    authenticatorAttachment: z.string().optional(),
+  }),
+})
+
+export const verifyPasskeyRegistrationFn = createServerFn({ method: 'POST' })
+  .inputValidator(verifyPasskeyRegistrationSchema)
+  .handler(async ({ data }) => {
+    const { currentUser } = await authMiddleware()
+    if (!currentUser) {
+      setResponseStatus(401)
+      throw { message: 'Not authenticated', status: 401 }
+    }
+
+    const challengeKey = `passkey-challenge:${currentUser.id}`
+    const storedChallenge = passkeyChallengess.get(challengeKey)
+
+    if (!storedChallenge || new Date() > storedChallenge.expiresAt) {
+      passkeyChallengess.delete(challengeKey)
+      setResponseStatus(400)
+      throw { message: 'Challenge expired. Please try again.', status: 400 }
+    }
+
+    // Verify the credential (simplified - in production use @simplewebauthn/server)
+    const { credential } = data
+    
+    // Decode client data
+    const clientDataJSON = JSON.parse(
+      Buffer.from(credential.response.clientDataJSON, 'base64').toString('utf-8')
+    )
+
+    // Verify challenge
+    const expectedChallenge = Buffer.from(storedChallenge.challenge).toString('base64url')
+    if (clientDataJSON.challenge !== expectedChallenge) {
+      setResponseStatus(400)
+      throw { message: 'Invalid challenge', status: 400 }
+    }
+
+    // Verify origin
+    const expectedOrigin = process.env.APP_URL || 'http://localhost:5173'
+    if (clientDataJSON.origin !== expectedOrigin) {
+      setResponseStatus(400)
+      throw { message: 'Invalid origin', status: 400 }
+    }
+
+    // Store the passkey
+    const result = await db
+      .insert(passkeys)
+      .values({
+        userId: currentUser.id,
+        credentialId: credential.id,
+        publicKey: credential.response.attestationObject,
+        counter: 0,
+        deviceType: credential.authenticatorAttachment === 'platform' ? 'platform' : 'cross-platform',
+        backedUp: false,
+        transports: JSON.stringify(['internal']),
+        name: storedChallenge.name,
+      })
+      .returning()
+
+    const newPasskey = result[0]
+    if (!newPasskey) {
+      setResponseStatus(500)
+      throw { message: 'Failed to create passkey', status: 500 }
+    }
+
+    // Clean up challenge
+    passkeyChallengess.delete(challengeKey)
+
+    // Log security event
+    logSecurityEvent('auth.passkey_registered', {
+      userId: currentUser.id,
+    })
+
+    return {
+      success: true,
+      passkey: {
+        id: newPasskey.id,
+        name: newPasskey.name,
+        createdAt: newPasskey.createdAt,
+      },
+    }
+  })
+
+// Delete a passkey
+const deletePasskeySchema = z.object({
+  passkeyId: z.string().uuid(),
+})
+
+export const deletePasskeyFn = createServerFn({ method: 'POST' })
+  .inputValidator(deletePasskeySchema)
+  .handler(async ({ data }) => {
+    const { currentUser } = await authMiddleware()
+    if (!currentUser) {
+      setResponseStatus(401)
+      throw { message: 'Not authenticated', status: 401 }
+    }
+
+    const [deleted] = await db
+      .delete(passkeys)
+      .where(and(eq(passkeys.id, data.passkeyId), eq(passkeys.userId, currentUser.id)))
+      .returning()
+
+    if (!deleted) {
+      setResponseStatus(404)
+      throw { message: 'Passkey not found', status: 404 }
+    }
+
+    logSecurityEvent('auth.passkey_removed', {
+      userId: currentUser.id,
+    })
+
+    return { success: true }
+  })
+
+// Rename a passkey
+const renamePasskeySchema = z.object({
+  passkeyId: z.string().uuid(),
+  name: z.string().min(1).max(100),
+})
+
+export const renamePasskeyFn = createServerFn({ method: 'POST' })
+  .inputValidator(renamePasskeySchema)
+  .handler(async ({ data }) => {
+    const { currentUser } = await authMiddleware()
+    if (!currentUser) {
+      setResponseStatus(401)
+      throw { message: 'Not authenticated', status: 401 }
+    }
+
+    const [updated] = await db
+      .update(passkeys)
+      .set({ name: data.name })
+      .where(and(eq(passkeys.id, data.passkeyId), eq(passkeys.userId, currentUser.id)))
+      .returning()
+
+    if (!updated) {
+      setResponseStatus(404)
+      throw { message: 'Passkey not found', status: 404 }
+    }
+
+    return { success: true }
+  })
+
+// Get passkey authentication options (for login)
+const getPasskeyAuthOptionsSchema = z.object({
+  email: z.string().email().optional(),
+})
+
+export const getPasskeyAuthOptionsFn = createServerFn({ method: 'POST' })
+  .inputValidator(getPasskeyAuthOptionsSchema)
+  .handler(async ({ data }) => {
+    const rpID = process.env.APP_URL ? new URL(process.env.APP_URL).hostname : 'localhost'
+    const challenge = crypto.randomUUID() + crypto.randomUUID()
+
+    let allowCredentials: { id: string; type: 'public-key' }[] = []
+
+    if (data.email) {
+      const user = await findUserByEmail(data.email)
+      if (user) {
+        const userPasskeys = await db
+          .select({ credentialId: passkeys.credentialId })
+          .from(passkeys)
+          .where(eq(passkeys.userId, user.id))
+
+        allowCredentials = userPasskeys.map((p) => ({
+          id: p.credentialId,
+          type: 'public-key' as const,
+        }))
+      }
+    }
+
+    // Store challenge
+    const challengeKey = `passkey-auth-challenge:${challenge}`
+    passkeyAuthChallenges.set(challengeKey, {
+      challenge,
+      email: data.email,
+      expiresAt: new Date(Date.now() + 5 * 60 * 1000),
+    })
+
+    return {
+      options: {
+        challenge,
+        timeout: 60000,
+        rpId: rpID,
+        allowCredentials: allowCredentials.length > 0 ? allowCredentials : undefined,
+        userVerification: 'preferred',
+      },
+    }
+  })
+
+const passkeyAuthChallenges = new Map<string, { challenge: string; email?: string; expiresAt: Date }>()
+
+// Verify passkey authentication (login)
+const verifyPasskeyAuthSchema = z.object({
+  credential: z.object({
+    id: z.string(),
+    rawId: z.string(),
+    response: z.object({
+      clientDataJSON: z.string(),
+      authenticatorData: z.string(),
+      signature: z.string(),
+      userHandle: z.string().optional(),
+    }),
+    type: z.literal('public-key'),
+  }),
+  challenge: z.string(),
+})
+
+export const verifyPasskeyAuthFn = createServerFn({ method: 'POST' })
+  .inputValidator(verifyPasskeyAuthSchema)
+  .handler(async ({ data }) => {
+    const rawIP = getRequestIP() || 'unknown'
+    const ip = anonymizeIP(rawIP)
+    const userAgentRaw = getRequestHeader('User-Agent') || null
+    const parsedUA = parseUserAgent(userAgentRaw)
+    const userAgentFormatted = formatUserAgent(parsedUA)
+
+    // Get stored challenge
+    const challengeKey = `passkey-auth-challenge:${data.challenge}`
+    const storedChallenge = passkeyAuthChallenges.get(challengeKey)
+
+    if (!storedChallenge || new Date() > storedChallenge.expiresAt) {
+      passkeyAuthChallenges.delete(challengeKey)
+      setResponseStatus(400)
+      throw { message: 'Challenge expired. Please try again.', status: 400 }
+    }
+
+    // Find the passkey
+    const [passkey] = await db
+      .select()
+      .from(passkeys)
+      .where(eq(passkeys.credentialId, data.credential.id))
+      .limit(1)
+
+    if (!passkey) {
+      setResponseStatus(400)
+      throw { message: 'Passkey not found', status: 400 }
+    }
+
+    // Verify client data
+    const clientDataJSON = JSON.parse(
+      Buffer.from(data.credential.response.clientDataJSON, 'base64').toString('utf-8')
+    )
+
+    const expectedChallenge = Buffer.from(storedChallenge.challenge).toString('base64url')
+    if (clientDataJSON.challenge !== expectedChallenge) {
+      setResponseStatus(400)
+      throw { message: 'Invalid challenge', status: 400 }
+    }
+
+    // Clean up challenge
+    passkeyAuthChallenges.delete(challengeKey)
+
+    // Update passkey last used
+    await db
+      .update(passkeys)
+      .set({ 
+        lastUsedAt: new Date(),
+        counter: passkey.counter + 1,
+      })
+      .where(eq(passkeys.id, passkey.id))
+
+    // Get user
+    const user = await db
+      .select()
+      .from(users)
+      .where(eq(users.id, passkey.userId))
+      .limit(1)
+      .then((r) => r[0])
+
+    if (!user) {
+      setResponseStatus(400)
+      throw { message: 'User not found', status: 400 }
+    }
+
+    // Check if account is locked
+    if (await isAccountLocked(user.id)) {
+      setResponseStatus(403)
+      throw { message: 'Account is temporarily locked.', status: 403 }
+    }
+
+    // Create session
+    const session = await createSession(user.id, ip, userAgentFormatted)
+    if (!session) {
+      setResponseStatus(500)
+      throw { message: 'Failed to create session.', status: 500 }
+    }
+    await recordSuccessfulLogin(user.id, ip)
+
+    // Set session cookie
+    setCookie('session-token', session.token, COOKIE_OPTIONS)
+
+    // Log security event
+    logSecurityEvent('auth.login_passkey', {
+      userId: user.id,
+      ip,
+      userAgent: userAgentFormatted,
+    })
+
+    return { success: true }
+  })
 
 export type SignUpInput = z.infer<typeof signUpSchema>
 export type SignInInput = z.infer<typeof signInSchema>

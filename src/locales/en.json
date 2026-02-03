@@ -57,6 +57,7 @@
     "confirm": "Confirm",
     "required": "Required",
     "optional": "Optional",
+    "continue": "Continue",
     "learnMore": "Learn more",
     "viewAll": "View all",
     "seeMore": "See more",
@@ -2042,6 +2043,13 @@
     "title": "Welcome back",
     "description": "Sign in to continue to your dashboard.",
     "badge": "Sign In",
+    "continueWithDiscord": "Continue with Discord",
+    "orContinueWith": "or continue with",
+    "methods": {
+      "password": "Password",
+      "otp": "Email Code",
+      "passkey": "Passkey"
+    },
     "email": {
       "label": "Email address",
       "placeholder": "you@example.com"
@@ -2057,12 +2065,24 @@
     },
     "submit": "Sign In",
     "signingIn": "Signing in...",
-    "divider": "New to Eziox?",
-    "createAccount": "Create free account",
-    "stats": {
-      "creators": "Active Creators",
-      "clicks": "Total Clicks",
-      "uptime": "Uptime"
+    "noAccount": "Don't have an account?",
+    "createAccount": "Create one",
+    "otp": {
+      "title": "Sign in with Email Code",
+      "description": "We'll send a 6-digit code to your email",
+      "emailLabel": "Email address",
+      "emailPlaceholder": "you@example.com",
+      "sendCode": "Send Login Code",
+      "enterCode": "Enter your code",
+      "codeSent": "We sent a code to {{email}}",
+      "verify": "Verify Code",
+      "resend": "Resend code",
+      "changeEmail": "Use different email"
+    },
+    "passkey": {
+      "title": "Sign in with Passkey",
+      "description": "Use your fingerprint, face, or security key to sign in securely.",
+      "authenticate": "Authenticate"
     },
     "footer": {
       "ssl": "256-bit SSL",
@@ -2071,6 +2091,11 @@
     "errors": {
       "general": "Failed to sign in",
       "securityRequired": "Please complete the security check",
+      "discordFailed": "Discord authentication failed",
+      "passkeyNotSupported": "Passkeys are not supported in this browser",
+      "passkeyNotConfigured": "Passkey authentication is not yet configured",
+      "otpFailed": "Failed to send login code",
+      "otpInvalid": "Invalid or expired code",
       "email": {
         "invalid": "Please enter a valid email address"
       },
@@ -2090,8 +2115,12 @@
   },
   "signUp": {
     "title": "Create your account",
+    "subtitle": "Start building your online presence today",
     "description": "Join {{count}}+ creators for free",
-    "badge": "Sign Up",
+    "badge": "Get Started",
+    "continueWithDiscord": "Continue with Discord",
+    "orContinueWith": "or continue with",
+    "continueWithEmail": "Continue with Email",
     "name": {
       "label": "Name",
       "placeholder": "Your name"
@@ -2130,32 +2159,17 @@
       "title": "Security Check"
     },
     "terms": {
-      "text": "I agree to the",
-      "termsLink": "Terms",
-      "privacyLink": "Privacy Policy"
+      "prefix": "I agree to the",
+      "terms": "Terms",
+      "privacy": "Privacy Policy"
     },
     "submit": "Create Account",
     "creating": "Creating...",
-    "divider": "Already have an account?",
-    "signInLink": "Sign In",
-    "features": {
-      "oneLink": {
-        "title": "One Link",
-        "desc": "All your content"
-      },
-      "analytics": {
-        "title": "Analytics",
-        "desc": "Track clicks"
-      },
-      "customize": {
-        "title": "Customize",
-        "desc": "Make it yours"
-      },
-      "creators": "Creators"
-    },
+    "hasAccount": "Already have an account?",
+    "signIn": "Sign In",
     "footer": {
       "ssl": "256-bit SSL",
-      "free": "Free forever"
+      "instant": "Instant Access"
     },
     "errors": {
       "general": "Failed to create account",
@@ -2449,7 +2463,9 @@
       "settings": "Settings",
       "settingsDesc": "Account settings",
       "privacy": "Privacy",
-      "privacyDesc": "Privacy controls"
+      "privacyDesc": "Privacy controls",
+      "security": "Security",
+      "securityDesc": "Passkeys & login methods"
     },
     "quickLinks": {
       "myBioPage": "My Bio Page",
@@ -4023,6 +4039,39 @@
     "sidebar": {
       "collapse": "Collapse sidebar",
       "expand": "Expand sidebar"
+    }
+  },
+  "security": {
+    "title": "Security Settings",
+    "description": "Manage your login methods and account security",
+    "passkeys": {
+      "title": "Passkeys",
+      "description": "Sign in securely with biometrics or security keys",
+      "add": "Add Passkey",
+      "addNew": "Register a new passkey",
+      "namePlaceholder": "e.g. MacBook Pro, iPhone",
+      "register": "Register Passkey",
+      "empty": "No passkeys registered yet. Add one for passwordless login.",
+      "added": "Passkey registered successfully",
+      "deleted": "Passkey removed",
+      "created": "Created",
+      "lastUsed": "Last used",
+      "errors": {
+        "notSupported": "Passkeys are not supported in this browser",
+        "cancelled": "Passkey registration was cancelled"
+      }
+    },
+    "otp": {
+      "title": "Email Code Login",
+      "description": "Sign in with a one-time code sent to your email",
+      "enabled": "Email Code Login Enabled",
+      "enabledDescription": "You can sign in using a code sent to {{email}}"
+    },
+    "tips": {
+      "title": "Security Tips",
+      "passkey": "Use passkeys for the most secure and convenient login experience",
+      "unique": "Never reuse passwords across different services",
+      "phishing": "Always verify you're on eziox.link before entering credentials"
     }
   }
 }

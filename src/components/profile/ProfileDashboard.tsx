@@ -48,6 +48,7 @@ import { SubscriptionTab } from './tabs/SubscriptionTab'
 import { ApiAccessTab } from './tabs/ApiAccessTab'
 import { SettingsTab } from './tabs/SettingsTab'
 import { PrivacyTab } from './tabs/PrivacyTab'
+import { SecurityTab } from './tabs/SecurityTab'
 import QRCode from 'qrcode'
 
 interface ProfileDashboardProps {
@@ -543,6 +544,9 @@ export function ProfileDashboard({ currentUser, initialTab }: ProfileDashboardPr
               {activeTab === 'settings' && <SettingsTab key="settings" currentUser={currentUser} />}
               {activeTab === 'privacy' && (
                 <PrivacyTab key="privacy" currentUser={currentUser} />
+              )}
+              {activeTab === 'security' && (
+                <SecurityTab key="security" currentUser={currentUser} />
               )}
             </AnimatePresence>
           </div>

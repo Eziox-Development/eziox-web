@@ -57,6 +57,7 @@
     "confirm": "Bestätigen",
     "required": "Erforderlich",
     "optional": "Optional",
+    "continue": "Weiter",
     "learnMore": "Mehr erfahren",
     "viewAll": "Alle anzeigen",
     "seeMore": "Mehr anzeigen",
@@ -2042,6 +2043,13 @@
     "title": "Willkommen zurück",
     "description": "Melde dich an, um zu deinem Dashboard zu gelangen.",
     "badge": "Anmelden",
+    "continueWithDiscord": "Mit Discord fortfahren",
+    "orContinueWith": "oder fortfahren mit",
+    "methods": {
+      "password": "Passwort",
+      "otp": "E-Mail Code",
+      "passkey": "Passkey"
+    },
     "email": {
       "label": "E-Mail-Adresse",
       "placeholder": "deine@email.de"
@@ -2057,12 +2065,24 @@
     },
     "submit": "Anmelden",
     "signingIn": "Wird angemeldet...",
-    "divider": "Neu bei Eziox?",
-    "createAccount": "Kostenloses Konto erstellen",
-    "stats": {
-      "creators": "Aktive Creator",
-      "clicks": "Gesamte Klicks",
-      "uptime": "Verfügbarkeit"
+    "noAccount": "Noch kein Konto?",
+    "createAccount": "Jetzt erstellen",
+    "otp": {
+      "title": "Mit E-Mail Code anmelden",
+      "description": "Wir senden dir einen 6-stelligen Code per E-Mail",
+      "emailLabel": "E-Mail-Adresse",
+      "emailPlaceholder": "deine@email.de",
+      "sendCode": "Login-Code senden",
+      "enterCode": "Code eingeben",
+      "codeSent": "Wir haben einen Code an {{email}} gesendet",
+      "verify": "Code bestätigen",
+      "resend": "Code erneut senden",
+      "changeEmail": "Andere E-Mail verwenden"
+    },
+    "passkey": {
+      "title": "Mit Passkey anmelden",
+      "description": "Verwende deinen Fingerabdruck, Gesicht oder Sicherheitsschlüssel für sichere Anmeldung.",
+      "authenticate": "Authentifizieren"
     },
     "footer": {
       "ssl": "256-bit SSL",
@@ -2071,6 +2091,11 @@
     "errors": {
       "general": "Anmeldung fehlgeschlagen",
       "securityRequired": "Bitte vervollständige die Sicherheitsprüfung",
+      "discordFailed": "Discord-Authentifizierung fehlgeschlagen",
+      "passkeyNotSupported": "Passkeys werden in diesem Browser nicht unterstützt",
+      "passkeyNotConfigured": "Passkey-Authentifizierung ist noch nicht konfiguriert",
+      "otpFailed": "Login-Code konnte nicht gesendet werden",
+      "otpInvalid": "Ungültiger oder abgelaufener Code",
       "email": {
         "invalid": "Bitte gib eine gültige E-Mail-Adresse ein"
       },
@@ -2090,8 +2115,12 @@
   },
   "signUp": {
     "title": "Konto erstellen",
+    "subtitle": "Starte heute mit deiner Online-Präsenz",
     "description": "Werde Teil von {{count}}+ Creatorn - kostenlos",
-    "badge": "Registrieren",
+    "badge": "Loslegen",
+    "continueWithDiscord": "Mit Discord fortfahren",
+    "orContinueWith": "oder fortfahren mit",
+    "continueWithEmail": "Mit E-Mail fortfahren",
     "name": {
       "label": "Name",
       "placeholder": "Dein Name"
@@ -2130,32 +2159,17 @@
       "title": "Sicherheitsprüfung"
     },
     "terms": {
-      "text": "Ich akzeptiere die",
-      "termsLink": "AGB",
-      "privacyLink": "Datenschutzerklärung"
+      "prefix": "Ich akzeptiere die",
+      "terms": "AGB",
+      "privacy": "Datenschutzerklärung"
     },
     "submit": "Konto erstellen",
     "creating": "Wird erstellt...",
-    "divider": "Bereits ein Konto?",
-    "signInLink": "Anmelden",
-    "features": {
-      "oneLink": {
-        "title": "Ein Link",
-        "desc": "Alle deine Inhalte"
-      },
-      "analytics": {
-        "title": "Analytics",
-        "desc": "Klicks verfolgen"
-      },
-      "customize": {
-        "title": "Anpassen",
-        "desc": "Mach es zu deinem"
-      },
-      "creators": "Creator"
-    },
+    "hasAccount": "Bereits ein Konto?",
+    "signIn": "Anmelden",
     "footer": {
       "ssl": "256-bit SSL",
-      "free": "Für immer kostenlos"
+      "instant": "Sofortiger Zugang"
     },
     "errors": {
       "general": "Konto konnte nicht erstellt werden",
@@ -4023,6 +4037,39 @@
     "sidebar": {
       "collapse": "Seitenleiste einklappen",
       "expand": "Seitenleiste ausklappen"
+    }
+  },
+  "security": {
+    "title": "Sicherheitseinstellungen",
+    "description": "Verwalte deine Anmeldemethoden und Kontosicherheit",
+    "passkeys": {
+      "title": "Passkeys",
+      "description": "Melde dich sicher mit Biometrie oder Sicherheitsschlüsseln an",
+      "add": "Passkey hinzufügen",
+      "addNew": "Neuen Passkey registrieren",
+      "namePlaceholder": "z.B. MacBook Pro, iPhone",
+      "register": "Passkey registrieren",
+      "empty": "Noch keine Passkeys registriert. Füge einen für passwortlose Anmeldung hinzu.",
+      "added": "Passkey erfolgreich registriert",
+      "deleted": "Passkey entfernt",
+      "created": "Erstellt",
+      "lastUsed": "Zuletzt verwendet",
+      "errors": {
+        "notSupported": "Passkeys werden in diesem Browser nicht unterstützt",
+        "cancelled": "Passkey-Registrierung wurde abgebrochen"
+      }
+    },
+    "otp": {
+      "title": "E-Mail Code Login",
+      "description": "Melde dich mit einem Einmalcode per E-Mail an",
+      "enabled": "E-Mail Code Login aktiviert",
+      "enabledDescription": "Du kannst dich mit einem Code an {{email}} anmelden"
+    },
+    "tips": {
+      "title": "Sicherheitstipps",
+      "passkey": "Verwende Passkeys für die sicherste und bequemste Anmeldung",
+      "unique": "Verwende niemals dasselbe Passwort für verschiedene Dienste",
+      "phishing": "Überprüfe immer, dass du auf eziox.link bist, bevor du dich anmeldest"
     }
   }
 }

@@ -183,7 +183,7 @@ function MaintenancePage() {
             </button>
             
             <a
-              href="mailto:support@eziox.com"
+              href="mailto:support@eziox.link"
               className="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-medium py-3 px-6 rounded-xl transition-all hover:scale-105 flex items-center justify-center gap-2"
             >
               <Mail className="w-4 h-4" />
