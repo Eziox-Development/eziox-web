@@ -4056,7 +4056,10 @@
       "lastUsed": "Zuletzt verwendet",
       "errors": {
         "notSupported": "Passkeys werden in diesem Browser nicht unterstützt",
-        "cancelled": "Passkey-Registrierung wurde abgebrochen"
+        "cancelled": "Passkey-Registrierung wurde abgebrochen",
+        "timeout": "Die Operation ist abgelaufen. Bitte versuche es erneut.",
+        "security": "Sicherheitseinstellungen haben diese Operation verhindert. Überprüfe deine Geräteeinstellungen.",
+        "failed": "Passkey konnte nicht erstellt werden. Bitte versuche es erneut."
       }
     },
     "otp": {

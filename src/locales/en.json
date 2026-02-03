@@ -4058,7 +4058,10 @@
       "lastUsed": "Last used",
       "errors": {
         "notSupported": "Passkeys are not supported in this browser",
-        "cancelled": "Passkey registration was cancelled"
+        "cancelled": "Passkey registration was cancelled",
+        "timeout": "The operation timed out. Please try again.",
+        "security": "Security settings prevented this operation. Check your device settings.",
+        "failed": "Failed to create passkey. Please try again."
       }
     },
     "otp": {

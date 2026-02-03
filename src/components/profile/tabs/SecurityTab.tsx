@@ -83,20 +83,41 @@ export function SecurityTab({ currentUser }: SecurityTabProps) {
       const userIdBuffer = Uint8Array.from(options.user.id, (c) => c.charCodeAt(0))
 
       // Create credential
-      const credential = await navigator.credentials.create({
-        publicKey: {
-          challenge: challengeBuffer,
-          rp: options.rp,
-          user: {
-            ...options.user,
-            id: userIdBuffer,
+      let credential: PublicKeyCredential | null = null
+      try {
+        credential = await navigator.credentials.create({
+          publicKey: {
+            challenge: challengeBuffer,
+            rp: options.rp,
+            user: {
+              ...options.user,
+              id: userIdBuffer,
+            },
+            pubKeyCredParams: options.pubKeyCredParams,
+            timeout: options.timeout,
+            attestation: options.attestation as AttestationConveyancePreference,
+            authenticatorSelection: options.authenticatorSelection,
           },
-          pubKeyCredParams: options.pubKeyCredParams,
-          timeout: options.timeout,
-          attestation: options.attestation as AttestationConveyancePreference,
-          authenticatorSelection: options.authenticatorSelection,
-        },
-      }) as PublicKeyCredential
+        }) as PublicKeyCredential
+      } catch (err) {
+        // Catch WebAuthn errors and provide user-friendly messages
+        if (err instanceof Error) {
+          if (err.name === 'NotAllowedError') {
+            throw new Error(t('security.passkeys.errors.cancelled'))
+          }
+          if (err.name === 'TimeoutError') {
+            throw new Error(t('security.passkeys.errors.timeout'))
+          }
+          if (err.name === 'SecurityError') {
+            throw new Error(t('security.passkeys.errors.security'))
+          }
+          if (err.name === 'NotSupportedError') {
+            throw new Error(t('security.passkeys.errors.notSupported'))
+          }
+        }
+        // Generic error for unknown cases
+        throw new Error(t('security.passkeys.errors.failed'))
+      }
 
       if (!credential) {
         throw new Error(t('security.passkeys.errors.cancelled'))
