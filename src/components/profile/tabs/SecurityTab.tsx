@@ -63,6 +63,9 @@ export function SecurityTab({ currentUser }: SecurityTabProps) {
   const { data: passkeysData, isLoading: passkeysLoading } = useQuery({
     queryKey: ['passkeys'],
     queryFn: () => getPasskeys(),
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    staleTime: 5 * 60 * 1000, // 5 minutes
   })
 
   // Mutations
