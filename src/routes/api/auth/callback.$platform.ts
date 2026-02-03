@@ -12,7 +12,7 @@ export const Route = createFileRoute('/api/auth/callback/$platform')({
       GET: async ({ request, params }: { request: Request; params: { platform: string } }) => {
         const { platform } = params
         const url = new URL(request.url)
-        const baseUrl = process.env.VITE_APP_URL || 'http://localhost:5173'
+        const baseUrl = process.env.APP_URL || 'https://eziox.link'
         
         // Validate platform
         if (!SUPPORTED_PLATFORMS.includes(platform as typeof SUPPORTED_PLATFORMS[number])) {

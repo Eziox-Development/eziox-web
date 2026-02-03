@@ -212,8 +212,7 @@ export const createCheckoutSessionFn = createServerFn({ method: 'POST' })
 
     const baseUrl =
       process.env.APP_URL ||
-      process.env.VITE_APP_URL ||
-      'https://www.eziox.link'
+      'https://eziox.link'
     const isLifetime = data.tier === 'lifetime'
 
     const session = isLifetime
@@ -284,7 +283,7 @@ export const createBillingPortalSessionFn = createServerFn({
   }
 
   const baseUrl =
-    process.env.APP_URL || process.env.VITE_APP_URL || 'https://www.eziox.link'
+    process.env.APP_URL || 'https://eziox.link'
 
   const session = await stripe.billingPortal.sessions.create({
     customer: userData.stripeCustomerId,

@@ -78,10 +78,11 @@ const PLATFORM_CONFIG: Record<
 
 const getClientCredentials = (platform: SupportedPlatform) => {
   const envPrefix = platform.toUpperCase()
+  const baseUrl = process.env.APP_URL || 'https://eziox.link'
   return {
     clientId: process.env[`${envPrefix}_CLIENT_ID`] || '',
     clientSecret: process.env[`${envPrefix}_CLIENT_SECRET`] || '',
-    redirectUri: process.env[`${envPrefix}_REDIRECT_URI`] || `${process.env.VITE_APP_URL || 'http://localhost:5173'}/api/auth/callback/${platform}`,
+    redirectUri: process.env[`${envPrefix}_REDIRECT_URI`] || `${baseUrl}/api/auth/callback/${platform}`,
   }
 }
 
@@ -116,7 +117,7 @@ export const getOAuthUrlFn = createServerFn({ method: 'GET' })
         'openid.ns': 'http://specs.openid.net/auth/2.0',
         'openid.mode': 'checkid_setup',
         'openid.return_to': `${credentials.redirectUri}?state=${state}`,
-        'openid.realm': process.env.VITE_APP_URL || 'http://localhost:5173',
+        'openid.realm': process.env.APP_URL || 'https://eziox.link',
         'openid.identity': 'http://specs.openid.net/auth/2.0/identifier_select',
         'openid.claimed_id': 'http://specs.openid.net/auth/2.0/identifier_select',
       })
