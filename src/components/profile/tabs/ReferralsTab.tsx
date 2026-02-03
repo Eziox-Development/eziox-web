@@ -19,7 +19,7 @@ export function ReferralsTab() {
   })
 
   const referralCode = currentUser?.profile?.referralCode || 'LOADING'
-  const referralLink = `https://eziox.link/sign-up?ref=${referralCode}`
+  const referralLink = `${typeof window !== 'undefined' ? (window.location.hostname === 'localhost' ? 'https://localhost:5173' : window.location.origin) : 'https://eziox.link'}/sign-up?ref=${referralCode}`
 
   const copyToClipboard = async (text: string, type: 'code' | 'link') => {
     await navigator.clipboard.writeText(text)

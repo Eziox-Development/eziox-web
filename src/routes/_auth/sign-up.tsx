@@ -567,7 +567,7 @@ function SignUpPage() {
                       className="font-semibold"
                       style={{ color: colors.primary }}
                     >
-                      eziox.link/{username}
+                      {typeof window !== 'undefined' ? (window.location.hostname === 'localhost' ? 'localhost:5173' : window.location.hostname) : 'eziox.link'}/{username}
                     </span>
                   </motion.div>
                 )}

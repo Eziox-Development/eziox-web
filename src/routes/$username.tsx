@@ -37,7 +37,9 @@ import {
   ArrowUpRight,
   Verified,
   ChevronDown,
+  ChevronRight,
   MessageCircle,
+  FolderOpen,
 } from 'lucide-react'
 import { BadgeDisplay } from '@/components/ui/badge-display'
 import {
@@ -57,6 +59,8 @@ import { FollowModal } from '@/components/bio/FollowModal'
 import { ProfileComments } from '@/components/bio/ProfileComments'
 import { getSocialUrl, getSocialColor } from '@/lib/social-links'
 import { SpotifyWidget } from '@/components/spotify'
+import { WidgetRenderer } from '@/components/widgets'
+import { getPublicWidgetsFn } from '@/server/functions/widgets'
 import { useTheme } from '@/components/layout/ThemeProvider'
 import { checkSpotifyConnectionFn } from '@/server/functions/spotify'
 import type { TierType } from '@/server/lib/stripe'
@@ -116,7 +120,7 @@ export const Route = createFileRoute('/$username')({
         { title }, { name: 'description', content: description },
         { property: 'og:title', content: title }, { property: 'og:description', content: description },
         { property: 'og:type', content: 'profile' },
-        { property: 'og:url', content: `https://eziox.link/${profile.user.username}` },
+        { property: 'og:url', content: `${typeof window !== 'undefined' ? (window.location.hostname === 'localhost' ? 'https://localhost:5173' : window.location.origin) : 'https://eziox.link'}/${profile.user.username}` },
         ...(avatarUrl ? [{ property: 'og:image', content: avatarUrl }] : []),
         { name: 'twitter:card', content: avatarUrl ? 'summary_large_image' : 'summary' },
         { name: 'twitter:title', content: title }, { name: 'twitter:description', content: description },
@@ -144,6 +148,8 @@ function BioPage() {
   const linksRef = useRef<HTMLDivElement>(null)
   const commentsRef = useRef<HTMLDivElement>(null)
   const cardRef = useRef<HTMLDivElement>(null)
+  const isScrollingRef = useRef(false)
+  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   const [activeSection, setActiveSection] = useState<'profile' | 'links' | 'comments'>(search.tab || 'profile')
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -157,6 +163,7 @@ function BioPage() {
   const [tiltX, setTiltX] = useState(0)
   const [tiltY, setTiltY] = useState(0)
   const [isCardHovering, setIsCardHovering] = useState(false)
+  const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set())
 
   const getProfile = useServerFn(getPublicProfileFn)
   const trackClick = useServerFn(trackLinkClickFn)
@@ -165,6 +172,7 @@ function BioPage() {
   const followUserFnCall = useServerFn(followUserFn)
   const unfollowUserFnCall = useServerFn(unfollowUserFn)
   const checkSpotifyConnection = useServerFn(checkSpotifyConnectionFn)
+  const getPublicWidgets = useServerFn(getPublicWidgetsFn)
 
   const { data: profile, isLoading, error } = useQuery({
     queryKey: ['publicProfile', username],
@@ -174,6 +182,12 @@ function BioPage() {
   const { data: spotifyStatus } = useQuery<SpotifyConnectionStatus>({
     queryKey: ['spotifyConnection', profile?.user?.id],
     queryFn: () => checkSpotifyConnection({ data: { userId: profile!.user.id } }),
+    enabled: !!profile?.user?.id,
+  })
+
+  const { data: widgets = [] } = useQuery({
+    queryKey: ['publicWidgets', profile?.user?.id],
+    queryFn: () => getPublicWidgets({ data: { userId: profile!.user.id } }),
     enabled: !!profile?.user?.id,
   })
 
@@ -207,56 +221,52 @@ function BioPage() {
     }
   }, [profile?.user?.id, trackView])
 
-  // Scroll to section on initial load if tab param is set
   useEffect(() => {
-    const tab = search.tab as 'profile' | 'links' | 'comments' | undefined
-    if (tab) {
-      const refs = { 
-        profile: heroRef, 
-        links: linksRef, 
-        comments: commentsRef 
-      }
-      const ref = refs[tab]
-      if (ref?.current) {
-        setTimeout(() => ref.current?.scrollIntoView({ behavior: 'smooth' }), 100)
-      }
+    const tab = search.tab || 'profile'
+    if (tab !== activeSection) {
+      setActiveSection(tab)
     }
   }, [search.tab])
 
-  // Update URL when section changes (without full navigation)
-  useEffect(() => {
-    const newTab = activeSection === 'profile' ? undefined : activeSection
-    if (search.tab !== newTab) {
-      void navigate({
-        to: '/$username',
-        params: { username },
-        search: newTab ? { tab: newTab } : {},
-        replace: true,
-      })
-    }
-  }, [activeSection, navigate, username, search.tab])
-
+  // Scroll tracking - only updates activeSection when NOT manually scrolling
   useEffect(() => {
     const handleScroll = () => {
+      // Don't update activeSection if user is manually navigating
+      if (isScrollingRef.current) return
+
       const scrollY = window.scrollY
       const windowHeight = window.innerHeight
       const linksTop = linksRef.current?.offsetTop ?? Infinity
       const commentsTop = commentsRef.current?.offsetTop ?? Infinity
       const scrollCenter = scrollY + windowHeight / 2
 
+      let newSection: 'profile' | 'links' | 'comments'
       if (scrollCenter < linksTop) {
-        setActiveSection('profile')
+        newSection = 'profile'
       } else if (scrollCenter < commentsTop) {
-        setActiveSection('links')
+        newSection = 'links'
       } else {
-        setActiveSection('comments')
+        newSection = 'comments'
+      }
+
+      if (newSection !== activeSection) {
+        setActiveSection(newSection)
+        
+        // Update URL to match scroll position
+        const newTab = newSection === 'profile' ? undefined : newSection
+        void navigate({
+          to: '/$username',
+          params: { username },
+          search: newTab ? { tab: newTab } : {},
+          replace: true,
+        })
       }
     }
 
     window.addEventListener('scroll', handleScroll, { passive: true })
     handleScroll() // Initial check
     return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
+  }, [activeSection, navigate, username])
 
   const handleCardMouseMove = (e: React.MouseEvent) => {
     if (!cardRef.current) return
@@ -274,13 +284,37 @@ function BioPage() {
   }
 
   const scrollToSection = (section: 'profile' | 'links' | 'comments') => {
-    // Set active section immediately to prevent scroll listener from overriding
+    // Set flag to prevent scroll listener from interfering
+    isScrollingRef.current = true
+    
+    // Clear any existing timeout
+    if (scrollTimeoutRef.current) {
+      clearTimeout(scrollTimeoutRef.current)
+    }
+    
+    // Update activeSection and URL immediately
     setActiveSection(section)
+    const newTab = section === 'profile' ? undefined : section
+    void navigate({
+      to: '/$username',
+      params: { username },
+      search: newTab ? { tab: newTab } : {},
+      replace: true,
+    })
     
     // Scroll to the section
-    if (section === 'profile') window.scrollTo({ top: 0, behavior: 'smooth' })
-    else if (section === 'links' && linksRef.current) linksRef.current.scrollIntoView({ behavior: 'smooth' })
-    else if (section === 'comments' && commentsRef.current) commentsRef.current.scrollIntoView({ behavior: 'smooth' })
+    if (section === 'profile') {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    } else if (section === 'links' && linksRef.current) {
+      linksRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    } else if (section === 'comments' && commentsRef.current) {
+      commentsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+    
+    // Re-enable scroll tracking after animation completes
+    scrollTimeoutRef.current = setTimeout(() => {
+      isScrollingRef.current = false
+    }, 1000)
   }
 
   const handleFollowToggle = async () => {
@@ -318,7 +352,7 @@ function BioPage() {
   }
 
   const handleShare = async () => {
-    const url = `https://eziox.link/${username}`
+    const url = `${typeof window !== 'undefined' ? (window.location.hostname === 'localhost' ? 'https://localhost:5173' : window.location.origin) : 'https://eziox.link'}/${username}`
     if (navigator.share) await navigator.share({ title: `${profile?.user.name || username}'s Bio`, url })
     else {
       await navigator.clipboard.writeText(url)
@@ -453,6 +487,29 @@ function BioPage() {
       {(customBackground?.type === 'image' || customBackground?.type === 'video') && (
         <div className="fixed inset-0 pointer-events-none z-[1]" style={{ background: `rgba(0,0,0,${1 - (customBackground.imageOpacity ?? 0.5)})` }} />
       )}
+
+      {/* Fixed Position Weather Widgets */}
+      {widgets
+        .filter((w) => w.type === 'weather' && (w.config as { position?: string })?.position)
+        .map((widget) => {
+          const pos = (widget.config as { position?: string })?.position
+          const positionClasses: Record<string, string> = {
+            'top-left': 'top-4 left-4',
+            'top-right': 'top-4 right-4',
+            'bottom-left': 'bottom-4 left-4',
+            'bottom-right': 'bottom-4 right-4',
+          }
+          return (
+            <motion.div
+              key={widget.id}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className={`fixed z-40 ${positionClasses[pos || 'top-right']}`}
+            >
+              <WidgetRenderer widget={widget} />
+            </motion.div>
+          )
+        })}
 
       {/* Floating Navigation */}
       <motion.nav
@@ -700,10 +757,151 @@ function BioPage() {
             </motion.div>
           )}
 
-          {/* Links */}
-          {profile.links?.length ? (
+          {/* Profile Widgets (exclude fixed-position weather widgets) */}
+          {widgets.filter((w) => !(w.type === 'weather' && (w.config as { position?: string })?.position)).length > 0 && (
+            <div className="space-y-4 mb-8">
+              {widgets
+                .filter((w) => !(w.type === 'weather' && (w.config as { position?: string })?.position))
+                .map((widget, index) => (
+                  <motion.div
+                    key={widget.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.1 }}
+                  >
+                    <WidgetRenderer widget={widget} />
+                  </motion.div>
+                ))}
+            </div>
+          )}
+
+          {/* Links with Groups */}
+          {profile.links?.length || profile.linkGroups?.length ? (
             <div className="space-y-4">
-              {profile.links.map((link, index) => {
+              {/* Render grouped links */}
+              {profile.linkGroups?.map((group, groupIndex) => {
+                const groupLinks = profile.links?.filter((l) => l.groupId === group.id) || []
+                if (groupLinks.length === 0) return null
+                
+                const isCollapsed = group.isCollapsible && collapsedGroups.has(group.id)
+                const toggleCollapse = () => {
+                  if (!group.isCollapsible) return
+                  setCollapsedGroups((prev) => {
+                    const next = new Set(prev)
+                    if (next.has(group.id)) {
+                      next.delete(group.id)
+                    } else {
+                      next.add(group.id)
+                    }
+                    return next
+                  })
+                }
+
+                return (
+                  <motion.div
+                    key={group.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: groupIndex * 0.1 }}
+                    className="space-y-3"
+                  >
+                    {/* Group Header */}
+                    <button
+                      onClick={toggleCollapse}
+                      className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl backdrop-blur-xl transition-all ${group.isCollapsible ? 'cursor-pointer hover:bg-white/5' : 'cursor-default'}`}
+                      style={{
+                        background: 'linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02))',
+                        border: '1px solid rgba(255,255,255,0.08)',
+                        borderLeftWidth: 4,
+                        borderLeftColor: group.color || 'rgba(139, 92, 246, 0.5)',
+                      }}
+                    >
+                      <div
+                        className="w-8 h-8 rounded-lg flex items-center justify-center"
+                        style={{ backgroundColor: `${group.color || '#8b5cf6'}20` }}
+                      >
+                        <FolderOpen size={16} style={{ color: group.color || '#8b5cf6' }} />
+                      </div>
+                      <span className="flex-1 text-left font-medium text-white/90">{group.name}</span>
+                      {group.isCollapsible && (
+                        <motion.div animate={{ rotate: isCollapsed ? 0 : 90 }} transition={{ duration: 0.2 }}>
+                          <ChevronRight size={18} className="text-white/40" />
+                        </motion.div>
+                      )}
+                    </button>
+
+                    {/* Group Links */}
+                    <motion.div
+                      initial={false}
+                      animate={{ height: isCollapsed ? 0 : 'auto', opacity: isCollapsed ? 0 : 1 }}
+                      transition={{ duration: 0.3, ease: 'easeInOut' }}
+                      className="overflow-hidden space-y-3 pl-4"
+                    >
+                      {groupLinks.map((link, index) => {
+                        const platform = getPlatformFromUrl(link.url)
+                        const isHovered = hoveredLink === link.id
+                        const isClicked = clickedLink === link.id
+                        return (
+                          <motion.button
+                            key={link.id}
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: index * 0.05 }}
+                            onClick={() => handleLinkClick(link.id, link.url)}
+                            onMouseEnter={() => setHoveredLink(link.id)}
+                            onMouseLeave={() => setHoveredLink(null)}
+                            disabled={isClicked}
+                            className="w-full group"
+                          >
+                            <motion.div
+                              className="relative overflow-hidden"
+                              style={{ borderRadius }}
+                              animate={{ scale: isHovered ? 1.02 : 1, y: isHovered ? -4 : 0 }}
+                            >
+                              <div
+                                className="flex items-center gap-4 p-5 backdrop-blur-xl transition-all"
+                                style={{
+                                  background: link.backgroundColor ? `linear-gradient(135deg, ${link.backgroundColor}20, ${link.backgroundColor}10)` : 'linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02))',
+                                  border: '1px solid rgba(255,255,255,0.1)',
+                                  borderRadius,
+                                }}
+                              >
+                                <div
+                                  className="w-14 h-14 flex items-center justify-center shrink-0 overflow-hidden"
+                                  style={{ borderRadius: borderRadius - 4, background: link.backgroundColor ? `${link.backgroundColor}30` : 'linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(6, 182, 212, 0.2))' }}
+                                >
+                                  {link.thumbnail ? (
+                                    <img src={link.thumbnail} alt={link.title} className="w-full h-full object-cover" />
+                                  ) : link.icon ? (
+                                    <span className="text-2xl">{link.icon}</span>
+                                  ) : platform?.icon ? (
+                                    <platform.icon size={24} style={{ color: platform.color }} />
+                                  ) : (
+                                    <ExternalLink size={22} className="text-white/60" />
+                                  )}
+                                </div>
+                                <div className="flex-1 min-w-0 text-left">
+                                  <p className="font-semibold text-lg text-white truncate" style={{ color: link.textColor || '#ffffff' }}>{link.title}</p>
+                                  {link.description && <p className="text-sm truncate mt-1 opacity-60" style={{ color: link.textColor || '#ffffff' }}>{link.description}</p>}
+                                </div>
+                                <motion.div className="shrink-0" animate={{ x: isHovered ? 4 : 0, opacity: isHovered ? 1 : 0.4 }}>
+                                  {isClicked ? <Loader2 size={20} className="animate-spin text-white/60" /> : <ArrowUpRight size={20} className="text-white/60" />}
+                                </motion.div>
+                              </div>
+                            </motion.div>
+                          </motion.button>
+                        )
+                      })}
+                    </motion.div>
+                  </motion.div>
+                )
+              })}
+
+              {/* Render ungrouped links */}
+              {profile.links?.filter((l) => !l.groupId).map((link, index) => {
                 const platform = getPlatformFromUrl(link.url)
                 const isHovered = hoveredLink === link.id
                 const isClicked = clickedLink === link.id

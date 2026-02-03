@@ -6,6 +6,9 @@ import type { TabType } from '@/components/profile/types'
 const validTabs: TabType[] = [
   'profile',
   'links',
+  'widgets',
+  'integrations',
+  'media',
   'referrals',
   'badges',
   'subscription',

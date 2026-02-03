@@ -240,7 +240,7 @@ export function ShortLinkNotFound() {
                   className="font-mono text-sm"
                   style={{ color: theme.colors.primary }}
                 >
-                  eziox.link/s/{code}
+                  {typeof window !== 'undefined' ? (window.location.hostname === 'localhost' ? 'localhost:5173' : window.location.hostname) : 'eziox.link'}/s/{code}
                 </code>
               </motion.div>
 

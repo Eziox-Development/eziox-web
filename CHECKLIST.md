@@ -357,38 +357,43 @@
 - [x] Key expiration support (30d, 90d, 180d, 1y, never)
 - [x] Modern ApiAccessTab UI with full theme integration
 - [x] API Documentation page (`/api-docs`)
-- [ ] Public API endpoints (future)
+- [x] Public API endpoints (`/api/v1/profile/:username`, `/api/v1/me`, `/api/v1/links`, `/api/v1/analytics`)
 - [ ] Webhook support (Stripe webhooks only)
 
 ### Phase 6: Database Features (Schema Ready, UI Pending)
 
-#### 15. Link Groups
+#### 15. Link Groups ✅ COMPLETED
 
 - [x] Schema: `linkGroups` table
 - [x] Fields: name, icon, color, isCollapsible, isCollapsed, order
-- [ ] UI: Group links into sections
-- [ ] UI: Collapsible groups on bio page
+- [x] Server functions: CRUD operations (`src/server/functions/link-groups.ts`)
+- [x] UI: Group links into sections (LinksTab with Groups view)
+- [x] UI: Collapsible groups on bio page
 
-#### 16. Profile Widgets
+#### 16. Profile Widgets ✅ COMPLETED
 
 - [x] Schema: `profileWidgets` table
-- [x] Widget types defined (Spotify, Weather, Countdown, Social Feed)
-- [ ] UI: Widget management in dashboard
-- [ ] UI: Widget display on bio page
+- [x] Widget types defined (Spotify, Weather, Countdown, Social Feed, YouTube, SoundCloud, Twitch, GitHub)
+- [x] Server functions: CRUD operations (`src/server/functions/widgets.ts`)
+- [x] UI: Widget management in dashboard (WidgetsTab)
+- [x] UI: Widget display on bio page (integrated with profile)
 
-#### 17. Social Integrations (Beyond Spotify)
+#### 17. Social Integrations (Beyond Spotify) ✅ COMPLETED
 
 - [x] Schema: `socialIntegrations` table
 - [x] Fields: platform, accessToken, refreshToken, showOnProfile
-- [ ] UI: Connect additional platforms (YouTube, Twitch, Discord)
-- [ ] OAuth flows for other platforms
+- [x] UI: Connect additional platforms (Discord, Steam, Twitch, GitHub)
+- [x] OAuth flows for other platforms (`src/server/functions/social-integrations.ts`)
+- [x] OAuth callback route (`src/routes/api/auth/callback.$platform.ts`)
+- [x] IntegrationsTab UI component (`src/components/profile/tabs/IntegrationsTab.tsx`)
 
-#### 18. Media Library
+#### 18. Media Library ✅ COMPLETED
 
 - [x] Schema: `mediaLibrary` table
 - [x] Fields: filename, mimeType, size, url, thumbnailUrl, folder
-- [ ] UI: Media library in dashboard
-- [ ] UI: Reuse uploaded images
+- [x] UI: Media library in dashboard (`src/components/profile/tabs/MediaLibraryTab.tsx`)
+- [x] UI: Reuse uploaded images (selection mode in MediaLibraryTab)
+- [x] Server functions: CRUD operations (`src/server/functions/media-library.ts`)
 
 #### 19. Scheduled Posts
 

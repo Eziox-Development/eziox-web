@@ -50,6 +50,11 @@ import { Route as ApiHelloRouteImport } from './routes/_api/hello'
 import { Route as PublicDocsIndexRouteImport } from './routes/_public/docs/index'
 import { Route as ProtectedAdminIndexRouteImport } from './routes/_protected/admin/index'
 import { Route as ApiWebhooksStripeRouteImport } from './routes/api/webhooks/stripe'
+import { Route as ApiV1WidgetsRouteImport } from './routes/api/v1/widgets'
+import { Route as ApiV1MeRouteImport } from './routes/api/v1/me'
+import { Route as ApiV1LinksRouteImport } from './routes/api/v1/links'
+import { Route as ApiV1GroupsRouteImport } from './routes/api/v1/groups'
+import { Route as ApiV1AnalyticsRouteImport } from './routes/api/v1/analytics'
 import { Route as PublicSCodeRouteImport } from './routes/_public/s.$code'
 import { Route as PublicJoinCodeRouteImport } from './routes/_public/join.$code'
 import { Route as PublicDocsSpotifyIntegrationRouteImport } from './routes/_public/docs/spotify-integration'
@@ -63,6 +68,11 @@ import { Route as PublicDocsAnalyticsRouteImport } from './routes/_public/docs/a
 import { Route as ProtectedAdminSettingsRouteImport } from './routes/_protected/admin/settings'
 import { Route as ProtectedAdminPartnerApplicationsRouteImport } from './routes/_protected/admin/partner-applications'
 import { Route as ProtectedAdminAbuseAlertsRouteImport } from './routes/_protected/admin/abuse-alerts'
+import { Route as ApiV1WidgetsIdRouteImport } from './routes/api/v1/widgets.$id'
+import { Route as ApiV1ProfileUsernameRouteImport } from './routes/api/v1/profile.$username'
+import { Route as ApiV1LinksIdRouteImport } from './routes/api/v1/links.$id'
+import { Route as ApiV1GroupsIdRouteImport } from './routes/api/v1/groups.$id'
+import { Route as ApiAuthCallbackPlatformRouteImport } from './routes/api/auth/callback.$platform'
 
 const MaintenanceRoute = MaintenanceRouteImport.update({
   id: '/maintenance',
@@ -266,6 +276,31 @@ const ApiWebhooksStripeRoute = ApiWebhooksStripeRouteImport.update({
   path: '/api/webhooks/stripe',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiV1WidgetsRoute = ApiV1WidgetsRouteImport.update({
+  id: '/api/v1/widgets',
+  path: '/api/v1/widgets',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiV1MeRoute = ApiV1MeRouteImport.update({
+  id: '/api/v1/me',
+  path: '/api/v1/me',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiV1LinksRoute = ApiV1LinksRouteImport.update({
+  id: '/api/v1/links',
+  path: '/api/v1/links',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiV1GroupsRoute = ApiV1GroupsRouteImport.update({
+  id: '/api/v1/groups',
+  path: '/api/v1/groups',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiV1AnalyticsRoute = ApiV1AnalyticsRouteImport.update({
+  id: '/api/v1/analytics',
+  path: '/api/v1/analytics',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PublicSCodeRoute = PublicSCodeRouteImport.update({
   id: '/s/$code',
   path: '/s/$code',
@@ -335,6 +370,31 @@ const ProtectedAdminAbuseAlertsRoute =
     path: '/admin/abuse-alerts',
     getParentRoute: () => ProtectedRoute,
   } as any)
+const ApiV1WidgetsIdRoute = ApiV1WidgetsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => ApiV1WidgetsRoute,
+} as any)
+const ApiV1ProfileUsernameRoute = ApiV1ProfileUsernameRouteImport.update({
+  id: '/api/v1/profile/$username',
+  path: '/api/v1/profile/$username',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiV1LinksIdRoute = ApiV1LinksIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => ApiV1LinksRoute,
+} as any)
+const ApiV1GroupsIdRoute = ApiV1GroupsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => ApiV1GroupsRoute,
+} as any)
+const ApiAuthCallbackPlatformRoute = ApiAuthCallbackPlatformRouteImport.update({
+  id: '/api/auth/callback/$platform',
+  path: '/api/auth/callback/$platform',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/$username': typeof UsernameRoute
@@ -385,9 +445,19 @@ export interface FileRoutesByFullPath {
   '/docs/spotify-integration': typeof PublicDocsSpotifyIntegrationRoute
   '/join/$code': typeof PublicJoinCodeRoute
   '/s/$code': typeof PublicSCodeRoute
+  '/api/v1/analytics': typeof ApiV1AnalyticsRoute
+  '/api/v1/groups': typeof ApiV1GroupsRouteWithChildren
+  '/api/v1/links': typeof ApiV1LinksRouteWithChildren
+  '/api/v1/me': typeof ApiV1MeRoute
+  '/api/v1/widgets': typeof ApiV1WidgetsRouteWithChildren
   '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
   '/admin': typeof ProtectedAdminIndexRoute
   '/docs': typeof PublicDocsIndexRoute
+  '/api/auth/callback/$platform': typeof ApiAuthCallbackPlatformRoute
+  '/api/v1/groups/$id': typeof ApiV1GroupsIdRoute
+  '/api/v1/links/$id': typeof ApiV1LinksIdRoute
+  '/api/v1/profile/$username': typeof ApiV1ProfileUsernameRoute
+  '/api/v1/widgets/$id': typeof ApiV1WidgetsIdRoute
 }
 export interface FileRoutesByTo {
   '/$username': typeof UsernameRoute
@@ -438,9 +508,19 @@ export interface FileRoutesByTo {
   '/docs/spotify-integration': typeof PublicDocsSpotifyIntegrationRoute
   '/join/$code': typeof PublicJoinCodeRoute
   '/s/$code': typeof PublicSCodeRoute
+  '/api/v1/analytics': typeof ApiV1AnalyticsRoute
+  '/api/v1/groups': typeof ApiV1GroupsRouteWithChildren
+  '/api/v1/links': typeof ApiV1LinksRouteWithChildren
+  '/api/v1/me': typeof ApiV1MeRoute
+  '/api/v1/widgets': typeof ApiV1WidgetsRouteWithChildren
   '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
   '/admin': typeof ProtectedAdminIndexRoute
   '/docs': typeof PublicDocsIndexRoute
+  '/api/auth/callback/$platform': typeof ApiAuthCallbackPlatformRoute
+  '/api/v1/groups/$id': typeof ApiV1GroupsIdRoute
+  '/api/v1/links/$id': typeof ApiV1LinksIdRoute
+  '/api/v1/profile/$username': typeof ApiV1ProfileUsernameRoute
+  '/api/v1/widgets/$id': typeof ApiV1WidgetsIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -495,9 +575,19 @@ export interface FileRoutesById {
   '/_public/docs/spotify-integration': typeof PublicDocsSpotifyIntegrationRoute
   '/_public/join/$code': typeof PublicJoinCodeRoute
   '/_public/s/$code': typeof PublicSCodeRoute
+  '/api/v1/analytics': typeof ApiV1AnalyticsRoute
+  '/api/v1/groups': typeof ApiV1GroupsRouteWithChildren
+  '/api/v1/links': typeof ApiV1LinksRouteWithChildren
+  '/api/v1/me': typeof ApiV1MeRoute
+  '/api/v1/widgets': typeof ApiV1WidgetsRouteWithChildren
   '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
   '/_protected/admin/': typeof ProtectedAdminIndexRoute
   '/_public/docs/': typeof PublicDocsIndexRoute
+  '/api/auth/callback/$platform': typeof ApiAuthCallbackPlatformRoute
+  '/api/v1/groups/$id': typeof ApiV1GroupsIdRoute
+  '/api/v1/links/$id': typeof ApiV1LinksIdRoute
+  '/api/v1/profile/$username': typeof ApiV1ProfileUsernameRoute
+  '/api/v1/widgets/$id': typeof ApiV1WidgetsIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -550,9 +640,19 @@ export interface FileRouteTypes {
     | '/docs/spotify-integration'
     | '/join/$code'
     | '/s/$code'
+    | '/api/v1/analytics'
+    | '/api/v1/groups'
+    | '/api/v1/links'
+    | '/api/v1/me'
+    | '/api/v1/widgets'
     | '/api/webhooks/stripe'
     | '/admin'
     | '/docs'
+    | '/api/auth/callback/$platform'
+    | '/api/v1/groups/$id'
+    | '/api/v1/links/$id'
+    | '/api/v1/profile/$username'
+    | '/api/v1/widgets/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/$username'
@@ -603,9 +703,19 @@ export interface FileRouteTypes {
     | '/docs/spotify-integration'
     | '/join/$code'
     | '/s/$code'
+    | '/api/v1/analytics'
+    | '/api/v1/groups'
+    | '/api/v1/links'
+    | '/api/v1/me'
+    | '/api/v1/widgets'
     | '/api/webhooks/stripe'
     | '/admin'
     | '/docs'
+    | '/api/auth/callback/$platform'
+    | '/api/v1/groups/$id'
+    | '/api/v1/links/$id'
+    | '/api/v1/profile/$username'
+    | '/api/v1/widgets/$id'
   id:
     | '__root__'
     | '/$username'
@@ -659,9 +769,19 @@ export interface FileRouteTypes {
     | '/_public/docs/spotify-integration'
     | '/_public/join/$code'
     | '/_public/s/$code'
+    | '/api/v1/analytics'
+    | '/api/v1/groups'
+    | '/api/v1/links'
+    | '/api/v1/me'
+    | '/api/v1/widgets'
     | '/api/webhooks/stripe'
     | '/_protected/admin/'
     | '/_public/docs/'
+    | '/api/auth/callback/$platform'
+    | '/api/v1/groups/$id'
+    | '/api/v1/links/$id'
+    | '/api/v1/profile/$username'
+    | '/api/v1/widgets/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -676,7 +796,14 @@ export interface RootRouteChildren {
   ApiCheckUsernameRoute: typeof ApiCheckUsernameRoute
   ApiHealthRoute: typeof ApiHealthRoute
   ApiSpotifyCallbackRoute: typeof ApiSpotifyCallbackRoute
+  ApiV1AnalyticsRoute: typeof ApiV1AnalyticsRoute
+  ApiV1GroupsRoute: typeof ApiV1GroupsRouteWithChildren
+  ApiV1LinksRoute: typeof ApiV1LinksRouteWithChildren
+  ApiV1MeRoute: typeof ApiV1MeRoute
+  ApiV1WidgetsRoute: typeof ApiV1WidgetsRouteWithChildren
   ApiWebhooksStripeRoute: typeof ApiWebhooksStripeRoute
+  ApiAuthCallbackPlatformRoute: typeof ApiAuthCallbackPlatformRoute
+  ApiV1ProfileUsernameRoute: typeof ApiV1ProfileUsernameRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -968,6 +1095,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiWebhooksStripeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/v1/widgets': {
+      id: '/api/v1/widgets'
+      path: '/api/v1/widgets'
+      fullPath: '/api/v1/widgets'
+      preLoaderRoute: typeof ApiV1WidgetsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/me': {
+      id: '/api/v1/me'
+      path: '/api/v1/me'
+      fullPath: '/api/v1/me'
+      preLoaderRoute: typeof ApiV1MeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/links': {
+      id: '/api/v1/links'
+      path: '/api/v1/links'
+      fullPath: '/api/v1/links'
+      preLoaderRoute: typeof ApiV1LinksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/groups': {
+      id: '/api/v1/groups'
+      path: '/api/v1/groups'
+      fullPath: '/api/v1/groups'
+      preLoaderRoute: typeof ApiV1GroupsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/analytics': {
+      id: '/api/v1/analytics'
+      path: '/api/v1/analytics'
+      fullPath: '/api/v1/analytics'
+      preLoaderRoute: typeof ApiV1AnalyticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_public/s/$code': {
       id: '/_public/s/$code'
       path: '/s/$code'
@@ -1058,6 +1220,41 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/abuse-alerts'
       preLoaderRoute: typeof ProtectedAdminAbuseAlertsRouteImport
       parentRoute: typeof ProtectedRoute
+    }
+    '/api/v1/widgets/$id': {
+      id: '/api/v1/widgets/$id'
+      path: '/$id'
+      fullPath: '/api/v1/widgets/$id'
+      preLoaderRoute: typeof ApiV1WidgetsIdRouteImport
+      parentRoute: typeof ApiV1WidgetsRoute
+    }
+    '/api/v1/profile/$username': {
+      id: '/api/v1/profile/$username'
+      path: '/api/v1/profile/$username'
+      fullPath: '/api/v1/profile/$username'
+      preLoaderRoute: typeof ApiV1ProfileUsernameRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/links/$id': {
+      id: '/api/v1/links/$id'
+      path: '/$id'
+      fullPath: '/api/v1/links/$id'
+      preLoaderRoute: typeof ApiV1LinksIdRouteImport
+      parentRoute: typeof ApiV1LinksRoute
+    }
+    '/api/v1/groups/$id': {
+      id: '/api/v1/groups/$id'
+      path: '/$id'
+      fullPath: '/api/v1/groups/$id'
+      preLoaderRoute: typeof ApiV1GroupsIdRouteImport
+      parentRoute: typeof ApiV1GroupsRoute
+    }
+    '/api/auth/callback/$platform': {
+      id: '/api/auth/callback/$platform'
+      path: '/api/auth/callback/$platform'
+      fullPath: '/api/auth/callback/$platform'
+      preLoaderRoute: typeof ApiAuthCallbackPlatformRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
 }
@@ -1174,6 +1371,42 @@ const PublicRouteChildren: PublicRouteChildren = {
 const PublicRouteWithChildren =
   PublicRoute._addFileChildren(PublicRouteChildren)
 
+interface ApiV1GroupsRouteChildren {
+  ApiV1GroupsIdRoute: typeof ApiV1GroupsIdRoute
+}
+
+const ApiV1GroupsRouteChildren: ApiV1GroupsRouteChildren = {
+  ApiV1GroupsIdRoute: ApiV1GroupsIdRoute,
+}
+
+const ApiV1GroupsRouteWithChildren = ApiV1GroupsRoute._addFileChildren(
+  ApiV1GroupsRouteChildren,
+)
+
+interface ApiV1LinksRouteChildren {
+  ApiV1LinksIdRoute: typeof ApiV1LinksIdRoute
+}
+
+const ApiV1LinksRouteChildren: ApiV1LinksRouteChildren = {
+  ApiV1LinksIdRoute: ApiV1LinksIdRoute,
+}
+
+const ApiV1LinksRouteWithChildren = ApiV1LinksRoute._addFileChildren(
+  ApiV1LinksRouteChildren,
+)
+
+interface ApiV1WidgetsRouteChildren {
+  ApiV1WidgetsIdRoute: typeof ApiV1WidgetsIdRoute
+}
+
+const ApiV1WidgetsRouteChildren: ApiV1WidgetsRouteChildren = {
+  ApiV1WidgetsIdRoute: ApiV1WidgetsIdRoute,
+}
+
+const ApiV1WidgetsRouteWithChildren = ApiV1WidgetsRoute._addFileChildren(
+  ApiV1WidgetsRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   UsernameRoute: UsernameRoute,
   AuthRoute: AuthRouteWithChildren,
@@ -1186,7 +1419,14 @@ const rootRouteChildren: RootRouteChildren = {
   ApiCheckUsernameRoute: ApiCheckUsernameRoute,
   ApiHealthRoute: ApiHealthRoute,
   ApiSpotifyCallbackRoute: ApiSpotifyCallbackRoute,
+  ApiV1AnalyticsRoute: ApiV1AnalyticsRoute,
+  ApiV1GroupsRoute: ApiV1GroupsRouteWithChildren,
+  ApiV1LinksRoute: ApiV1LinksRouteWithChildren,
+  ApiV1MeRoute: ApiV1MeRoute,
+  ApiV1WidgetsRoute: ApiV1WidgetsRouteWithChildren,
   ApiWebhooksStripeRoute: ApiWebhooksStripeRoute,
+  ApiAuthCallbackPlatformRoute: ApiAuthCallbackPlatformRoute,
+  ApiV1ProfileUsernameRoute: ApiV1ProfileUsernameRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

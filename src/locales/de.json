@@ -1157,6 +1157,10 @@
           "title": "Link erstellen",
           "description": "Erstelle einen neuen Bio-Link."
         },
+        "getOne": {
+          "title": "Link abrufen",
+          "description": "Rufe einen bestimmten Link per ID ab."
+        },
         "update": {
           "title": "Link aktualisieren",
           "description": "Aktualisiere einen bestehenden Link."
@@ -1164,6 +1168,44 @@
         "delete": {
           "title": "Link löschen",
           "description": "Lösche einen Link dauerhaft."
+        }
+      },
+      "groups": {
+        "title": "Link-Gruppen",
+        "getAll": {
+          "title": "Alle Gruppen abrufen",
+          "description": "Rufe alle deine Link-Gruppen ab."
+        },
+        "create": {
+          "title": "Gruppe erstellen",
+          "description": "Erstelle eine neue Link-Gruppe."
+        },
+        "update": {
+          "title": "Gruppe aktualisieren",
+          "description": "Aktualisiere eine bestehende Gruppe."
+        },
+        "delete": {
+          "title": "Gruppe löschen",
+          "description": "Lösche eine Gruppe dauerhaft."
+        }
+      },
+      "widgets": {
+        "title": "Widgets",
+        "getAll": {
+          "title": "Alle Widgets abrufen",
+          "description": "Rufe alle deine Profil-Widgets ab."
+        },
+        "create": {
+          "title": "Widget erstellen",
+          "description": "Erstelle ein neues Profil-Widget."
+        },
+        "update": {
+          "title": "Widget aktualisieren",
+          "description": "Aktualisiere ein bestehendes Widget."
+        },
+        "delete": {
+          "title": "Widget löschen",
+          "description": "Lösche ein Widget dauerhaft."
         }
       },
       "analytics": {
@@ -1205,6 +1247,77 @@
     "required": "Erforderlich",
     "optional": "Optional",
     "copyCode": "Code kopieren"
+  },
+  "integrations": {
+    "title": "Social Integrationen",
+    "description": "Verbinde deine Social-Accounts, um sie auf deinem Profil anzuzeigen",
+    "connected_count": "verbunden",
+    "connected_badge": "Verbunden",
+    "connected": "{{platform}} erfolgreich verbunden!",
+    "show_on_profile": "Auf Profil anzeigen",
+    "connect": "Verbinden",
+    "disconnect": "Trennen",
+    "not_configured": "Nicht konfiguriert",
+    "disconnect_confirm": {
+      "title": "Plattform trennen",
+      "description": "Bist du sicher, dass du {{platform}} trennen möchtest? Du kannst dich jederzeit wieder verbinden."
+    },
+    "setup": {
+      "title": "Einrichtungsanleitung",
+      "description": "Um Plattform-Integrationen zu aktivieren, musst du OAuth-Apps im Developer-Portal jeder Plattform erstellen und die Zugangsdaten zu deinen Umgebungsvariablen hinzufügen."
+    },
+    "security_note_title": "Sichere OAuth-Verbindung",
+    "security_note": "Wir verwenden sicheres OAuth 2.0, um deine Accounts zu verbinden. Wir speichern niemals deine Passwörter und du kannst die Verbindung jederzeit trennen.",
+    "security": {
+      "title": "Deine Daten sind sicher",
+      "subtitle": "Wir nehmen deine Privatsphäre und Sicherheit ernst",
+      "oauth_title": "OAuth 2.0",
+      "oauth_desc": "Branchenstandard für sichere Authentifizierung",
+      "no_password_title": "Keine Passwörter gespeichert",
+      "no_password_desc": "Wir sehen oder speichern niemals deine Passwörter",
+      "revoke_title": "Jederzeit widerrufen",
+      "revoke_desc": "Trenne deine Accounts sofort mit einem Klick"
+    }
+  },
+  "mediaLibrary": {
+    "title": "Medienbibliothek",
+    "description": "Verwalte deine hochgeladenen Bilder und Dateien",
+    "files": "Dateien",
+    "search": "Dateien suchen...",
+    "allFiles": "Alle Dateien",
+    "selected": "ausgewählt",
+    "move": "Verschieben",
+    "delete": "Löschen",
+    "upload": "Hochladen",
+    "copyUrl": "URL kopieren",
+    "preview": "Vorschau",
+    "select": "Auswählen",
+    "selectAll": "Alle auswählen",
+    "newFolder": "Neuer Ordner",
+    "newFolderDescription": "Erstelle einen neuen Ordner, um deine Medien zu organisieren",
+    "folderName": "Ordnername",
+    "createFolder": "Ordner erstellen",
+    "noFolder": "Kein Ordner",
+    "openInNewTab": "In neuem Tab öffnen",
+    "download": "Herunterladen",
+    "uploadFirst": "Lade deine erste Datei hoch",
+    "deleteSelected": "Ausgewählte löschen",
+    "dropzone": {
+      "title": "Dateien hier ablegen zum Hochladen",
+      "subtitle": "oder klicke oben auf Hochladen"
+    },
+    "empty": {
+      "title": "Noch keine Mediendateien",
+      "subtitle": "Lade dein erstes Bild hoch, um loszulegen"
+    },
+    "deleteConfirm": {
+      "title": "Datei löschen",
+      "description": "Bist du sicher, dass du \"{{filename}}\" löschen möchtest? Diese Aktion kann nicht rückgängig gemacht werden."
+    },
+    "bulkDeleteConfirm": {
+      "title": "Dateien löschen",
+      "description": "Bist du sicher, dass du {{count}} Datei(en) löschen möchtest? Diese Aktion kann nicht rückgängig gemacht werden."
+    }
   },
   "creators": {
     "badge": "Creator Community",
@@ -2319,6 +2432,12 @@
       "profileDesc": "Bearbeite deine Profilinfos",
       "links": "Links",
       "linksDesc": "Verwalte deine Links",
+      "widgets": "Widgets",
+      "widgetsDesc": "Interaktive Widgets hinzufügen",
+      "integrations": "Integrationen",
+      "integrationsDesc": "Social Accounts verbinden",
+      "media": "Medienbibliothek",
+      "mediaDesc": "Hochgeladene Dateien verwalten",
       "referrals": "Empfehlungen",
       "referralsDesc": "Lade Freunde ein",
       "badges": "Abzeichen",
@@ -2379,8 +2498,22 @@
           "name": "Spotify",
           "description": "Zeige, was du gerade hörst",
           "connectedSince": "Verbunden seit {{date}}"
+        },
+        "discord": {
+          "description": "Zeige deinen Discord-Status"
+        },
+        "twitch": {
+          "description": "Zeige deinen Twitch-Kanal"
+        },
+        "github": {
+          "description": "Verknüpfe dein GitHub-Profil"
+        },
+        "steam": {
+          "description": "Zeige dein Steam-Profil"
         }
       },
+      "manageIntegrations": "Alle Integrationen verwalten",
+      "uploadBanner": "Klicken zum Hochladen",
       "banner": "Banner",
       "bannerUrl": "Banner-URL",
       "avatar": "Avatar",
@@ -2406,7 +2539,96 @@
       "clicks": "Klicks",
       "advanced": "Erweitert",
       "schedule": "Zeitplan",
-      "analytics": "Analytics"
+      "analytics": "Analytics",
+      "views": {
+        "allLinks": "Alle Links",
+        "groups": "Gruppen"
+      },
+      "groups": {
+        "title": "Link-Gruppen",
+        "addGroup": "Gruppe hinzufügen",
+        "editGroup": "Gruppe bearbeiten",
+        "deleteGroup": "Gruppe löschen",
+        "groupName": "Gruppenname",
+        "groupColor": "Farbe",
+        "collapsible": "Einklappbar",
+        "noGroups": "Noch keine Gruppen",
+        "addFirst": "Erstelle deine erste Gruppe, um Links zu organisieren",
+        "ungrouped": "Nicht gruppierte Links",
+        "assignToGroup": "Zu Gruppe zuweisen",
+        "removeFromGroup": "Aus Gruppe entfernen",
+        "linksInGroup": "{{count}} Links"
+      }
+    },
+    "widgets": {
+      "title": "Profil-Widgets",
+      "description": "Füge interaktive Widgets zu deiner Bio-Seite hinzu",
+      "addWidget": "Widget hinzufügen",
+      "editWidget": "Widget bearbeiten",
+      "selectWidget": "Widget-Typ auswählen",
+      "noWidgets": "Noch keine Widgets",
+      "addFirst": "Füge dein erstes Widget hinzu, um deine Bio-Seite zu verbessern",
+      "widgetTitle": "Widget-Titel",
+      "visibility": "Sichtbarkeit",
+      "visible": "Sichtbar auf deiner Bio-Seite",
+      "hidden": "Für Besucher verborgen",
+      "activate": "Aktivieren",
+      "deactivate": "Deaktivieren",
+      "premiumRequired": "Premium erforderlich",
+      "types": {
+        "weather": {
+          "name": "Wetter",
+          "description": "Zeige das Wetter für einen Standort"
+        },
+        "countdown": {
+          "name": "Countdown",
+          "description": "Zähle zu einem besonderen Datum herunter"
+        },
+        "social_feed": {
+          "name": "Social Feed",
+          "description": "Bette Social-Media-Beiträge ein"
+        },
+        "youtube": {
+          "name": "YouTube Einbettung",
+          "description": "Bette ein YouTube-Video ein"
+        },
+        "soundcloud": {
+          "name": "SoundCloud",
+          "description": "Bette einen SoundCloud-Track ein"
+        },
+        "twitch": {
+          "name": "Twitch Status",
+          "description": "Zeige deinen Twitch Live-Status"
+        },
+        "github": {
+          "name": "GitHub Statistiken",
+          "description": "Zeige deine GitHub-Aktivität"
+        }
+      },
+      "config": {
+        "countdown": "Countdown-Einstellungen",
+        "targetDate": "Zieldatum",
+        "youtube": "YouTube-Einstellungen",
+        "videoId": "Video-ID",
+        "weather": "Wetter-Einstellungen",
+        "location": "Standort",
+        "position": "Position",
+        "topLeft": "Oben Links",
+        "topRight": "Oben Rechts",
+        "bottomLeft": "Unten Links",
+        "bottomRight": "Unten Rechts",
+        "soundcloud": "SoundCloud-Einstellungen",
+        "trackUrl": "Track-URL",
+        "twitch": "Twitch-Einstellungen",
+        "channelName": "Kanalname",
+        "github": "GitHub-Einstellungen",
+        "username": "Benutzername",
+        "socialFeed": "Social-Feed-Einstellungen",
+        "platform": "Plattform",
+        "selectDateTime": "Datum und Uhrzeit auswählen",
+        "searchLocation": "Nach einer Stadt suchen...",
+        "noLocationsFound": "Keine Standorte gefunden"
+      }
     },
     "referrals": {
       "title": "Empfehlungsprogramm",
@@ -2852,7 +3074,26 @@
               "Beschreibungen · Gib jedem Link mehr Kontext",
               "Planung · Starte/stoppe Links zu festgelegten Zeiten",
               "Analytics · Sieh Klicks, Geräte, Referrer",
-              "Highlight-Stile · Betone wichtige Links mit Speziallayouts"
+              "Link-Gruppen · Organisiere Links in einklappbaren Kategorien"
+            ]
+          },
+          "widgets": {
+            "title": "Widgets hinzufügen",
+            "intro": "Erweitere deine Bio-Seite mit interaktiven Widgets:",
+            "steps": [
+              "Navigiere zu Dashboard → Widgets",
+              "Klicke auf 'Widget hinzufügen' und wähle einen Widget-Typ",
+              "Konfiguriere die Widget-Einstellungen (z.B. Countdown-Datum, YouTube-Video-ID)",
+              "Schalte die Sichtbarkeit um, um Widgets auf deiner Bio-Seite anzuzeigen oder zu verbergen"
+            ],
+            "typesTitle": "Verfügbare Widgets",
+            "typesList": [
+              "Countdown · Zähle zu einem besonderen Datum herunter",
+              "YouTube · Bette ein YouTube-Video auf deiner Seite ein",
+              "SoundCloud · Bette einen SoundCloud-Track ein",
+              "Wetter · Zeige das Wetter für deinen Standort (Premium)",
+              "Twitch · Zeige deinen Twitch-Live-Status (Premium)",
+              "GitHub · Zeige deine GitHub-Aktivität (Premium)"
             ]
           },
           "themes": {

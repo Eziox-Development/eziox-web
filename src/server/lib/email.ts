@@ -224,7 +224,7 @@ export async function sendWelcomeEmail(
                 View Your Page
               </a>
               <p style="margin: 24px 0 0; font-size: 13px; color: rgba(255, 255, 255, 0.5); text-align: center;">
-                Your page: <a href="${APP_URL}/${username}" style="color: #8b5cf6;">eziox.link/${username}</a>
+                Your page: <a href="${APP_URL}/${username}" style="color: #8b5cf6;">${new URL(APP_URL).hostname}/${username}</a>
               </p>
             </td>
           </tr>
@@ -1190,7 +1190,7 @@ export async function sendAbuseAlertEmail(params: {
   try {
     const { error } = await getResend().emails.send({
       from: FROM_EMAIL,
-      to: 'legal@eziox.link',
+      to: process.env.LEGAL_EMAIL || 'legal@eziox.link',
       subject: `${severityEmoji} [${severity.toUpperCase()}] Abuse Alert: ${title}`,
       html: generateEmailTemplate({
         title: `${severityEmoji} Abuse Alert`,

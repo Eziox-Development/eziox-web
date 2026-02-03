@@ -264,7 +264,7 @@ export function HomePage() {
                   }}
                 >
                   <div className="flex items-center gap-2 px-4 py-3 rounded-xl" style={{ background: theme.colors.backgroundSecondary }}>
-                    <span className="text-sm font-medium" style={{ color: theme.colors.foregroundMuted }}>eziox.link/</span>
+                    <span className="text-sm font-medium" style={{ color: theme.colors.foregroundMuted }}>{typeof window !== 'undefined' ? (window.location.hostname === 'localhost' ? 'localhost:5173' : window.location.hostname) : 'eziox.link'}/</span>
                   </div>
                   <input
                     type="text"

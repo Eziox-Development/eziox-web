@@ -1,6 +1,9 @@
 export type TabType =
   | 'profile'
   | 'links'
+  | 'widgets'
+  | 'integrations'
+  | 'media'
   | 'referrals'
   | 'badges'
   | 'subscription'

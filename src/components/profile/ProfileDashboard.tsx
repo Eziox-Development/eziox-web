@@ -39,6 +39,9 @@ import { DASHBOARD_TABS } from './constants'
 import type { TabType, ProfileFormData, ProfileUser } from './types'
 import { ProfileTab } from './tabs/ProfileTab'
 import { LinksTab } from './tabs/LinksTab'
+import { WidgetsTab } from './tabs/WidgetsTab'
+import { IntegrationsTab } from './tabs/IntegrationsTab'
+import { MediaLibraryTab } from './tabs/MediaLibraryTab'
 import { ReferralsTab } from './tabs/ReferralsTab'
 import { BadgesTab } from './tabs/BadgesTab'
 import { SubscriptionTab } from './tabs/SubscriptionTab'
@@ -89,7 +92,7 @@ export function ProfileDashboard({ currentUser, initialTab }: ProfileDashboardPr
     socials: {},
   })
 
-  const bioUrl = `https://eziox.link/${currentUser.username}`
+  const bioUrl = `${typeof window !== 'undefined' ? (window.location.hostname === 'localhost' ? 'https://localhost:5173' : window.location.origin) : 'https://eziox.link'}/${currentUser.username}`
 
   useEffect(() => {
     if (initialTab && initialTab !== activeTab) {
@@ -344,7 +347,7 @@ export function ProfileDashboard({ currentUser, initialTab }: ProfileDashboardPr
                     </p>
                     <div className="flex items-center gap-2">
                       <div className="flex-1 px-3 py-2 text-sm font-mono truncate rounded-[calc(var(--radius)*0.3)] bg-background-secondary/30 text-primary">
-                        eziox.link/{currentUser.username}
+                        {typeof window !== 'undefined' ? (window.location.hostname === 'localhost' ? 'localhost:5173' : window.location.hostname) : 'eziox.link'}/{currentUser.username}
                       </div>
                       <button
                         onClick={copyBioUrl}
@@ -520,6 +523,9 @@ export function ProfileDashboard({ currentUser, initialTab }: ProfileDashboardPr
                 />
               )}
               {activeTab === 'links' && <LinksTab key="links" />}
+              {activeTab === 'widgets' && <WidgetsTab key="widgets" />}
+              {activeTab === 'integrations' && <IntegrationsTab key="integrations" />}
+              {activeTab === 'media' && <MediaLibraryTab key="media" />}
               {activeTab === 'referrals' && <ReferralsTab key="referrals" />}
               {activeTab === 'badges' && (
                 <BadgesTab
@@ -576,7 +582,7 @@ export function ProfileDashboard({ currentUser, initialTab }: ProfileDashboardPr
               </div>
 
               <p className="text-center text-sm mb-4 font-mono text-purple-400">
-                eziox.link/{currentUser.username}
+                {typeof window !== 'undefined' ? (window.location.hostname === 'localhost' ? 'localhost:5173' : window.location.hostname) : 'eziox.link'}/{currentUser.username}
               </p>
 
               <div className="mb-4">

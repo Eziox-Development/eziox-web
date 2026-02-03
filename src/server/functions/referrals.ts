@@ -80,7 +80,7 @@ export const getReferralCodeFn = createServerFn({ method: 'GET' }).handler(
     if (profile.referralCode) {
       return {
         code: profile.referralCode,
-        link: `https://eziox.link/join/${profile.referralCode}`,
+        link: `${process.env.APP_URL || 'https://eziox.link'}/join/${profile.referralCode}`,
         isOwner: profile.role === 'owner',
       }
     }
@@ -114,7 +114,7 @@ export const getReferralCodeFn = createServerFn({ method: 'GET' }).handler(
 
     return {
       code: newCode,
-      link: `https://eziox.link/join/${newCode}`,
+      link: `${process.env.APP_URL || 'https://eziox.link'}/join/${newCode}`,
       isOwner,
     }
   },
@@ -374,7 +374,7 @@ export const regenerateReferralCodeFn = createServerFn({
   if (user.role === 'owner') {
     return {
       code: generateOwnerCode(),
-      link: `https://eziox.link/join/${generateOwnerCode()}`,
+      link: `${process.env.APP_URL || 'https://eziox.link'}/join/${generateOwnerCode()}`,
     }
   }
 
@@ -400,6 +400,6 @@ export const regenerateReferralCodeFn = createServerFn({
 
   return {
     code: newCode,
-    link: `https://eziox.link/join/${newCode}`,
+    link: `${process.env.APP_URL || 'https://eziox.link'}/join/${newCode}`,
   }
 })

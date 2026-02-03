@@ -91,7 +91,7 @@ export function ApiDocsPage() {
         },
         {
           method: 'GET',
-          path: '/v1/profile/me',
+          path: '/v1/me',
           title: t('apiDocs.endpoints.profile.getMe.title'),
           description: t('apiDocs.endpoints.profile.getMe.description'),
           auth: true,
@@ -106,7 +106,7 @@ export function ApiDocsPage() {
         },
         {
           method: 'PATCH',
-          path: '/v1/profile/me',
+          path: '/v1/me',
           title: t('apiDocs.endpoints.profile.update.title'),
           description: t('apiDocs.endpoints.profile.update.description'),
           auth: true,
@@ -117,7 +117,7 @@ export function ApiDocsPage() {
 }`,
           response: `{
   "success": true,
-  "profile": {...}
+  "updated": ["name", "bio"]
 }`,
         },
       ],
@@ -137,7 +137,8 @@ export function ApiDocsPage() {
       "clicks": 0,
       "isActive": true
     }
-  ]
+  ],
+  "total": 5
 }`,
         },
         {
@@ -154,6 +155,19 @@ export function ApiDocsPage() {
           response: `{
   "success": true,
   "link": {...}
+}`,
+        },
+        {
+          method: 'GET',
+          path: '/v1/links/:id',
+          title: t('apiDocs.endpoints.links.getOne.title'),
+          description: t('apiDocs.endpoints.links.getOne.description'),
+          auth: true,
+          response: `{
+  "id": "uuid",
+  "title": "string",
+  "url": "string",
+  "clicks": 0
 }`,
         },
         {
@@ -182,6 +196,131 @@ export function ApiDocsPage() {
 }`,
         },
       ],
+      groups: [
+        {
+          method: 'GET',
+          path: '/v1/groups',
+          title: t('apiDocs.endpoints.groups.getAll.title'),
+          description: t('apiDocs.endpoints.groups.getAll.description'),
+          auth: true,
+          response: `{
+  "groups": [
+    {
+      "id": "uuid",
+      "name": "string",
+      "icon": "string",
+      "color": "#hex",
+      "isCollapsible": true
+    }
+  ],
+  "total": 3
+}`,
+        },
+        {
+          method: 'POST',
+          path: '/v1/groups',
+          title: t('apiDocs.endpoints.groups.create.title'),
+          description: t('apiDocs.endpoints.groups.create.description'),
+          auth: true,
+          body: `{
+  "name": "string",
+  "icon": "string",
+  "color": "#hex"
+}`,
+          response: `{
+  "success": true,
+  "group": {...}
+}`,
+        },
+        {
+          method: 'PATCH',
+          path: '/v1/groups/:id',
+          title: t('apiDocs.endpoints.groups.update.title'),
+          description: t('apiDocs.endpoints.groups.update.description'),
+          auth: true,
+          body: `{
+  "name": "string",
+  "isCollapsible": true
+}`,
+          response: `{
+  "success": true,
+  "group": {...}
+}`,
+        },
+        {
+          method: 'DELETE',
+          path: '/v1/groups/:id',
+          title: t('apiDocs.endpoints.groups.delete.title'),
+          description: t('apiDocs.endpoints.groups.delete.description'),
+          auth: true,
+          response: `{
+  "success": true
+}`,
+        },
+      ],
+      widgets: [
+        {
+          method: 'GET',
+          path: '/v1/widgets',
+          title: t('apiDocs.endpoints.widgets.getAll.title'),
+          description: t('apiDocs.endpoints.widgets.getAll.description'),
+          auth: true,
+          response: `{
+  "widgets": [
+    {
+      "id": "uuid",
+      "type": "weather|countdown|youtube",
+      "title": "string",
+      "isActive": true,
+      "config": {...}
+    }
+  ],
+  "total": 2
+}`,
+        },
+        {
+          method: 'POST',
+          path: '/v1/widgets',
+          title: t('apiDocs.endpoints.widgets.create.title'),
+          description: t('apiDocs.endpoints.widgets.create.description'),
+          auth: true,
+          body: `{
+  "type": "weather|countdown|youtube|soundcloud|twitch|github",
+  "title": "string",
+  "config": {...}
+}`,
+          response: `{
+  "success": true,
+  "widget": {...}
+}`,
+        },
+        {
+          method: 'PATCH',
+          path: '/v1/widgets/:id',
+          title: t('apiDocs.endpoints.widgets.update.title'),
+          description: t('apiDocs.endpoints.widgets.update.description'),
+          auth: true,
+          body: `{
+  "title": "string",
+  "isActive": true,
+  "config": {...}
+}`,
+          response: `{
+  "success": true,
+  "widget": {...}
+}`,
+        },
+        {
+          method: 'DELETE',
+          path: '/v1/widgets/:id',
+          title: t('apiDocs.endpoints.widgets.delete.title'),
+          description: t('apiDocs.endpoints.widgets.delete.description'),
+          auth: true,
+          response: `{
+  "success": true
+}`,
+        },
+      ],
       analytics: [
         {
           method: 'GET',
@@ -191,10 +330,12 @@ export function ApiDocsPage() {
           auth: true,
           params: [{ name: 'days', type: 'number', optional: true }],
           response: `{
-  "profileViews": 0,
-  "linkClicks": 0,
+  "period": {...},
+  "totals": {...},
   "topLinks": [...],
-  "dailyStats": [...]
+  "dailyStats": [...],
+  "deviceStats": {...},
+  "browserStats": {...}
 }`,
         },
       ],
@@ -227,6 +368,8 @@ export function ApiDocsPage() {
     () => ({
       profile: User,
       links: Link2,
+      groups: Layers,
+      widgets: Zap,
       analytics: BarChart3,
     }),
     [],
@@ -316,7 +459,7 @@ export function ApiDocsPage() {
             {[
               {
                 icon: Code2,
-                label: '8 Endpoints',
+                label: '17 Endpoints',
                 color: theme.colors.primary,
               },
               { icon: Zap, label: '< 50ms', color: '#22c55e' },
@@ -464,11 +607,11 @@ export function ApiDocsPage() {
               {t('apiDocs.baseUrl.description')}
             </p>
             <CodeBlock
-              code="https://api.eziox.link"
+              code={(typeof window !== 'undefined' ? (window.location.hostname === 'localhost' ? 'localhost:5173' : window.location.hostname) : 'eziox.link').replace('eziox.link', 'api.eziox.link')}
               theme={theme}
               cardRadius={cardRadius}
               onCopy={() =>
-                copyToClipboard('https://api.eziox.link', 'baseurl')
+                copyToClipboard((typeof window !== 'undefined' ? (window.location.hostname === 'localhost' ? 'localhost:5173' : window.location.hostname) : 'eziox.link').replace('eziox.link', 'api.eziox.link'), 'baseurl')
               }
               copied={copiedId === 'baseurl'}
               language="text"

@@ -218,6 +218,63 @@ export const removeBannerFn = createServerFn({ method: 'POST' }).handler(
   },
 )
 
+// Upload Media (generic upload for media library)
+const uploadMediaSchema = z.object({
+  image: z.string().min(1, 'Image data is required'),
+  folder: z.string().optional(),
+})
+
+export const uploadMediaFn = createServerFn({ method: 'POST' })
+  .inputValidator(uploadMediaSchema)
+  .handler(async ({ data }) => {
+    const token = getCookie('session-token')
+    if (!token) {
+      setResponseStatus(401)
+      throw { message: 'Not authenticated', status: 401 }
+    }
+
+    const user = await validateSession(token)
+    if (!user) {
+      setResponseStatus(401)
+      throw { message: 'Not authenticated', status: 401 }
+    }
+
+    const ip = getRequestIP() || 'unknown'
+    const rateLimit = checkRateLimit(
+      `upload:${user.id}:${ip}`,
+      RATE_LIMITS.API_UPLOAD.maxRequests,
+      RATE_LIMITS.API_UPLOAD.windowMs,
+    )
+    if (!rateLimit.allowed) {
+      setResponseStatus(429)
+      throw {
+        message: 'Too many uploads. Please try again later.',
+        status: 429,
+      }
+    }
+
+    try {
+      const { uploadImage } = await import('../lib/cloudinary')
+      const folder = data.folder || 'media'
+      const publicId = `media_${user.id}_${Date.now()}`
+      
+      const result = await uploadImage(data.image, folder, publicId)
+
+      return {
+        success: true,
+        url: result.url,
+        publicId: result.publicId,
+      }
+    } catch (error) {
+      console.error('Media upload error:', error)
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to upload media'
+      setResponseStatus(500)
+      throw { message: errorMessage, status: 500 }
+    }
+  })
+
 // Type Exports
 export type UploadAvatarInput = z.infer<typeof uploadAvatarSchema>
 export type UploadBannerInput = z.infer<typeof uploadBannerSchema>
+export type UploadMediaInput = z.infer<typeof uploadMediaSchema>

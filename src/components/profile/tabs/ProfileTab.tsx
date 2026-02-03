@@ -1,9 +1,11 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { useTranslation } from 'react-i18next'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
 import { getSpotifyConnectionFn, disconnectSpotifyFn } from '@/server/functions/spotify'
+import { getConnectedPlatformsFn, getOAuthUrlFn } from '@/server/functions/social-integrations'
+import { uploadAvatarFn, uploadBannerFn } from '@/server/functions/upload'
 import {
   User,
   AtSign,
@@ -15,13 +17,18 @@ import {
   Search,
   X,
   Camera,
-  ImageIcon,
   Link2,
   Loader2,
   Trash2,
+  Upload,
+  ExternalLink,
 } from 'lucide-react'
 import {
-  SiSpotify
+  SiSpotify,
+  SiDiscord,
+  SiSteam,
+  SiTwitch,
+  SiGithub,
 } from 'react-icons/si'
 import { SOCIAL_PLATFORMS, ADDITIONAL_PLATFORMS, CREATOR_TYPES, PRONOUNS_OPTIONS } from '../constants'
 import type { ProfileFormData } from '../types'
@@ -50,13 +57,30 @@ export function ProfileTab({
   onBannerChange,
 }: ProfileTabProps) {
   const queryClient = useQueryClient()
+  const { t } = useTranslation()
+  const avatarInputRef = useRef<HTMLInputElement>(null)
+  const bannerInputRef = useRef<HTMLInputElement>(null)
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false)
+  const [isUploadingBanner, setIsUploadingBanner] = useState(false)
+  const [showMoreSocials, setShowMoreSocials] = useState(false)
+  const [socialSearch, setSocialSearch] = useState('')
+
+  // Server functions
   const getSpotifyConnection = useServerFn(getSpotifyConnectionFn)
   const disconnectSpotify = useServerFn(disconnectSpotifyFn)
+  const uploadAvatar = useServerFn(uploadAvatarFn)
+  const uploadBanner = useServerFn(uploadBannerFn)
 
   // Spotify connection state
   const { data: spotifyConnection } = useQuery({
     queryKey: ['spotify-connection'],
     queryFn: () => getSpotifyConnection(),
+  })
+
+  // Social integrations
+  const { data: connectedPlatforms } = useQuery({
+    queryKey: ['connected-platforms'],
+    queryFn: () => getConnectedPlatformsFn(),
   })
 
   const spotifyDisconnectMutation = useMutation({
@@ -65,9 +89,59 @@ export function ProfileTab({
       void queryClient.invalidateQueries({ queryKey: ['spotify-connection'] })
     },
   })
-  const { t } = useTranslation()
-  const [showMoreSocials, setShowMoreSocials] = useState(false)
-  const [socialSearch, setSocialSearch] = useState('')
+
+  const connectPlatformMutation = useMutation({
+    mutationFn: (platform: 'discord' | 'steam' | 'twitch' | 'github') => 
+      getOAuthUrlFn({ data: { platform } }),
+    onSuccess: (data) => {
+      if (data.url) {
+        window.location.href = data.url
+      }
+    },
+  })
+
+  // File upload handlers
+  const handleAvatarUpload = async (file: File) => {
+    setIsUploadingAvatar(true)
+    try {
+      const reader = new FileReader()
+      reader.onload = async (e) => {
+        const base64 = e.target?.result as string
+        const result = await uploadAvatar({ data: { image: base64 } })
+        if (result.avatarUrl) {
+          onAvatarChange(result.avatarUrl)
+        }
+        setIsUploadingAvatar(false)
+      }
+      reader.readAsDataURL(file)
+    } catch (error) {
+      console.error('Avatar upload failed:', error)
+      setIsUploadingAvatar(false)
+    }
+  }
+
+  const handleBannerUpload = async (file: File) => {
+    setIsUploadingBanner(true)
+    try {
+      const reader = new FileReader()
+      reader.onload = async (e) => {
+        const base64 = e.target?.result as string
+        const result = await uploadBanner({ data: { image: base64 } })
+        if (result.bannerUrl) {
+          onBannerChange(result.bannerUrl)
+        }
+        setIsUploadingBanner(false)
+      }
+      reader.readAsDataURL(file)
+    } catch (error) {
+      console.error('Banner upload failed:', error)
+      setIsUploadingBanner(false)
+    }
+  }
+
+  const isPlatformConnected = (platform: string) => {
+    return connectedPlatforms?.integrations?.some(i => i.platform === platform) ?? false
+  }
 
   const filteredAdditional = ADDITIONAL_PLATFORMS.filter(
     (p) => p.label.toLowerCase().includes(socialSearch.toLowerCase())
@@ -98,18 +172,46 @@ export function ProfileTab({
               style={{
                 background: banner ? `url(${banner}) center/cover` : undefined,
               }}
+              onClick={() => bannerInputRef.current?.click()}
             >
-              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-(--animation-speed) flex items-center justify-center">
-                <ImageIcon size={24} className="text-white" />
+              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-(--animation-speed) flex items-center justify-center gap-2">
+                {isUploadingBanner ? (
+                  <Loader2 size={24} className="text-white animate-spin" />
+                ) : (
+                  <>
+                    <Upload size={24} className="text-white" />
+                    <span className="text-white text-sm font-medium">{t('dashboard.profile.uploadBanner')}</span>
+                  </>
+                )}
               </div>
             </div>
             <input
-              type="url"
-              value={banner || ''}
-              onChange={(e) => onBannerChange(e.target.value || null)}
-              placeholder={t('dashboard.profile.bannerUrl')}
-              className="mt-2 w-full px-4 py-3 focus:outline-none transition-colors duration-(--animation-speed) rounded-lg bg-background-secondary/30 border border-border/20 text-foreground placeholder-foreground-muted/50 focus:border-primary/50"
+              ref={bannerInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0]
+                if (file) void handleBannerUpload(file)
+              }}
             />
+            <div className="mt-2 flex gap-2">
+              <input
+                type="url"
+                value={banner || ''}
+                onChange={(e) => onBannerChange(e.target.value || null)}
+                placeholder={t('dashboard.profile.bannerUrl')}
+                className="flex-1 px-4 py-3 focus:outline-none transition-colors duration-(--animation-speed) rounded-lg bg-background-secondary/30 border border-border/20 text-foreground placeholder-foreground-muted/50 focus:border-primary/50"
+              />
+              {banner && (
+                <button
+                  onClick={() => onBannerChange(null)}
+                  className="px-3 py-2 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors"
+                >
+                  <Trash2 size={18} />
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Avatar */}
@@ -121,6 +223,7 @@ export function ProfileTab({
                 style={{
                   background: avatar ? `url(${avatar}) center/cover` : undefined,
                 }}
+                onClick={() => avatarInputRef.current?.click()}
               >
                 {!avatar && (
                   <div className="w-full h-full flex items-center justify-center font-bold text-2xl text-primary-foreground">
@@ -128,16 +231,40 @@ export function ProfileTab({
                   </div>
                 )}
                 <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-(--animation-speed) flex items-center justify-center">
-                  <Camera size={20} className="text-white" />
+                  {isUploadingAvatar ? (
+                    <Loader2 size={20} className="text-white animate-spin" />
+                  ) : (
+                    <Camera size={20} className="text-white" />
+                  )}
                 </div>
               </div>
               <input
-                type="url"
-                value={avatar || ''}
-                onChange={(e) => onAvatarChange(e.target.value || null)}
-                placeholder={t('dashboard.profile.avatarUrl')}
-                className="flex-1 px-4 py-3 focus:outline-none transition-colors duration-(--animation-speed) rounded-lg bg-background-secondary/30 border border-border/20 text-foreground placeholder-foreground-muted/50 focus:border-primary/50"
+                ref={avatarInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0]
+                  if (file) void handleAvatarUpload(file)
+                }}
               />
+              <div className="flex-1 flex gap-2">
+                <input
+                  type="url"
+                  value={avatar || ''}
+                  onChange={(e) => onAvatarChange(e.target.value || null)}
+                  placeholder={t('dashboard.profile.avatarUrl')}
+                  className="flex-1 px-4 py-3 focus:outline-none transition-colors duration-(--animation-speed) rounded-lg bg-background-secondary/30 border border-border/20 text-foreground placeholder-foreground-muted/50 focus:border-primary/50"
+                />
+                {avatar && (
+                  <button
+                    onClick={() => onAvatarChange(null)}
+                    className="px-3 py-2 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors"
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -165,7 +292,7 @@ export function ProfileTab({
             value={formData.username}
             onChange={(v) => updateField('username', v.toLowerCase().replace(/[^a-z0-9_-]/g, ''))}
             placeholder={t('dashboard.profile.usernamePlaceholder')}
-            hint={`eziox.link/${formData.username || 'username'}`}
+            hint={`${typeof window !== 'undefined' ? (window.location.hostname === 'localhost' ? 'localhost:5173' : window.location.hostname) : 'eziox.link'}/${formData.username || 'username'}`}
           />
 
           <div>
@@ -406,6 +533,158 @@ export function ProfileTab({
               </a>
             )}
           </div>
+
+          {/* Discord Service */}
+          <div className="flex items-center justify-between p-4 rounded-xl bg-background-secondary/50 hover:bg-background-secondary/70 transition-all duration-300">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: '#5865F220' }}>
+                <SiDiscord size={20} style={{ color: '#5865F2' }} />
+              </div>
+              <div>
+                <p className="font-medium text-foreground">Discord</p>
+                <p className="text-xs text-foreground-muted">
+                  {isPlatformConnected('discord') 
+                    ? t('integrations.connected_badge')
+                    : t('dashboard.profile.services.discord.description')}
+                </p>
+              </div>
+            </div>
+            {isPlatformConnected('discord') ? (
+              <span className="px-3 py-1.5 rounded-lg bg-green-500/20 text-green-400 text-sm font-medium">
+                {t('integrations.connected_badge')}
+              </span>
+            ) : (
+              <button
+                onClick={() => connectPlatformMutation.mutate('discord')}
+                disabled={connectPlatformMutation.isPending}
+                className="px-3 py-1.5 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors"
+                style={{ backgroundColor: '#5865F220', color: '#5865F2' }}
+              >
+                {connectPlatformMutation.isPending ? (
+                  <Loader2 size={14} className="animate-spin" />
+                ) : (
+                  <ExternalLink size={14} />
+                )}
+                {t('common.connect')}
+              </button>
+            )}
+          </div>
+
+          {/* Twitch Service */}
+          <div className="flex items-center justify-between p-4 rounded-xl bg-background-secondary/50 hover:bg-background-secondary/70 transition-all duration-300">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: '#9146FF20' }}>
+                <SiTwitch size={20} style={{ color: '#9146FF' }} />
+              </div>
+              <div>
+                <p className="font-medium text-foreground">Twitch</p>
+                <p className="text-xs text-foreground-muted">
+                  {isPlatformConnected('twitch') 
+                    ? t('integrations.connected_badge')
+                    : t('dashboard.profile.services.twitch.description')}
+                </p>
+              </div>
+            </div>
+            {isPlatformConnected('twitch') ? (
+              <span className="px-3 py-1.5 rounded-lg bg-green-500/20 text-green-400 text-sm font-medium">
+                {t('integrations.connected_badge')}
+              </span>
+            ) : (
+              <button
+                onClick={() => connectPlatformMutation.mutate('twitch')}
+                disabled={connectPlatformMutation.isPending}
+                className="px-3 py-1.5 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors"
+                style={{ backgroundColor: '#9146FF20', color: '#9146FF' }}
+              >
+                {connectPlatformMutation.isPending ? (
+                  <Loader2 size={14} className="animate-spin" />
+                ) : (
+                  <ExternalLink size={14} />
+                )}
+                {t('common.connect')}
+              </button>
+            )}
+          </div>
+
+          {/* GitHub Service */}
+          <div className="flex items-center justify-between p-4 rounded-xl bg-background-secondary/50 hover:bg-background-secondary/70 transition-all duration-300">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-[#18171720]">
+                <SiGithub size={20} className="text-foreground" />
+              </div>
+              <div>
+                <p className="font-medium text-foreground">GitHub</p>
+                <p className="text-xs text-foreground-muted">
+                  {isPlatformConnected('github') 
+                    ? t('integrations.connected_badge')
+                    : t('dashboard.profile.services.github.description')}
+                </p>
+              </div>
+            </div>
+            {isPlatformConnected('github') ? (
+              <span className="px-3 py-1.5 rounded-lg bg-green-500/20 text-green-400 text-sm font-medium">
+                {t('integrations.connected_badge')}
+              </span>
+            ) : (
+              <button
+                onClick={() => connectPlatformMutation.mutate('github')}
+                disabled={connectPlatformMutation.isPending}
+                className="px-3 py-1.5 rounded-lg bg-foreground/10 text-foreground text-sm font-medium flex items-center gap-2 transition-colors hover:bg-foreground/20"
+              >
+                {connectPlatformMutation.isPending ? (
+                  <Loader2 size={14} className="animate-spin" />
+                ) : (
+                  <ExternalLink size={14} />
+                )}
+                {t('common.connect')}
+              </button>
+            )}
+          </div>
+
+          {/* Steam Service */}
+          <div className="flex items-center justify-between p-4 rounded-xl bg-background-secondary/50 hover:bg-background-secondary/70 transition-all duration-300">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: '#1b283820' }}>
+                <SiSteam size={20} style={{ color: '#66c0f4' }} />
+              </div>
+              <div>
+                <p className="font-medium text-foreground">Steam</p>
+                <p className="text-xs text-foreground-muted">
+                  {isPlatformConnected('steam') 
+                    ? t('integrations.connected_badge')
+                    : t('dashboard.profile.services.steam.description')}
+                </p>
+              </div>
+            </div>
+            {isPlatformConnected('steam') ? (
+              <span className="px-3 py-1.5 rounded-lg bg-green-500/20 text-green-400 text-sm font-medium">
+                {t('integrations.connected_badge')}
+              </span>
+            ) : (
+              <button
+                onClick={() => connectPlatformMutation.mutate('steam')}
+                disabled={connectPlatformMutation.isPending}
+                className="px-3 py-1.5 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors"
+                style={{ backgroundColor: '#1b283820', color: '#66c0f4' }}
+              >
+                {connectPlatformMutation.isPending ? (
+                  <Loader2 size={14} className="animate-spin" />
+                ) : (
+                  <ExternalLink size={14} />
+                )}
+                {t('common.connect')}
+              </button>
+            )}
+          </div>
+
+          {/* Link to full integrations page */}
+          <a
+            href="/profile?tab=integrations"
+            className="flex items-center justify-center gap-2 p-3 rounded-xl border border-dashed border-border text-foreground-muted hover:text-foreground hover:border-primary/50 transition-colors text-sm"
+          >
+            <Plus size={16} />
+            {t('dashboard.profile.manageIntegrations')}
+          </a>
         </div>
       </div>
     </motion.div>

@@ -124,7 +124,7 @@ function ShortenerPage() {
 
   // Handlers
   const copyToClipboard = async (code: string, id: string) => {
-    await navigator.clipboard.writeText(`https://eziox.link/s/${code}`)
+    await navigator.clipboard.writeText(`${typeof window !== 'undefined' ? (window.location.hostname === 'localhost' ? 'https://localhost:5173' : window.location.origin) : 'https://eziox.link'}/s/${code}`)
     setCopiedId(id)
     setTimeout(() => setCopiedId(null), 2000)
   }
@@ -466,7 +466,7 @@ function ShortenerPage() {
 
                       {/* Visit */}
                       <a
-                        href={`https://eziox.link/s/${link.code}`}
+                        href={`${typeof window !== 'undefined' ? (window.location.hostname === 'localhost' ? 'https://localhost:5173' : window.location.origin) : 'https://eziox.link'}/s/${link.code}` }
                         target="_blank"
                         rel="noopener noreferrer"
                         className="p-2 rounded-lg hover:bg-background-secondary transition-colors"

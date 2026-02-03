@@ -178,7 +178,7 @@ export function Nav() {
     'U'
   const displayName =
     currentUser?.name || currentUser?.email?.split('@')[0] || 'User'
-  const bioLink = `eziox.link/${currentUser?.username || 'you'}`
+  const bioLink = `${typeof window !== 'undefined' ? (window.location.hostname === 'localhost' ? 'localhost:5173' : window.location.hostname) : 'eziox.link'}/${currentUser?.username || 'you'}`
   const isCommunityActive = COMMUNITY_ITEMS.some(
     (i) => location.pathname === i.href,
   )

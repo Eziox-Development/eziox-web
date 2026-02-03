@@ -32,6 +32,9 @@ import {
   Lock,
   Globe,
   Key,
+  LayoutGrid,
+  Plug,
+  Image,
 } from 'lucide-react'
 import type { TabType } from './types'
 
@@ -107,6 +110,9 @@ export const DASHBOARD_TABS: Array<{
 }> = [
   { id: 'profile', labelKey: 'dashboard.tabs.profile', descKey: 'dashboard.tabs.profileDesc', icon: UserCircle, category: 'main' },
   { id: 'links', labelKey: 'dashboard.tabs.links', descKey: 'dashboard.tabs.linksDesc', icon: LinkIcon, category: 'main' },
+  { id: 'widgets', labelKey: 'dashboard.tabs.widgets', descKey: 'dashboard.tabs.widgetsDesc', icon: LayoutGrid, category: 'main' },
+  { id: 'integrations', labelKey: 'dashboard.tabs.integrations', descKey: 'dashboard.tabs.integrationsDesc', icon: Plug, category: 'main' },
+  { id: 'media', labelKey: 'dashboard.tabs.media', descKey: 'dashboard.tabs.mediaDesc', icon: Image, category: 'main' },
   { id: 'referrals', labelKey: 'dashboard.tabs.referrals', descKey: 'dashboard.tabs.referralsDesc', icon: Gift, category: 'main' },
   { id: 'badges', labelKey: 'dashboard.tabs.badges', descKey: 'dashboard.tabs.badgesDesc', icon: Shield, category: 'main' },
   { id: 'subscription', labelKey: 'dashboard.tabs.subscription', descKey: 'dashboard.tabs.subscriptionDesc', icon: Crown, category: 'premium' },

@@ -104,6 +104,30 @@ export function GettingStartedDoc() {
         </DocSubSection>
       </DocSection>
 
+      <DocSection title={t(`${s}.widgets.title`)}>
+        <DocParagraph>{t(`${s}.widgets.intro`)}</DocParagraph>
+        <DocList
+          items={[
+            t(`${s}.widgets.steps.0`),
+            t(`${s}.widgets.steps.1`),
+            t(`${s}.widgets.steps.2`),
+            t(`${s}.widgets.steps.3`),
+          ]}
+        />
+        <DocSubSection title={t(`${s}.widgets.typesTitle`)}>
+          <DocList
+            items={[
+              t(`${s}.widgets.typesList.0`),
+              t(`${s}.widgets.typesList.1`),
+              t(`${s}.widgets.typesList.2`),
+              t(`${s}.widgets.typesList.3`),
+              t(`${s}.widgets.typesList.4`),
+              t(`${s}.widgets.typesList.5`),
+            ]}
+          />
+        </DocSubSection>
+      </DocSection>
+
       <DocSection title={t(`${s}.themes.title`)}>
         <DocParagraph>{t(`${s}.themes.intro`)}</DocParagraph>
         <DocTable

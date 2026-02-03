@@ -2,7 +2,7 @@ import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
 import { getRequestIP } from '@tanstack/react-start/server'
 import { db } from '../db'
-import { users, profiles, userStats, userLinks } from '../db/schema'
+import { users, profiles, userStats, userLinks, linkGroups } from '../db/schema'
 import { eq, desc, asc, sql } from 'drizzle-orm'
 import { checkRateLimit, RATE_LIMITS } from '@/lib/security'
 
@@ -54,11 +54,19 @@ export const getPublicProfileFn = createServerFn({ method: 'GET' })
       .where(eq(userLinks.userId, result.user.id))
       .orderBy(asc(userLinks.order))
 
+    // Get user's link groups
+    const groups = await db
+      .select()
+      .from(linkGroups)
+      .where(eq(linkGroups.userId, result.user.id))
+      .orderBy(asc(linkGroups.order))
+
     return {
       user: result.user,
       profile: result.profile,
       stats: result.stats,
       links: links.filter((l) => l.isActive),
+      linkGroups: groups,
     }
   })
 

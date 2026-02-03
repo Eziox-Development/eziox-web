@@ -628,6 +628,10 @@
           "title": "Create Link",
           "description": "Create a new bio link."
         },
+        "getOne": {
+          "title": "Get Link",
+          "description": "Retrieve a specific link by ID."
+        },
         "update": {
           "title": "Update Link",
           "description": "Update an existing link."
@@ -635,6 +639,44 @@
         "delete": {
           "title": "Delete Link",
           "description": "Delete a link permanently."
+        }
+      },
+      "groups": {
+        "title": "Link Groups",
+        "getAll": {
+          "title": "Get All Groups",
+          "description": "Retrieve all your link groups."
+        },
+        "create": {
+          "title": "Create Group",
+          "description": "Create a new link group."
+        },
+        "update": {
+          "title": "Update Group",
+          "description": "Update an existing group."
+        },
+        "delete": {
+          "title": "Delete Group",
+          "description": "Delete a group permanently."
+        }
+      },
+      "widgets": {
+        "title": "Widgets",
+        "getAll": {
+          "title": "Get All Widgets",
+          "description": "Retrieve all your profile widgets."
+        },
+        "create": {
+          "title": "Create Widget",
+          "description": "Create a new profile widget."
+        },
+        "update": {
+          "title": "Update Widget",
+          "description": "Update an existing widget."
+        },
+        "delete": {
+          "title": "Delete Widget",
+          "description": "Delete a widget permanently."
         }
       },
       "analytics": {
@@ -676,6 +718,77 @@
     "required": "Required",
     "optional": "Optional",
     "copyCode": "Copy code"
+  },
+  "integrations": {
+    "title": "Social Integrations",
+    "description": "Connect your social accounts to display on your profile",
+    "connected_count": "connected",
+    "connected_badge": "Connected",
+    "connected": "Successfully connected {{platform}}!",
+    "show_on_profile": "Show on profile",
+    "connect": "Connect",
+    "disconnect": "Disconnect",
+    "not_configured": "Not configured",
+    "disconnect_confirm": {
+      "title": "Disconnect Platform",
+      "description": "Are you sure you want to disconnect {{platform}}? You can reconnect anytime."
+    },
+    "setup": {
+      "title": "Setup Instructions",
+      "description": "To enable platform integrations, you need to create OAuth apps in each platform's developer portal and add the credentials to your environment variables."
+    },
+    "security_note_title": "Secure OAuth Connection",
+    "security_note": "We use secure OAuth 2.0 to connect your accounts. We never store your passwords and you can disconnect anytime.",
+    "security": {
+      "title": "Your Data is Safe",
+      "subtitle": "We take your privacy and security seriously",
+      "oauth_title": "OAuth 2.0",
+      "oauth_desc": "Industry-standard secure authentication protocol",
+      "no_password_title": "No Passwords Stored",
+      "no_password_desc": "We never see or store your account passwords",
+      "revoke_title": "Revoke Anytime",
+      "revoke_desc": "Disconnect your accounts instantly with one click"
+    }
+  },
+  "mediaLibrary": {
+    "title": "Media Library",
+    "description": "Manage your uploaded images and files",
+    "files": "files",
+    "search": "Search files...",
+    "allFiles": "All Files",
+    "selected": "selected",
+    "move": "Move",
+    "delete": "Delete",
+    "upload": "Upload",
+    "copyUrl": "Copy URL",
+    "preview": "Preview",
+    "select": "Select",
+    "selectAll": "Select All",
+    "newFolder": "New Folder",
+    "newFolderDescription": "Create a new folder to organize your media",
+    "folderName": "Folder name",
+    "createFolder": "Create Folder",
+    "noFolder": "No Folder",
+    "openInNewTab": "Open in New Tab",
+    "download": "Download",
+    "uploadFirst": "Upload your first file",
+    "deleteSelected": "Delete Selected",
+    "dropzone": {
+      "title": "Drop files here to upload",
+      "subtitle": "or click the upload button above"
+    },
+    "empty": {
+      "title": "No media files yet",
+      "subtitle": "Upload your first image to get started"
+    },
+    "deleteConfirm": {
+      "title": "Delete File",
+      "description": "Are you sure you want to delete \"{{filename}}\"? This action cannot be undone."
+    },
+    "bulkDeleteConfirm": {
+      "title": "Delete Files",
+      "description": "Are you sure you want to delete {{count}} file(s)? This action cannot be undone."
+    }
   },
   "creators": {
     "badge": "Creator Community",
@@ -2319,6 +2432,12 @@
       "profileDesc": "Edit your profile info",
       "links": "Links",
       "linksDesc": "Manage your links",
+      "widgets": "Widgets",
+      "widgetsDesc": "Add interactive widgets",
+      "integrations": "Integrations",
+      "integrationsDesc": "Connect social accounts",
+      "media": "Media Library",
+      "mediaDesc": "Manage uploaded files",
       "referrals": "Referrals",
       "referralsDesc": "Invite friends",
       "badges": "Badges",
@@ -2379,8 +2498,22 @@
           "name": "Spotify",
           "description": "Show what you're listening to",
           "connectedSince": "Connected since {{date}}"
+        },
+        "discord": {
+          "description": "Show your Discord status"
+        },
+        "twitch": {
+          "description": "Display your Twitch channel"
+        },
+        "github": {
+          "description": "Link your GitHub profile"
+        },
+        "steam": {
+          "description": "Show your Steam profile"
         }
       },
+      "manageIntegrations": "Manage all integrations",
+      "uploadBanner": "Click to upload",
       "banner": "Banner",
       "bannerUrl": "Banner URL",
       "avatar": "Avatar",
@@ -2406,7 +2539,96 @@
       "clicks": "Clicks",
       "advanced": "Advanced",
       "schedule": "Schedule",
-      "analytics": "Analytics"
+      "analytics": "Analytics",
+      "views": {
+        "allLinks": "All Links",
+        "groups": "Groups"
+      },
+      "groups": {
+        "title": "Link Groups",
+        "addGroup": "Add Group",
+        "editGroup": "Edit Group",
+        "deleteGroup": "Delete Group",
+        "groupName": "Group Name",
+        "groupColor": "Color",
+        "collapsible": "Collapsible",
+        "noGroups": "No groups yet",
+        "addFirst": "Create your first group to organize links",
+        "ungrouped": "Ungrouped Links",
+        "assignToGroup": "Assign to Group",
+        "removeFromGroup": "Remove from Group",
+        "linksInGroup": "{{count}} links"
+      }
+    },
+    "widgets": {
+      "title": "Profile Widgets",
+      "description": "Add interactive widgets to your bio page",
+      "addWidget": "Add Widget",
+      "editWidget": "Edit Widget",
+      "selectWidget": "Select Widget Type",
+      "noWidgets": "No widgets yet",
+      "addFirst": "Add your first widget to enhance your bio page",
+      "widgetTitle": "Widget Title",
+      "visibility": "Visibility",
+      "visible": "Visible on your bio page",
+      "hidden": "Hidden from visitors",
+      "activate": "Activate",
+      "deactivate": "Deactivate",
+      "premiumRequired": "Premium Required",
+      "types": {
+        "weather": {
+          "name": "Weather",
+          "description": "Display weather for a location"
+        },
+        "countdown": {
+          "name": "Countdown",
+          "description": "Count down to a special date"
+        },
+        "social_feed": {
+          "name": "Social Feed",
+          "description": "Embed social media posts"
+        },
+        "youtube": {
+          "name": "YouTube Embed",
+          "description": "Embed a YouTube video"
+        },
+        "soundcloud": {
+          "name": "SoundCloud",
+          "description": "Embed a SoundCloud track"
+        },
+        "twitch": {
+          "name": "Twitch Status",
+          "description": "Show your Twitch live status"
+        },
+        "github": {
+          "name": "GitHub Stats",
+          "description": "Display your GitHub activity"
+        }
+      },
+      "config": {
+        "countdown": "Countdown Settings",
+        "targetDate": "Target Date",
+        "youtube": "YouTube Settings",
+        "videoId": "Video ID",
+        "weather": "Weather Settings",
+        "location": "Location",
+        "position": "Position",
+        "topLeft": "Top Left",
+        "topRight": "Top Right",
+        "bottomLeft": "Bottom Left",
+        "bottomRight": "Bottom Right",
+        "soundcloud": "SoundCloud Settings",
+        "trackUrl": "Track URL",
+        "twitch": "Twitch Settings",
+        "channelName": "Channel Name",
+        "github": "GitHub Settings",
+        "username": "Username",
+        "socialFeed": "Social Feed Settings",
+        "platform": "Platform",
+        "selectDateTime": "Select date and time",
+        "searchLocation": "Search for a city...",
+        "noLocationsFound": "No locations found"
+      }
     },
     "referrals": {
       "title": "Referral Program",
@@ -2843,7 +3065,7 @@
             "intro": "Eziox supports unlimited links with rich customization.",
             "steps": [
               "Navigate to Dashboard → Links",
-              "Click “Add Link” and paste your URL",
+              "Click 'Add Link' and paste your URL",
               "Give it a descriptive title and optional icon",
               "Drag & drop to reorder links in seconds"
             ],
@@ -2852,7 +3074,26 @@
               "Descriptions · Provide extra context for each link",
               "Scheduling · Set start/end dates for time-sensitive content",
               "Analytics · View clicks, devices, referrers",
-              "Featured Styles · Spotlight key links with special layouts"
+              "Link Groups · Organize links into collapsible categories"
+            ]
+          },
+          "widgets": {
+            "title": "Adding widgets",
+            "intro": "Enhance your bio page with interactive widgets:",
+            "steps": [
+              "Navigate to Dashboard → Widgets",
+              "Click 'Add Widget' and select a widget type",
+              "Configure the widget settings (e.g., countdown date, YouTube video ID)",
+              "Toggle visibility to show or hide widgets on your bio page"
+            ],
+            "typesTitle": "Available widgets",
+            "typesList": [
+              "Countdown · Count down to a special date or event",
+              "YouTube · Embed a YouTube video on your page",
+              "SoundCloud · Embed a SoundCloud track",
+              "Weather · Display weather for your location (Premium)",
+              "Twitch · Show your Twitch live status (Premium)",
+              "GitHub · Display your GitHub activity (Premium)"
             ]
           },
           "themes": {

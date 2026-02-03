@@ -37,7 +37,7 @@ export function AnalyticsDoc() {
       <DocSection title={t('docs.pages.analytics.sections.overview.title')}>
         <DocParagraph>
           {t('docs.pages.analytics.sections.overview.intro', { link: '' })}
-          <DocLink href="/analytics">eziox.link/analytics</DocLink>
+          <DocLink href="/analytics">{typeof window !== 'undefined' ? (window.location.hostname === 'localhost' ? 'localhost:5173' : window.location.hostname) : 'eziox.link'}/analytics</DocLink>
         </DocParagraph>
 
         <DocSubSection title={t('docs.pages.analytics.sections.overview.keyMetrics')}>
