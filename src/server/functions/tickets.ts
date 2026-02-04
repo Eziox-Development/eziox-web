@@ -126,8 +126,8 @@ export const createTicketFn = createServerFn({ method: 'POST' })
       category: z.enum(TICKET_CATEGORIES),
       subject: z.string().min(5).max(255),
       description: z.string().min(20).max(5000),
-      // Guest info (only if not logged in)
-      guestEmail: z.string().email().optional(),
+      // Guest info (required if not logged in)
+      guestEmail: z.email().optional(),
       guestName: z.string().min(2).max(100).optional(),
       // Optional metadata
       metadata: z.record(z.string(), z.unknown()).optional(),
@@ -141,8 +141,100 @@ export const createTicketFn = createServerFn({ method: 'POST' })
       throw { message: 'Email and name required for guest tickets', status: 400 }
     }
 
+    // SECURITY: Rate limiting for guests (stricter)
+    if (!user) {
+      // Check if guest email already has too many open tickets
+      const [existingGuestTicketCount] = await db
+        .select({ count: count() })
+        .from(supportTickets)
+        .where(
+          and(
+            eq(supportTickets.guestEmail, data.guestEmail!),
+            eq(supportTickets.status, 'open')
+          )
+        )
+
+      if ((existingGuestTicketCount?.count || 0) >= 1) {
+        throw { 
+          message: 'You already have an open ticket. Please wait for a response or check your email for updates.', 
+          status: 429 
+        }
+      }
+
+      // Check for duplicate guest tickets in last 24 hours
+      const [duplicateGuestTicket] = await db
+        .select()
+        .from(supportTickets)
+        .where(
+          and(
+            eq(supportTickets.guestEmail, data.guestEmail!),
+            eq(supportTickets.category, data.category),
+            eq(supportTickets.subject, data.subject),
+            sql`${supportTickets.createdAt} > NOW() - INTERVAL '24 hours'`
+          )
+        )
+        .limit(1)
+
+      if (duplicateGuestTicket) {
+        throw { 
+          message: 'You already have a similar ticket from the last 24 hours. Please wait for a response or check your email for updates.', 
+          status: 429 
+        }
+      }
+    } else {
+      // Rate limiting for authenticated users (more lenient)
+      const [existingTicketCount] = await db
+        .select({ count: count() })
+        .from(supportTickets)
+        .where(
+          and(
+            eq(supportTickets.userId, user.id),
+            eq(supportTickets.status, 'open')
+          )
+        )
+
+      if ((existingTicketCount?.count || 0) >= 3) {
+        throw { 
+          message: 'You have reached the maximum number of open tickets. Please wait for existing tickets to be resolved.', 
+          status: 429 
+        }
+      }
+
+      // Check for duplicate user tickets in last 24 hours
+      const [duplicateTicket] = await db
+        .select()
+        .from(supportTickets)
+        .where(
+          and(
+            eq(supportTickets.userId, user.id),
+            eq(supportTickets.category, data.category),
+            eq(supportTickets.subject, data.subject),
+            sql`${supportTickets.createdAt} > NOW() - INTERVAL '24 hours'`
+          )
+        )
+        .limit(1)
+
+      if (duplicateTicket) {
+        throw { 
+          message: 'You already have a similar ticket from the last 24 hours. Please wait for a response or update your existing ticket.', 
+          status: 429 
+        }
+      }
+    }
+
     const ticketNumber = generateTicketNumber()
     const priority = CATEGORY_PRIORITY_MAP[data.category]
+
+    // Get user tier if authenticated
+    let userTier: 'free' | 'pro' | 'creator' | 'lifetime' = 'free'
+    if (user) {
+      const [userData] = await db
+        .select({ tier: users.tier })
+        .from(users)
+        .where(eq(users.id, user.id))
+        .limit(1)
+      userTier = (userData?.tier as 'free' | 'pro' | 'creator' | 'lifetime') || 'free'
+    }
 
     // Collect metadata
     const metadata = {
@@ -150,19 +242,7 @@ export const createTicketFn = createServerFn({ method: 'POST' })
       ipAddress: getRequestIP(),
       userAgent: undefined, // Will be set from client
       submittedAt: new Date().toISOString(),
-      userTier: user ? undefined : 'guest', // Will be populated if user exists
-    }
-
-    // Get user tier if logged in
-    if (user) {
-      const [userData] = await db
-        .select({ tier: users.tier })
-        .from(users)
-        .where(eq(users.id, user.id))
-        .limit(1)
-      if (userData) {
-        metadata.userTier = userData.tier || 'free'
-      }
+      userTier,
     }
 
     // Create ticket
@@ -252,12 +332,58 @@ export const getMyTicketsFn = createServerFn({ method: 'GET' })
   })
 
 /**
+ * Get guest tickets by email (for guest ticket tracking)
+ */
+export const getGuestTicketsFn = createServerFn({ method: 'GET' })
+  .inputValidator(
+    z.object({
+      email: z.string().email(),
+      ticketNumber: z.string().optional(), // Optional: get specific ticket
+      status: z.enum([...TICKET_STATUSES, 'all']).optional(),
+      limit: z.number().min(1).max(50).optional(),
+      offset: z.number().min(0).optional(),
+    })
+  )
+  // @ts-expect-error - TanStack Server Functions type inference issue with complex return types
+  .handler(async ({ data }) => {
+    const conditions = [eq(supportTickets.guestEmail, data.email)]
+    
+    if (data.ticketNumber) {
+      conditions.push(eq(supportTickets.ticketNumber, data.ticketNumber))
+    }
+    
+    if (data.status && data.status !== 'all') {
+      conditions.push(eq(supportTickets.status, data.status))
+    }
+
+    const [tickets, [countResult]] = await Promise.all([
+      db
+        .select()
+        .from(supportTickets)
+        .where(and(...conditions))
+        .orderBy(desc(supportTickets.lastActivityAt))
+        .limit(data.limit || 20)
+        .offset(data.offset || 0),
+      db
+        .select({ count: count() })
+        .from(supportTickets)
+        .where(and(...conditions)),
+    ])
+
+    return {
+      tickets,
+      total: countResult?.count || 0,
+    }
+  })
+
+/**
  * Get a specific ticket with messages
  */
 export const getTicketFn = createServerFn({ method: 'GET' })
   .inputValidator(
     z.object({
       ticketId: z.string().uuid(),
+      guestEmail: z.string().email().optional(), // For guest access
     })
   )
   // @ts-expect-error - TanStack Server Functions type inference issue with complex return types
@@ -277,8 +403,9 @@ export const getTicketFn = createServerFn({ method: 'GET' })
     // Check access
     const isAdmin = user?.role === 'admin' || user?.role === 'owner'
     const isOwner = ticket.userId === user?.id
+    const isGuest = !user && ticket.guestEmail === data.guestEmail
 
-    if (!isAdmin && !isOwner) {
+    if (!isAdmin && !isOwner && !isGuest) {
       throw { message: 'Access denied', status: 403 }
     }
 

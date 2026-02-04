@@ -749,70 +749,54 @@
     }
   },
   "templates": {
-    "badge": "Template-Galerie",
-    "hero": {
-      "title": "Finde deinen perfekten",
-      "titleHighlight": "Style",
-      "subtitle": "Entdecke beeindruckende Profil-Templates aus der Community. Ein Klick verwandelt deine Bio-Seite."
-    },
-    "stats": {
-      "templates": "Templates",
-      "uses": "Nutzungen",
-      "likes": "Likes",
-      "featured": "Featured"
-    },
-    "categories": {
-      "all": "Alle",
-      "vtuber": "VTuber",
-      "gamer": "Gamer",
-      "developer": "Entwickler",
-      "minimal": "Minimal",
-      "creative": "Kreativ",
-      "business": "Business",
-      "music": "Musik",
-      "art": "Kunst",
-      "anime": "Anime"
+    "title": "Vorlagen",
+    "subtitle": "Entdecke wunderschöne Profil-Vorlagen und verwandle deine Bio-Seite",
+    "search": "Vorlagen suchen...",
+    "featured": "Empfohlen",
+    "all": "Alle Vorlagen",
+    "apply": "Anwenden",
+    "applying": "Wird angewendet...",
+    "applyTemplate": "Vorlage anwenden",
+    "loginToApply": "Anmelden zum Anwenden",
+    "tabs": {
+      "official": "Offiziell",
+      "community": "Community"
     },
     "sort": {
       "popular": "Beliebt",
-      "likes": "Geliked",
-      "newest": "Neu"
+      "newest": "Neueste",
+      "likes": "Meiste Likes"
     },
-    "search": {
-      "placeholder": "Templates nach Name, Creator oder Style suchen..."
+    "categories": {
+      "all": "Alle",
+      "minimal": "Minimal",
+      "creative": "Kreativ",
+      "gamer": "Gamer",
+      "vtuber": "VTuber",
+      "developer": "Entwickler",
+      "music": "Musik",
+      "business": "Business",
+      "art": "Kunst",
+      "anime": "Anime"
     },
-    "loading": "Templates werden geladen...",
-    "tier": {
-      "official": "Offiziell",
-      "creator": "Creator",
-      "pro": "Pro"
+    "preview": {
+      "settings": "Einstellungen",
+      "background": "Hintergrund",
+      "layout": "Layout",
+      "linkStyle": "Link-Stil",
+      "animations": "Animationen",
+      "accentColor": "Akzentfarbe"
     },
-    "card": {
-      "featured": "Featured",
-      "official": "Offiziell",
-      "preview": "Vorschau",
-      "apply": "Anwenden",
-      "noDescription": "Keine Beschreibung"
-    },
-    "empty": {
-      "title": "Keine Templates gefunden",
-      "description": "Versuche deine Filter oder Suchbegriffe anzupassen.",
-      "clearFilters": "Filter löschen",
-      "signUp": "Registrieren zum Erstellen"
-    },
-    "modal": {
-      "title": "Template-Vorschau",
-      "cancel": "Abbrechen",
-      "apply": "Template anwenden",
-      "proRequired": "Pro-Stufe oder höher erforderlich"
-    },
+    "noResults": "Keine Vorlagen gefunden",
+    "noResultsDesc": "Versuche deine Suche oder Filter anzupassen",
+    "noTemplates": "Keine Vorlagen verfügbar",
+    "noTemplatesDesc": "Schau später nochmal vorbei",
+    "noCommunity": "Noch keine Community-Vorlagen",
+    "noCommunityDesc": "Sei der Erste, der eine Vorlage erstellt und teilt",
     "toast": {
-      "applied": "Template angewendet!",
-      "appliedDescription": "Dein Profil wurde mit dem neuen Style aktualisiert.",
-      "appliedPreset": "\"{{name}}\" wurde angewendet.",
-      "proRequired": "Pro-Stufe erforderlich",
-      "proRequiredDescription": "Upgrade um Templates anzuwenden.",
-      "failed": "Template konnte nicht angewendet werden"
+      "applied": "Vorlage erfolgreich angewendet!",
+      "failed": "Vorlage konnte nicht angewendet werden",
+      "loginRequired": "Bitte melde dich an, um Vorlagen anzuwenden"
     }
   },
   "shortlink": {
@@ -3008,6 +2992,7 @@
   "followModal": {
     "followers": "Follower",
     "following": "Folge ich",
+    "connections": "Verbindungen",
     "searchPlaceholder": "Benutzer suchen...",
     "refresh": "Aktualisieren",
     "results": "Ergebnis | Ergebnisse",

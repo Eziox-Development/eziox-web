@@ -86,35 +86,35 @@ export const siteConfig: SiteConfig = {
   },
 
   themes: [
-    // === GENERAL ===
+    // === EZIOX SIGNATURE THEME ===
     {
       id: 'eziox-default',
       name: 'Eziox',
       category: 'general',
-      description: 'The signature Eziox look with vibrant violet accents',
+      description: 'The signature Eziox experience - modern, clean, and smooth',
       colors: {
-        background: '#030305',
-        backgroundSecondary: '#0c0c10',
-        foreground: '#fafafa',
-        foregroundMuted: '#71717a',
-        primary: '#8b5cf6',
+        background: '#0a0a0f',
+        backgroundSecondary: '#111118',
+        foreground: '#f8fafc',
+        foregroundMuted: '#64748b',
+        primary: '#3b82f6',
         primaryForeground: '#ffffff',
-        accent: '#c4b5fd',
-        accentForeground: '#030305',
-        border: '#1c1c22',
-        card: '#0c0c10',
-        cardForeground: '#fafafa',
+        accent: '#06b6d4',
+        accentForeground: '#0a0a0f',
+        border: '#1e293b',
+        card: '#0f172a',
+        cardForeground: '#f8fafc',
       },
       typography: {
-        displayFont: "'Geist', 'Inter', sans-serif",
+        displayFont: "'Plus Jakarta Sans', 'Inter', sans-serif",
         bodyFont: "'Inter', sans-serif",
         displayFontUrl:
-          'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap',
+          'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap',
         bodyFontUrl:
-          'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap',
+          'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap',
       },
       effects: {
-        glowIntensity: 'subtle',
+        glowIntensity: 'medium',
         borderRadius: 'rounded',
         cardStyle: 'glass',
         animationSpeed: 'normal',

@@ -347,25 +347,30 @@ export function HomePage() {
         fontFamily: theme.typography.bodyFont,
       }}
     >
-      {/* Animated Background */}
-      <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
-        <motion.div
-          className="absolute -top-40 -left-40 w-[900px] h-[900px] rounded-full blur-[250px]"
+      {/* Modern Gradient Background */}
+      <div className="fixed inset-0 pointer-events-none -z-10">
+        {/* Mesh gradient overlay */}
+        <div 
+          className="absolute inset-0"
           style={{
-            background: theme.colors.primary,
-            opacity: glowOpacity * 0.3,
+            background: `
+              radial-gradient(at 20% 0%, ${theme.colors.primary}20 0%, transparent 50%),
+              radial-gradient(at 80% 100%, ${theme.colors.accent}15 0%, transparent 50%),
+              radial-gradient(at 0% 50%, ${theme.colors.primary}10 0%, transparent 40%),
+              ${theme.colors.background}
+            `,
           }}
-          animate={{ scale: [1, 1.15, 1], x: [0, 80, 0], y: [0, 40, 0] }}
-          transition={{ duration: 25, repeat: Infinity, ease: 'easeInOut' }}
         />
-        <motion.div
-          className="absolute -bottom-60 -right-40 w-[800px] h-[800px] rounded-full blur-[200px]"
+        {/* Subtle grid pattern */}
+        <div 
+          className="absolute inset-0 opacity-[0.02]"
           style={{
-            background: theme.colors.accent,
-            opacity: glowOpacity * 0.25,
+            backgroundImage: `
+              linear-gradient(${theme.colors.foreground} 1px, transparent 1px),
+              linear-gradient(90deg, ${theme.colors.foreground} 1px, transparent 1px)
+            `,
+            backgroundSize: '64px 64px',
           }}
-          animate={{ scale: [1.1, 1, 1.1], x: [0, -60, 0], y: [0, -40, 0] }}
-          transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
         />
       </div>
 

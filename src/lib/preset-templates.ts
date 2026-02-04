@@ -1,113 +1,139 @@
 /**
  * Eziox Official Preset Templates
- * These are curated templates created by the Eziox team
- * They appear alongside community templates in the Templates page
+ * Completely redesigned template system with background images
+ *
+ * 100% compatible with $username profile schema
+ * All settings map directly to profile fields
  *
  * Copyright © 2026 Eziox Development. All rights reserved.
  * Licensed under PolyForm Noncommercial 1.0.0
  */
 
-export type CardLayout = 'default' | 'tilt' | 'stack' | 'grid' | 'minimal'
-export type LinkStyle =
-  | 'default'
+import type {
+  CustomBackground,
+  LayoutSettings,
+  AnimatedProfileSettings,
+} from '@/server/db/schema'
+
+// ============================================================================
+// TYPE DEFINITIONS
+// ============================================================================
+
+export type TemplateCategory =
   | 'minimal'
-  | 'bold'
-  | 'glass'
-  | 'outline'
-  | 'gradient'
-  | 'neon'
-export type AvatarAnimation =
-  | 'none'
-  | 'pulse'
-  | 'glow'
-  | 'bounce'
-  | 'rotate'
-  | 'shake'
-  | 'float'
-export type BannerAnimation =
-  | 'none'
-  | 'parallax'
-  | 'gradient-shift'
-  | 'particles'
-  | 'wave'
-  | 'aurora'
-export type LinkHoverEffect =
-  | 'none'
-  | 'scale'
-  | 'glow'
-  | 'slide'
-  | 'shake'
-  | 'flip'
-  | 'tilt'
-  | 'lift'
-export type PageTransition = 'none' | 'fade' | 'slide' | 'zoom' | 'blur'
+  | 'creative'
+  | 'gamer'
+  | 'vtuber'
+  | 'developer'
+  | 'music'
+  | 'business'
+  | 'art'
+  | 'anime'
+  | 'other'
 
 export interface PresetTemplate {
   id: string
   name: string
   description: string
-  category: string
+  category: TemplateCategory
   tags: string[]
   previewImage?: string
   featured: boolean
   isOfficial: true
   popularity: number
   settings: {
-    accentColor: string
-    secondaryColor?: string
-    textColor?: string
-    customBackground: {
-      type: 'solid' | 'gradient' | 'image' | 'animated' | 'mesh'
-      value?: string
-      imageUrl?: string
-      gradientColors?: string[]
-      gradientAngle?: number
-      animatedPreset?: string
-    }
-    layoutSettings: {
-      cardLayout: CardLayout
-      cardSpacing: number
-      cardBorderRadius: number
-      cardShadow: 'none' | 'sm' | 'md' | 'lg' | 'xl' | 'glow'
-      cardPadding: number
-      cardTiltDegree?: number
-      profileLayout: 'default' | 'centered' | 'minimal' | 'expanded' | 'hero'
-      linkStyle: LinkStyle
-      maxWidth?: number
-    }
-    animatedProfile: {
-      enabled: boolean
-      avatarAnimation: AvatarAnimation
-      bannerAnimation: BannerAnimation
-      linkHoverEffect: LinkHoverEffect
-      pageTransition: PageTransition
-      particleColor?: string
-      glowColor?: string
-    }
+    accentColor?: string
+    themeId?: string
+    customBackground?: CustomBackground
+    layoutSettings?: LayoutSettings
+    animatedProfile?: AnimatedProfileSettings
     customCSS?: string
   }
 }
 
+// ============================================================================
+// BACKGROUND IMAGE URLS (Unsplash/Pexels free images)
+// ============================================================================
+
+const BACKGROUNDS = {
+  // Minimal - Clean, abstract backgrounds
+  minimal: {
+    dark: 'https://images.unsplash.com/photo-1557682250-33bd709cbe85?w=1920&q=80',
+    light: 'https://images.unsplash.com/photo-1558591710-4b4a1ae0f04d?w=1920&q=80',
+    abstract: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1920&q=80',
+  },
+  // Creative - Artistic, colorful backgrounds
+  creative: {
+    aurora: 'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=1920&q=80',
+    neon: 'https://images.unsplash.com/photo-1550684376-efcbd6e3f031?w=1920&q=80',
+    gradient: 'https://images.unsplash.com/photo-1557682224-5b8590cd9ec5?w=1920&q=80',
+  },
+  // Gamer - Gaming setups, RGB, tech
+  gamer: {
+    rgb: 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=1920&q=80',
+    setup: 'https://images.unsplash.com/photo-1593305841991-05c297ba4575?w=1920&q=80',
+    controller: 'https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=1920&q=80',
+  },
+  // VTuber - Anime-style, kawaii, virtual
+  vtuber: {
+    kawaii: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=1920&q=80',
+    cyber: 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=1920&q=80',
+    sakura: 'https://images.unsplash.com/photo-1522383225653-ed111181a951?w=1920&q=80',
+  },
+  // Developer - Code, tech, workspace
+  developer: {
+    code: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1920&q=80',
+    terminal: 'https://images.unsplash.com/photo-1629654297299-c8506221ca97?w=1920&q=80',
+    workspace: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=1920&q=80',
+  },
+  // Music - Instruments, concerts, audio
+  music: {
+    vinyl: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=1920&q=80',
+    concert: 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=1920&q=80',
+    studio: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=1920&q=80',
+  },
+  // Business - Professional, corporate
+  business: {
+    office: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=1920&q=80',
+    skyline: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1920&q=80',
+    minimal: 'https://images.unsplash.com/photo-1497215842964-222b430dc094?w=1920&q=80',
+  },
+  // Art - Artistic, creative
+  art: {
+    gallery: 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=1920&q=80',
+    paint: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=1920&q=80',
+    abstract: 'https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=1920&q=80',
+  },
+  // Anime - Japanese animation style
+  anime: {
+    sakura: 'https://images.unsplash.com/photo-1522383225653-ed111181a951?w=1920&q=80',
+    tokyo: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=1920&q=80',
+    night: 'https://images.unsplash.com/photo-1519608487953-e999c86e7455?w=1920&q=80',
+  },
+}
+
+// ============================================================================
+// PRESET TEMPLATES
+// ============================================================================
+
 export const EZIOX_PRESET_TEMPLATES: PresetTemplate[] = [
   // ═══════════════════════════════════════════════════════════════════════════
-  // MINIMAL CATEGORY - Clean, professional designs
+  // MINIMAL - Clean, professional designs
   // ═══════════════════════════════════════════════════════════════════════════
   {
-    id: 'minimal-midnight',
-    name: 'Midnight Minimal',
-    description:
-      'Clean dark aesthetic with subtle indigo accents. Perfect for professionals.',
+    id: 'minimal-obsidian',
+    name: 'Obsidian',
+    description: 'Ultra-clean dark theme with subtle purple accents',
     category: 'minimal',
-    tags: ['dark', 'professional', 'clean', 'modern'],
+    tags: ['dark', 'clean', 'professional', 'modern'],
     featured: true,
     isOfficial: true,
-    popularity: 0,
+    popularity: 95,
     settings: {
-      accentColor: '#6366f1',
-      textColor: '#e2e8f0',
+      accentColor: '#8b5cf6',
       customBackground: {
         type: 'solid',
-        value: '#0a0a0f',
+        value: '#09090b',
       },
       layoutSettings: {
         cardLayout: 'default',
@@ -117,7 +143,6 @@ export const EZIOX_PRESET_TEMPLATES: PresetTemplate[] = [
         cardPadding: 16,
         profileLayout: 'default',
         linkStyle: 'minimal',
-        maxWidth: 480,
       },
       animatedProfile: {
         enabled: true,
@@ -129,17 +154,52 @@ export const EZIOX_PRESET_TEMPLATES: PresetTemplate[] = [
     },
   },
   {
-    id: 'minimal-clean-slate',
-    name: 'Clean Slate',
-    description: 'Bright and airy design with soft shadows. Fresh and modern.',
+    id: 'minimal-abstract',
+    name: 'Abstract Dark',
+    description: 'Elegant dark theme with abstract background',
     category: 'minimal',
-    tags: ['light', 'clean', 'fresh', 'professional'],
+    tags: ['dark', 'abstract', 'elegant', 'image'],
+    featured: true,
+    isOfficial: true,
+    popularity: 92,
+    settings: {
+      accentColor: '#6366f1',
+      customBackground: {
+        type: 'image',
+        value: '',
+        imageUrl: BACKGROUNDS.minimal.abstract,
+        imageOpacity: 0.3,
+        imageBlur: 2,
+      },
+      layoutSettings: {
+        cardLayout: 'default',
+        cardSpacing: 14,
+        cardBorderRadius: 16,
+        cardShadow: 'lg',
+        cardPadding: 18,
+        profileLayout: 'centered',
+        linkStyle: 'glass',
+      },
+      animatedProfile: {
+        enabled: true,
+        avatarAnimation: 'none',
+        bannerAnimation: 'none',
+        linkHoverEffect: 'glow',
+        pageTransition: 'fade',
+      },
+    },
+  },
+  {
+    id: 'minimal-snow',
+    name: 'Snow',
+    description: 'Bright, airy design with soft shadows',
+    category: 'minimal',
+    tags: ['light', 'clean', 'fresh', 'bright'],
     featured: false,
     isOfficial: true,
-    popularity: 0,
+    popularity: 82,
     settings: {
       accentColor: '#3b82f6',
-      textColor: '#1e293b',
       customBackground: {
         type: 'solid',
         value: '#fafafa',
@@ -152,7 +212,6 @@ export const EZIOX_PRESET_TEMPLATES: PresetTemplate[] = [
         cardPadding: 18,
         profileLayout: 'default',
         linkStyle: 'default',
-        maxWidth: 480,
       },
       animatedProfile: {
         enabled: true,
@@ -163,65 +222,27 @@ export const EZIOX_PRESET_TEMPLATES: PresetTemplate[] = [
       },
     },
   },
-  {
-    id: 'minimal-tilt-cards',
-    name: 'Tilted Elegance',
-    description:
-      'Stylish tilted card layout with subtle shadows. Unique and eye-catching.',
-    category: 'minimal',
-    tags: ['tilt', 'unique', 'stylish', 'modern'],
-    featured: true,
-    isOfficial: true,
-    popularity: 0,
-    settings: {
-      accentColor: '#8b5cf6',
-      textColor: '#f1f5f9',
-      customBackground: {
-        type: 'gradient',
-        gradientColors: ['#0f172a', '#1e1b4b'],
-        gradientAngle: 135,
-      },
-      layoutSettings: {
-        cardLayout: 'tilt',
-        cardSpacing: 16,
-        cardBorderRadius: 16,
-        cardShadow: 'lg',
-        cardPadding: 18,
-        cardTiltDegree: 2,
-        profileLayout: 'centered',
-        linkStyle: 'glass',
-        maxWidth: 520,
-      },
-      animatedProfile: {
-        enabled: true,
-        avatarAnimation: 'float',
-        bannerAnimation: 'none',
-        linkHoverEffect: 'tilt',
-        pageTransition: 'fade',
-      },
-    },
-  },
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // CREATIVE CATEGORY - Bold, artistic designs
+  // CREATIVE - Artistic and expressive designs
   // ═══════════════════════════════════════════════════════════════════════════
   {
-    id: 'creative-neon-dreams',
-    name: 'Neon Dreams',
-    description: 'Vibrant cyberpunk design with glowing neon accents.',
+    id: 'creative-aurora',
+    name: 'Aurora Borealis',
+    description: 'Mesmerizing northern lights background',
     category: 'creative',
-    tags: ['neon', 'cyberpunk', 'vibrant', 'glow'],
+    tags: ['aurora', 'colorful', 'animated', 'nature'],
     featured: true,
     isOfficial: true,
-    popularity: 0,
+    popularity: 94,
     settings: {
-      accentColor: '#ec4899',
-      secondaryColor: '#06b6d4',
-      textColor: '#f8fafc',
+      accentColor: '#06b6d4',
       customBackground: {
-        type: 'gradient',
-        gradientColors: ['#0f0f23', '#1a1a3e', '#0f0f23'],
-        gradientAngle: 135,
+        type: 'image',
+        value: '',
+        imageUrl: BACKGROUNDS.creative.aurora,
+        imageOpacity: 0.6,
+        imageBlur: 0,
       },
       layoutSettings: {
         cardLayout: 'default',
@@ -229,100 +250,86 @@ export const EZIOX_PRESET_TEMPLATES: PresetTemplate[] = [
         cardBorderRadius: 20,
         cardShadow: 'glow',
         cardPadding: 18,
-        profileLayout: 'default',
-        linkStyle: 'neon',
-        maxWidth: 500,
+        profileLayout: 'centered',
+        linkStyle: 'glass',
       },
       animatedProfile: {
         enabled: true,
         avatarAnimation: 'glow',
-        bannerAnimation: 'gradient-shift',
+        bannerAnimation: 'aurora',
+        linkHoverEffect: 'glow',
+        pageTransition: 'fade',
+        glowColor: '#06b6d4',
+      },
+    },
+  },
+  {
+    id: 'creative-neon-city',
+    name: 'Neon City',
+    description: 'Cyberpunk-inspired neon aesthetic',
+    category: 'creative',
+    tags: ['neon', 'cyberpunk', 'city', 'futuristic'],
+    featured: true,
+    isOfficial: true,
+    popularity: 91,
+    settings: {
+      accentColor: '#ec4899',
+      customBackground: {
+        type: 'image',
+        value: '',
+        imageUrl: BACKGROUNDS.creative.neon,
+        imageOpacity: 0.5,
+        imageBlur: 1,
+      },
+      layoutSettings: {
+        cardLayout: 'default',
+        cardSpacing: 14,
+        cardBorderRadius: 8,
+        cardShadow: 'glow',
+        cardPadding: 16,
+        profileLayout: 'default',
+        linkStyle: 'neon',
+      },
+      animatedProfile: {
+        enabled: true,
+        avatarAnimation: 'glow',
+        bannerAnimation: 'none',
         linkHoverEffect: 'glow',
         pageTransition: 'fade',
         glowColor: '#ec4899',
       },
-      customCSS: `
-        .link-card {
-          border: 1px solid rgba(236, 72, 153, 0.4);
-          box-shadow: 0 0 20px rgba(236, 72, 153, 0.2), inset 0 0 20px rgba(236, 72, 153, 0.05);
-        }
-        .link-card:hover {
-          box-shadow: 0 0 40px rgba(236, 72, 153, 0.4), inset 0 0 30px rgba(236, 72, 153, 0.1);
-          border-color: rgba(236, 72, 153, 0.8);
-        }
-      `,
     },
   },
   {
-    id: 'creative-aurora',
-    name: 'Aurora Borealis',
-    description: 'Mesmerizing northern lights with smooth color transitions.',
+    id: 'creative-gradient-dream',
+    name: 'Gradient Dream',
+    description: 'Smooth colorful gradient background',
     category: 'creative',
-    tags: ['aurora', 'gradient', 'nature', 'animated'],
-    featured: true,
+    tags: ['gradient', 'colorful', 'smooth', 'vibrant'],
+    featured: false,
     isOfficial: true,
-    popularity: 0,
+    popularity: 85,
     settings: {
-      accentColor: '#22d3ee',
-      secondaryColor: '#a855f7',
-      textColor: '#f0fdfa',
+      accentColor: '#f97316',
       customBackground: {
-        type: 'animated',
-        animatedPreset: 'aurora',
-        gradientColors: ['#0c4a6e', '#134e4a', '#1e1b4b'],
-        gradientAngle: 160,
+        type: 'image',
+        value: '',
+        imageUrl: BACKGROUNDS.creative.gradient,
+        imageOpacity: 0.7,
+        imageBlur: 0,
       },
       layoutSettings: {
-        cardLayout: 'tilt',
+        cardLayout: 'default',
         cardSpacing: 14,
         cardBorderRadius: 18,
         cardShadow: 'lg',
-        cardPadding: 16,
-        cardTiltDegree: -1.5,
-        profileLayout: 'centered',
-        linkStyle: 'glass',
-        maxWidth: 500,
+        cardPadding: 18,
+        profileLayout: 'default',
+        linkStyle: 'gradient',
       },
       animatedProfile: {
         enabled: true,
         avatarAnimation: 'pulse',
-        bannerAnimation: 'aurora',
-        linkHoverEffect: 'lift',
-        pageTransition: 'blur',
-      },
-    },
-  },
-  {
-    id: 'creative-sunset',
-    name: 'Sunset Vibes',
-    description: 'Warm orange and pink gradient inspired by beautiful sunsets.',
-    category: 'creative',
-    tags: ['sunset', 'warm', 'gradient', 'vibrant'],
-    featured: false,
-    isOfficial: true,
-    popularity: 0,
-    settings: {
-      accentColor: '#f97316',
-      secondaryColor: '#ec4899',
-      textColor: '#fef3c7',
-      customBackground: {
-        type: 'gradient',
-        gradientColors: ['#7c2d12', '#be185d', '#4c1d95'],
-        gradientAngle: 135,
-      },
-      layoutSettings: {
-        cardLayout: 'stack',
-        cardSpacing: 10,
-        cardBorderRadius: 24,
-        cardShadow: 'lg',
-        cardPadding: 20,
-        profileLayout: 'hero',
-        linkStyle: 'gradient',
-        maxWidth: 520,
-      },
-      animatedProfile: {
-        enabled: true,
-        avatarAnimation: 'float',
         bannerAnimation: 'gradient-shift',
         linkHoverEffect: 'scale',
         pageTransition: 'fade',
@@ -331,361 +338,266 @@ export const EZIOX_PRESET_TEMPLATES: PresetTemplate[] = [
   },
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // GAMER CATEGORY - Gaming-inspired designs
+  // GAMER - Gaming-focused designs
   // ═══════════════════════════════════════════════════════════════════════════
   {
-    id: 'gamer-rgb',
-    name: 'RGB Gamer',
-    description:
-      'Bold gaming aesthetic with RGB-inspired colors and sharp edges.',
+    id: 'gamer-rgb-setup',
+    name: 'RGB Setup',
+    description: 'Epic gaming setup with RGB lighting',
     category: 'gamer',
-    tags: ['gaming', 'rgb', 'bold', 'esports'],
+    tags: ['rgb', 'gaming', 'setup', 'colorful'],
     featured: true,
     isOfficial: true,
-    popularity: 0,
+    popularity: 93,
     settings: {
       accentColor: '#22c55e',
-      secondaryColor: '#3b82f6',
-      textColor: '#f0fdf4',
       customBackground: {
-        type: 'gradient',
-        gradientColors: ['#0a0a0a', '#1a1a2e', '#0a0a0a'],
-        gradientAngle: 180,
+        type: 'image',
+        value: '',
+        imageUrl: BACKGROUNDS.gamer.rgb,
+        imageOpacity: 0.5,
+        imageBlur: 2,
       },
       layoutSettings: {
         cardLayout: 'default',
-        cardSpacing: 10,
+        cardSpacing: 12,
         cardBorderRadius: 8,
         cardShadow: 'glow',
         cardPadding: 14,
         profileLayout: 'default',
-        linkStyle: 'bold',
-        maxWidth: 480,
+        linkStyle: 'neon',
       },
       animatedProfile: {
         enabled: true,
         avatarAnimation: 'pulse',
-        bannerAnimation: 'particles',
+        bannerAnimation: 'gradient-shift',
         linkHoverEffect: 'glow',
-        pageTransition: 'slide',
-        particleColor: '#22c55e',
+        pageTransition: 'fade',
         glowColor: '#22c55e',
       },
-      customCSS: `
-        .link-card {
-          border: 2px solid rgba(34, 197, 94, 0.5);
-          background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(59, 130, 246, 0.1));
-        }
-        .link-card:hover {
-          border-color: rgba(34, 197, 94, 0.9);
-          box-shadow: 0 0 30px rgba(34, 197, 94, 0.5), 0 0 60px rgba(59, 130, 246, 0.3);
-        }
-      `,
     },
   },
   {
-    id: 'gamer-retro-arcade',
-    name: 'Retro Arcade',
-    description: 'Nostalgic 80s arcade vibes with pixel-perfect aesthetics.',
+    id: 'gamer-battlestation',
+    name: 'Battlestation',
+    description: 'Pro gaming setup aesthetic',
     category: 'gamer',
-    tags: ['retro', 'arcade', '80s', 'pixel'],
+    tags: ['gaming', 'setup', 'pro', 'dark'],
     featured: false,
     isOfficial: true,
-    popularity: 0,
+    popularity: 87,
     settings: {
-      accentColor: '#facc15',
-      secondaryColor: '#f472b6',
-      textColor: '#fef9c3',
+      accentColor: '#ef4444',
       customBackground: {
-        type: 'solid',
-        value: '#1a1a2e',
+        type: 'image',
+        value: '',
+        imageUrl: BACKGROUNDS.gamer.setup,
+        imageOpacity: 0.4,
+        imageBlur: 3,
       },
       layoutSettings: {
         cardLayout: 'grid',
+        cardSpacing: 10,
+        cardBorderRadius: 8,
+        cardShadow: 'lg',
+        cardPadding: 14,
+        profileLayout: 'default',
+        linkStyle: 'outline',
+      },
+      animatedProfile: {
+        enabled: true,
+        avatarAnimation: 'none',
+        bannerAnimation: 'none',
+        linkHoverEffect: 'scale',
+        pageTransition: 'fade',
+      },
+    },
+  },
+  {
+    id: 'gamer-controller',
+    name: 'Controller',
+    description: 'Console gaming vibes',
+    category: 'gamer',
+    tags: ['console', 'controller', 'gaming', 'chill'],
+    featured: false,
+    isOfficial: true,
+    popularity: 78,
+    settings: {
+      accentColor: '#3b82f6',
+      customBackground: {
+        type: 'image',
+        value: '',
+        imageUrl: BACKGROUNDS.gamer.controller,
+        imageOpacity: 0.4,
+        imageBlur: 2,
+      },
+      layoutSettings: {
+        cardLayout: 'default',
         cardSpacing: 12,
-        cardBorderRadius: 4,
-        cardShadow: 'none',
+        cardBorderRadius: 12,
+        cardShadow: 'md',
         cardPadding: 16,
-        profileLayout: 'centered',
-        linkStyle: 'bold',
-        maxWidth: 560,
+        profileLayout: 'default',
+        linkStyle: 'default',
       },
       animatedProfile: {
         enabled: true,
         avatarAnimation: 'bounce',
         bannerAnimation: 'none',
-        linkHoverEffect: 'shake',
-        pageTransition: 'zoom',
-      },
-      customCSS: `
-        .link-card {
-          border: 3px solid #facc15;
-          font-family: 'Press Start 2P', monospace;
-        }
-        .link-card:hover {
-          background: #facc15;
-          color: #1a1a2e;
-        }
-      `,
-    },
-  },
-  {
-    id: 'gamer-esports-pro',
-    name: 'Esports Pro',
-    description:
-      'Professional esports team style with tilted cards and sharp design.',
-    category: 'gamer',
-    tags: ['esports', 'professional', 'team', 'competitive'],
-    featured: true,
-    isOfficial: true,
-    popularity: 0,
-    settings: {
-      accentColor: '#ef4444',
-      secondaryColor: '#f97316',
-      textColor: '#fef2f2',
-      customBackground: {
-        type: 'gradient',
-        gradientColors: ['#0c0c0c', '#1c1917', '#0c0c0c'],
-        gradientAngle: 180,
-      },
-      layoutSettings: {
-        cardLayout: 'tilt',
-        cardSpacing: 12,
-        cardBorderRadius: 6,
-        cardShadow: 'lg',
-        cardPadding: 16,
-        cardTiltDegree: 3,
-        profileLayout: 'hero',
-        linkStyle: 'bold',
-        maxWidth: 500,
-      },
-      animatedProfile: {
-        enabled: true,
-        avatarAnimation: 'none',
-        bannerAnimation: 'particles',
-        linkHoverEffect: 'tilt',
-        pageTransition: 'slide',
-        particleColor: '#ef4444',
+        linkHoverEffect: 'lift',
+        pageTransition: 'fade',
       },
     },
   },
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // VTUBER CATEGORY - Anime/VTuber inspired designs
+  // VTUBER - Virtual content creator designs
   // ═══════════════════════════════════════════════════════════════════════════
   {
-    id: 'vtuber-kawaii-pink',
-    name: 'Kawaii Pink',
-    description:
-      'Adorable pink aesthetic perfect for VTubers and content creators.',
+    id: 'vtuber-kawaii',
+    name: 'Kawaii Dream',
+    description: 'Cute and colorful VTuber aesthetic',
     category: 'vtuber',
-    tags: ['kawaii', 'pink', 'cute', 'vtuber'],
+    tags: ['cute', 'pink', 'kawaii', 'pastel'],
     featured: true,
     isOfficial: true,
-    popularity: 0,
+    popularity: 92,
     settings: {
       accentColor: '#f472b6',
-      secondaryColor: '#c084fc',
-      textColor: '#831843',
       customBackground: {
-        type: 'gradient',
-        gradientColors: ['#fdf2f8', '#fce7f3', '#fbcfe8'],
-        gradientAngle: 180,
+        type: 'image',
+        value: '',
+        imageUrl: BACKGROUNDS.vtuber.kawaii,
+        imageOpacity: 0.5,
+        imageBlur: 1,
       },
       layoutSettings: {
         cardLayout: 'default',
-        cardSpacing: 14,
+        cardSpacing: 16,
         cardBorderRadius: 24,
         cardShadow: 'md',
-        cardPadding: 18,
+        cardPadding: 20,
         profileLayout: 'centered',
         linkStyle: 'default',
-        maxWidth: 480,
       },
       animatedProfile: {
         enabled: true,
-        avatarAnimation: 'bounce',
+        avatarAnimation: 'float',
         bannerAnimation: 'particles',
         linkHoverEffect: 'scale',
         pageTransition: 'fade',
         particleColor: '#f472b6',
       },
-      customCSS: `
-        .link-card {
-          border: 2px solid rgba(244, 114, 182, 0.4);
-          background: rgba(255, 255, 255, 0.8);
-        }
-        .link-card:hover {
-          border-color: rgba(244, 114, 182, 0.8);
-          transform: scale(1.02) rotate(-1deg);
-        }
-      `,
     },
   },
   {
-    id: 'vtuber-galaxy-idol',
-    name: 'Galaxy Idol',
-    description:
-      'Sparkling cosmic theme with star-studded backgrounds for idol VTubers.',
+    id: 'vtuber-cyber-idol',
+    name: 'Cyber Idol',
+    description: 'Futuristic virtual idol theme',
     category: 'vtuber',
-    tags: ['galaxy', 'idol', 'stars', 'cosmic'],
+    tags: ['cyber', 'idol', 'futuristic', 'blue'],
     featured: true,
     isOfficial: true,
-    popularity: 0,
+    popularity: 89,
     settings: {
-      accentColor: '#a855f7',
-      secondaryColor: '#ec4899',
-      textColor: '#f5f3ff',
+      accentColor: '#06b6d4',
       customBackground: {
-        type: 'animated',
-        animatedPreset: 'stars',
-        gradientColors: ['#1e1b4b', '#312e81', '#4c1d95'],
-        gradientAngle: 135,
+        type: 'image',
+        value: '',
+        imageUrl: BACKGROUNDS.vtuber.cyber,
+        imageOpacity: 0.5,
+        imageBlur: 1,
       },
       layoutSettings: {
         cardLayout: 'tilt',
         cardSpacing: 14,
-        cardBorderRadius: 20,
+        cardBorderRadius: 16,
         cardShadow: 'glow',
-        cardPadding: 16,
-        cardTiltDegree: -2,
-        profileLayout: 'hero',
+        cardPadding: 18,
+        cardTiltDegree: 2,
+        profileLayout: 'centered',
         linkStyle: 'glass',
-        maxWidth: 500,
       },
       animatedProfile: {
         enabled: true,
         avatarAnimation: 'glow',
-        bannerAnimation: 'particles',
+        bannerAnimation: 'aurora',
         linkHoverEffect: 'glow',
-        pageTransition: 'blur',
-        particleColor: '#c084fc',
-        glowColor: '#a855f7',
+        pageTransition: 'fade',
+        glowColor: '#06b6d4',
       },
     },
   },
   {
-    id: 'vtuber-cozy-stream',
-    name: 'Cozy Stream',
-    description: 'Warm and inviting design for cozy streaming vibes.',
+    id: 'vtuber-sakura',
+    name: 'Sakura Stream',
+    description: 'Cherry blossom streaming aesthetic',
     category: 'vtuber',
-    tags: ['cozy', 'warm', 'stream', 'comfortable'],
+    tags: ['sakura', 'pink', 'japanese', 'spring'],
     featured: false,
     isOfficial: true,
-    popularity: 0,
+    popularity: 85,
     settings: {
-      accentColor: '#f59e0b',
-      secondaryColor: '#fb923c',
-      textColor: '#451a03',
+      accentColor: '#f9a8d4',
       customBackground: {
-        type: 'gradient',
-        gradientColors: ['#fef3c7', '#fde68a', '#fcd34d'],
-        gradientAngle: 180,
+        type: 'image',
+        value: '',
+        imageUrl: BACKGROUNDS.vtuber.sakura,
+        imageOpacity: 0.6,
+        imageBlur: 1,
       },
       layoutSettings: {
-        cardLayout: 'stack',
-        cardSpacing: 12,
+        cardLayout: 'default',
+        cardSpacing: 14,
         cardBorderRadius: 20,
         cardShadow: 'md',
         cardPadding: 18,
         profileLayout: 'centered',
         linkStyle: 'default',
-        maxWidth: 480,
       },
       animatedProfile: {
         enabled: true,
         avatarAnimation: 'float',
-        bannerAnimation: 'none',
-        linkHoverEffect: 'lift',
+        bannerAnimation: 'particles',
+        linkHoverEffect: 'scale',
         pageTransition: 'fade',
+        particleColor: '#f9a8d4',
       },
     },
   },
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // DEVELOPER CATEGORY - Tech-focused designs
+  // DEVELOPER - Tech and coding focused
   // ═══════════════════════════════════════════════════════════════════════════
   {
-    id: 'dev-terminal',
-    name: 'Terminal',
-    description:
-      'Hacker-style terminal aesthetic with monospace fonts and green accents.',
+    id: 'dev-code-editor',
+    name: 'Code Editor',
+    description: 'Classic code editor aesthetic',
     category: 'developer',
-    tags: ['terminal', 'hacker', 'code', 'matrix'],
+    tags: ['code', 'editor', 'dark', 'programming'],
     featured: true,
     isOfficial: true,
-    popularity: 0,
+    popularity: 91,
     settings: {
       accentColor: '#22c55e',
-      textColor: '#22c55e',
       customBackground: {
-        type: 'solid',
-        value: '#0d1117',
+        type: 'image',
+        value: '',
+        imageUrl: BACKGROUNDS.developer.code,
+        imageOpacity: 0.3,
+        imageBlur: 3,
       },
       layoutSettings: {
         cardLayout: 'minimal',
         cardSpacing: 8,
         cardBorderRadius: 4,
-        cardShadow: 'none',
-        cardPadding: 14,
-        profileLayout: 'minimal',
-        linkStyle: 'outline',
-        maxWidth: 520,
+        cardShadow: 'sm',
+        cardPadding: 12,
+        profileLayout: 'default',
+        linkStyle: 'minimal',
       },
       animatedProfile: {
         enabled: true,
-        avatarAnimation: 'none',
-        bannerAnimation: 'none',
-        linkHoverEffect: 'slide',
-        pageTransition: 'fade',
-      },
-      customCSS: `
-        * { font-family: 'JetBrains Mono', 'Fira Code', monospace !important; }
-        .link-card {
-          border: 1px solid rgba(34, 197, 94, 0.4);
-          background: rgba(34, 197, 94, 0.05);
-        }
-        .link-card:hover {
-          background: rgba(34, 197, 94, 0.15);
-          border-color: rgba(34, 197, 94, 0.8);
-        }
-        .link-card::before {
-          content: '> ';
-          color: #22c55e;
-        }
-      `,
-    },
-  },
-  {
-    id: 'dev-github-dark',
-    name: 'GitHub Dark',
-    description:
-      "Inspired by GitHub's dark theme. Clean and professional for developers.",
-    category: 'developer',
-    tags: ['github', 'dark', 'professional', 'code'],
-    featured: false,
-    isOfficial: true,
-    popularity: 0,
-    settings: {
-      accentColor: '#58a6ff',
-      secondaryColor: '#238636',
-      textColor: '#c9d1d9',
-      customBackground: {
-        type: 'solid',
-        value: '#0d1117',
-      },
-      layoutSettings: {
-        cardLayout: 'default',
-        cardSpacing: 12,
-        cardBorderRadius: 8,
-        cardShadow: 'sm',
-        cardPadding: 16,
-        profileLayout: 'default',
-        linkStyle: 'default',
-        maxWidth: 480,
-      },
-      animatedProfile: {
-        enabled: false,
         avatarAnimation: 'none',
         bannerAnimation: 'none',
         linkHoverEffect: 'scale',
@@ -694,32 +606,67 @@ export const EZIOX_PRESET_TEMPLATES: PresetTemplate[] = [
     },
   },
   {
-    id: 'dev-vscode',
-    name: 'VS Code',
-    description: 'Inspired by Visual Studio Code. Perfect for developers.',
+    id: 'dev-terminal',
+    name: 'Terminal',
+    description: 'Hacker-style terminal theme',
     category: 'developer',
-    tags: ['vscode', 'ide', 'code', 'microsoft'],
+    tags: ['terminal', 'hacker', 'green', 'matrix'],
     featured: true,
     isOfficial: true,
-    popularity: 0,
+    popularity: 88,
     settings: {
-      accentColor: '#007acc',
-      secondaryColor: '#0098ff',
-      textColor: '#cccccc',
+      accentColor: '#22c55e',
       customBackground: {
-        type: 'solid',
-        value: '#1e1e1e',
+        type: 'image',
+        value: '',
+        imageUrl: BACKGROUNDS.developer.terminal,
+        imageOpacity: 0.4,
+        imageBlur: 2,
       },
       layoutSettings: {
-        cardLayout: 'tilt',
-        cardSpacing: 10,
-        cardBorderRadius: 6,
-        cardShadow: 'md',
-        cardPadding: 14,
-        cardTiltDegree: 1,
+        cardLayout: 'minimal',
+        cardSpacing: 6,
+        cardBorderRadius: 2,
+        cardShadow: 'none',
+        cardPadding: 10,
         profileLayout: 'default',
         linkStyle: 'minimal',
-        maxWidth: 500,
+      },
+      animatedProfile: {
+        enabled: true,
+        avatarAnimation: 'none',
+        bannerAnimation: 'none',
+        linkHoverEffect: 'scale',
+        pageTransition: 'none',
+      },
+    },
+  },
+  {
+    id: 'dev-workspace',
+    name: 'Dev Workspace',
+    description: 'Clean developer workspace',
+    category: 'developer',
+    tags: ['workspace', 'clean', 'professional', 'setup'],
+    featured: false,
+    isOfficial: true,
+    popularity: 80,
+    settings: {
+      accentColor: '#3b82f6',
+      customBackground: {
+        type: 'image',
+        value: '',
+        imageUrl: BACKGROUNDS.developer.workspace,
+        imageOpacity: 0.3,
+        imageBlur: 4,
+      },
+      layoutSettings: {
+        cardLayout: 'default',
+        cardSpacing: 12,
+        cardBorderRadius: 8,
+        cardShadow: 'md',
+        cardPadding: 16,
+        profileLayout: 'default',
+        linkStyle: 'default',
       },
       animatedProfile: {
         enabled: true,
@@ -728,142 +675,44 @@ export const EZIOX_PRESET_TEMPLATES: PresetTemplate[] = [
         linkHoverEffect: 'lift',
         pageTransition: 'fade',
       },
-      customCSS: `
-        .link-card {
-          border-left: 3px solid #007acc;
-          background: #252526;
-        }
-        .link-card:hover {
-          background: #2d2d2d;
-          border-left-color: #0098ff;
-        }
-      `,
     },
   },
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // BUSINESS CATEGORY - Professional designs
+  // MUSIC - Music and audio focused
   // ═══════════════════════════════════════════════════════════════════════════
   {
-    id: 'business-corporate',
-    name: 'Corporate Pro',
-    description: 'Professional and trustworthy design for business profiles.',
-    category: 'business',
-    tags: ['corporate', 'professional', 'business', 'clean'],
-    featured: false,
+    id: 'music-concert',
+    name: 'Concert Vibes',
+    description: 'Live concert atmosphere',
+    category: 'music',
+    tags: ['concert', 'live', 'energy', 'lights'],
+    featured: true,
     isOfficial: true,
-    popularity: 0,
+    popularity: 90,
     settings: {
-      accentColor: '#0ea5e9',
-      textColor: '#1e293b',
+      accentColor: '#f97316',
       customBackground: {
-        type: 'gradient',
-        gradientColors: ['#f8fafc', '#e2e8f0'],
-        gradientAngle: 180,
+        type: 'image',
+        value: '',
+        imageUrl: BACKGROUNDS.music.concert,
+        imageOpacity: 0.5,
+        imageBlur: 2,
       },
       layoutSettings: {
         cardLayout: 'default',
         cardSpacing: 14,
-        cardBorderRadius: 12,
-        cardShadow: 'md',
-        cardPadding: 18,
-        profileLayout: 'default',
-        linkStyle: 'default',
-        maxWidth: 480,
-      },
-      animatedProfile: {
-        enabled: false,
-        avatarAnimation: 'none',
-        bannerAnimation: 'none',
-        linkHoverEffect: 'scale',
-        pageTransition: 'none',
-      },
-    },
-  },
-  {
-    id: 'business-executive',
-    name: 'Executive Dark',
-    description:
-      'Elegant dark theme for executives and high-end professionals.',
-    category: 'business',
-    tags: ['executive', 'luxury', 'dark', 'elegant'],
-    featured: true,
-    isOfficial: true,
-    popularity: 0,
-    settings: {
-      accentColor: '#d4af37',
-      secondaryColor: '#b8860b',
-      textColor: '#fafaf9',
-      customBackground: {
-        type: 'gradient',
-        gradientColors: ['#18181b', '#27272a', '#18181b'],
-        gradientAngle: 180,
-      },
-      layoutSettings: {
-        cardLayout: 'tilt',
-        cardSpacing: 16,
-        cardBorderRadius: 8,
+        cardBorderRadius: 16,
         cardShadow: 'lg',
-        cardPadding: 20,
-        cardTiltDegree: -1,
-        profileLayout: 'hero',
-        linkStyle: 'default',
-        maxWidth: 500,
-      },
-      animatedProfile: {
-        enabled: true,
-        avatarAnimation: 'none',
-        bannerAnimation: 'none',
-        linkHoverEffect: 'lift',
-        pageTransition: 'fade',
-      },
-      customCSS: `
-        .link-card {
-          border: 1px solid rgba(212, 175, 55, 0.3);
-        }
-        .link-card:hover {
-          border-color: rgba(212, 175, 55, 0.6);
-          box-shadow: 0 10px 40px rgba(212, 175, 55, 0.15);
-        }
-      `,
-    },
-  },
-
-  // ═══════════════════════════════════════════════════════════════════════════
-  // MUSIC CATEGORY - Music-inspired designs
-  // ═══════════════════════════════════════════════════════════════════════════
-  {
-    id: 'music-spotify',
-    name: 'Spotify Vibes',
-    description: 'Music-inspired dark theme with vibrant green accents.',
-    category: 'music',
-    tags: ['spotify', 'music', 'streaming', 'green'],
-    featured: true,
-    isOfficial: true,
-    popularity: 0,
-    settings: {
-      accentColor: '#1db954',
-      textColor: '#ffffff',
-      customBackground: {
-        type: 'gradient',
-        gradientColors: ['#121212', '#1a1a1a', '#121212'],
-        gradientAngle: 180,
-      },
-      layoutSettings: {
-        cardLayout: 'default',
-        cardSpacing: 12,
-        cardBorderRadius: 8,
-        cardShadow: 'md',
-        cardPadding: 16,
-        profileLayout: 'default',
-        linkStyle: 'default',
-        maxWidth: 480,
+        cardPadding: 18,
+        profileLayout: 'centered',
+        linkStyle: 'gradient',
       },
       animatedProfile: {
         enabled: true,
         avatarAnimation: 'pulse',
-        bannerAnimation: 'none',
-        linkHoverEffect: 'scale',
+        bannerAnimation: 'gradient-shift',
+        linkHoverEffect: 'glow',
         pageTransition: 'fade',
       },
     },
@@ -871,149 +720,68 @@ export const EZIOX_PRESET_TEMPLATES: PresetTemplate[] = [
   {
     id: 'music-vinyl',
     name: 'Vinyl Records',
-    description: 'Retro vinyl aesthetic for music lovers and DJs.',
+    description: 'Classic vinyl aesthetic',
     category: 'music',
-    tags: ['vinyl', 'retro', 'dj', 'analog'],
+    tags: ['vinyl', 'retro', 'classic', 'warm'],
     featured: false,
     isOfficial: true,
-    popularity: 0,
+    popularity: 84,
     settings: {
       accentColor: '#f97316',
-      secondaryColor: '#ea580c',
-      textColor: '#fef3c7',
       customBackground: {
-        type: 'solid',
-        value: '#1c1917',
+        type: 'image',
+        value: '',
+        imageUrl: BACKGROUNDS.music.vinyl,
+        imageOpacity: 0.5,
+        imageBlur: 2,
       },
       layoutSettings: {
-        cardLayout: 'stack',
+        cardLayout: 'default',
         cardSpacing: 14,
-        cardBorderRadius: 50,
+        cardBorderRadius: 16,
         cardShadow: 'lg',
         cardPadding: 18,
         profileLayout: 'centered',
-        linkStyle: 'bold',
-        maxWidth: 480,
+        linkStyle: 'default',
       },
       animatedProfile: {
         enabled: true,
         avatarAnimation: 'rotate',
         bannerAnimation: 'none',
-        linkHoverEffect: 'scale',
-        pageTransition: 'slide',
-      },
-    },
-  },
-  {
-    id: 'music-soundwave',
-    name: 'Soundwave',
-    description: 'Dynamic audio-inspired design with wave animations.',
-    category: 'music',
-    tags: ['soundwave', 'audio', 'dynamic', 'producer'],
-    featured: true,
-    isOfficial: true,
-    popularity: 0,
-    settings: {
-      accentColor: '#8b5cf6',
-      secondaryColor: '#06b6d4',
-      textColor: '#e0e7ff',
-      customBackground: {
-        type: 'animated',
-        animatedPreset: 'wave',
-        gradientColors: ['#0f172a', '#1e1b4b'],
-        gradientAngle: 180,
-      },
-      layoutSettings: {
-        cardLayout: 'tilt',
-        cardSpacing: 12,
-        cardBorderRadius: 16,
-        cardShadow: 'glow',
-        cardPadding: 16,
-        cardTiltDegree: 2,
-        profileLayout: 'hero',
-        linkStyle: 'glass',
-        maxWidth: 500,
-      },
-      animatedProfile: {
-        enabled: true,
-        avatarAnimation: 'pulse',
-        bannerAnimation: 'wave',
-        linkHoverEffect: 'glow',
-        pageTransition: 'blur',
-        glowColor: '#8b5cf6',
-      },
-    },
-  },
-
-  // ═══════════════════════════════════════════════════════════════════════════
-  // ART CATEGORY - Artistic designs
-  // ═══════════════════════════════════════════════════════════════════════════
-  {
-    id: 'art-watercolor',
-    name: 'Watercolor Dreams',
-    description: 'Soft, artistic watercolor-inspired gradients for artists.',
-    category: 'art',
-    tags: ['watercolor', 'soft', 'artistic', 'pastel'],
-    featured: true,
-    isOfficial: true,
-    popularity: 0,
-    settings: {
-      accentColor: '#8b5cf6',
-      secondaryColor: '#ec4899',
-      textColor: '#581c87',
-      customBackground: {
-        type: 'gradient',
-        gradientColors: ['#fdf4ff', '#fae8ff', '#f5d0fe'],
-        gradientAngle: 135,
-      },
-      layoutSettings: {
-        cardLayout: 'tilt',
-        cardSpacing: 16,
-        cardBorderRadius: 24,
-        cardShadow: 'md',
-        cardPadding: 20,
-        cardTiltDegree: -2,
-        profileLayout: 'centered',
-        linkStyle: 'glass',
-        maxWidth: 500,
-      },
-      animatedProfile: {
-        enabled: true,
-        avatarAnimation: 'float',
-        bannerAnimation: 'gradient-shift',
-        linkHoverEffect: 'scale',
+        linkHoverEffect: 'lift',
         pageTransition: 'fade',
       },
     },
   },
   {
-    id: 'art-gallery',
-    name: 'Art Gallery',
-    description: 'Clean gallery-style layout to showcase your artwork.',
-    category: 'art',
-    tags: ['gallery', 'minimal', 'showcase', 'portfolio'],
+    id: 'music-studio',
+    name: 'Studio Session',
+    description: 'Professional music studio',
+    category: 'music',
+    tags: ['studio', 'professional', 'producer', 'audio'],
     featured: false,
     isOfficial: true,
-    popularity: 0,
+    popularity: 79,
     settings: {
-      accentColor: '#171717',
-      textColor: '#171717',
+      accentColor: '#8b5cf6',
       customBackground: {
-        type: 'solid',
-        value: '#fafafa',
+        type: 'image',
+        value: '',
+        imageUrl: BACKGROUNDS.music.studio,
+        imageOpacity: 0.4,
+        imageBlur: 3,
       },
       layoutSettings: {
-        cardLayout: 'grid',
-        cardSpacing: 20,
-        cardBorderRadius: 0,
-        cardShadow: 'lg',
-        cardPadding: 24,
-        profileLayout: 'minimal',
-        linkStyle: 'minimal',
-        maxWidth: 600,
+        cardLayout: 'default',
+        cardSpacing: 12,
+        cardBorderRadius: 12,
+        cardShadow: 'md',
+        cardPadding: 16,
+        profileLayout: 'default',
+        linkStyle: 'glass',
       },
       animatedProfile: {
-        enabled: false,
+        enabled: true,
         avatarAnimation: 'none',
         bannerAnimation: 'none',
         linkHoverEffect: 'scale',
@@ -1023,250 +791,320 @@ export const EZIOX_PRESET_TEMPLATES: PresetTemplate[] = [
   },
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // ANIME CATEGORY - Anime-inspired designs
+  // BUSINESS - Professional and corporate
   // ═══════════════════════════════════════════════════════════════════════════
   {
-    id: 'anime-pastel',
-    name: 'Anime Pastel',
-    description: 'Soft pastel colors inspired by anime aesthetics.',
-    category: 'anime',
-    tags: ['pastel', 'soft', 'anime', 'cute'],
+    id: 'business-skyline',
+    name: 'City Skyline',
+    description: 'Professional city skyline backdrop',
+    category: 'business',
+    tags: ['city', 'skyline', 'professional', 'corporate'],
     featured: true,
     isOfficial: true,
-    popularity: 0,
+    popularity: 86,
     settings: {
-      accentColor: '#f472b6',
-      secondaryColor: '#a78bfa',
-      textColor: '#831843',
+      accentColor: '#2563eb',
       customBackground: {
-        type: 'gradient',
-        gradientColors: ['#fce7f3', '#ddd6fe', '#cffafe'],
-        gradientAngle: 135,
+        type: 'image',
+        value: '',
+        imageUrl: BACKGROUNDS.business.skyline,
+        imageOpacity: 0.4,
+        imageBlur: 2,
       },
       layoutSettings: {
-        cardLayout: 'tilt',
-        cardSpacing: 14,
-        cardBorderRadius: 20,
+        cardLayout: 'default',
+        cardSpacing: 12,
+        cardBorderRadius: 8,
         cardShadow: 'md',
         cardPadding: 16,
-        cardTiltDegree: 1.5,
-        profileLayout: 'centered',
+        profileLayout: 'default',
         linkStyle: 'default',
-        maxWidth: 480,
       },
       animatedProfile: {
         enabled: true,
-        avatarAnimation: 'bounce',
-        bannerAnimation: 'gradient-shift',
-        linkHoverEffect: 'tilt',
+        avatarAnimation: 'none',
+        bannerAnimation: 'none',
+        linkHoverEffect: 'lift',
         pageTransition: 'fade',
       },
     },
   },
   {
-    id: 'anime-dark',
-    name: 'Dark Anime',
-    description: 'Moody dark anime aesthetic with deep purple and blue tones.',
-    category: 'anime',
-    tags: ['dark', 'moody', 'anime', 'purple'],
+    id: 'business-minimal',
+    name: 'Corporate Clean',
+    description: 'Minimalist corporate design',
+    category: 'business',
+    tags: ['minimal', 'corporate', 'clean', 'professional'],
     featured: false,
     isOfficial: true,
-    popularity: 0,
+    popularity: 81,
     settings: {
-      accentColor: '#a855f7',
-      secondaryColor: '#6366f1',
-      textColor: '#e9d5ff',
+      accentColor: '#0ea5e9',
       customBackground: {
-        type: 'gradient',
-        gradientColors: ['#0f0f1a', '#1a1a2e', '#16213e'],
-        gradientAngle: 180,
+        type: 'image',
+        value: '',
+        imageUrl: BACKGROUNDS.business.minimal,
+        imageOpacity: 0.3,
+        imageBlur: 4,
       },
       layoutSettings: {
         cardLayout: 'default',
-        cardSpacing: 12,
-        cardBorderRadius: 16,
-        cardShadow: 'glow',
-        cardPadding: 16,
-        profileLayout: 'default',
-        linkStyle: 'glass',
-        maxWidth: 480,
+        cardSpacing: 14,
+        cardBorderRadius: 12,
+        cardShadow: 'sm',
+        cardPadding: 18,
+        profileLayout: 'centered',
+        linkStyle: 'outline',
       },
       animatedProfile: {
         enabled: true,
-        avatarAnimation: 'glow',
-        bannerAnimation: 'particles',
-        linkHoverEffect: 'glow',
-        pageTransition: 'slide',
-        particleColor: '#a855f7',
-        glowColor: '#a855f7',
+        avatarAnimation: 'none',
+        bannerAnimation: 'none',
+        linkHoverEffect: 'scale',
+        pageTransition: 'fade',
+      },
+    },
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // ART - Artistic and creative
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    id: 'art-gallery',
+    name: 'Art Gallery',
+    description: 'Elegant gallery aesthetic',
+    category: 'art',
+    tags: ['gallery', 'elegant', 'artistic', 'museum'],
+    featured: true,
+    isOfficial: true,
+    popularity: 83,
+    settings: {
+      accentColor: '#171717',
+      customBackground: {
+        type: 'image',
+        value: '',
+        imageUrl: BACKGROUNDS.art.gallery,
+        imageOpacity: 0.4,
+        imageBlur: 2,
+      },
+      layoutSettings: {
+        cardLayout: 'grid',
+        cardSpacing: 16,
+        cardBorderRadius: 0,
+        cardShadow: 'sm',
+        cardPadding: 20,
+        profileLayout: 'minimal',
+        linkStyle: 'minimal',
+      },
+      animatedProfile: {
+        enabled: true,
+        avatarAnimation: 'none',
+        bannerAnimation: 'none',
+        linkHoverEffect: 'scale',
+        pageTransition: 'fade',
       },
     },
   },
   {
-    id: 'anime-sakura',
-    name: 'Sakura Bloom',
-    description: 'Beautiful cherry blossom inspired theme with falling petals.',
-    category: 'anime',
-    tags: ['sakura', 'cherry', 'blossom', 'japanese'],
-    featured: true,
+    id: 'art-paint',
+    name: 'Paint Splash',
+    description: 'Colorful paint splash aesthetic',
+    category: 'art',
+    tags: ['paint', 'colorful', 'creative', 'splash'],
+    featured: false,
     isOfficial: true,
-    popularity: 0,
+    popularity: 77,
     settings: {
-      accentColor: '#fb7185',
-      secondaryColor: '#fda4af',
-      textColor: '#881337',
+      accentColor: '#7c3aed',
       customBackground: {
-        type: 'animated',
-        animatedPreset: 'sakura',
-        gradientColors: ['#fff1f2', '#ffe4e6', '#fecdd3'],
-        gradientAngle: 180,
+        type: 'image',
+        value: '',
+        imageUrl: BACKGROUNDS.art.paint,
+        imageOpacity: 0.5,
+        imageBlur: 1,
       },
       layoutSettings: {
-        cardLayout: 'tilt',
+        cardLayout: 'default',
+        cardSpacing: 16,
+        cardBorderRadius: 24,
+        cardShadow: 'md',
+        cardPadding: 20,
+        profileLayout: 'centered',
+        linkStyle: 'glass',
+      },
+      animatedProfile: {
+        enabled: true,
+        avatarAnimation: 'float',
+        bannerAnimation: 'none',
+        linkHoverEffect: 'scale',
+        pageTransition: 'fade',
+      },
+    },
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // ANIME - Anime and manga inspired
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    id: 'anime-sakura',
+    name: 'Sakura Season',
+    description: 'Beautiful cherry blossom theme',
+    category: 'anime',
+    tags: ['sakura', 'pink', 'japanese', 'spring'],
+    featured: true,
+    isOfficial: true,
+    popularity: 91,
+    settings: {
+      accentColor: '#f9a8d4',
+      customBackground: {
+        type: 'image',
+        value: '',
+        imageUrl: BACKGROUNDS.anime.sakura,
+        imageOpacity: 0.6,
+        imageBlur: 1,
+      },
+      layoutSettings: {
+        cardLayout: 'default',
         cardSpacing: 14,
-        cardBorderRadius: 22,
+        cardBorderRadius: 20,
         cardShadow: 'md',
         cardPadding: 18,
-        cardTiltDegree: -1.5,
-        profileLayout: 'hero',
-        linkStyle: 'glass',
-        maxWidth: 500,
+        profileLayout: 'centered',
+        linkStyle: 'default',
       },
       animatedProfile: {
         enabled: true,
         avatarAnimation: 'float',
         bannerAnimation: 'particles',
-        linkHoverEffect: 'lift',
-        pageTransition: 'blur',
-        particleColor: '#fb7185',
+        linkHoverEffect: 'scale',
+        pageTransition: 'fade',
+        particleColor: '#f9a8d4',
+      },
+    },
+  },
+  {
+    id: 'anime-tokyo-night',
+    name: 'Tokyo Night',
+    description: 'Neon-lit Tokyo streets',
+    category: 'anime',
+    tags: ['tokyo', 'night', 'neon', 'city'],
+    featured: true,
+    isOfficial: true,
+    popularity: 89,
+    settings: {
+      accentColor: '#ec4899',
+      customBackground: {
+        type: 'image',
+        value: '',
+        imageUrl: BACKGROUNDS.anime.tokyo,
+        imageOpacity: 0.5,
+        imageBlur: 1,
+      },
+      layoutSettings: {
+        cardLayout: 'default',
+        cardSpacing: 12,
+        cardBorderRadius: 12,
+        cardShadow: 'glow',
+        cardPadding: 16,
+        profileLayout: 'default',
+        linkStyle: 'neon',
+      },
+      animatedProfile: {
+        enabled: true,
+        avatarAnimation: 'glow',
+        bannerAnimation: 'none',
+        linkHoverEffect: 'glow',
+        pageTransition: 'fade',
+        glowColor: '#ec4899',
+      },
+    },
+  },
+  {
+    id: 'anime-night-sky',
+    name: 'Starry Night',
+    description: 'Anime-style night sky',
+    category: 'anime',
+    tags: ['night', 'stars', 'sky', 'peaceful'],
+    featured: false,
+    isOfficial: true,
+    popularity: 82,
+    settings: {
+      accentColor: '#8b5cf6',
+      customBackground: {
+        type: 'image',
+        value: '',
+        imageUrl: BACKGROUNDS.anime.night,
+        imageOpacity: 0.6,
+        imageBlur: 0,
+      },
+      layoutSettings: {
+        cardLayout: 'tilt',
+        cardSpacing: 14,
+        cardBorderRadius: 16,
+        cardShadow: 'lg',
+        cardPadding: 18,
+        cardTiltDegree: 2,
+        profileLayout: 'centered',
+        linkStyle: 'glass',
+      },
+      animatedProfile: {
+        enabled: true,
+        avatarAnimation: 'glow',
+        bannerAnimation: 'aurora',
+        linkHoverEffect: 'glow',
+        pageTransition: 'fade',
+        glowColor: '#8b5cf6',
       },
     },
   },
 ]
 
-// ═══════════════════════════════════════════════════════════════════════════
+// ============================================================================
 // HELPER FUNCTIONS
-// ═══════════════════════════════════════════════════════════════════════════
+// ============================================================================
 
-/**
- * Get templates by category
- */
-export function getPresetTemplatesByCategory(
-  category: string,
-): PresetTemplate[] {
-  if (category === 'all') return EZIOX_PRESET_TEMPLATES
+export function getAllPresetTemplates(): PresetTemplate[] {
+  return EZIOX_PRESET_TEMPLATES
+}
+
+export function getPresetTemplatesByCategory(category: TemplateCategory): PresetTemplate[] {
   return EZIOX_PRESET_TEMPLATES.filter((t) => t.category === category)
 }
 
-/**
- * Get featured preset templates
- */
 export function getFeaturedPresetTemplates(): PresetTemplate[] {
   return EZIOX_PRESET_TEMPLATES.filter((t) => t.featured)
 }
 
-/**
- * Search preset templates by query
- */
+export function getPresetTemplateById(id: string): PresetTemplate | undefined {
+  return EZIOX_PRESET_TEMPLATES.find((t) => t.id === id)
+}
+
 export function searchPresetTemplates(query: string): PresetTemplate[] {
   const lowerQuery = query.toLowerCase()
   return EZIOX_PRESET_TEMPLATES.filter(
     (t) =>
       t.name.toLowerCase().includes(lowerQuery) ||
       t.description.toLowerCase().includes(lowerQuery) ||
-      t.category.toLowerCase().includes(lowerQuery) ||
       t.tags.some((tag) => tag.toLowerCase().includes(lowerQuery)),
   )
 }
 
-/**
- * Get templates sorted by popularity
- */
-export function getPopularPresetTemplates(limit?: number): PresetTemplate[] {
-  const sorted = [...EZIOX_PRESET_TEMPLATES].sort(
-    (a, b) => b.popularity - a.popularity,
-  )
-  return limit ? sorted.slice(0, limit) : sorted
-}
-
-/**
- * Get templates by layout type
- */
-export function getPresetTemplatesByLayout(
-  layout: CardLayout,
-): PresetTemplate[] {
-  return EZIOX_PRESET_TEMPLATES.filter(
-    (t) => t.settings.layoutSettings.cardLayout === layout,
-  )
-}
-
-/**
- * Get total stats
- */
 export function getPresetTemplateStats() {
-  const templates = EZIOX_PRESET_TEMPLATES
+  const categories = new Map<string, number>()
+  let featuredCount = 0
+
+  for (const template of EZIOX_PRESET_TEMPLATES) {
+    categories.set(template.category, (categories.get(template.category) || 0) + 1)
+    if (template.featured) featuredCount++
+  }
+
   return {
-    total: templates.length,
-    featured: templates.filter((t) => t.featured).length,
-    totalPopularity: templates.reduce((sum, t) => sum + t.popularity, 0),
-    categories: [...new Set(templates.map((t) => t.category))].length,
-    withTiltLayout: templates.filter(
-      (t) => t.settings.layoutSettings.cardLayout === 'tilt',
-    ).length,
+    total: EZIOX_PRESET_TEMPLATES.length,
+    featured: featuredCount,
+    byCategory: Object.fromEntries(categories),
   }
 }
 
-/**
- * Get template by ID
- */
-export function getPresetTemplateById(id: string): PresetTemplate | undefined {
-  return EZIOX_PRESET_TEMPLATES.find((t) => t.id === id)
-}
-
-/**
- * Generate CSS for template preview
- */
-export function generatePreviewCSS(template: PresetTemplate): string {
-  const { settings } = template
-  const { layoutSettings, animatedProfile, customBackground } = settings
-
-  let bgStyle = ''
-  if (customBackground.type === 'solid') {
-    bgStyle = `background: ${customBackground.value};`
-  } else if (
-    customBackground.type === 'gradient' &&
-    customBackground.gradientColors
-  ) {
-    bgStyle = `background: linear-gradient(${customBackground.gradientAngle || 135}deg, ${customBackground.gradientColors.join(', ')});`
-  }
-
-  let cardTransform = ''
-  if (layoutSettings.cardLayout === 'tilt' && layoutSettings.cardTiltDegree) {
-    cardTransform = `transform: rotate(${layoutSettings.cardTiltDegree}deg);`
-  }
-
-  return `
-    .preview-container {
-      ${bgStyle}
-      color: ${settings.textColor || '#ffffff'};
-      padding: 24px;
-      border-radius: 16px;
-      min-height: 300px;
-    }
-    .preview-card {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: ${layoutSettings.cardBorderRadius}px;
-      padding: ${layoutSettings.cardPadding}px;
-      margin-bottom: ${layoutSettings.cardSpacing}px;
-      ${cardTransform}
-      transition: all 0.3s ease;
-    }
-    .preview-card:hover {
-      ${animatedProfile.linkHoverEffect === 'scale' ? 'transform: scale(1.02);' : ''}
-      ${animatedProfile.linkHoverEffect === 'lift' ? 'transform: translateY(-4px);' : ''}
-      ${animatedProfile.linkHoverEffect === 'glow' ? `box-shadow: 0 0 20px ${settings.accentColor}40;` : ''}
-      ${animatedProfile.linkHoverEffect === 'tilt' ? 'transform: rotate(2deg);' : ''}
-    }
-    ${settings.customCSS || ''}
-  `
+export function getTemplatesByPopularity(): PresetTemplate[] {
+  return [...EZIOX_PRESET_TEMPLATES].sort((a, b) => b.popularity - a.popularity)
 }

@@ -6,7 +6,6 @@ import { useTranslation } from 'react-i18next'
 import { Link } from '@tanstack/react-router'
 import {
   MessageCircle,
-  Send,
   Heart,
   MoreHorizontal,
   Trash2,
@@ -15,10 +14,16 @@ import {
   Loader2,
   AlertCircle,
   PenLine,
-  ChevronDown,
-  X,
   Sparkles,
 } from 'lucide-react'
+import { ProfileCommentsModal } from './ProfileCommentsModal'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import {
   getProfileCommentsFn,
   createCommentFn,
@@ -61,14 +66,12 @@ export function ProfileComments({
 }: ProfileCommentsProps) {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
-  const [newComment, setNewComment] = useState('')
   const [isWriting, setIsWriting] = useState(false)
   const [activeMenu, setActiveMenu] = useState<string | null>(null)
   const [reportingComment, setReportingComment] = useState<string | null>(null)
   const [reportReason, setReportReason] = useState<string>('')
   const [likedComments, setLikedComments] = useState<Set<string>>(new Set())
   const [sortBy, setSortBy] = useState<SortOption>('newest')
-  const [showSortMenu, setShowSortMenu] = useState(false)
 
   const getComments = useServerFn(getProfileCommentsFn)
   const createComment = useServerFn(createCommentFn)
@@ -87,7 +90,6 @@ export function ProfileComments({
     mutationFn: (content: string) =>
       createComment({ data: { profileUserId, content } }),
     onSuccess: () => {
-      setNewComment('')
       setIsWriting(false)
       void queryClient.invalidateQueries({
         queryKey: ['profileComments', profileUserId],
@@ -153,12 +155,6 @@ export function ProfileComments({
     },
   })
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!newComment.trim() || !currentUserId) return
-    createMutation.mutate(newComment.trim())
-  }
-
   const formatDate = (date: Date) => {
     return new Date(date).toLocaleDateString('de-DE', {
       day: 'numeric',
@@ -216,45 +212,22 @@ export function ProfileComments({
 
         <div className="flex items-center gap-2">
           {/* Sort Dropdown */}
-          <div className="relative">
-            <button
-              onClick={() => setShowSortMenu(!showSortMenu)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm text-white/60 hover:text-white/80 hover:bg-white/5 transition-colors"
-            >
-              {sortLabels[sortBy]}
-              <ChevronDown size={14} />
-            </button>
-
-            <AnimatePresence>
-              {showSortMenu && (
-                <motion.div
-                  initial={{ opacity: 0, y: -5 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -5 }}
-                  className="absolute right-0 top-full mt-1 z-20 py-1 rounded-lg bg-[#1a1a24] border border-white/10 shadow-xl min-w-[140px]"
-                >
-                  {(['newest', 'oldest', 'popular'] as SortOption[]).map(
-                    (option) => (
-                      <button
-                        key={option}
-                        onClick={() => {
-                          setSortBy(option)
-                          setShowSortMenu(false)
-                        }}
-                        className={`w-full px-3 py-2 text-left text-sm transition-colors ${
-                          sortBy === option
-                            ? 'text-purple-400 bg-white/5'
-                            : 'text-white/70 hover:bg-white/5'
-                        }`}
-                      >
-                        {sortLabels[option]}
-                      </button>
-                    ),
-                  )}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+          <Select value={sortBy} onValueChange={(value) => setSortBy(value as SortOption)}>
+            <SelectTrigger className="h-8 w-[130px] bg-white/5 border-white/10 text-white/70 text-sm">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="bg-[#1a1a24] border-white/10">
+              <SelectItem value="newest" className="text-white/70 focus:bg-white/10 focus:text-white">
+                {sortLabels.newest}
+              </SelectItem>
+              <SelectItem value="oldest" className="text-white/70 focus:bg-white/10 focus:text-white">
+                {sortLabels.oldest}
+              </SelectItem>
+              <SelectItem value="popular" className="text-white/70 focus:bg-white/10 focus:text-white">
+                {sortLabels.popular}
+              </SelectItem>
+            </SelectContent>
+          </Select>
 
           {/* Write Comment Button */}
           {currentUserId && (
@@ -481,78 +454,14 @@ export function ProfileComments({
       </div>
 
       {/* Write Comment Modal */}
-      <AnimatePresence>
-        {isWriting && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
-            onClick={() => setIsWriting(false)}
-          >
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-md p-6 rounded-2xl bg-[#1a1a24] border border-white/10"
-            >
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                  <PenLine size={20} />
-                  {t('bioPage.comments.writeComment')}
-                </h3>
-                <button
-                  onClick={() => setIsWriting(false)}
-                  className="p-1 text-white/40 hover:text-white/60 transition-colors"
-                >
-                  <X size={20} />
-                </button>
-              </div>
-
-              <form onSubmit={handleSubmit}>
-                <textarea
-                  value={newComment}
-                  onChange={(e) => setNewComment(e.target.value)}
-                  placeholder={t('bioPage.comments.placeholder')}
-                  maxLength={500}
-                  rows={4}
-                  autoFocus
-                  className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/40 resize-none focus:outline-none focus:border-white/20 transition-colors"
-                />
-                <div className="flex items-center justify-between mt-3">
-                  <span className="text-xs text-white/30">
-                    {newComment.length}/500
-                  </span>
-                  <motion.button
-                    type="submit"
-                    disabled={!newComment.trim() || createMutation.isPending}
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-white bg-gradient-to-r from-purple-500 to-cyan-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    {createMutation.isPending ? (
-                      <Loader2 size={18} className="animate-spin" />
-                    ) : (
-                      <>
-                        <Send size={16} />
-                        {t('bioPage.comments.submit')}
-                      </>
-                    )}
-                  </motion.button>
-                </div>
-                {createMutation.isError && (
-                  <p className="mt-3 text-sm text-red-400 flex items-center gap-1">
-                    <AlertCircle size={14} />
-                    {(createMutation.error as Error)?.message ||
-                      t('bioPage.comments.errors.failed')}
-                  </p>
-                )}
-              </form>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <ProfileCommentsModal
+        isOpen={isWriting}
+        onClose={() => setIsWriting(false)}
+        onSubmit={(content) => createMutation.mutate(content)}
+        isPending={createMutation.isPending}
+        isError={createMutation.isError}
+        errorMessage={(createMutation.error as Error)?.message}
+      />
 
       {/* Report Modal */}
       <AnimatePresence>

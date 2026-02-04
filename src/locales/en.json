@@ -1303,70 +1303,54 @@
     }
   },
   "templates": {
-    "badge": "Template Gallery",
-    "hero": {
-      "title": "Find Your Perfect",
-      "titleHighlight": "Style",
-      "subtitle": "Discover stunning profile templates created by the community. One click to transform your bio page."
-    },
-    "stats": {
-      "templates": "Templates",
-      "uses": "Uses",
-      "likes": "Likes",
-      "featured": "Featured"
-    },
-    "categories": {
-      "all": "All",
-      "vtuber": "VTuber",
-      "gamer": "Gamer",
-      "developer": "Developer",
-      "minimal": "Minimal",
-      "creative": "Creative",
-      "business": "Business",
-      "music": "Music",
-      "art": "Art",
-      "anime": "Anime"
+    "title": "Templates",
+    "subtitle": "Discover beautiful profile templates and transform your bio page",
+    "search": "Search templates...",
+    "featured": "Featured",
+    "all": "All Templates",
+    "apply": "Apply",
+    "applying": "Applying...",
+    "applyTemplate": "Apply Template",
+    "loginToApply": "Login to Apply",
+    "tabs": {
+      "official": "Official",
+      "community": "Community"
     },
     "sort": {
       "popular": "Popular",
-      "likes": "Liked",
-      "newest": "New"
+      "newest": "Newest",
+      "likes": "Most Liked"
     },
-    "search": {
-      "placeholder": "Search templates by name, creator, or style..."
+    "categories": {
+      "all": "All",
+      "minimal": "Minimal",
+      "creative": "Creative",
+      "gamer": "Gamer",
+      "vtuber": "VTuber",
+      "developer": "Developer",
+      "music": "Music",
+      "business": "Business",
+      "art": "Art",
+      "anime": "Anime"
     },
-    "loading": "Loading templates...",
-    "tier": {
-      "official": "Official",
-      "creator": "Creator",
-      "pro": "Pro"
+    "preview": {
+      "settings": "Settings",
+      "background": "Background",
+      "layout": "Layout",
+      "linkStyle": "Link Style",
+      "animations": "Animations",
+      "accentColor": "Accent Color"
     },
-    "card": {
-      "featured": "Featured",
-      "official": "Official",
-      "preview": "Preview",
-      "apply": "Apply",
-      "noDescription": "No description"
-    },
-    "empty": {
-      "title": "No templates found",
-      "description": "Try adjusting your filters or search terms to find what you're looking for.",
-      "clearFilters": "Clear Filters",
-      "signUp": "Sign up to create"
-    },
-    "modal": {
-      "title": "Template Preview",
-      "cancel": "Cancel",
-      "apply": "Apply Template",
-      "proRequired": "Pro tier or higher required to apply templates"
-    },
+    "noResults": "No templates found",
+    "noResultsDesc": "Try adjusting your search or filters",
+    "noTemplates": "No templates available",
+    "noTemplatesDesc": "Check back later for new templates",
+    "noCommunity": "No community templates yet",
+    "noCommunityDesc": "Be the first to create and share a template",
     "toast": {
-      "applied": "Template applied!",
-      "appliedDescription": "Your profile has been updated with the new style.",
-      "appliedPreset": "\"{{name}}\" has been applied.",
-      "proRequired": "Pro tier required",
-      "proRequiredDescription": "Upgrade to apply templates.",
-      "failed": "Failed to apply template"
+      "applied": "Template applied successfully!",
+      "failed": "Failed to apply template",
+      "loginRequired": "Please login to apply templates"
     }
   },
   "shortlink": {
@@ -3008,6 +2992,7 @@
   "followModal": {
     "followers": "Followers",
     "following": "Following",
+    "connections": "Connections",
     "searchPlaceholder": "Search users...",
     "refresh": "Refresh",
     "results": "result | results",
