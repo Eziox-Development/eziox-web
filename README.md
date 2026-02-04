@@ -94,8 +94,8 @@
 │  > Ticket System ......... Live support tickets with 12 categories          │
 │  > Admin Panel .......... Complete ticket management for staff              │
 │  > Email Notifications ... Confirmation emails on ticket creation           │
-│  > Guest Support ........ Non-registered users can submit tickets          │
-│  > Priority Levels ...... Low, Normal, High, Urgent ticket priorities      │
+│  > Guest Support ........ Non-registered users can submit tickets           │
+│  > Priority Levels ...... Low, Normal, High, Urgent ticket priorities       │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
