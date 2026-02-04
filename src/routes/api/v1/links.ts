@@ -20,8 +20,11 @@ export const Route = createFileRoute('/api/v1/links')({
 
         if (!authHeader?.startsWith('Bearer ')) {
           return new Response(
-            JSON.stringify({ error: 'Missing or invalid Authorization header', code: 'UNAUTHORIZED' }),
-            { status: 401, headers: { 'Content-Type': 'application/json' } }
+            JSON.stringify({
+              error: 'Missing or invalid Authorization header',
+              code: 'UNAUTHORIZED',
+            }),
+            { status: 401, headers: { 'Content-Type': 'application/json' } },
           )
         }
 
@@ -30,17 +33,29 @@ export const Route = createFileRoute('/api/v1/links')({
 
         if (!validation.valid || !validation.apiKey) {
           return new Response(
-            JSON.stringify({ error: validation.error || 'Invalid API key', code: 'INVALID_API_KEY' }),
-            { status: 401, headers: { 'Content-Type': 'application/json' } }
+            JSON.stringify({
+              error: validation.error || 'Invalid API key',
+              code: 'INVALID_API_KEY',
+            }),
+            { status: 401, headers: { 'Content-Type': 'application/json' } },
           )
         }
 
         const permissions = validation.apiKey.permissions as ApiKeyPermissions
         if (!permissions.links?.read) {
-          await logApiRequest(validation.apiKey.id, '/api/v1/links', 'GET', 403, Date.now() - startTime)
+          await logApiRequest(
+            validation.apiKey.id,
+            '/api/v1/links',
+            'GET',
+            403,
+            Date.now() - startTime,
+          )
           return new Response(
-            JSON.stringify({ error: 'API key lacks links:read permission', code: 'FORBIDDEN' }),
-            { status: 403, headers: { 'Content-Type': 'application/json' } }
+            JSON.stringify({
+              error: 'API key lacks links:read permission',
+              code: 'FORBIDDEN',
+            }),
+            { status: 403, headers: { 'Content-Type': 'application/json' } },
           )
         }
 
@@ -65,7 +80,13 @@ export const Route = createFileRoute('/api/v1/links')({
             .where(eq(userLinks.userId, validation.apiKey.userId))
             .orderBy(asc(userLinks.order))
 
-          await logApiRequest(validation.apiKey.id, '/api/v1/links', 'GET', 200, Date.now() - startTime)
+          await logApiRequest(
+            validation.apiKey.id,
+            '/api/v1/links',
+            'GET',
+            200,
+            Date.now() - startTime,
+          )
 
           return new Response(
             JSON.stringify({
@@ -86,14 +107,26 @@ export const Route = createFileRoute('/api/v1/links')({
               })),
               total: links.length,
             }),
-            { status: 200, headers: { 'Content-Type': 'application/json' } }
+            { status: 200, headers: { 'Content-Type': 'application/json' } },
           )
         } catch (error) {
           console.error('API Error [GET /api/v1/links]:', error)
-          await logApiRequest(validation.apiKey.id, '/api/v1/links', 'GET', 500, Date.now() - startTime, undefined, undefined, String(error))
+          await logApiRequest(
+            validation.apiKey.id,
+            '/api/v1/links',
+            'GET',
+            500,
+            Date.now() - startTime,
+            undefined,
+            undefined,
+            String(error),
+          )
           return new Response(
-            JSON.stringify({ error: 'Internal server error', code: 'INTERNAL_ERROR' }),
-            { status: 500, headers: { 'Content-Type': 'application/json' } }
+            JSON.stringify({
+              error: 'Internal server error',
+              code: 'INTERNAL_ERROR',
+            }),
+            { status: 500, headers: { 'Content-Type': 'application/json' } },
           )
         }
       },
@@ -104,8 +137,11 @@ export const Route = createFileRoute('/api/v1/links')({
 
         if (!authHeader?.startsWith('Bearer ')) {
           return new Response(
-            JSON.stringify({ error: 'Missing or invalid Authorization header', code: 'UNAUTHORIZED' }),
-            { status: 401, headers: { 'Content-Type': 'application/json' } }
+            JSON.stringify({
+              error: 'Missing or invalid Authorization header',
+              code: 'UNAUTHORIZED',
+            }),
+            { status: 401, headers: { 'Content-Type': 'application/json' } },
           )
         }
 
@@ -114,37 +150,64 @@ export const Route = createFileRoute('/api/v1/links')({
 
         if (!validation.valid || !validation.apiKey) {
           return new Response(
-            JSON.stringify({ error: validation.error || 'Invalid API key', code: 'INVALID_API_KEY' }),
-            { status: 401, headers: { 'Content-Type': 'application/json' } }
+            JSON.stringify({
+              error: validation.error || 'Invalid API key',
+              code: 'INVALID_API_KEY',
+            }),
+            { status: 401, headers: { 'Content-Type': 'application/json' } },
           )
         }
 
         const permissions = validation.apiKey.permissions as ApiKeyPermissions
         if (!permissions.links?.write) {
-          await logApiRequest(validation.apiKey.id, '/api/v1/links', 'POST', 403, Date.now() - startTime)
+          await logApiRequest(
+            validation.apiKey.id,
+            '/api/v1/links',
+            'POST',
+            403,
+            Date.now() - startTime,
+          )
           return new Response(
-            JSON.stringify({ error: 'API key lacks links:write permission', code: 'FORBIDDEN' }),
-            { status: 403, headers: { 'Content-Type': 'application/json' } }
+            JSON.stringify({
+              error: 'API key lacks links:write permission',
+              code: 'FORBIDDEN',
+            }),
+            { status: 403, headers: { 'Content-Type': 'application/json' } },
           )
         }
 
         try {
-          const body = await request.json() as Record<string, unknown>
+          const body = (await request.json()) as Record<string, unknown>
 
           // Validate required fields
           if (!body.title || typeof body.title !== 'string') {
-            await logApiRequest(validation.apiKey.id, '/api/v1/links', 'POST', 400, Date.now() - startTime)
+            await logApiRequest(
+              validation.apiKey.id,
+              '/api/v1/links',
+              'POST',
+              400,
+              Date.now() - startTime,
+            )
             return new Response(
-              JSON.stringify({ error: 'title is required', code: 'BAD_REQUEST' }),
-              { status: 400, headers: { 'Content-Type': 'application/json' } }
+              JSON.stringify({
+                error: 'title is required',
+                code: 'BAD_REQUEST',
+              }),
+              { status: 400, headers: { 'Content-Type': 'application/json' } },
             )
           }
 
           if (!body.url || typeof body.url !== 'string') {
-            await logApiRequest(validation.apiKey.id, '/api/v1/links', 'POST', 400, Date.now() - startTime)
+            await logApiRequest(
+              validation.apiKey.id,
+              '/api/v1/links',
+              'POST',
+              400,
+              Date.now() - startTime,
+            )
             return new Response(
               JSON.stringify({ error: 'url is required', code: 'BAD_REQUEST' }),
-              { status: 400, headers: { 'Content-Type': 'application/json' } }
+              { status: 400, headers: { 'Content-Type': 'application/json' } },
             )
           }
 
@@ -152,10 +215,19 @@ export const Route = createFileRoute('/api/v1/links')({
           try {
             new URL(body.url as string)
           } catch {
-            await logApiRequest(validation.apiKey.id, '/api/v1/links', 'POST', 400, Date.now() - startTime)
+            await logApiRequest(
+              validation.apiKey.id,
+              '/api/v1/links',
+              'POST',
+              400,
+              Date.now() - startTime,
+            )
             return new Response(
-              JSON.stringify({ error: 'Invalid URL format', code: 'BAD_REQUEST' }),
-              { status: 400, headers: { 'Content-Type': 'application/json' } }
+              JSON.stringify({
+                error: 'Invalid URL format',
+                code: 'BAD_REQUEST',
+              }),
+              { status: 400, headers: { 'Content-Type': 'application/json' } },
             )
           }
 
@@ -171,15 +243,35 @@ export const Route = createFileRoute('/api/v1/links')({
               userId: validation.apiKey.userId,
               title: (body.title as string).slice(0, 100),
               url: (body.url as string).slice(0, 2048),
-              icon: typeof body.icon === 'string' ? body.icon.slice(0, 50) : undefined,
-              description: typeof body.description === 'string' ? body.description.slice(0, 255) : undefined,
-              backgroundColor: typeof body.backgroundColor === 'string' && /^#[0-9A-Fa-f]{6}$/.test(body.backgroundColor) ? body.backgroundColor : undefined,
-              textColor: typeof body.textColor === 'string' && /^#[0-9A-Fa-f]{6}$/.test(body.textColor) ? body.textColor : undefined,
+              icon:
+                typeof body.icon === 'string'
+                  ? body.icon.slice(0, 50)
+                  : undefined,
+              description:
+                typeof body.description === 'string'
+                  ? body.description.slice(0, 255)
+                  : undefined,
+              backgroundColor:
+                typeof body.backgroundColor === 'string' &&
+                /^#[0-9A-Fa-f]{6}$/.test(body.backgroundColor)
+                  ? body.backgroundColor
+                  : undefined,
+              textColor:
+                typeof body.textColor === 'string' &&
+                /^#[0-9A-Fa-f]{6}$/.test(body.textColor)
+                  ? body.textColor
+                  : undefined,
               order: (maxOrder?.max ?? -1) + 1,
             })
             .returning()
 
-          await logApiRequest(validation.apiKey.id, '/api/v1/links', 'POST', 201, Date.now() - startTime)
+          await logApiRequest(
+            validation.apiKey.id,
+            '/api/v1/links',
+            'POST',
+            201,
+            Date.now() - startTime,
+          )
 
           return new Response(
             JSON.stringify({
@@ -198,14 +290,26 @@ export const Route = createFileRoute('/api/v1/links')({
                 createdAt: newLink?.createdAt,
               },
             }),
-            { status: 201, headers: { 'Content-Type': 'application/json' } }
+            { status: 201, headers: { 'Content-Type': 'application/json' } },
           )
         } catch (error) {
           console.error('API Error [POST /api/v1/links]:', error)
-          await logApiRequest(validation.apiKey.id, '/api/v1/links', 'POST', 500, Date.now() - startTime, undefined, undefined, String(error))
+          await logApiRequest(
+            validation.apiKey.id,
+            '/api/v1/links',
+            'POST',
+            500,
+            Date.now() - startTime,
+            undefined,
+            undefined,
+            String(error),
+          )
           return new Response(
-            JSON.stringify({ error: 'Internal server error', code: 'INTERNAL_ERROR' }),
-            { status: 500, headers: { 'Content-Type': 'application/json' } }
+            JSON.stringify({
+              error: 'Internal server error',
+              code: 'INTERNAL_ERROR',
+            }),
+            { status: 500, headers: { 'Content-Type': 'application/json' } },
           )
         }
       },

@@ -136,7 +136,9 @@ export const updateMediaItemFn = createServerFn({ method: 'POST' })
     const [existing] = await db
       .select({ id: mediaLibrary.id })
       .from(mediaLibrary)
-      .where(and(eq(mediaLibrary.id, data.id), eq(mediaLibrary.userId, user.id)))
+      .where(
+        and(eq(mediaLibrary.id, data.id), eq(mediaLibrary.userId, user.id)),
+      )
       .limit(1)
 
     if (!existing) {
@@ -165,7 +167,9 @@ export const deleteMediaItemFn = createServerFn({ method: 'POST' })
 
     const result = await db
       .delete(mediaLibrary)
-      .where(and(eq(mediaLibrary.id, data.id), eq(mediaLibrary.userId, user.id)))
+      .where(
+        and(eq(mediaLibrary.id, data.id), eq(mediaLibrary.userId, user.id)),
+      )
       .returning({ id: mediaLibrary.id })
 
     if (result.length === 0) {

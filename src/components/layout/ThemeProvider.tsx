@@ -138,7 +138,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     metaThemeColor.setAttribute('content', colors.background)
 
     // Font loading with preconnect optimization
-    const existingPreconnects = document.querySelectorAll('link[data-theme-preconnect]')
+    const existingPreconnects = document.querySelectorAll(
+      'link[data-theme-preconnect]',
+    )
     if (existingPreconnects.length === 0) {
       const preconnectUrls = [GOOGLE_FONTS_PRECONNECT, GOOGLE_FONTS_STATIC]
       preconnectUrls.forEach((url) => {

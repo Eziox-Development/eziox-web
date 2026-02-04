@@ -43,6 +43,48 @@
       "when": 1770052233865,
       "tag": "0005_long_gorgon",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1770115654670,
+      "tag": "0006_lethal_owl",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1770116989023,
+      "tag": "0007_high_risque",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1770136320960,
+      "tag": "0008_fancy_purple_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1770157767944,
+      "tag": "0009_sticky_meteorite",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1770159496399,
+      "tag": "0010_legal_warlock",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1770162085610,
+      "tag": "0011_broken_harry_osborn",
+      "breakpoints": true
     }
   ]
 }

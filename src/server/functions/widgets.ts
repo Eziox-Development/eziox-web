@@ -30,16 +30,58 @@ import { validateSession } from '../lib/auth'
 // ============================================================================
 
 export const WIDGET_TYPES = [
-  { id: 'weather', name: 'Weather', description: 'Display weather for a location', icon: 'CloudSun', premium: true },
-  { id: 'countdown', name: 'Countdown', description: 'Count down to a special date', icon: 'Timer', premium: false },
-  { id: 'social_feed', name: 'Social Feed', description: 'Embed social media posts', icon: 'Smartphone', premium: true },
-  { id: 'youtube', name: 'YouTube Embed', description: 'Embed a YouTube video', icon: 'Youtube', premium: false },
-  { id: 'soundcloud', name: 'SoundCloud', description: 'Embed a SoundCloud track', icon: 'Headphones', premium: false },
-  { id: 'twitch', name: 'Twitch Status', description: 'Show your Twitch live status', icon: 'Twitch', premium: true },
-  { id: 'github', name: 'GitHub Stats', description: 'Display your GitHub activity', icon: 'Github', premium: true },
+  {
+    id: 'weather',
+    name: 'Weather',
+    description: 'Display weather for a location',
+    icon: 'CloudSun',
+    premium: true,
+  },
+  {
+    id: 'countdown',
+    name: 'Countdown',
+    description: 'Count down to a special date',
+    icon: 'Timer',
+    premium: false,
+  },
+  {
+    id: 'social_feed',
+    name: 'Social Feed',
+    description: 'Embed social media posts',
+    icon: 'Smartphone',
+    premium: true,
+  },
+  {
+    id: 'youtube',
+    name: 'YouTube Embed',
+    description: 'Embed a YouTube video',
+    icon: 'Youtube',
+    premium: false,
+  },
+  {
+    id: 'soundcloud',
+    name: 'SoundCloud',
+    description: 'Embed a SoundCloud track',
+    icon: 'Headphones',
+    premium: false,
+  },
+  {
+    id: 'twitch',
+    name: 'Twitch Status',
+    description: 'Show your Twitch live status',
+    icon: 'Twitch',
+    premium: true,
+  },
+  {
+    id: 'github',
+    name: 'GitHub Stats',
+    description: 'Display your GitHub activity',
+    icon: 'Github',
+    premium: true,
+  },
 ] as const
 
-export type WidgetType = typeof WIDGET_TYPES[number]['id']
+export type WidgetType = (typeof WIDGET_TYPES)[number]['id']
 
 // ============================================================================
 // Validation Schemas
@@ -81,7 +123,7 @@ const reorderWidgetsSchema = z.object({
     z.object({
       id: z.uuid(),
       order: z.number().int().min(0),
-    })
+    }),
   ),
 })
 
@@ -121,7 +163,12 @@ export const getPublicWidgetsFn = createServerFn({ method: 'GET' })
     const widgets = await db
       .select()
       .from(profileWidgets)
-      .where(and(eq(profileWidgets.userId, data.userId), eq(profileWidgets.isActive, true)))
+      .where(
+        and(
+          eq(profileWidgets.userId, data.userId),
+          eq(profileWidgets.isActive, true),
+        ),
+      )
       .orderBy(asc(profileWidgets.order))
 
     return widgets as ProfileWidget[]
@@ -154,9 +201,15 @@ export const createWidgetFn = createServerFn({ method: 'POST' })
     }
 
     // Check premium requirement
-    if (widgetType.premium && !['pro', 'creator', 'lifetime'].includes(user.tier || 'free')) {
+    if (
+      widgetType.premium &&
+      !['pro', 'creator', 'lifetime'].includes(user.tier || 'free')
+    ) {
       setResponseStatus(403)
-      throw { message: 'This widget requires a premium subscription', status: 403 }
+      throw {
+        message: 'This widget requires a premium subscription',
+        status: 403,
+      }
     }
 
     // Get current max order
@@ -217,11 +270,13 @@ export const updateWidgetFn = createServerFn({ method: 'POST' })
     const setData: Record<string, unknown> = {
       updatedAt: new Date(),
     }
-    
+
     if (updateData.title !== undefined) setData.title = updateData.title
-    if (updateData.isActive !== undefined) setData.isActive = updateData.isActive
+    if (updateData.isActive !== undefined)
+      setData.isActive = updateData.isActive
     if (updateData.order !== undefined) setData.order = updateData.order
-    if (updateData.settings !== undefined) setData.settings = updateData.settings as WidgetSettings
+    if (updateData.settings !== undefined)
+      setData.settings = updateData.settings as WidgetSettings
     if (updateData.config !== undefined) setData.config = updateData.config
 
     const [updated] = await db
@@ -293,7 +348,12 @@ export const reorderWidgetsFn = createServerFn({ method: 'POST' })
       await db
         .update(profileWidgets)
         .set({ order: widget.order, updatedAt: new Date() })
-        .where(and(eq(profileWidgets.id, widget.id), eq(profileWidgets.userId, user.id)))
+        .where(
+          and(
+            eq(profileWidgets.id, widget.id),
+            eq(profileWidgets.userId, user.id),
+          ),
+        )
     }
 
     return { success: true }

@@ -12,6 +12,10 @@ import {
   getAbuseStats,
   updateAlertStatus,
 } from '../lib/abuse-detection'
+import { banUser, type BanDuration, type BanType } from '../lib/account-suspension'
+import { db } from '../db'
+import { userLinks, abuseAlerts } from '../db/schema'
+import { eq, and } from 'drizzle-orm'
 
 // =============================================================================
 // Helper: Require Admin
@@ -117,3 +121,90 @@ export const getNewAlertsCountFn = createServerFn({ method: 'GET' }).handler(
     }
   },
 )
+
+// =============================================================================
+// Ban User from Alert (Admin Action)
+// =============================================================================
+
+export const banUserFromAlertFn = createServerFn({ method: 'POST' })
+  .inputValidator(
+    z.object({
+      alertId: z.uuid(),
+      userId: z.uuid(),
+      duration: z.number().min(1),
+      unit: z.enum(['hours', 'days', 'weeks', 'months', 'years', 'permanent']),
+      type: z.enum(['temporary', 'permanent', 'shadow']),
+      reason: z.string().min(1).max(500),
+      notes: z.string().max(1000).optional(),
+    }),
+  )
+  .handler(async ({ data }) => {
+    const admin = await requireAdmin()
+
+    // Ban the user
+    const banDuration: BanDuration | undefined = data.unit === 'permanent' 
+      ? { type: 'permanent' }
+      : { type: data.unit as 'hours' | 'days' | 'weeks' | 'months' | 'years', value: data.duration }
+    
+    await banUser({
+      userId: data.userId,
+      bannedBy: admin.id,
+      banType: data.type as BanType,
+      reason: data.reason,
+      internalNotes: data.notes,
+      duration: banDuration,
+    })
+
+    // Update alert status
+    await updateAlertStatus(data.alertId, 'resolved', admin.id, `User banned: ${data.reason}`)
+
+    return { success: true }
+  })
+
+// =============================================================================
+// Delete User Link from Alert (Admin Action)
+// =============================================================================
+
+export const deleteLinkFromAlertFn = createServerFn({ method: 'POST' })
+  .inputValidator(
+    z.object({
+      alertId: z.uuid(),
+      userId: z.uuid(),
+      linkUrl: z.url().optional(),
+      notes: z.string().max(1000).optional(),
+    }),
+  )
+  .handler(async ({ data }) => {
+    const admin = await requireAdmin()
+
+    // Get alert to find link metadata
+    const alert = await db.query.abuseAlerts.findFirst({
+      where: eq(abuseAlerts.id, data.alertId),
+    })
+
+    if (!alert) {
+      setResponseStatus(404)
+      throw { message: 'Alert not found', status: 404 }
+    }
+
+    // Extract URL from metadata or use provided URL
+    const metadata = alert.metadata as Record<string, unknown> | null
+    const urlToDelete = data.linkUrl || (metadata?.url as string)
+
+    if (urlToDelete) {
+      // Delete all links with this URL for this user
+      await db
+        .delete(userLinks)
+        .where(and(eq(userLinks.userId, data.userId), eq(userLinks.url, urlToDelete)))
+    }
+
+    // Update alert status
+    await updateAlertStatus(
+      data.alertId,
+      'resolved',
+      admin.id,
+      data.notes || `Link deleted: ${urlToDelete}`,
+    )
+
+    return { success: true, deletedUrl: urlToDelete }
+  })

@@ -12,8 +12,11 @@ const parseMarkdown = (text: string): React.ReactNode => {
   // Handle italic text *text*
   text = text.replace(/\*(.*?)\*/g, '<em>$1</em>')
   // Handle inline code `code`
-  text = text.replace(/`(.*?)`/g, '<code class="px-1 py-0.5 rounded text-xs font-mono" style="background: rgba(0,0,0,0.1)">$1</code>')
-  
+  text = text.replace(
+    /`(.*?)`/g,
+    '<code class="px-1 py-0.5 rounded text-xs font-mono" style="background: rgba(0,0,0,0.1)">$1</code>',
+  )
+
   return <span dangerouslySetInnerHTML={{ __html: text }} />
 }
 import {
@@ -94,7 +97,6 @@ const CATEGORY_COLORS: Record<string, string> = {
   support: '#ec4899',
 }
 
-
 interface DocsLayoutProps {
   children: React.ReactNode
   headings?: DocHeading[]
@@ -105,18 +107,29 @@ interface DocsLayoutProps {
   icon?: string
 }
 
-export function DocsLayout({ children, headings = [], slug, title, description, category, icon }: DocsLayoutProps) {
+export function DocsLayout({
+  children,
+  headings = [],
+  slug,
+  title,
+  description,
+  category,
+  icon,
+}: DocsLayoutProps) {
   const { t } = useTranslation()
   const { theme } = useTheme()
   const location = useLocation()
-  
+
   // Helper to get text - returns i18n translation if key starts with 'docs.' otherwise returns as-is
-  const getText = useCallback((key: string) => {
-    if (key.startsWith('docs.')) {
-      return t(key)
-    }
-    return key
-  }, [t])
+  const getText = useCallback(
+    (key: string) => {
+      if (key.startsWith('docs.')) {
+        return t(key)
+      }
+      return key
+    },
+    [t],
+  )
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [searchOpen, setSearchOpen] = useState(false)
@@ -125,7 +138,7 @@ export function DocsLayout({ children, headings = [], slug, title, description, 
   const currentDoc = useMemo(() => {
     const currentSlug = slug || location.pathname.split('/').pop()
     const foundDoc = DOCS_NAV.find((doc) => doc.slug === currentSlug)
-    
+
     // Support legacy props (title, description, category, icon)
     if (!foundDoc && title) {
       return {
@@ -138,7 +151,7 @@ export function DocsLayout({ children, headings = [], slug, title, description, 
         _isLegacy: true,
       } as DocNavItem & { _isLegacy?: boolean }
     }
-    
+
     return foundDoc
   }, [slug, location.pathname, title, description, category, icon])
 
@@ -147,7 +160,8 @@ export function DocsLayout({ children, headings = [], slug, title, description, 
   }, [currentDoc])
 
   const prevDoc = currentIndex > 0 ? DOCS_NAV[currentIndex - 1] : null
-  const nextDoc = currentIndex < DOCS_NAV.length - 1 ? DOCS_NAV[currentIndex + 1] : null
+  const nextDoc =
+    currentIndex < DOCS_NAV.length - 1 ? DOCS_NAV[currentIndex + 1] : null
 
   const groupedDocs = useMemo(() => {
     const groups: Record<string, DocNavItem[]> = {}
@@ -169,7 +183,13 @@ export function DocsLayout({ children, headings = [], slug, title, description, 
     return groups
   }, [searchQuery, t])
 
-  const categoryOrder = ['basics', 'features', 'integrations', 'account', 'support']
+  const categoryOrder = [
+    'basics',
+    'features',
+    'integrations',
+    'account',
+    'support',
+  ]
 
   useEffect(() => {
     if (headings.length === 0) return
@@ -182,7 +202,7 @@ export function DocsLayout({ children, headings = [], slug, title, description, 
           }
         })
       },
-      { rootMargin: '-100px 0px -80% 0px' }
+      { rootMargin: '-100px 0px -80% 0px' },
     )
 
     headings.forEach((heading) => {
@@ -217,8 +237,12 @@ export function DocsLayout({ children, headings = [], slug, title, description, 
     }
   }, [])
 
-  const IconComponent = currentDoc ? ICON_MAP[currentDoc.icon] || BookOpen : BookOpen
-  const categoryColor = currentDoc ? CATEGORY_COLORS[currentDoc.category] || theme.colors.primary : theme.colors.primary
+  const IconComponent = currentDoc
+    ? ICON_MAP[currentDoc.icon] || BookOpen
+    : BookOpen
+  const categoryColor = currentDoc
+    ? CATEGORY_COLORS[currentDoc.category] || theme.colors.primary
+    : theme.colors.primary
 
   return (
     <div
@@ -236,7 +260,10 @@ export function DocsLayout({ children, headings = [], slug, title, description, 
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 flex items-start justify-center pt-[20vh]"
-            style={{ background: 'rgba(0, 0, 0, 0.6)', backdropFilter: 'blur(4px)' }}
+            style={{
+              background: 'rgba(0, 0, 0, 0.6)',
+              backdropFilter: 'blur(4px)',
+            }}
             onClick={() => setSearchOpen(false)}
           >
             <motion.div
@@ -252,8 +279,14 @@ export function DocsLayout({ children, headings = [], slug, title, description, 
               }}
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex items-center gap-3 p-4 border-b" style={{ borderColor: theme.colors.border }}>
-                <Search size={20} style={{ color: theme.colors.foregroundMuted }} />
+              <div
+                className="flex items-center gap-3 p-4 border-b"
+                style={{ borderColor: theme.colors.border }}
+              >
+                <Search
+                  size={20}
+                  style={{ color: theme.colors.foregroundMuted }}
+                />
                 <input
                   type="text"
                   placeholder={t('docs.searchPlaceholder')}
@@ -265,7 +298,10 @@ export function DocsLayout({ children, headings = [], slug, title, description, 
                 />
                 <kbd
                   className="px-2 py-1 text-xs rounded"
-                  style={{ background: theme.colors.backgroundSecondary, color: theme.colors.foregroundMuted }}
+                  style={{
+                    background: theme.colors.backgroundSecondary,
+                    color: theme.colors.foregroundMuted,
+                  }}
                 >
                   ESC
                 </kbd>
@@ -275,14 +311,22 @@ export function DocsLayout({ children, headings = [], slug, title, description, 
                 {Object.entries(groupedDocs).length === 0 ? (
                   <div className="p-8 text-center">
                     <Search size={32} className="mx-auto mb-3 opacity-30" />
-                    <p style={{ color: theme.colors.foregroundMuted }}>{t('docs.noResults')}</p>
+                    <p style={{ color: theme.colors.foregroundMuted }}>
+                      {t('docs.noResults')}
+                    </p>
                   </div>
                 ) : (
                   Object.entries(groupedDocs)
-                    .sort(([a], [b]) => categoryOrder.indexOf(a) - categoryOrder.indexOf(b))
+                    .sort(
+                      ([a], [b]) =>
+                        categoryOrder.indexOf(a) - categoryOrder.indexOf(b),
+                    )
                     .map(([category, docs]) => (
                       <div key={category} className="mb-4">
-                        <p className="px-3 py-2 text-xs font-semibold uppercase tracking-wider" style={{ color: theme.colors.foregroundMuted }}>
+                        <p
+                          className="px-3 py-2 text-xs font-semibold uppercase tracking-wider"
+                          style={{ color: theme.colors.foregroundMuted }}
+                        >
                           {t(`docs.categories.${category}`)}
                         </p>
                         {docs.map((doc) => {
@@ -296,19 +340,37 @@ export function DocsLayout({ children, headings = [], slug, title, description, 
                             >
                               <div
                                 className="w-10 h-10 flex items-center justify-center rounded-lg"
-                                style={{ background: `${CATEGORY_COLORS[doc.category]}15` }}
+                                style={{
+                                  background: `${CATEGORY_COLORS[doc.category]}15`,
+                                }}
                               >
-                                <DocIcon size={18} style={{ color: CATEGORY_COLORS[doc.category] }} />
+                                <DocIcon
+                                  size={18}
+                                  style={{
+                                    color: CATEGORY_COLORS[doc.category],
+                                  }}
+                                />
                               </div>
                               <div className="flex-1 min-w-0">
-                                <p className="font-medium truncate" style={{ color: theme.colors.foreground }}>
+                                <p
+                                  className="font-medium truncate"
+                                  style={{ color: theme.colors.foreground }}
+                                >
                                   {getText(doc.titleKey)}
                                 </p>
-                                <p className="text-sm truncate" style={{ color: theme.colors.foregroundMuted }}>
+                                <p
+                                  className="text-sm truncate"
+                                  style={{
+                                    color: theme.colors.foregroundMuted,
+                                  }}
+                                >
                                   {getText(doc.descriptionKey)}
                                 </p>
                               </div>
-                              <ChevronRight size={16} style={{ color: theme.colors.foregroundMuted }} />
+                              <ChevronRight
+                                size={16}
+                                style={{ color: theme.colors.foregroundMuted }}
+                              />
                             </Link>
                           )
                         })}
@@ -349,17 +411,32 @@ export function DocsLayout({ children, headings = [], slug, title, description, 
         >
           <div className="flex flex-col h-full">
             {/* Sidebar Header */}
-            <div className="flex items-center justify-between p-4 border-b" style={{ borderColor: theme.colors.border }}>
+            <div
+              className="flex items-center justify-between p-4 border-b"
+              style={{ borderColor: theme.colors.border }}
+            >
               <Link to="/docs" className="flex items-center gap-3">
                 <div
                   className="w-10 h-10 flex items-center justify-center rounded-xl"
-                  style={{ background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})` }}
+                  style={{
+                    background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
+                  }}
                 >
                   <BookOpen size={20} className="text-white" />
                 </div>
                 <div>
-                  <p className="font-bold" style={{ color: theme.colors.foreground }}>{t('docs.title')}</p>
-                  <p className="text-xs" style={{ color: theme.colors.foregroundMuted }}>Eziox</p>
+                  <p
+                    className="font-bold"
+                    style={{ color: theme.colors.foreground }}
+                  >
+                    {t('docs.title')}
+                  </p>
+                  <p
+                    className="text-xs"
+                    style={{ color: theme.colors.foregroundMuted }}
+                  >
+                    Eziox
+                  </p>
                 </div>
               </Link>
               <button
@@ -380,13 +457,22 @@ export function DocsLayout({ children, headings = [], slug, title, description, 
                   border: `1px solid ${theme.colors.border}`,
                 }}
               >
-                <Search size={16} style={{ color: theme.colors.foregroundMuted }} />
-                <span className="flex-1 text-left text-sm" style={{ color: theme.colors.foregroundMuted }}>
+                <Search
+                  size={16}
+                  style={{ color: theme.colors.foregroundMuted }}
+                />
+                <span
+                  className="flex-1 text-left text-sm"
+                  style={{ color: theme.colors.foregroundMuted }}
+                >
                   {t('docs.searchPlaceholder')}
                 </span>
                 <kbd
                   className="px-2 py-0.5 text-xs rounded"
-                  style={{ background: theme.colors.backgroundSecondary, color: theme.colors.foregroundMuted }}
+                  style={{
+                    background: theme.colors.backgroundSecondary,
+                    color: theme.colors.foregroundMuted,
+                  }}
                 >
                   /
                 </kbd>
@@ -404,7 +490,10 @@ export function DocsLayout({ children, headings = [], slug, title, description, 
                 return (
                   <div key={category} className="mb-6">
                     <div className="flex items-center gap-2 mb-2 px-2">
-                      <CategoryIcon size={14} style={{ color: CATEGORY_COLORS[category] }} />
+                      <CategoryIcon
+                        size={14}
+                        style={{ color: CATEGORY_COLORS[category] }}
+                      />
                       <p
                         className="text-xs font-semibold uppercase tracking-wider"
                         style={{ color: theme.colors.foregroundMuted }}
@@ -424,13 +513,28 @@ export function DocsLayout({ children, headings = [], slug, title, description, 
                             onClick={() => setSidebarOpen(false)}
                             className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all"
                             style={{
-                              background: isActive ? `${CATEGORY_COLORS[doc.category]}15` : 'transparent',
-                              color: isActive ? theme.colors.foreground : theme.colors.foregroundMuted,
-                              borderLeft: isActive ? `3px solid ${CATEGORY_COLORS[doc.category]}` : '3px solid transparent',
+                              background: isActive
+                                ? `${CATEGORY_COLORS[doc.category]}15`
+                                : 'transparent',
+                              color: isActive
+                                ? theme.colors.foreground
+                                : theme.colors.foregroundMuted,
+                              borderLeft: isActive
+                                ? `3px solid ${CATEGORY_COLORS[doc.category]}`
+                                : '3px solid transparent',
                             }}
                           >
-                            <DocIcon size={16} style={{ color: isActive ? CATEGORY_COLORS[doc.category] : theme.colors.foregroundMuted }} />
-                            <span className="text-sm font-medium">{getText(doc.titleKey)}</span>
+                            <DocIcon
+                              size={16}
+                              style={{
+                                color: isActive
+                                  ? CATEGORY_COLORS[doc.category]
+                                  : theme.colors.foregroundMuted,
+                              }}
+                            />
+                            <span className="text-sm font-medium">
+                              {getText(doc.titleKey)}
+                            </span>
                           </Link>
                         )
                       })}
@@ -441,7 +545,10 @@ export function DocsLayout({ children, headings = [], slug, title, description, 
             </nav>
 
             {/* Sidebar Footer */}
-            <div className="p-4 border-t" style={{ borderColor: theme.colors.border }}>
+            <div
+              className="p-4 border-t"
+              style={{ borderColor: theme.colors.border }}
+            >
               <Link
                 to="/"
                 className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all hover:bg-white/5"
@@ -483,15 +590,26 @@ export function DocsLayout({ children, headings = [], slug, title, description, 
               </Link>
               {currentDoc && (
                 <>
-                  <ChevronRight size={14} style={{ color: theme.colors.foregroundMuted }} />
+                  <ChevronRight
+                    size={14}
+                    style={{ color: theme.colors.foregroundMuted }}
+                  />
                   <span
                     className="px-2 py-0.5 rounded-md text-xs font-medium"
-                    style={{ background: `${categoryColor}15`, color: categoryColor }}
+                    style={{
+                      background: `${categoryColor}15`,
+                      color: categoryColor,
+                    }}
                   >
                     {t(`docs.categories.${currentDoc.category}`)}
                   </span>
-                  <ChevronRight size={14} style={{ color: theme.colors.foregroundMuted }} />
-                  <span style={{ color: theme.colors.foreground }}>{getText(currentDoc.titleKey)}</span>
+                  <ChevronRight
+                    size={14}
+                    style={{ color: theme.colors.foregroundMuted }}
+                  />
+                  <span style={{ color: theme.colors.foreground }}>
+                    {getText(currentDoc.titleKey)}
+                  </span>
                 </>
               )}
             </nav>
@@ -507,13 +625,22 @@ export function DocsLayout({ children, headings = [], slug, title, description, 
                 border: `1px solid ${theme.colors.border}`,
               }}
             >
-              <Search size={16} style={{ color: theme.colors.foregroundMuted }} />
-              <span className="text-sm" style={{ color: theme.colors.foregroundMuted }}>
+              <Search
+                size={16}
+                style={{ color: theme.colors.foregroundMuted }}
+              />
+              <span
+                className="text-sm"
+                style={{ color: theme.colors.foregroundMuted }}
+              >
                 {t('docs.searchPlaceholder')}
               </span>
               <kbd
                 className="px-2 py-0.5 text-xs rounded ml-4"
-                style={{ background: theme.colors.backgroundSecondary, color: theme.colors.foregroundMuted }}
+                style={{
+                  background: theme.colors.backgroundSecondary,
+                  color: theme.colors.foregroundMuted,
+                }}
               >
                 /
               </kbd>
@@ -536,16 +663,25 @@ export function DocsLayout({ children, headings = [], slug, title, description, 
                       className="w-14 h-14 flex items-center justify-center rounded-2xl shrink-0"
                       style={{ background: `${categoryColor}15` }}
                     >
-                      <IconComponent size={28} style={{ color: categoryColor }} />
+                      <IconComponent
+                        size={28}
+                        style={{ color: categoryColor }}
+                      />
                     </div>
                     <div className="flex-1 min-w-0">
                       <h1
                         className="text-3xl lg:text-4xl font-bold mb-2"
-                        style={{ color: theme.colors.foreground, fontFamily: theme.typography.displayFont }}
+                        style={{
+                          color: theme.colors.foreground,
+                          fontFamily: theme.typography.displayFont,
+                        }}
                       >
                         {getText(currentDoc.titleKey)}
                       </h1>
-                      <p className="text-lg" style={{ color: theme.colors.foregroundMuted }}>
+                      <p
+                        className="text-lg"
+                        style={{ color: theme.colors.foregroundMuted }}
+                      >
                         {getText(currentDoc.descriptionKey)}
                       </p>
                     </div>
@@ -554,14 +690,22 @@ export function DocsLayout({ children, headings = [], slug, title, description, 
                   {/* Meta Info */}
                   <div className="flex flex-wrap items-center gap-4 mt-4">
                     {currentDoc.readTime && (
-                      <div className="flex items-center gap-2 text-sm" style={{ color: theme.colors.foregroundMuted }}>
+                      <div
+                        className="flex items-center gap-2 text-sm"
+                        style={{ color: theme.colors.foregroundMuted }}
+                      >
                         <Clock size={14} />
-                        {t('docs.meta.readTime', { minutes: currentDoc.readTime })}
+                        {t('docs.meta.readTime', {
+                          minutes: currentDoc.readTime,
+                        })}
                       </div>
                     )}
                     <div
                       className="px-3 py-1 rounded-full text-xs font-medium"
-                      style={{ background: `${categoryColor}15`, color: categoryColor }}
+                      style={{
+                        background: `${categoryColor}15`,
+                        color: categoryColor,
+                      }}
                     >
                       {t(`docs.categories.${currentDoc.category}`)}
                     </div>
@@ -607,13 +751,22 @@ export function DocsLayout({ children, headings = [], slug, title, description, 
                       className="w-10 h-10 flex items-center justify-center rounded-xl transition-colors group-hover:bg-white/10"
                       style={{ background: theme.colors.backgroundSecondary }}
                     >
-                      <ChevronLeft size={20} style={{ color: theme.colors.foregroundMuted }} />
+                      <ChevronLeft
+                        size={20}
+                        style={{ color: theme.colors.foregroundMuted }}
+                      />
                     </div>
                     <div>
-                      <span className="text-xs font-medium" style={{ color: theme.colors.foregroundMuted }}>
+                      <span
+                        className="text-xs font-medium"
+                        style={{ color: theme.colors.foregroundMuted }}
+                      >
                         {t('docs.navigation.previous')}
                       </span>
-                      <p className="font-semibold" style={{ color: theme.colors.foreground }}>
+                      <p
+                        className="font-semibold"
+                        style={{ color: theme.colors.foreground }}
+                      >
                         {getText(prevDoc.titleKey)}
                       </p>
                     </div>
@@ -632,10 +785,16 @@ export function DocsLayout({ children, headings = [], slug, title, description, 
                     }}
                   >
                     <div>
-                      <span className="text-xs font-medium" style={{ color: theme.colors.foregroundMuted }}>
+                      <span
+                        className="text-xs font-medium"
+                        style={{ color: theme.colors.foregroundMuted }}
+                      >
                         {t('docs.navigation.next')}
                       </span>
-                      <p className="font-semibold" style={{ color: theme.colors.foreground }}>
+                      <p
+                        className="font-semibold"
+                        style={{ color: theme.colors.foreground }}
+                      >
                         {getText(nextDoc.titleKey)}
                       </p>
                     </div>
@@ -643,7 +802,10 @@ export function DocsLayout({ children, headings = [], slug, title, description, 
                       className="w-10 h-10 flex items-center justify-center rounded-xl transition-colors group-hover:bg-white/10"
                       style={{ background: theme.colors.backgroundSecondary }}
                     >
-                      <ChevronRight size={20} style={{ color: theme.colors.foregroundMuted }} />
+                      <ChevronRight
+                        size={20}
+                        style={{ color: theme.colors.foregroundMuted }}
+                      />
                     </div>
                   </Link>
                 )}
@@ -684,9 +846,15 @@ export function DocsLayout({ children, headings = [], slug, title, description, 
                         onClick={() => scrollToHeading(heading.id)}
                         className="w-full flex items-center gap-2 px-3 py-2 text-sm text-left rounded-lg transition-all hover:bg-white/5"
                         style={{
-                          color: activeHeading === heading.id ? theme.colors.primary : theme.colors.foregroundMuted,
+                          color:
+                            activeHeading === heading.id
+                              ? theme.colors.primary
+                              : theme.colors.foregroundMuted,
                           paddingLeft: `${(heading.level - 1) * 12 + 12}px`,
-                          borderLeft: activeHeading === heading.id ? `2px solid ${theme.colors.primary}` : '2px solid transparent',
+                          borderLeft:
+                            activeHeading === heading.id
+                              ? `2px solid ${theme.colors.primary}`
+                              : '2px solid transparent',
                         }}
                       >
                         <Hash size={12} className="shrink-0 opacity-50" />
@@ -705,14 +873,23 @@ export function DocsLayout({ children, headings = [], slug, title, description, 
 }
 
 // Styled components for doc content
-export function DocSection({ title, children }: { title: string; children: React.ReactNode }) {
+export function DocSection({
+  title,
+  children,
+}: {
+  title: string
+  children: React.ReactNode
+}) {
   const { theme } = useTheme()
   return (
     <section className="mb-10">
       <h2
         id={title.toLowerCase().replace(/\s+/g, '-')}
         className="text-2xl font-bold mb-4 scroll-mt-24"
-        style={{ color: theme.colors.foreground, fontFamily: theme.typography.displayFont }}
+        style={{
+          color: theme.colors.foreground,
+          fontFamily: theme.typography.displayFont,
+        }}
       >
         {parseMarkdown(title)}
       </h2>
@@ -721,7 +898,13 @@ export function DocSection({ title, children }: { title: string; children: React
   )
 }
 
-export function DocSubSection({ title, children }: { title: string; children: React.ReactNode }) {
+export function DocSubSection({
+  title,
+  children,
+}: {
+  title: string
+  children: React.ReactNode
+}) {
   const { theme } = useTheme()
   return (
     <div className="mb-6">
@@ -739,9 +922,13 @@ export function DocSubSection({ title, children }: { title: string; children: Re
 
 export function DocParagraph({ children }: { children: React.ReactNode }) {
   const { theme } = useTheme()
-  const content = typeof children === 'string' ? parseMarkdown(children) : children
+  const content =
+    typeof children === 'string' ? parseMarkdown(children) : children
   return (
-    <p className="mb-4 leading-relaxed" style={{ color: theme.colors.foregroundMuted }}>
+    <p
+      className="mb-4 leading-relaxed"
+      style={{ color: theme.colors.foregroundMuted }}
+    >
       {content}
     </p>
   )
@@ -757,7 +944,10 @@ export function DocList({ items }: { items: string[] }) {
           className="flex items-start gap-3"
           style={{ color: theme.colors.foregroundMuted }}
         >
-          <span className="w-1.5 h-1.5 rounded-full mt-2 shrink-0" style={{ background: theme.colors.primary }} />
+          <span
+            className="w-1.5 h-1.5 rounded-full mt-2 shrink-0"
+            style={{ background: theme.colors.primary }}
+          />
           {parseMarkdown(item)}
         </li>
       ))}
@@ -765,14 +955,23 @@ export function DocList({ items }: { items: string[] }) {
   )
 }
 
-export function DocCode({ children, language }: { children: string; language?: string }) {
+export function DocCode({
+  children,
+  language,
+}: {
+  children: string
+  language?: string
+}) {
   const { theme } = useTheme()
   return (
     <div className="relative mb-4 group">
       {language && (
         <span
           className="absolute top-3 right-3 px-2 py-1 text-xs rounded-md"
-          style={{ background: theme.colors.backgroundSecondary, color: theme.colors.foregroundMuted }}
+          style={{
+            background: theme.colors.backgroundSecondary,
+            color: theme.colors.foregroundMuted,
+          }}
         >
           {language}
         </span>
@@ -806,10 +1005,19 @@ export function DocInlineCode({ children }: { children: React.ReactNode }) {
   )
 }
 
-export function DocTable({ headers, rows }: { headers: string[]; rows: React.ReactNode[][] }) {
+export function DocTable({
+  headers,
+  rows,
+}: {
+  headers: string[]
+  rows: React.ReactNode[][]
+}) {
   const { theme } = useTheme()
   return (
-    <div className="overflow-x-auto mb-4 rounded-xl" style={{ border: `1px solid ${theme.colors.border}` }}>
+    <div
+      className="overflow-x-auto mb-4 rounded-xl"
+      style={{ border: `1px solid ${theme.colors.border}` }}
+    >
       <table className="w-full text-sm">
         <thead style={{ background: theme.colors.backgroundSecondary }}>
           <tr>
@@ -826,9 +1034,16 @@ export function DocTable({ headers, rows }: { headers: string[]; rows: React.Rea
         </thead>
         <tbody>
           {rows.map((row, i) => (
-            <tr key={i} style={{ borderTop: `1px solid ${theme.colors.border}` }}>
+            <tr
+              key={i}
+              style={{ borderTop: `1px solid ${theme.colors.border}` }}
+            >
               {row.map((cell, j) => (
-                <td key={j} className="px-4 py-3" style={{ color: theme.colors.foregroundMuted }}>
+                <td
+                  key={j}
+                  className="px-4 py-3"
+                  style={{ color: theme.colors.foregroundMuted }}
+                >
                   {cell}
                 </td>
               ))}
@@ -840,7 +1055,13 @@ export function DocTable({ headers, rows }: { headers: string[]; rows: React.Rea
   )
 }
 
-export function DocBlockquote({ children, type = 'info' }: { children: React.ReactNode; type?: 'info' | 'warning' | 'tip' | 'danger' }) {
+export function DocBlockquote({
+  children,
+  type = 'info',
+}: {
+  children: React.ReactNode
+  type?: 'info' | 'warning' | 'tip' | 'danger'
+}) {
   const { theme } = useTheme()
 
   const colors = {
@@ -874,7 +1095,13 @@ export function DocBlockquote({ children, type = 'info' }: { children: React.Rea
   )
 }
 
-export function DocLink({ href, children }: { href: string; children: React.ReactNode }) {
+export function DocLink({
+  href,
+  children,
+}: {
+  href: string
+  children: React.ReactNode
+}) {
   const { theme } = useTheme()
   const isExternal = href.startsWith('http')
 
@@ -894,13 +1121,27 @@ export function DocLink({ href, children }: { href: string; children: React.Reac
   }
 
   return (
-    <Link to={href as '/'} className="underline hover:no-underline" style={{ color: theme.colors.primary }}>
+    <Link
+      to={href as '/'}
+      className="underline hover:no-underline"
+      style={{ color: theme.colors.primary }}
+    >
       {children}
     </Link>
   )
 }
 
-export function DocCard({ title, description, href, icon }: { title: string; description: string; href: string; icon?: string }) {
+export function DocCard({
+  title,
+  description,
+  href,
+  icon,
+}: {
+  title: string
+  description: string
+  href: string
+  icon?: string
+}) {
   const { theme } = useTheme()
   const IconComponent = icon ? ICON_MAP[icon] || FileText : FileText
 
@@ -921,10 +1162,16 @@ export function DocCard({ title, description, href, icon }: { title: string; des
           <IconComponent size={20} style={{ color: theme.colors.primary }} />
         </div>
         <div>
-          <h4 className="font-semibold mb-1" style={{ color: theme.colors.foreground }}>
+          <h4
+            className="font-semibold mb-1"
+            style={{ color: theme.colors.foreground }}
+          >
             {title}
           </h4>
-          <p className="text-sm" style={{ color: theme.colors.foregroundMuted }}>
+          <p
+            className="text-sm"
+            style={{ color: theme.colors.foregroundMuted }}
+          >
             {description}
           </p>
         </div>
@@ -934,5 +1181,7 @@ export function DocCard({ title, description, href, icon }: { title: string; des
 }
 
 export function DocGrid({ children }: { children: React.ReactNode }) {
-  return <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">{children}</div>
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">{children}</div>
+  )
 }

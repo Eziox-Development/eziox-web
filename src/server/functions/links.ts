@@ -11,7 +11,17 @@ import { userLinks, userStats, linkClickAnalytics } from '../db/schema'
 import { eq, asc, sql, desc, and, gte } from 'drizzle-orm'
 import { validateSession } from '../lib/auth'
 import { checkRateLimit, RATE_LIMITS } from '@/lib/security'
-import { checkLinkLimit, detectRapidCreation } from '../lib/abuse-detection'
+import {
+  checkLinkLimit,
+  detectRapidCreation,
+  createAbuseAlert,
+} from '../lib/abuse-detection'
+import {
+  validateUrl,
+  validateProfileContentExtended,
+  detectSuspiciousActivity,
+  logModerationAction,
+} from '../lib/content-moderation'
 
 // ============================================================================
 // Validation Schemas
@@ -176,6 +186,96 @@ export const createLinkFn = createServerFn({ method: 'POST' })
         status: 429,
         code: 'RAPID_CREATION_DETECTED',
       }
+    }
+
+    // Content Moderation: Validate URL
+    const urlValidation = validateUrl(data.url)
+    if (!urlValidation.isAllowed) {
+      await logModerationAction(user.id, 'link', data.url, {
+        isAllowed: false,
+        reason: urlValidation.reason || 'malicious_url',
+        severity: 'critical',
+        action: 'blocked',
+      })
+      // Create abuse alert for admin review
+      await createAbuseAlert({
+        userId: user.id,
+        alertType: 'malicious_link',
+        severity: 'critical',
+        title: 'Malicious URL blocked',
+        description: `Blocked malicious URL: ${urlValidation.reason}`,
+        metadata: { url: data.url, warnings: urlValidation.warnings },
+      })
+      setResponseStatus(400)
+      throw {
+        message: 'This URL has been flagged as potentially harmful and cannot be added.',
+        status: 400,
+        code: 'MALICIOUS_URL_BLOCKED',
+      }
+    }
+
+    // Content Moderation: Validate title/description
+    if (data.title) {
+      const titleValidation = validateProfileContentExtended(data.title)
+      if (!titleValidation.isAllowed) {
+        await logModerationAction(user.id, 'link', data.title, {
+          isAllowed: false,
+          reason: titleValidation.reason || 'inappropriate_content',
+          severity: titleValidation.severity,
+          action: 'blocked',
+        })
+        if (titleValidation.severity === 'critical') {
+          await createAbuseAlert({
+            userId: user.id,
+            alertType: 'inappropriate_content',
+            severity: titleValidation.severity,
+            title: 'Inappropriate link content',
+            description: `Blocked link title: ${titleValidation.reason}`,
+            metadata: { title: data.title, category: titleValidation.category },
+          })
+        }
+        setResponseStatus(400)
+        throw {
+          message: 'Link title contains inappropriate content.',
+          status: 400,
+          code: 'INAPPROPRIATE_CONTENT',
+        }
+      }
+    }
+
+    // Suspicious activity check
+    const activityCheck = await detectSuspiciousActivity(user.id, 'link_creation')
+    if (activityCheck.actions.includes('block')) {
+      await createAbuseAlert({
+        userId: user.id,
+        alertType: 'suspicious_activity',
+        severity: 'high',
+        title: 'Suspicious link creation activity',
+        description: `Suspicious link creation activity blocked`,
+        metadata: { riskScore: activityCheck.riskScore, details: activityCheck.details },
+      })
+      setResponseStatus(403)
+      throw {
+        message: 'Your account has been flagged for suspicious activity. Please contact support.',
+        status: 403,
+        code: 'SUSPICIOUS_ACTIVITY',
+      }
+    }
+
+    // Flag for manual review if medium risk
+    if (urlValidation.requiresManualReview || activityCheck.riskScore >= 40) {
+      await createAbuseAlert({
+        userId: user.id,
+        alertType: 'manual_review_required',
+        severity: 'warning',
+        title: 'Link requires manual review',
+        description: `Link flagged for manual review due to risk indicators`,
+        metadata: {
+          url: data.url,
+          urlWarnings: urlValidation.warnings,
+          activityRiskScore: activityCheck.riskScore,
+        },
+      })
     }
 
     // Get current max order

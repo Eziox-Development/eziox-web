@@ -5,6 +5,7 @@ import { useServerFn } from '@tanstack/react-start'
 import { useNavigate, Link } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '@/components/layout/ThemeProvider'
+import { getAppUrl, getAppHostname } from '@/lib/utils'
 import { updateProfileFn } from '@/server/functions/auth'
 import { getMyLinksFn } from '@/server/functions/links'
 import { getReferralStatsFn } from '@/server/functions/referrals'
@@ -39,6 +40,7 @@ import { DASHBOARD_TABS } from './constants'
 import type { TabType, ProfileFormData, ProfileUser } from './types'
 import { ProfileTab } from './tabs/ProfileTab'
 import { LinksTab } from './tabs/LinksTab'
+import { ShortenerTab } from './tabs/ShortenerTab'
 import { WidgetsTab } from './tabs/WidgetsTab'
 import { IntegrationsTab } from './tabs/IntegrationsTab'
 import { MediaLibraryTab } from './tabs/MediaLibraryTab'
@@ -56,7 +58,10 @@ interface ProfileDashboardProps {
   initialTab?: TabType
 }
 
-export function ProfileDashboard({ currentUser, initialTab }: ProfileDashboardProps) {
+export function ProfileDashboard({
+  currentUser,
+  initialTab,
+}: ProfileDashboardProps) {
   const { t } = useTranslation()
   const { theme } = useTheme()
   const navigate = useNavigate()
@@ -93,7 +98,7 @@ export function ProfileDashboard({ currentUser, initialTab }: ProfileDashboardPr
     socials: {},
   })
 
-  const bioUrl = `${typeof window !== 'undefined' ? (window.location.hostname === 'localhost' ? 'https://localhost:5173' : window.location.origin) : 'https://eziox.link'}/${currentUser.username}`
+  const bioUrl = `${getAppUrl()}/${currentUser.username}`
 
   useEffect(() => {
     if (initialTab && initialTab !== activeTab) {
@@ -108,14 +113,19 @@ export function ProfileDashboard({ currentUser, initialTab }: ProfileDashboardPr
         margin: 2,
         color: { dark: qrColor, light: qrBgColor },
         errorCorrectionLevel: 'H',
-      }).then(setQrDataUrl).catch(console.error)
+      })
+        .then(setQrDataUrl)
+        .catch(console.error)
     }
   }, [showQRModal, bioUrl, qrColor, qrBgColor])
 
-  const handleTabChange = useCallback((tab: TabType) => {
-    setActiveTab(tab)
-    void navigate({ to: '/profile', search: { tab } })
-  }, [navigate])
+  const handleTabChange = useCallback(
+    (tab: TabType) => {
+      setActiveTab(tab)
+      void navigate({ to: '/profile', search: { tab } })
+    },
+    [navigate],
+  )
 
   const { data: links = [] } = useQuery({
     queryKey: ['my-links'],
@@ -154,13 +164,19 @@ export function ProfileDashboard({ currentUser, initialTab }: ProfileDashboardPr
     setTimeout(() => setCopiedBioUrl(false), 2000)
   }, [bioUrl])
 
-  const updateField = useCallback(<K extends keyof ProfileFormData>(key: K, value: ProfileFormData[K]) => {
-    setFormData((prev) => ({ ...prev, [key]: value }))
-    setHasChanges(true)
-  }, [])
+  const updateField = useCallback(
+    <K extends keyof ProfileFormData>(key: K, value: ProfileFormData[K]) => {
+      setFormData((prev) => ({ ...prev, [key]: value }))
+      setHasChanges(true)
+    },
+    [],
+  )
 
   const updateSocial = useCallback((key: string, value: string) => {
-    setFormData((prev) => ({ ...prev, socials: { ...prev.socials, [key]: value } }))
+    setFormData((prev) => ({
+      ...prev,
+      socials: { ...prev.socials, [key]: value },
+    }))
     setHasChanges(true)
   }, [])
 
@@ -168,7 +184,8 @@ export function ProfileDashboard({ currentUser, initialTab }: ProfileDashboardPr
     setIsSaving(true)
     setSaveError(null)
     try {
-      const pronounsToSave = formData.pronouns === 'custom' ? customPronouns : formData.pronouns
+      const pronounsToSave =
+        formData.pronouns === 'custom' ? customPronouns : formData.pronouns
       await updateProfile({
         data: {
           name: formData.name || undefined,
@@ -178,17 +195,25 @@ export function ProfileDashboard({ currentUser, initialTab }: ProfileDashboardPr
           location: formData.location || undefined,
           pronouns: pronounsToSave || undefined,
           birthday: formData.birthday || undefined,
-          creatorTypes: formData.creatorTypes.length > 0 ? formData.creatorTypes : undefined,
+          creatorTypes:
+            formData.creatorTypes.length > 0
+              ? formData.creatorTypes
+              : undefined,
           isPublic: formData.isPublic,
           showActivity: formData.showActivity,
-          socials: Object.keys(formData.socials).length > 0 ? formData.socials : undefined,
+          socials:
+            Object.keys(formData.socials).length > 0
+              ? formData.socials
+              : undefined,
         },
       })
       setSaveSuccess(true)
       setHasChanges(false)
       setTimeout(() => setSaveSuccess(false), 3000)
     } catch (error) {
-      setSaveError((error as { message?: string }).message || t('dashboard.saveFailed'))
+      setSaveError(
+        (error as { message?: string }).message || t('dashboard.saveFailed'),
+      )
     } finally {
       setIsSaving(false)
     }
@@ -210,14 +235,24 @@ export function ProfileDashboard({ currentUser, initialTab }: ProfileDashboardPr
   const handleShare = async () => {
     if (navigator.share) {
       try {
-        await navigator.share({ title: `${currentUser.name || currentUser.username} on Eziox`, url: bioUrl })
-      } catch { /* cancelled */ }
+        await navigator.share({
+          title: `${currentUser.name || currentUser.username} on Eziox`,
+          url: bioUrl,
+        })
+      } catch {
+        /* cancelled */
+      }
     } else {
       await copyBioUrl()
     }
   }
 
-  const stats = currentUser.stats || { profileViews: 0, totalLinkClicks: 0, followers: 0, following: 0 }
+  const stats = currentUser.stats || {
+    profileViews: 0,
+    totalLinkClicks: 0,
+    followers: 0,
+    following: 0,
+  }
   const totalClicks = links.reduce((sum, link) => sum + (link.clicks || 0), 0)
   const referralCount = referralStats?.referralCount || 0
   const userBadges = (currentUser.profile?.badges || []) as string[]
@@ -278,7 +313,9 @@ export function ProfileDashboard({ currentUser, initialTab }: ProfileDashboardPr
             className="fixed top-24 left-1/2 z-50 px-6 py-3 rounded-2xl flex items-center gap-3 bg-green-500 shadow-lg shadow-green-500/25"
           >
             <CheckCircle className="w-5 h-5 text-white" />
-            <span className="text-white font-medium">{t('dashboard.saved')}</span>
+            <span className="text-white font-medium">
+              {t('dashboard.saved')}
+            </span>
           </motion.div>
         )}
         {saveError && (
@@ -310,7 +347,9 @@ export function ProfileDashboard({ currentUser, initialTab }: ProfileDashboardPr
                 <div
                   className="h-24 relative bg-linear-to-br from-primary to-accent"
                   style={{
-                    background: banner ? `url(${banner}) center/cover` : undefined,
+                    background: banner
+                      ? `url(${banner}) center/cover`
+                      : undefined,
                   }}
                 >
                   <div className="absolute inset-0 bg-linear-to-t from-background to-transparent" />
@@ -322,7 +361,9 @@ export function ProfileDashboard({ currentUser, initialTab }: ProfileDashboardPr
                     <div
                       className="w-20 h-20 overflow-hidden shrink-0 rounded-lg bg-linear-to-br from-primary to-accent shadow-[0_0_0_4px_var(--background)]"
                       style={{
-                        background: avatar ? `url(${avatar}) center/cover` : undefined,
+                        background: avatar
+                          ? `url(${avatar}) center/cover`
+                          : undefined,
                       }}
                     >
                       {!avatar && (
@@ -332,7 +373,10 @@ export function ProfileDashboard({ currentUser, initialTab }: ProfileDashboardPr
                       )}
                     </div>
                     <div className="flex-1 min-w-0 pb-1">
-                      <h2 className="font-semibold text-lg truncate text-foreground" style={{ fontFamily: 'var(--font-display)' }}>
+                      <h2
+                        className="font-semibold text-lg truncate text-foreground"
+                        style={{ fontFamily: 'var(--font-display)' }}
+                      >
                         {currentUser.name || 'Anonymous'}
                       </h2>
                       <p className="text-sm truncate text-foreground-muted">
@@ -348,7 +392,7 @@ export function ProfileDashboard({ currentUser, initialTab }: ProfileDashboardPr
                     </p>
                     <div className="flex items-center gap-2">
                       <div className="flex-1 px-3 py-2 text-sm font-mono truncate rounded-[calc(var(--radius)*0.3)] bg-background-secondary/30 text-primary">
-                        {typeof window !== 'undefined' ? (window.location.hostname === 'localhost' ? 'localhost:5173' : window.location.hostname) : 'eziox.link'}/{currentUser.username}
+                        {getAppHostname()}/{currentUser.username}
                       </div>
                       <button
                         onClick={copyBioUrl}
@@ -421,16 +465,67 @@ export function ProfileDashboard({ currentUser, initialTab }: ProfileDashboardPr
                 <p className="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-foreground-muted">
                   {t('dashboard.sidebar.quickLinks')}
                 </p>
-                <QuickLink to="/$username" params={{ username: currentUser.username }} icon={Globe} labelKey="dashboard.quickLinks.myBioPage" external t={t} />
-                <QuickLink to="/shortener" icon={Link2} labelKey="dashboard.quickLinks.shortener" t={t} />
-                <QuickLink to="/analytics" icon={BarChart3} labelKey="dashboard.quickLinks.analytics" t={t} />
-                <QuickLink to="/leaderboard" icon={TrendingUp} labelKey="dashboard.quickLinks.leaderboard" t={t} />
-                <QuickLink to="/playground" icon={Palette} labelKey="dashboard.quickLinks.playground" t={t} />
-                <QuickLink to="/theme-builder" icon={Paintbrush} labelKey="dashboard.quickLinks.themeBuilder" premium t={t} />
+                <QuickLink
+                  to="/$username"
+                  params={{ username: currentUser.username }}
+                  icon={Globe}
+                  labelKey="dashboard.quickLinks.myBioPage"
+                  external
+                  t={t}
+                />
+                <QuickLink
+                  to="/shortener"
+                  icon={Link2}
+                  labelKey="dashboard.quickLinks.shortener"
+                  t={t}
+                />
+                <QuickLink
+                  to="/analytics"
+                  icon={BarChart3}
+                  labelKey="dashboard.quickLinks.analytics"
+                  t={t}
+                />
+                <QuickLink
+                  to="/leaderboard"
+                  icon={TrendingUp}
+                  labelKey="dashboard.quickLinks.leaderboard"
+                  t={t}
+                />
+                <QuickLink
+                  to="/playground"
+                  icon={Palette}
+                  labelKey="dashboard.quickLinks.playground"
+                  t={t}
+                />
+                <QuickLink
+                  to="/theme-builder"
+                  icon={Paintbrush}
+                  labelKey="dashboard.quickLinks.themeBuilder"
+                  premium
+                  t={t}
+                />
+
+                <div className="my-3 border-t border-border/20" />
+                <p className="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-foreground-muted">
+                  {t('dashboard.sidebar.support')}
+                </p>
+                <QuickLink
+                  to="/support/tickets"
+                  icon={Shield}
+                  labelKey="dashboard.quickLinks.myTickets"
+                  t={t}
+                />
+                <QuickLink
+                  to="/support"
+                  icon={Globe}
+                  labelKey="dashboard.quickLinks.helpCenter"
+                  t={t}
+                />
               </div>
 
               {/* Admin Section */}
-              {(currentUser.role === 'admin' || currentUser.role === 'owner') && (
+              {(currentUser.role === 'admin' ||
+                currentUser.role === 'owner') && (
                 <div className="rounded-3xl overflow-hidden bg-white/[0.03] border border-red-500/20 backdrop-blur-xl p-3">
                   <p className="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-red-400 flex items-center gap-1.5">
                     <Crown size={12} />
@@ -443,17 +538,22 @@ export function ProfileDashboard({ currentUser, initialTab }: ProfileDashboardPr
                     <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-red-500/20">
                       <Shield size={18} className="text-red-400" />
                     </div>
-                    <span className="text-sm text-white">{t('dashboard.sidebar.adminPanel')}</span>
+                    <span className="text-sm text-white">
+                      {t('dashboard.sidebar.adminPanel')}
+                    </span>
                     <ChevronRight size={14} className="ml-auto text-white/30" />
                   </Link>
                   <Link
-                    to="/admin/partner-applications"
+                    to="/admin"
+                    search={{ tab: 'partners' }}
                     className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-teal-500/10 transition-colors"
                   >
                     <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-teal-500/20">
                       <Handshake size={18} className="text-teal-400" />
                     </div>
-                    <span className="text-sm text-white">{t('dashboard.sidebar.partnerApps')}</span>
+                    <span className="text-sm text-white">
+                      {t('dashboard.sidebar.partnerApps')}
+                    </span>
                     <ChevronRight size={14} className="ml-auto text-white/30" />
                   </Link>
                 </div>
@@ -469,10 +569,34 @@ export function ProfileDashboard({ currentUser, initialTab }: ProfileDashboardPr
               animate={{ opacity: 1, y: 0 }}
               className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6"
             >
-              <StatCard icon={Eye} label={t('dashboard.stats.profileViews')} value={stats.profileViews} gradient="from-blue-500 to-cyan-500" cardStyle={cardStyle} />
-              <StatCard icon={MousePointerClick} label={t('dashboard.stats.linkClicks')} value={totalClicks} gradient="from-green-500 to-emerald-500" cardStyle={cardStyle} />
-              <StatCard icon={Users} label={t('dashboard.stats.followers')} value={stats.followers} gradient="from-purple-500 to-pink-500" cardStyle={cardStyle} />
-              <StatCard icon={Gift} label={t('dashboard.stats.referrals')} value={referralCount} gradient="from-amber-500 to-orange-500" cardStyle={cardStyle} />
+              <StatCard
+                icon={Eye}
+                label={t('dashboard.stats.profileViews')}
+                value={stats.profileViews}
+                gradient="from-blue-500 to-cyan-500"
+                cardStyle={cardStyle}
+              />
+              <StatCard
+                icon={MousePointerClick}
+                label={t('dashboard.stats.linkClicks')}
+                value={totalClicks}
+                gradient="from-green-500 to-emerald-500"
+                cardStyle={cardStyle}
+              />
+              <StatCard
+                icon={Users}
+                label={t('dashboard.stats.followers')}
+                value={stats.followers}
+                gradient="from-purple-500 to-pink-500"
+                cardStyle={cardStyle}
+              />
+              <StatCard
+                icon={Gift}
+                label={t('dashboard.stats.referrals')}
+                value={referralCount}
+                gradient="from-amber-500 to-orange-500"
+                cardStyle={cardStyle}
+              />
             </motion.div>
 
             {/* Save Bar */}
@@ -485,7 +609,9 @@ export function ProfileDashboard({ currentUser, initialTab }: ProfileDashboardPr
                   className="mb-6"
                 >
                   <div className="p-4 rounded-lg flex items-center justify-between gap-4 bg-linear-to-r from-primary/10 to-accent/10 border border-primary/20">
-                    <p className="text-sm text-foreground-muted">{t('dashboard.unsavedChanges')}</p>
+                    <p className="text-sm text-foreground-muted">
+                      {t('dashboard.unsavedChanges')}
+                    </p>
                     <div className="flex items-center gap-2">
                       <button
                         onClick={handleCancel}
@@ -498,7 +624,11 @@ export function ProfileDashboard({ currentUser, initialTab }: ProfileDashboardPr
                         disabled={isSaving}
                         className="flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-semibold text-primary-foreground bg-linear-to-r from-primary to-accent hover:opacity-90 transition-all duration-(--animation-speed) disabled:opacity-50"
                       >
-                        {isSaving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+                        {isSaving ? (
+                          <Loader2 size={16} className="animate-spin" />
+                        ) : (
+                          <Save size={16} />
+                        )}
                         {isSaving ? t('dashboard.saving') : t('dashboard.save')}
                       </button>
                     </div>
@@ -524,8 +654,11 @@ export function ProfileDashboard({ currentUser, initialTab }: ProfileDashboardPr
                 />
               )}
               {activeTab === 'links' && <LinksTab key="links" />}
+              {activeTab === 'shortener' && <ShortenerTab key="shortener" />}
               {activeTab === 'widgets' && <WidgetsTab key="widgets" />}
-              {activeTab === 'integrations' && <IntegrationsTab key="integrations" />}
+              {activeTab === 'integrations' && (
+                <IntegrationsTab key="integrations" />
+              )}
               {activeTab === 'media' && <MediaLibraryTab key="media" />}
               {activeTab === 'referrals' && <ReferralsTab key="referrals" />}
               {activeTab === 'badges' && (
@@ -539,9 +672,13 @@ export function ProfileDashboard({ currentUser, initialTab }: ProfileDashboardPr
                   isStaff={currentUser.role === 'admin'}
                 />
               )}
-              {activeTab === 'subscription' && <SubscriptionTab key="subscription" />}
+              {activeTab === 'subscription' && (
+                <SubscriptionTab key="subscription" />
+              )}
               {activeTab === 'api' && <ApiAccessTab key="api" />}
-              {activeTab === 'settings' && <SettingsTab key="settings" currentUser={currentUser} />}
+              {activeTab === 'settings' && (
+                <SettingsTab key="settings" currentUser={currentUser} />
+              )}
               {activeTab === 'privacy' && (
                 <PrivacyTab key="privacy" currentUser={currentUser} />
               )}
@@ -571,39 +708,77 @@ export function ProfileDashboard({ currentUser, initialTab }: ProfileDashboardPr
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-white">{t('dashboard.qrCode.title')}</h3>
-                <button onClick={() => setShowQRModal(false)} className="p-2 rounded-lg hover:bg-white/10">
+                <h3 className="text-lg font-bold text-white">
+                  {t('dashboard.qrCode.title')}
+                </h3>
+                <button
+                  onClick={() => setShowQRModal(false)}
+                  className="p-2 rounded-lg hover:bg-white/10"
+                >
                   <X size={18} className="text-white/50" />
                 </button>
               </div>
 
               <div className="flex justify-center mb-4">
                 {qrDataUrl ? (
-                  <img src={qrDataUrl} alt="QR Code" className="w-48 h-48 rounded-xl" />
+                  <img
+                    src={qrDataUrl}
+                    alt="QR Code"
+                    className="w-48 h-48 rounded-xl"
+                  />
                 ) : (
                   <div className="w-48 h-48 rounded-xl animate-pulse bg-white/10" />
                 )}
               </div>
 
               <p className="text-center text-sm mb-4 font-mono text-purple-400">
-                {typeof window !== 'undefined' ? (window.location.hostname === 'localhost' ? 'localhost:5173' : window.location.hostname) : 'eziox.link'}/{currentUser.username}
+                {getAppHostname()}/{currentUser.username}
               </p>
 
               <div className="mb-4">
-                <p className="text-xs font-medium mb-2 text-white/50">{t('dashboard.qrCode.style')}</p>
+                <p className="text-xs font-medium mb-2 text-white/50">
+                  {t('dashboard.qrCode.style')}
+                </p>
                 <div className="flex gap-2 flex-wrap">
                   {[
-                    { fg: '#ffffff', bg: '#000000', label: t('dashboard.qrCode.classic') },
-                    { fg: '#000000', bg: '#ffffff', label: t('dashboard.qrCode.light') },
-                    { fg: '#8b5cf6', bg: '#1e1e2e', label: t('dashboard.qrCode.accent') },
-                    { fg: '#ec4899', bg: '#1e1e2e', label: t('dashboard.qrCode.pink') },
-                    { fg: '#22c55e', bg: '#0a0a0a', label: t('dashboard.qrCode.green') },
+                    {
+                      fg: '#ffffff',
+                      bg: '#000000',
+                      label: t('dashboard.qrCode.classic'),
+                    },
+                    {
+                      fg: '#000000',
+                      bg: '#ffffff',
+                      label: t('dashboard.qrCode.light'),
+                    },
+                    {
+                      fg: '#8b5cf6',
+                      bg: '#1e1e2e',
+                      label: t('dashboard.qrCode.accent'),
+                    },
+                    {
+                      fg: '#ec4899',
+                      bg: '#1e1e2e',
+                      label: t('dashboard.qrCode.pink'),
+                    },
+                    {
+                      fg: '#22c55e',
+                      bg: '#0a0a0a',
+                      label: t('dashboard.qrCode.green'),
+                    },
                   ].map((preset) => (
                     <button
                       key={preset.label}
-                      onClick={() => { setQrColor(preset.fg); setQrBgColor(preset.bg) }}
+                      onClick={() => {
+                        setQrColor(preset.fg)
+                        setQrBgColor(preset.bg)
+                      }}
                       className="px-2.5 py-1 rounded-lg text-xs font-medium transition-all hover:scale-105"
-                      style={{ background: preset.bg, color: preset.fg, border: `1px solid ${preset.fg}40` }}
+                      style={{
+                        background: preset.bg,
+                        color: preset.fg,
+                        border: `1px solid ${preset.fg}40`,
+                      }}
                     >
                       {preset.label}
                     </button>
@@ -663,12 +838,16 @@ function SidebarButton({
     >
       <div
         className={`w-9 h-9 rounded-lg flex items-center justify-center transition-colors duration-(--animation-speed) ${
-          isActive ? 'bg-linear-to-br from-primary to-accent' : 'bg-background-secondary/50'
+          isActive
+            ? 'bg-linear-to-br from-primary to-accent'
+            : 'bg-background-secondary/50'
         }`}
       >
         <Icon
           size={18}
-          className={isActive ? 'text-primary-foreground' : 'text-foreground-muted'}
+          className={
+            isActive ? 'text-primary-foreground' : 'text-foreground-muted'
+          }
         />
       </div>
       <span
@@ -683,7 +862,10 @@ function SidebarButton({
           {badge}
         </span>
       )}
-      <ChevronRight size={16} className={isActive ? 'text-primary' : 'text-transparent'} />
+      <ChevronRight
+        size={16}
+        className={isActive ? 'text-primary' : 'text-transparent'}
+      />
     </button>
   )
 }
@@ -715,12 +897,16 @@ function QuickLink({
     >
       <div
         className={`w-9 h-9 rounded-lg flex items-center justify-center ${
-          premium ? 'bg-linear-to-br from-primary to-accent' : 'bg-background-secondary/50'
+          premium
+            ? 'bg-linear-to-br from-primary to-accent'
+            : 'bg-background-secondary/50'
         }`}
       >
         <Icon
           size={18}
-          className={premium ? 'text-primary-foreground' : 'text-foreground-muted'}
+          className={
+            premium ? 'text-primary-foreground' : 'text-foreground-muted'
+          }
         />
       </div>
       <span className="text-sm text-foreground">{t(labelKey)}</span>
@@ -755,7 +941,10 @@ function StatCard({
       >
         <Icon size={20} className="text-white" />
       </div>
-      <p className="text-2xl font-bold text-foreground" style={{ fontFamily: 'var(--font-display)' }}>
+      <p
+        className="text-2xl font-bold text-foreground"
+        style={{ fontFamily: 'var(--font-display)' }}
+      >
         {value.toLocaleString()}
       </p>
       <p className="text-xs text-foreground-muted">{label}</p>
@@ -776,7 +965,9 @@ export function ProfileDashboardLoader() {
           <div className="w-16 h-16 rounded-full border-2 animate-spin border-border/20 border-t-primary" />
           <div className="absolute inset-0 w-16 h-16 rounded-full blur-xl bg-linear-to-br from-primary/30 to-accent/30" />
         </div>
-        <p className="text-sm mt-6 font-medium text-foreground-muted">Loading...</p>
+        <p className="text-sm mt-6 font-medium text-foreground-muted">
+          Loading...
+        </p>
       </motion.div>
     </div>
   )

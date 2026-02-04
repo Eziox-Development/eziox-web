@@ -21,6 +21,33 @@ interface EmailResult {
   error?: string
 }
 
+// Generic email sending function
+export async function sendEmail(params: {
+  to: string
+  subject: string
+  html: string
+  from?: string
+}): Promise<EmailResult> {
+  try {
+    const { error } = await getResend().emails.send({
+      from: params.from || FROM_EMAIL,
+      to: params.to,
+      subject: params.subject,
+      html: params.html,
+    })
+
+    if (error) {
+      console.error('[Email] Failed to send email:', error)
+      return { success: false, error: error.message }
+    }
+
+    return { success: true }
+  } catch (err) {
+    console.error('[Email] Error sending email:', err)
+    return { success: false, error: 'Failed to send email' }
+  }
+}
+
 export async function sendPasswordResetEmail(
   to: string,
   token: string,
@@ -543,15 +570,26 @@ export async function send2FADisabledEmail(
 
 export async function sendSubscriptionEmail(
   to: string,
-  username: string,
-  tier: string,
-  action: 'upgraded' | 'downgraded' | 'cancelled' | 'renewed',
+  action: 'upgraded' | 'downgraded' | 'cancelled' | 'renewed' | 'suspended' | 'payment_failed' | 'refunded',
+  data: {
+    username: string
+    tier: string
+    reason?: string
+    failedCount?: number
+    maxAttempts?: number
+    refundAmount?: string
+  },
 ): Promise<EmailResult> {
+  const { username, tier, reason, failedCount, maxAttempts, refundAmount } = data
+
   const titles: Record<typeof action, string> = {
     upgraded: `Welcome to ${tier}! 🎉`,
     downgraded: 'Subscription Changed',
     cancelled: 'Subscription Cancelled',
     renewed: `${tier} Renewed ✓`,
+    suspended: '⚠️ Subscription Suspended',
+    payment_failed: '⚠️ Payment Failed',
+    refunded: '💰 Refund Processed',
   }
 
   const subtitles: Record<typeof action, string> = {
@@ -559,6 +597,9 @@ export async function sendSubscriptionEmail(
     downgraded: `Hey @${username}, your subscription has been changed.`,
     cancelled: `Hey @${username}, your subscription has been cancelled.`,
     renewed: `Hey @${username}, your ${tier} subscription has been renewed.`,
+    suspended: `Hey @${username}, your subscription has been suspended.`,
+    payment_failed: `Hey @${username}, we couldn't process your payment.`,
+    refunded: `Hey @${username}, your refund has been processed.`,
   }
 
   const contents: Record<typeof action, string> = {
@@ -589,6 +630,43 @@ export async function sendSubscriptionEmail(
       <p style="margin: 0 0 16px; font-size: 14px; color: rgba(255, 255, 255, 0.7); line-height: 1.6;">
         Your ${tier} subscription has been renewed. Thank you for your continued support!
       </p>
+    `,
+    suspended: `
+      <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 12px; padding: 16px; margin-bottom: 24px;">
+        <p style="margin: 0; font-size: 14px; color: #ef4444; text-align: center;">
+          ⚠️ Your subscription has been suspended
+        </p>
+      </div>
+      <p style="margin: 0 0 16px; font-size: 14px; color: rgba(255, 255, 255, 0.7); line-height: 1.6;">
+        ${reason || 'Your subscription has been suspended due to payment issues.'}
+      </p>
+      <p style="margin: 0 0 16px; font-size: 14px; color: rgba(255, 255, 255, 0.7); line-height: 1.6;">
+        Your account has been downgraded to the free tier. To restore your ${tier} features, please update your payment method and resubscribe.
+      </p>
+    `,
+    payment_failed: `
+      <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 12px; padding: 16px; margin-bottom: 24px;">
+        <p style="margin: 0; font-size: 14px; color: #f59e0b; text-align: center;">
+          ⚠️ Payment attempt ${failedCount || 1} of ${maxAttempts || 3} failed
+        </p>
+      </div>
+      <p style="margin: 0 0 16px; font-size: 14px; color: rgba(255, 255, 255, 0.7); line-height: 1.6;">
+        We couldn't process your payment for your ${tier} subscription. Please update your payment method to avoid service interruption.
+      </p>
+      <p style="margin: 0 0 16px; font-size: 14px; color: rgba(255, 255, 255, 0.7); line-height: 1.6;">
+        <strong style="color: #ef4444;">After ${maxAttempts || 3} failed attempts, your subscription will be suspended.</strong>
+      </p>
+    `,
+    refunded: `
+      <div style="background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3); border-radius: 12px; padding: 16px; margin-bottom: 24px;">
+        <p style="margin: 0; font-size: 14px; color: #22c55e; text-align: center;">
+          ✓ Refund of ${refundAmount || 'your payment'} has been processed
+        </p>
+      </div>
+      <p style="margin: 0 0 16px; font-size: 14px; color: rgba(255, 255, 255, 0.7); line-height: 1.6;">
+        Your refund has been processed and should appear in your account within 5-10 business days, depending on your bank.
+      </p>
+      ${reason ? `<p style="margin: 0 0 16px; font-size: 14px; color: rgba(255, 255, 255, 0.7); line-height: 1.6;">Reason: ${reason}</p>` : ''}
     `,
   }
 
@@ -694,7 +772,7 @@ export async function sendWeeklyDigestEmail(
 }
 
 // Helper function to generate consistent email templates
-function generateEmailTemplate(options: {
+export function generateEmailTemplate(options: {
   title: string
   subtitle: string
   content: string

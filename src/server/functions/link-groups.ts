@@ -18,7 +18,10 @@ import { validateSession } from '../lib/auth'
 const createGroupSchema = z.object({
   name: z.string().min(1, 'Name is required').max(100),
   icon: z.string().max(50).optional(),
-  color: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(),
+  color: z
+    .string()
+    .regex(/^#[0-9A-Fa-f]{6}$/)
+    .optional(),
   isCollapsible: z.boolean().optional(),
   isCollapsed: z.boolean().optional(),
 })
@@ -27,7 +30,10 @@ const updateGroupSchema = z.object({
   id: z.uuid(),
   name: z.string().min(1).max(100).optional(),
   icon: z.string().max(50).optional(),
-  color: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(),
+  color: z
+    .string()
+    .regex(/^#[0-9A-Fa-f]{6}$/)
+    .optional(),
   isCollapsible: z.boolean().optional(),
   isCollapsed: z.boolean().optional(),
   order: z.number().int().min(0).optional(),
@@ -43,7 +49,7 @@ const reorderGroupsSchema = z.object({
     z.object({
       id: z.uuid(),
       order: z.number().int().min(0),
-    })
+    }),
   ),
 })
 
@@ -75,51 +81,51 @@ export const getMyLinkGroupsFn = createServerFn({ method: 'GET' }).handler(
       .orderBy(asc(linkGroups.order))
 
     return groups
-  }
+  },
 )
 
 // ============================================================================
 // Get Link Groups with Links
 // ============================================================================
 
-export const getLinkGroupsWithLinksFn = createServerFn({ method: 'GET' }).handler(
-  async () => {
-    const token = getCookie('session-token')
-    if (!token) {
-      return { groups: [], ungroupedLinks: [] }
-    }
-
-    const user = await validateSession(token)
-    if (!user) {
-      return { groups: [], ungroupedLinks: [] }
-    }
-
-    // Get all groups
-    const groups = await db
-      .select()
-      .from(linkGroups)
-      .where(eq(linkGroups.userId, user.id))
-      .orderBy(asc(linkGroups.order))
-
-    // Get all links
-    const links = await db
-      .select()
-      .from(userLinks)
-      .where(eq(userLinks.userId, user.id))
-      .orderBy(asc(userLinks.order))
-
-    // Organize links by group
-    const groupedLinks = groups.map((group) => ({
-      ...group,
-      links: links.filter((link) => link.groupId === group.id),
-    }))
-
-    // Get ungrouped links
-    const ungroupedLinks = links.filter((link) => !link.groupId)
-
-    return { groups: groupedLinks, ungroupedLinks }
+export const getLinkGroupsWithLinksFn = createServerFn({
+  method: 'GET',
+}).handler(async () => {
+  const token = getCookie('session-token')
+  if (!token) {
+    return { groups: [], ungroupedLinks: [] }
   }
-)
+
+  const user = await validateSession(token)
+  if (!user) {
+    return { groups: [], ungroupedLinks: [] }
+  }
+
+  // Get all groups
+  const groups = await db
+    .select()
+    .from(linkGroups)
+    .where(eq(linkGroups.userId, user.id))
+    .orderBy(asc(linkGroups.order))
+
+  // Get all links
+  const links = await db
+    .select()
+    .from(userLinks)
+    .where(eq(userLinks.userId, user.id))
+    .orderBy(asc(userLinks.order))
+
+  // Organize links by group
+  const groupedLinks = groups.map((group) => ({
+    ...group,
+    links: links.filter((link) => link.groupId === group.id),
+  }))
+
+  // Get ungrouped links
+  const ungroupedLinks = links.filter((link) => !link.groupId)
+
+  return { groups: groupedLinks, ungroupedLinks }
+})
 
 // ============================================================================
 // Get Public Link Groups (for bio page)
@@ -139,7 +145,9 @@ export const getPublicLinkGroupsFn = createServerFn({ method: 'GET' })
     const links = await db
       .select()
       .from(userLinks)
-      .where(and(eq(userLinks.userId, data.userId), eq(userLinks.isActive, true)))
+      .where(
+        and(eq(userLinks.userId, data.userId), eq(userLinks.isActive, true)),
+      )
       .orderBy(asc(userLinks.order))
 
     // Organize links by group

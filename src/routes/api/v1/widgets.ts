@@ -11,7 +11,15 @@ import { eq, asc, sql } from 'drizzle-orm'
 import { validateApiKey, logApiRequest } from '@/server/functions/api-keys'
 import type { ApiKeyPermissions } from '@/server/functions/api-keys'
 
-const VALID_WIDGET_TYPES = ['weather', 'countdown', 'youtube', 'soundcloud', 'twitch', 'github', 'socialFeed']
+const VALID_WIDGET_TYPES = [
+  'weather',
+  'countdown',
+  'youtube',
+  'soundcloud',
+  'twitch',
+  'github',
+  'socialFeed',
+]
 
 export const Route = createFileRoute('/api/v1/widgets')({
   server: {
@@ -22,8 +30,11 @@ export const Route = createFileRoute('/api/v1/widgets')({
 
         if (!authHeader?.startsWith('Bearer ')) {
           return new Response(
-            JSON.stringify({ error: 'Missing or invalid Authorization header', code: 'UNAUTHORIZED' }),
-            { status: 401, headers: { 'Content-Type': 'application/json' } }
+            JSON.stringify({
+              error: 'Missing or invalid Authorization header',
+              code: 'UNAUTHORIZED',
+            }),
+            { status: 401, headers: { 'Content-Type': 'application/json' } },
           )
         }
 
@@ -32,17 +43,29 @@ export const Route = createFileRoute('/api/v1/widgets')({
 
         if (!validation.valid || !validation.apiKey) {
           return new Response(
-            JSON.stringify({ error: validation.error || 'Invalid API key', code: 'INVALID_API_KEY' }),
-            { status: 401, headers: { 'Content-Type': 'application/json' } }
+            JSON.stringify({
+              error: validation.error || 'Invalid API key',
+              code: 'INVALID_API_KEY',
+            }),
+            { status: 401, headers: { 'Content-Type': 'application/json' } },
           )
         }
 
         const permissions = validation.apiKey.permissions as ApiKeyPermissions
         if (!permissions.profile?.read) {
-          await logApiRequest(validation.apiKey.id, '/api/v1/widgets', 'GET', 403, Date.now() - startTime)
+          await logApiRequest(
+            validation.apiKey.id,
+            '/api/v1/widgets',
+            'GET',
+            403,
+            Date.now() - startTime,
+          )
           return new Response(
-            JSON.stringify({ error: 'API key lacks profile:read permission', code: 'FORBIDDEN' }),
-            { status: 403, headers: { 'Content-Type': 'application/json' } }
+            JSON.stringify({
+              error: 'API key lacks profile:read permission',
+              code: 'FORBIDDEN',
+            }),
+            { status: 403, headers: { 'Content-Type': 'application/json' } },
           )
         }
 
@@ -63,7 +86,13 @@ export const Route = createFileRoute('/api/v1/widgets')({
             .where(eq(profileWidgets.userId, validation.apiKey.userId))
             .orderBy(asc(profileWidgets.order))
 
-          await logApiRequest(validation.apiKey.id, '/api/v1/widgets', 'GET', 200, Date.now() - startTime)
+          await logApiRequest(
+            validation.apiKey.id,
+            '/api/v1/widgets',
+            'GET',
+            200,
+            Date.now() - startTime,
+          )
 
           return new Response(
             JSON.stringify({
@@ -80,14 +109,26 @@ export const Route = createFileRoute('/api/v1/widgets')({
               })),
               total: widgets.length,
             }),
-            { status: 200, headers: { 'Content-Type': 'application/json' } }
+            { status: 200, headers: { 'Content-Type': 'application/json' } },
           )
         } catch (error) {
           console.error('API Error [GET /api/v1/widgets]:', error)
-          await logApiRequest(validation.apiKey.id, '/api/v1/widgets', 'GET', 500, Date.now() - startTime, undefined, undefined, String(error))
+          await logApiRequest(
+            validation.apiKey.id,
+            '/api/v1/widgets',
+            'GET',
+            500,
+            Date.now() - startTime,
+            undefined,
+            undefined,
+            String(error),
+          )
           return new Response(
-            JSON.stringify({ error: 'Internal server error', code: 'INTERNAL_ERROR' }),
-            { status: 500, headers: { 'Content-Type': 'application/json' } }
+            JSON.stringify({
+              error: 'Internal server error',
+              code: 'INTERNAL_ERROR',
+            }),
+            { status: 500, headers: { 'Content-Type': 'application/json' } },
           )
         }
       },
@@ -98,8 +139,11 @@ export const Route = createFileRoute('/api/v1/widgets')({
 
         if (!authHeader?.startsWith('Bearer ')) {
           return new Response(
-            JSON.stringify({ error: 'Missing or invalid Authorization header', code: 'UNAUTHORIZED' }),
-            { status: 401, headers: { 'Content-Type': 'application/json' } }
+            JSON.stringify({
+              error: 'Missing or invalid Authorization header',
+              code: 'UNAUTHORIZED',
+            }),
+            { status: 401, headers: { 'Content-Type': 'application/json' } },
           )
         }
 
@@ -108,45 +152,74 @@ export const Route = createFileRoute('/api/v1/widgets')({
 
         if (!validation.valid || !validation.apiKey) {
           return new Response(
-            JSON.stringify({ error: validation.error || 'Invalid API key', code: 'INVALID_API_KEY' }),
-            { status: 401, headers: { 'Content-Type': 'application/json' } }
+            JSON.stringify({
+              error: validation.error || 'Invalid API key',
+              code: 'INVALID_API_KEY',
+            }),
+            { status: 401, headers: { 'Content-Type': 'application/json' } },
           )
         }
 
         const permissions = validation.apiKey.permissions as ApiKeyPermissions
         if (!permissions.profile?.write) {
-          await logApiRequest(validation.apiKey.id, '/api/v1/widgets', 'POST', 403, Date.now() - startTime)
+          await logApiRequest(
+            validation.apiKey.id,
+            '/api/v1/widgets',
+            'POST',
+            403,
+            Date.now() - startTime,
+          )
           return new Response(
-            JSON.stringify({ error: 'API key lacks profile:write permission', code: 'FORBIDDEN' }),
-            { status: 403, headers: { 'Content-Type': 'application/json' } }
+            JSON.stringify({
+              error: 'API key lacks profile:write permission',
+              code: 'FORBIDDEN',
+            }),
+            { status: 403, headers: { 'Content-Type': 'application/json' } },
           )
         }
 
         try {
-          const body = await request.json() as Record<string, unknown>
+          const body = (await request.json()) as Record<string, unknown>
 
           if (!body.type || typeof body.type !== 'string') {
-            await logApiRequest(validation.apiKey.id, '/api/v1/widgets', 'POST', 400, Date.now() - startTime)
+            await logApiRequest(
+              validation.apiKey.id,
+              '/api/v1/widgets',
+              'POST',
+              400,
+              Date.now() - startTime,
+            )
             return new Response(
-              JSON.stringify({ error: 'type is required', code: 'BAD_REQUEST' }),
-              { status: 400, headers: { 'Content-Type': 'application/json' } }
+              JSON.stringify({
+                error: 'type is required',
+                code: 'BAD_REQUEST',
+              }),
+              { status: 400, headers: { 'Content-Type': 'application/json' } },
             )
           }
 
           if (!VALID_WIDGET_TYPES.includes(body.type)) {
-            await logApiRequest(validation.apiKey.id, '/api/v1/widgets', 'POST', 400, Date.now() - startTime)
+            await logApiRequest(
+              validation.apiKey.id,
+              '/api/v1/widgets',
+              'POST',
+              400,
+              Date.now() - startTime,
+            )
             return new Response(
-              JSON.stringify({ 
-                error: `Invalid widget type. Valid types: ${VALID_WIDGET_TYPES.join(', ')}`, 
-                code: 'BAD_REQUEST' 
+              JSON.stringify({
+                error: `Invalid widget type. Valid types: ${VALID_WIDGET_TYPES.join(', ')}`,
+                code: 'BAD_REQUEST',
               }),
-              { status: 400, headers: { 'Content-Type': 'application/json' } }
+              { status: 400, headers: { 'Content-Type': 'application/json' } },
             )
           }
 
           // Get max order
           const [maxOrder] = await db
-            .select({ max: sql<number>`COALESCE(MAX(${profileWidgets.order}), -1)` })
+            .select({
+              max: sql<number>`COALESCE(MAX(${profileWidgets.order}), -1)`,
+            })
             .from(profileWidgets)
             .where(eq(profileWidgets.userId, validation.apiKey.userId))
 
@@ -155,14 +228,27 @@ export const Route = createFileRoute('/api/v1/widgets')({
             .values({
               userId: validation.apiKey.userId,
               type: body.type,
-              title: typeof body.title === 'string' ? body.title.slice(0, 100) : null,
-              isActive: typeof body.isActive === 'boolean' ? body.isActive : true,
+              title:
+                typeof body.title === 'string'
+                  ? body.title.slice(0, 100)
+                  : null,
+              isActive:
+                typeof body.isActive === 'boolean' ? body.isActive : true,
               order: (maxOrder?.max ?? -1) + 1,
-              config: typeof body.config === 'object' && body.config !== null ? body.config as Record<string, unknown> : undefined,
+              config:
+                typeof body.config === 'object' && body.config !== null
+                  ? (body.config as Record<string, unknown>)
+                  : undefined,
             })
             .returning()
 
-          await logApiRequest(validation.apiKey.id, '/api/v1/widgets', 'POST', 201, Date.now() - startTime)
+          await logApiRequest(
+            validation.apiKey.id,
+            '/api/v1/widgets',
+            'POST',
+            201,
+            Date.now() - startTime,
+          )
 
           return new Response(
             JSON.stringify({
@@ -177,14 +263,26 @@ export const Route = createFileRoute('/api/v1/widgets')({
                 createdAt: newWidget?.createdAt,
               },
             }),
-            { status: 201, headers: { 'Content-Type': 'application/json' } }
+            { status: 201, headers: { 'Content-Type': 'application/json' } },
           )
         } catch (error) {
           console.error('API Error [POST /api/v1/widgets]:', error)
-          await logApiRequest(validation.apiKey.id, '/api/v1/widgets', 'POST', 500, Date.now() - startTime, undefined, undefined, String(error))
+          await logApiRequest(
+            validation.apiKey.id,
+            '/api/v1/widgets',
+            'POST',
+            500,
+            Date.now() - startTime,
+            undefined,
+            undefined,
+            String(error),
+          )
           return new Response(
-            JSON.stringify({ error: 'Internal server error', code: 'INTERNAL_ERROR' }),
-            { status: 500, headers: { 'Content-Type': 'application/json' } }
+            JSON.stringify({
+              error: 'Internal server error',
+              code: 'INTERNAL_ERROR',
+            }),
+            { status: 500, headers: { 'Content-Type': 'application/json' } },
           )
         }
       },

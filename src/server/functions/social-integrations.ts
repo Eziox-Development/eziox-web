@@ -1,6 +1,10 @@
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
-import { getCookie, setCookie, setResponseStatus } from '@tanstack/react-start/server'
+import {
+  getCookie,
+  setCookie,
+  setResponseStatus,
+} from '@tanstack/react-start/server'
 import { db } from '../db'
 import { socialIntegrations } from '../db/schema'
 import { eq, and } from 'drizzle-orm'
@@ -22,7 +26,12 @@ async function getAuthenticatedUser() {
 }
 
 // Supported platforms with easy OAuth APIs
-export const SUPPORTED_PLATFORMS = ['discord', 'steam', 'twitch', 'github'] as const
+export const SUPPORTED_PLATFORMS = [
+  'discord',
+  'steam',
+  'twitch',
+  'github',
+] as const
 export type SupportedPlatform = (typeof SUPPORTED_PLATFORMS)[number]
 
 // Platform configurations
@@ -82,7 +91,9 @@ const getClientCredentials = (platform: SupportedPlatform) => {
   return {
     clientId: process.env[`${envPrefix}_CLIENT_ID`] || '',
     clientSecret: process.env[`${envPrefix}_CLIENT_SECRET`] || '',
-    redirectUri: process.env[`${envPrefix}_REDIRECT_URI`] || `${baseUrl}/api/auth/callback/${platform}`,
+    redirectUri:
+      process.env[`${envPrefix}_REDIRECT_URI`] ||
+      `${baseUrl}/api/auth/callback/${platform}`,
   }
 }
 
@@ -119,7 +130,8 @@ export const getOAuthUrlFn = createServerFn({ method: 'GET' })
         'openid.return_to': `${credentials.redirectUri}?state=${state}`,
         'openid.realm': process.env.APP_URL || 'https://eziox.link',
         'openid.identity': 'http://specs.openid.net/auth/2.0/identifier_select',
-        'openid.claimed_id': 'http://specs.openid.net/auth/2.0/identifier_select',
+        'openid.claimed_id':
+          'http://specs.openid.net/auth/2.0/identifier_select',
       })
       return { url: `${config.authUrl}?${params.toString()}` }
     }
@@ -138,7 +150,11 @@ export const getOAuthUrlFn = createServerFn({ method: 'GET' })
 async function exchangeCodeForTokens(
   platform: SupportedPlatform,
   code: string,
-): Promise<{ accessToken: string; refreshToken?: string; expiresIn?: number } | null> {
+): Promise<{
+  accessToken: string
+  refreshToken?: string
+  expiresIn?: number
+} | null> {
   const config = PLATFORM_CONFIG[platform]
   const credentials = getClientCredentials(platform)
 
@@ -170,7 +186,10 @@ async function exchangeCodeForTokens(
     })
 
     if (!response.ok) {
-      console.error(`Failed to exchange ${platform} code:`, await response.text())
+      console.error(
+        `Failed to exchange ${platform} code:`,
+        await response.text(),
+      )
       return null
     }
 
@@ -189,7 +208,12 @@ async function exchangeCodeForTokens(
 async function fetchPlatformUser(
   platform: SupportedPlatform,
   accessToken: string,
-): Promise<{ id: string; username: string; avatar?: string; metadata?: Record<string, unknown> } | null> {
+): Promise<{
+  id: string
+  username: string
+  avatar?: string
+  metadata?: Record<string, unknown>
+} | null> {
   const config = PLATFORM_CONFIG[platform]
   const credentials = getClientCredentials(platform)
 
@@ -203,8 +227,13 @@ async function fetchPlatformUser(
       return {
         id: responseData.id,
         username: responseData.username,
-        avatar: responseData.avatar ? `https://cdn.discordapp.com/avatars/${responseData.id}/${responseData.avatar}.png` : undefined,
-        metadata: { discriminator: responseData.discriminator, globalName: responseData.global_name },
+        avatar: responseData.avatar
+          ? `https://cdn.discordapp.com/avatars/${responseData.id}/${responseData.avatar}.png`
+          : undefined,
+        metadata: {
+          discriminator: responseData.discriminator,
+          globalName: responseData.global_name,
+        },
       }
     }
 
@@ -221,7 +250,10 @@ async function fetchPlatformUser(
         id: steamId,
         username: player.personaname,
         avatar: player.avatarfull,
-        metadata: { profileUrl: player.profileurl, personaState: player.personastate },
+        metadata: {
+          profileUrl: player.profileurl,
+          personaState: player.personastate,
+        },
       }
     }
 
@@ -240,7 +272,10 @@ async function fetchPlatformUser(
         id: twitchUser.id,
         username: twitchUser.login,
         avatar: twitchUser.profile_image_url,
-        metadata: { displayName: twitchUser.display_name, broadcasterType: twitchUser.broadcaster_type },
+        metadata: {
+          displayName: twitchUser.display_name,
+          broadcasterType: twitchUser.broadcaster_type,
+        },
       }
     }
 
@@ -254,7 +289,11 @@ async function fetchPlatformUser(
         id: String(responseData.id),
         username: responseData.login,
         avatar: responseData.avatar_url,
-        metadata: { name: responseData.name, bio: responseData.bio, publicRepos: responseData.public_repos },
+        metadata: {
+          name: responseData.name,
+          bio: responseData.bio,
+          publicRepos: responseData.public_repos,
+        },
       }
     }
 
@@ -316,7 +355,9 @@ export const handleOAuthCallbackFn = createServerFn({ method: 'POST' })
           platformUserId: platformUser.id,
           platformUsername: platformUser.username,
           accessToken: encrypt(tokens.accessToken),
-          refreshToken: tokens.refreshToken ? encrypt(tokens.refreshToken) : null,
+          refreshToken: tokens.refreshToken
+            ? encrypt(tokens.refreshToken)
+            : null,
           expiresAt,
           metadata: platformUser.metadata,
           updatedAt: new Date(),
@@ -345,31 +386,31 @@ export const handleOAuthCallbackFn = createServerFn({ method: 'POST' })
   })
 
 // Get user's connected platforms
-export const getConnectedPlatformsFn = createServerFn({ method: 'GET' }).handler(
-  async () => {
-    const user = await getAuthenticatedUser()
+export const getConnectedPlatformsFn = createServerFn({
+  method: 'GET',
+}).handler(async () => {
+  const user = await getAuthenticatedUser()
 
-    const integrations = await db
-      .select({
-        id: socialIntegrations.id,
-        platform: socialIntegrations.platform,
-        platformUsername: socialIntegrations.platformUsername,
-        showOnProfile: socialIntegrations.showOnProfile,
-        metadata: socialIntegrations.metadata,
-        createdAt: socialIntegrations.createdAt,
-      })
-      .from(socialIntegrations)
-      .where(eq(socialIntegrations.userId, user.id))
+  const integrations = await db
+    .select({
+      id: socialIntegrations.id,
+      platform: socialIntegrations.platform,
+      platformUsername: socialIntegrations.platformUsername,
+      showOnProfile: socialIntegrations.showOnProfile,
+      metadata: socialIntegrations.metadata,
+      createdAt: socialIntegrations.createdAt,
+    })
+    .from(socialIntegrations)
+    .where(eq(socialIntegrations.userId, user.id))
 
-    return {
-      integrations: integrations.map((i) => ({
-        ...i,
-        metadata: i.metadata as Record<string, string | number | boolean> | null,
-        config: PLATFORM_CONFIG[i.platform as SupportedPlatform],
-      })),
-    }
-  },
-)
+  return {
+    integrations: integrations.map((i) => ({
+      ...i,
+      metadata: i.metadata as Record<string, string | number | boolean> | null,
+      config: PLATFORM_CONFIG[i.platform as SupportedPlatform],
+    })),
+  }
+})
 
 // Disconnect a platform
 export const disconnectPlatformFn = createServerFn({ method: 'POST' })
@@ -391,7 +432,9 @@ export const disconnectPlatformFn = createServerFn({ method: 'POST' })
 
 // Toggle show on profile
 export const toggleShowOnProfileFn = createServerFn({ method: 'POST' })
-  .inputValidator(z.object({ platform: z.enum(SUPPORTED_PLATFORMS), show: z.boolean() }))
+  .inputValidator(
+    z.object({ platform: z.enum(SUPPORTED_PLATFORMS), show: z.boolean() }),
+  )
   .handler(async ({ data }) => {
     const user = await getAuthenticatedUser()
 
@@ -409,23 +452,23 @@ export const toggleShowOnProfileFn = createServerFn({ method: 'POST' })
   })
 
 // Get available platforms (with configuration status)
-export const getAvailablePlatformsFn = createServerFn({ method: 'GET' }).handler(
-  async () => {
-    return {
-      platforms: SUPPORTED_PLATFORMS.map((platform) => {
-        const credentials = getClientCredentials(platform)
-        const config = PLATFORM_CONFIG[platform]
-        return {
-          id: platform,
-          name: config.name,
-          color: config.color,
-          icon: config.icon,
-          configured: !!credentials.clientId,
-        }
-      }),
-    }
-  },
-)
+export const getAvailablePlatformsFn = createServerFn({
+  method: 'GET',
+}).handler(async () => {
+  return {
+    platforms: SUPPORTED_PLATFORMS.map((platform) => {
+      const credentials = getClientCredentials(platform)
+      const config = PLATFORM_CONFIG[platform]
+      return {
+        id: platform,
+        name: config.name,
+        color: config.color,
+        icon: config.icon,
+        configured: !!credentials.clientId,
+      }
+    }),
+  }
+})
 
 // Get public integrations for a user (for bio page)
 export const getPublicIntegrationsFn = createServerFn({ method: 'GET' })
@@ -448,7 +491,10 @@ export const getPublicIntegrationsFn = createServerFn({ method: 'GET' })
     return {
       integrations: integrations.map((i) => ({
         ...i,
-        metadata: i.metadata as Record<string, string | number | boolean> | null,
+        metadata: i.metadata as Record<
+          string,
+          string | number | boolean
+        > | null,
         config: PLATFORM_CONFIG[i.platform as SupportedPlatform],
       })),
     }

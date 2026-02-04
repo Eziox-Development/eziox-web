@@ -4,6 +4,13 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
 import { useTranslation } from 'react-i18next'
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import {
   getMyWidgetsFn,
   getWidgetTypesFn,
   createWidgetFn,
@@ -91,8 +98,11 @@ export function WidgetsTab() {
   })
 
   const createMutation = useMutation({
-    mutationFn: (data: { type: string; title?: string; config?: Record<string, unknown> }) =>
-      createWidget({ data }),
+    mutationFn: (data: {
+      type: string
+      title?: string
+      config?: Record<string, unknown>
+    }) => createWidget({ data }),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['my-widgets'] })
       setIsAddingWidget(false)
@@ -101,8 +111,12 @@ export function WidgetsTab() {
   })
 
   const updateMutation = useMutation({
-    mutationFn: (data: { id: string; title?: string; isActive?: boolean; config?: Record<string, unknown> }) =>
-      updateWidget({ data }),
+    mutationFn: (data: {
+      id: string
+      title?: string
+      isActive?: boolean
+      config?: Record<string, unknown>
+    }) => updateWidget({ data }),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['my-widgets'] })
       setEditingWidget(null)
@@ -166,8 +180,15 @@ export function WidgetsTab() {
     >
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-bold text-foreground">{t('dashboard.widgets.title', 'Profile Widgets')}</h2>
-          <p className="text-sm text-foreground-muted">{t('dashboard.widgets.description', 'Add interactive widgets to your bio page')}</p>
+          <h2 className="text-xl font-bold text-foreground">
+            {t('dashboard.widgets.title', 'Profile Widgets')}
+          </h2>
+          <p className="text-sm text-foreground-muted">
+            {t(
+              'dashboard.widgets.description',
+              'Add interactive widgets to your bio page',
+            )}
+          </p>
         </div>
         <motion.button
           onClick={() => setIsAddingWidget(true)}
@@ -190,8 +211,16 @@ export function WidgetsTab() {
             className="overflow-hidden rounded-lg bg-card/10 border border-border/20"
           >
             <div className="p-5 flex items-center justify-between border-b border-border/20">
-              <h3 className="font-bold text-foreground">{t('dashboard.widgets.selectWidget', 'Select Widget Type')}</h3>
-              <button onClick={() => { setIsAddingWidget(false); setSelectedType(null) }} className="p-2 rounded-lg hover:bg-background-secondary transition-colors">
+              <h3 className="font-bold text-foreground">
+                {t('dashboard.widgets.selectWidget', 'Select Widget Type')}
+              </h3>
+              <button
+                onClick={() => {
+                  setIsAddingWidget(false)
+                  setSelectedType(null)
+                }}
+                className="p-2 rounded-lg hover:bg-background-secondary transition-colors"
+              >
                 <X size={18} className="text-foreground-muted" />
               </button>
             </div>
@@ -206,8 +235,8 @@ export function WidgetsTab() {
                       selectedType === type.id
                         ? 'border-primary bg-primary/10'
                         : type.available
-                        ? 'border-border/50 hover:border-border hover:bg-background-secondary/30'
-                        : 'border-border/30 opacity-50 cursor-not-allowed'
+                          ? 'border-border/50 hover:border-border hover:bg-background-secondary/30'
+                          : 'border-border/30 opacity-50 cursor-not-allowed'
                     }`}
                   >
                     {type.premium && !type.available && (
@@ -215,9 +244,21 @@ export function WidgetsTab() {
                         <Crown size={14} className="text-amber-400" />
                       </div>
                     )}
-                    <div className="mb-2">{(() => { const Icon = REACT_ICON_MAP[type.icon] || LUCIDE_ICON_MAP[type.icon] || Package; return <Icon size={24} className="text-foreground" /> })()}</div>
-                    <p className="font-medium text-foreground text-sm">{type.name}</p>
-                    <p className="text-xs text-foreground-muted mt-1 line-clamp-2">{type.description}</p>
+                    <div className="mb-2">
+                      {(() => {
+                        const Icon =
+                          REACT_ICON_MAP[type.icon] ||
+                          LUCIDE_ICON_MAP[type.icon] ||
+                          Package
+                        return <Icon size={24} className="text-foreground" />
+                      })()}
+                    </div>
+                    <p className="font-medium text-foreground text-sm">
+                      {type.name}
+                    </p>
+                    <p className="text-xs text-foreground-muted mt-1 line-clamp-2">
+                      {type.description}
+                    </p>
                   </button>
                 ))}
               </div>
@@ -226,7 +267,11 @@ export function WidgetsTab() {
                 disabled={!selectedType || createMutation.isPending}
                 className="w-full py-3 rounded-xl font-medium text-primary-foreground bg-linear-to-r from-primary to-accent disabled:opacity-50 flex items-center justify-center gap-2"
               >
-                {createMutation.isPending ? <Loader2 size={18} className="animate-spin" /> : <Plus size={18} />}
+                {createMutation.isPending ? (
+                  <Loader2 size={18} className="animate-spin" />
+                ) : (
+                  <Plus size={18} />
+                )}
                 {t('dashboard.widgets.addWidget', 'Add Widget')}
               </button>
             </div>
@@ -241,34 +286,64 @@ export function WidgetsTab() {
         </div>
       ) : widgets.length === 0 ? (
         <div className="rounded-lg overflow-hidden bg-card/50 border border-border p-12 text-center">
-          <div className="mb-4"><Package size={48} className="mx-auto text-foreground-muted" /></div>
-          <p className="text-foreground-muted mb-2">{t('dashboard.widgets.noWidgets', 'No widgets yet')}</p>
-          <p className="text-sm text-foreground-muted/50">{t('dashboard.widgets.addFirst', 'Add your first widget to enhance your bio page')}</p>
+          <div className="mb-4">
+            <Package size={48} className="mx-auto text-foreground-muted" />
+          </div>
+          <p className="text-foreground-muted mb-2">
+            {t('dashboard.widgets.noWidgets', 'No widgets yet')}
+          </p>
+          <p className="text-sm text-foreground-muted/50">
+            {t(
+              'dashboard.widgets.addFirst',
+              'Add your first widget to enhance your bio page',
+            )}
+          </p>
         </div>
       ) : (
-        <Reorder.Group axis="y" values={widgets} onReorder={handleReorder} className="space-y-3">
+        <Reorder.Group
+          axis="y"
+          values={widgets}
+          onReorder={handleReorder}
+          className="space-y-3"
+        >
           {widgets.map((widget) => (
             <Reorder.Item
               key={widget.id}
               value={widget}
               className={`rounded-lg overflow-hidden border cursor-grab active:cursor-grabbing transition-opacity ${
-                widget.isActive ? 'bg-card/50 border-border' : 'bg-card/20 border-border/50 opacity-60'
+                widget.isActive
+                  ? 'bg-card/50 border-border'
+                  : 'bg-card/20 border-border/50 opacity-60'
               }`}
             >
               <div className="p-4 flex items-center gap-4">
-                <GripVertical size={20} className="text-foreground-muted/50 shrink-0" />
+                <GripVertical
+                  size={20}
+                  className="text-foreground-muted/50 shrink-0"
+                />
                 <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-background-secondary/50">
-                  {(() => { const Icon = getWidgetIcon(widget.type); return <Icon size={24} className="text-foreground" /> })()}
+                  {(() => {
+                    const Icon = getWidgetIcon(widget.type)
+                    return <Icon size={24} className="text-foreground" />
+                  })()}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-medium text-foreground truncate">{widget.title || getWidgetName(widget.type)}</p>
-                  <p className="text-sm text-foreground-muted truncate">{getWidgetName(widget.type)}</p>
+                  <p className="font-medium text-foreground truncate">
+                    {widget.title || getWidgetName(widget.type)}
+                  </p>
+                  <p className="text-sm text-foreground-muted truncate">
+                    {getWidgetName(widget.type)}
+                  </p>
                 </div>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => handleToggleActive(widget as Widget)}
                     className={`p-2 rounded-lg transition-colors ${widget.isActive ? 'text-green-400 hover:bg-green-500/20' : 'text-foreground-muted hover:bg-background-secondary'}`}
-                    title={widget.isActive ? t('dashboard.widgets.deactivate', 'Deactivate') : t('dashboard.widgets.activate', 'Activate')}
+                    title={
+                      widget.isActive
+                        ? t('dashboard.widgets.deactivate', 'Deactivate')
+                        : t('dashboard.widgets.activate', 'Activate')
+                    }
                   >
                     {widget.isActive ? <Eye size={18} /> : <EyeOff size={18} />}
                   </button>
@@ -309,25 +384,46 @@ export function WidgetsTab() {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-foreground">{t('dashboard.widgets.editWidget', 'Edit Widget')}</h3>
-                <button onClick={() => setEditingWidget(null)} className="p-2 rounded-lg hover:bg-background-secondary transition-colors">
+                <h3 className="text-lg font-bold text-foreground">
+                  {t('dashboard.widgets.editWidget', 'Edit Widget')}
+                </h3>
+                <button
+                  onClick={() => setEditingWidget(null)}
+                  className="p-2 rounded-lg hover:bg-background-secondary transition-colors"
+                >
                   <X size={18} className="text-foreground-muted" />
                 </button>
               </div>
               <div className="space-y-4">
                 <div className="flex items-center gap-4 p-4 rounded-xl bg-background-secondary/30">
-                  <div>{(() => { const Icon = getWidgetIcon(editingWidget.type); return <Icon size={32} className="text-foreground" /> })()}</div>
                   <div>
-                    <p className="font-medium text-foreground">{getWidgetName(editingWidget.type)}</p>
-                    <p className="text-sm text-foreground-muted">{editingWidget.type}</p>
+                    {(() => {
+                      const Icon = getWidgetIcon(editingWidget.type)
+                      return <Icon size={32} className="text-foreground" />
+                    })()}
+                  </div>
+                  <div>
+                    <p className="font-medium text-foreground">
+                      {getWidgetName(editingWidget.type)}
+                    </p>
+                    <p className="text-sm text-foreground-muted">
+                      {editingWidget.type}
+                    </p>
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-foreground-muted mb-2">{t('dashboard.widgets.widgetTitle', 'Widget Title')}</label>
+                  <label className="block text-sm font-medium text-foreground-muted mb-2">
+                    {t('dashboard.widgets.widgetTitle', 'Widget Title')}
+                  </label>
                   <input
                     type="text"
                     value={editingWidget.title || ''}
-                    onChange={(e) => setEditingWidget({ ...editingWidget, title: e.target.value })}
+                    onChange={(e) =>
+                      setEditingWidget({
+                        ...editingWidget,
+                        title: e.target.value,
+                      })
+                    }
                     placeholder={getWidgetName(editingWidget.type)}
                     className="w-full px-4 py-3 rounded-xl bg-background-secondary border border-border text-foreground placeholder-foreground-muted/50 focus:outline-none focus:border-primary/50 transition-colors"
                   />
@@ -335,26 +431,64 @@ export function WidgetsTab() {
                 {/* Widget-specific configuration */}
                 {editingWidget.type === 'countdown' && (
                   <div className="space-y-3 p-4 rounded-xl bg-background-secondary/20 border border-border/50">
-                    <h4 className="text-sm font-medium text-foreground">{t('dashboard.widgets.config.countdown', 'Countdown Settings')}</h4>
+                    <h4 className="text-sm font-medium text-foreground">
+                      {t(
+                        'dashboard.widgets.config.countdown',
+                        'Countdown Settings',
+                      )}
+                    </h4>
                     <div>
-                      <label className="block text-xs text-foreground-muted mb-2">{t('dashboard.widgets.config.targetDate', 'Target Date')}</label>
+                      <label className="block text-xs text-foreground-muted mb-2">
+                        {t(
+                          'dashboard.widgets.config.targetDate',
+                          'Target Date',
+                        )}
+                      </label>
                       <DateTimePicker
-                        value={(editingWidget.config?.targetDate as string) || ''}
-                        onChange={(value) => setEditingWidget({ ...editingWidget, config: { ...editingWidget.config, targetDate: value } })}
-                        placeholder={t('dashboard.widgets.config.selectDateTime', 'Select date and time')}
+                        value={
+                          (editingWidget.config?.targetDate as string) || ''
+                        }
+                        onChange={(value) =>
+                          setEditingWidget({
+                            ...editingWidget,
+                            config: {
+                              ...editingWidget.config,
+                              targetDate: value,
+                            },
+                          })
+                        }
+                        placeholder={t(
+                          'dashboard.widgets.config.selectDateTime',
+                          'Select date and time',
+                        )}
                       />
                     </div>
                   </div>
                 )}
                 {editingWidget.type === 'youtube' && (
                   <div className="space-y-3 p-4 rounded-xl bg-background-secondary/20 border border-border/50">
-                    <h4 className="text-sm font-medium text-foreground">{t('dashboard.widgets.config.youtube', 'YouTube Settings')}</h4>
+                    <h4 className="text-sm font-medium text-foreground">
+                      {t(
+                        'dashboard.widgets.config.youtube',
+                        'YouTube Settings',
+                      )}
+                    </h4>
                     <div>
-                      <label className="block text-xs text-foreground-muted mb-1">{t('dashboard.widgets.config.videoId', 'Video ID')}</label>
+                      <label className="block text-xs text-foreground-muted mb-1">
+                        {t('dashboard.widgets.config.videoId', 'Video ID')}
+                      </label>
                       <input
                         type="text"
                         value={(editingWidget.config?.videoId as string) || ''}
-                        onChange={(e) => setEditingWidget({ ...editingWidget, config: { ...editingWidget.config, videoId: e.target.value } })}
+                        onChange={(e) =>
+                          setEditingWidget({
+                            ...editingWidget,
+                            config: {
+                              ...editingWidget.config,
+                              videoId: e.target.value,
+                            },
+                          })
+                        }
                         placeholder="dQw4w9WgXcQ"
                         className="w-full px-3 py-2 rounded-lg bg-background-secondary border border-border text-foreground text-sm placeholder-foreground-muted/50 focus:outline-none focus:border-primary/50"
                       />
@@ -363,22 +497,62 @@ export function WidgetsTab() {
                 )}
                 {editingWidget.type === 'weather' && (
                   <div className="space-y-3 p-4 rounded-xl bg-background-secondary/20 border border-border/50">
-                    <h4 className="text-sm font-medium text-foreground">{t('dashboard.widgets.config.weather', 'Weather Settings')}</h4>
+                    <h4 className="text-sm font-medium text-foreground">
+                      {t(
+                        'dashboard.widgets.config.weather',
+                        'Weather Settings',
+                      )}
+                    </h4>
                     <div>
-                      <label className="block text-xs text-foreground-muted mb-2">{t('dashboard.widgets.config.position', 'Position')}</label>
+                      <label className="block text-xs text-foreground-muted mb-2">
+                        {t('dashboard.widgets.config.position', 'Position')}
+                      </label>
                       <div className="grid grid-cols-2 gap-2">
                         {[
-                          { value: 'top-left', label: t('dashboard.widgets.config.topLeft', 'Top Left') },
-                          { value: 'top-right', label: t('dashboard.widgets.config.topRight', 'Top Right') },
-                          { value: 'bottom-left', label: t('dashboard.widgets.config.bottomLeft', 'Bottom Left') },
-                          { value: 'bottom-right', label: t('dashboard.widgets.config.bottomRight', 'Bottom Right') },
+                          {
+                            value: 'top-left',
+                            label: t(
+                              'dashboard.widgets.config.topLeft',
+                              'Top Left',
+                            ),
+                          },
+                          {
+                            value: 'top-right',
+                            label: t(
+                              'dashboard.widgets.config.topRight',
+                              'Top Right',
+                            ),
+                          },
+                          {
+                            value: 'bottom-left',
+                            label: t(
+                              'dashboard.widgets.config.bottomLeft',
+                              'Bottom Left',
+                            ),
+                          },
+                          {
+                            value: 'bottom-right',
+                            label: t(
+                              'dashboard.widgets.config.bottomRight',
+                              'Bottom Right',
+                            ),
+                          },
                         ].map((pos) => (
                           <button
                             key={pos.value}
                             type="button"
-                            onClick={() => setEditingWidget({ ...editingWidget, config: { ...editingWidget.config, position: pos.value } })}
+                            onClick={() =>
+                              setEditingWidget({
+                                ...editingWidget,
+                                config: {
+                                  ...editingWidget.config,
+                                  position: pos.value,
+                                },
+                              })
+                            }
                             className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-                              (editingWidget.config?.position as string) === pos.value
+                              (editingWidget.config?.position as string) ===
+                              pos.value
                                 ? 'bg-primary text-primary-foreground'
                                 : 'bg-background-secondary border border-border text-foreground hover:border-primary/50'
                             }`}
@@ -389,30 +563,52 @@ export function WidgetsTab() {
                       </div>
                     </div>
                     <div>
-                      <label className="block text-xs text-foreground-muted mb-1">{t('dashboard.widgets.config.location', 'Location')}</label>
+                      <label className="block text-xs text-foreground-muted mb-1">
+                        {t('dashboard.widgets.config.location', 'Location')}
+                      </label>
                       <LocationSearch
                         value={(editingWidget.config?.location as string) || ''}
-                        onChange={(location, coords) => setEditingWidget({ 
-                          ...editingWidget, 
-                          config: { 
-                            ...editingWidget.config, 
-                            location,
-                            ...(coords && { lat: coords.lat, lon: coords.lon })
-                          } 
-                        })}
+                        onChange={(location, coords) =>
+                          setEditingWidget({
+                            ...editingWidget,
+                            config: {
+                              ...editingWidget.config,
+                              location,
+                              ...(coords && {
+                                lat: coords.lat,
+                                lon: coords.lon,
+                              }),
+                            },
+                          })
+                        }
                       />
                     </div>
                   </div>
                 )}
                 {editingWidget.type === 'soundcloud' && (
                   <div className="space-y-3 p-4 rounded-xl bg-background-secondary/20 border border-border/50">
-                    <h4 className="text-sm font-medium text-foreground">{t('dashboard.widgets.config.soundcloud', 'SoundCloud Settings')}</h4>
+                    <h4 className="text-sm font-medium text-foreground">
+                      {t(
+                        'dashboard.widgets.config.soundcloud',
+                        'SoundCloud Settings',
+                      )}
+                    </h4>
                     <div>
-                      <label className="block text-xs text-foreground-muted mb-1">{t('dashboard.widgets.config.trackUrl', 'Track URL')}</label>
+                      <label className="block text-xs text-foreground-muted mb-1">
+                        {t('dashboard.widgets.config.trackUrl', 'Track URL')}
+                      </label>
                       <input
                         type="url"
                         value={(editingWidget.config?.trackUrl as string) || ''}
-                        onChange={(e) => setEditingWidget({ ...editingWidget, config: { ...editingWidget.config, trackUrl: e.target.value } })}
+                        onChange={(e) =>
+                          setEditingWidget({
+                            ...editingWidget,
+                            config: {
+                              ...editingWidget.config,
+                              trackUrl: e.target.value,
+                            },
+                          })
+                        }
                         placeholder="https://soundcloud.com/artist/track"
                         className="w-full px-3 py-2 rounded-lg bg-background-secondary border border-border text-foreground text-sm placeholder-foreground-muted/50 focus:outline-none focus:border-primary/50"
                       />
@@ -421,13 +617,30 @@ export function WidgetsTab() {
                 )}
                 {editingWidget.type === 'twitch' && (
                   <div className="space-y-3 p-4 rounded-xl bg-background-secondary/20 border border-border/50">
-                    <h4 className="text-sm font-medium text-foreground">{t('dashboard.widgets.config.twitch', 'Twitch Settings')}</h4>
+                    <h4 className="text-sm font-medium text-foreground">
+                      {t('dashboard.widgets.config.twitch', 'Twitch Settings')}
+                    </h4>
                     <div>
-                      <label className="block text-xs text-foreground-muted mb-1">{t('dashboard.widgets.config.channelName', 'Channel Name')}</label>
+                      <label className="block text-xs text-foreground-muted mb-1">
+                        {t(
+                          'dashboard.widgets.config.channelName',
+                          'Channel Name',
+                        )}
+                      </label>
                       <input
                         type="text"
-                        value={(editingWidget.config?.channelName as string) || ''}
-                        onChange={(e) => setEditingWidget({ ...editingWidget, config: { ...editingWidget.config, channelName: e.target.value } })}
+                        value={
+                          (editingWidget.config?.channelName as string) || ''
+                        }
+                        onChange={(e) =>
+                          setEditingWidget({
+                            ...editingWidget,
+                            config: {
+                              ...editingWidget.config,
+                              channelName: e.target.value,
+                            },
+                          })
+                        }
                         placeholder="ninja"
                         className="w-full px-3 py-2 rounded-lg bg-background-secondary border border-border text-foreground text-sm placeholder-foreground-muted/50 focus:outline-none focus:border-primary/50"
                       />
@@ -436,13 +649,25 @@ export function WidgetsTab() {
                 )}
                 {editingWidget.type === 'github' && (
                   <div className="space-y-3 p-4 rounded-xl bg-background-secondary/20 border border-border/50">
-                    <h4 className="text-sm font-medium text-foreground">{t('dashboard.widgets.config.github', 'GitHub Settings')}</h4>
+                    <h4 className="text-sm font-medium text-foreground">
+                      {t('dashboard.widgets.config.github', 'GitHub Settings')}
+                    </h4>
                     <div>
-                      <label className="block text-xs text-foreground-muted mb-1">{t('dashboard.widgets.config.username', 'Username')}</label>
+                      <label className="block text-xs text-foreground-muted mb-1">
+                        {t('dashboard.widgets.config.username', 'Username')}
+                      </label>
                       <input
                         type="text"
                         value={(editingWidget.config?.username as string) || ''}
-                        onChange={(e) => setEditingWidget({ ...editingWidget, config: { ...editingWidget.config, username: e.target.value } })}
+                        onChange={(e) =>
+                          setEditingWidget({
+                            ...editingWidget,
+                            config: {
+                              ...editingWidget.config,
+                              username: e.target.value,
+                            },
+                          })
+                        }
                         placeholder="octocat"
                         className="w-full px-3 py-2 rounded-lg bg-background-secondary border border-border text-foreground text-sm placeholder-foreground-muted/50 focus:outline-none focus:border-primary/50"
                       />
@@ -451,27 +676,55 @@ export function WidgetsTab() {
                 )}
                 {editingWidget.type === 'social_feed' && (
                   <div className="space-y-3 p-4 rounded-xl bg-background-secondary/20 border border-border/50">
-                    <h4 className="text-sm font-medium text-foreground">{t('dashboard.widgets.config.socialFeed', 'Social Feed Settings')}</h4>
+                    <h4 className="text-sm font-medium text-foreground">
+                      {t(
+                        'dashboard.widgets.config.socialFeed',
+                        'Social Feed Settings',
+                      )}
+                    </h4>
                     <div>
-                      <label className="block text-xs text-foreground-muted mb-1">{t('dashboard.widgets.config.platform', 'Platform')}</label>
-                      <select
+                      <label className="block text-xs text-foreground-muted mb-1">
+                        {t('dashboard.widgets.config.platform', 'Platform')}
+                      </label>
+                      <Select
                         value={(editingWidget.config?.platform as string) || ''}
-                        onChange={(e) => setEditingWidget({ ...editingWidget, config: { ...editingWidget.config, platform: e.target.value } })}
-                        className="w-full px-3 py-2 rounded-lg bg-background-secondary border border-border text-foreground text-sm focus:outline-none focus:border-primary/50"
+                        onValueChange={(value) =>
+                          setEditingWidget({
+                            ...editingWidget,
+                            config: {
+                              ...editingWidget.config,
+                              platform: value,
+                            },
+                          })
+                        }
                       >
-                        <option value="">Select platform...</option>
-                        <option value="twitter">Twitter/X</option>
-                        <option value="instagram">Instagram</option>
-                        <option value="tiktok">TikTok</option>
-                        <option value="youtube">YouTube</option>
-                      </select>
+                        <SelectTrigger className="w-full h-10">
+                          <SelectValue placeholder="Select platform..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="twitter">Twitter/X</SelectItem>
+                          <SelectItem value="instagram">Instagram</SelectItem>
+                          <SelectItem value="tiktok">TikTok</SelectItem>
+                          <SelectItem value="youtube">YouTube</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                     <div>
-                      <label className="block text-xs text-foreground-muted mb-1">{t('dashboard.widgets.config.username', 'Username')}</label>
+                      <label className="block text-xs text-foreground-muted mb-1">
+                        {t('dashboard.widgets.config.username', 'Username')}
+                      </label>
                       <input
                         type="text"
                         value={(editingWidget.config?.username as string) || ''}
-                        onChange={(e) => setEditingWidget({ ...editingWidget, config: { ...editingWidget.config, username: e.target.value } })}
+                        onChange={(e) =>
+                          setEditingWidget({
+                            ...editingWidget,
+                            config: {
+                              ...editingWidget.config,
+                              username: e.target.value,
+                            },
+                          })
+                        }
                         placeholder="username"
                         className="w-full px-3 py-2 rounded-lg bg-background-secondary border border-border text-foreground text-sm placeholder-foreground-muted/50 focus:outline-none focus:border-primary/50"
                       />
@@ -481,11 +734,25 @@ export function WidgetsTab() {
 
                 <div className="flex items-center justify-between p-4 rounded-xl bg-background-secondary/30">
                   <div>
-                    <p className="font-medium text-foreground">{t('dashboard.widgets.visibility', 'Visibility')}</p>
-                    <p className="text-sm text-foreground-muted">{editingWidget.isActive ? t('dashboard.widgets.visible', 'Visible on your bio page') : t('dashboard.widgets.hidden', 'Hidden from visitors')}</p>
+                    <p className="font-medium text-foreground">
+                      {t('dashboard.widgets.visibility', 'Visibility')}
+                    </p>
+                    <p className="text-sm text-foreground-muted">
+                      {editingWidget.isActive
+                        ? t(
+                            'dashboard.widgets.visible',
+                            'Visible on your bio page',
+                          )
+                        : t('dashboard.widgets.hidden', 'Hidden from visitors')}
+                    </p>
                   </div>
                   <button
-                    onClick={() => setEditingWidget({ ...editingWidget, isActive: !editingWidget.isActive })}
+                    onClick={() =>
+                      setEditingWidget({
+                        ...editingWidget,
+                        isActive: !editingWidget.isActive,
+                      })
+                    }
                     className="p-2"
                   >
                     {editingWidget.isActive ? (
@@ -497,9 +764,11 @@ export function WidgetsTab() {
                 </div>
                 <button
                   onClick={() => {
-                    const configToSave = editingWidget.config && Object.keys(editingWidget.config).length > 0 
-                      ? editingWidget.config 
-                      : undefined
+                    const configToSave =
+                      editingWidget.config &&
+                      Object.keys(editingWidget.config).length > 0
+                        ? editingWidget.config
+                        : undefined
                     updateMutation.mutate({
                       id: editingWidget.id,
                       title: editingWidget.title || undefined,
@@ -510,7 +779,9 @@ export function WidgetsTab() {
                   disabled={updateMutation.isPending}
                   className="w-full py-3 rounded-xl font-medium text-primary-foreground bg-linear-to-r from-primary to-accent disabled:opacity-50 flex items-center justify-center gap-2"
                 >
-                  {updateMutation.isPending ? <Loader2 size={18} className="animate-spin" /> : null}
+                  {updateMutation.isPending ? (
+                    <Loader2 size={18} className="animate-spin" />
+                  ) : null}
                   {t('dashboard.save')}
                 </button>
               </div>

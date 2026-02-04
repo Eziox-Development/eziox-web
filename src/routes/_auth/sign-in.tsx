@@ -8,7 +8,13 @@ import {
   useSearch,
 } from '@tanstack/react-router'
 import { z } from 'zod'
-import { signInFn, signInWithOtpFn, requestOtpFn, getPasskeyAuthOptionsFn, verifyPasskeyAuthFn } from '@/server/functions/auth'
+import {
+  signInFn,
+  signInWithOtpFn,
+  requestOtpFn,
+  getPasskeyAuthOptionsFn,
+  verifyPasskeyAuthFn,
+} from '@/server/functions/auth'
 import { getOAuthUrlFn } from '@/server/functions/social-integrations'
 import { useServerFn } from '@tanstack/react-start'
 import { useForm } from 'react-hook-form'
@@ -98,11 +104,16 @@ function SignInPage() {
   const resetTurnstileToken = () => {
     setTurnstileToken('')
     try {
-      ;(window as unknown as { resetTurnstileWidget?: () => void }).resetTurnstileWidget?.()
+      ;(
+        window as unknown as { resetTurnstileWidget?: () => void }
+      ).resetTurnstileWidget?.()
     } catch {
       const el = document.querySelector('iframe[title*="turnstile"]')
       if (el) {
-        (el as HTMLIFrameElement).contentWindow?.postMessage({ event: 'reset' }, '*')
+        ;(el as HTMLIFrameElement).contentWindow?.postMessage(
+          { event: 'reset' },
+          '*',
+        )
       }
     }
   }
@@ -120,7 +131,10 @@ function SignInPage() {
       await navigate({ to: search.redirect || '/' })
     },
     onError: (err: { message?: string }) => {
-      if (err.message?.includes('Bot verification') || err.message?.includes('Token expired')) {
+      if (
+        err.message?.includes('Bot verification') ||
+        err.message?.includes('Token expired')
+      ) {
         resetTurnstileToken()
       }
       setError(err.message || t('signIn.errors.general'))
@@ -181,21 +195,26 @@ function SignInPage() {
       const { options } = await getPasskeyAuthOptions({ data: {} })
 
       // Convert challenge to ArrayBuffer
-      const challengeBuffer = Uint8Array.from(options.challenge, (c: string) => c.charCodeAt(0))
+      const challengeBuffer = Uint8Array.from(options.challenge, (c: string) =>
+        c.charCodeAt(0),
+      )
 
       // Request credential from authenticator
-      const credential = await navigator.credentials.get({
+      const credential = (await navigator.credentials.get({
         publicKey: {
           challenge: challengeBuffer,
           timeout: options.timeout,
           rpId: options.rpId,
-          userVerification: options.userVerification as UserVerificationRequirement,
-          allowCredentials: options.allowCredentials?.map((c: { id: string; type: 'public-key' }) => ({
-            id: Uint8Array.from(atob(c.id), (ch) => ch.charCodeAt(0)),
-            type: c.type,
-          })),
+          userVerification:
+            options.userVerification as UserVerificationRequirement,
+          allowCredentials: options.allowCredentials?.map(
+            (c: { id: string; type: 'public-key' }) => ({
+              id: Uint8Array.from(atob(c.id), (ch) => ch.charCodeAt(0)),
+              type: c.type,
+            }),
+          ),
         },
-      }) as PublicKeyCredential | null
+      })) as PublicKeyCredential | null
 
       if (!credential) {
         throw new Error(t('signIn.errors.passkeyCancelled'))
@@ -208,12 +227,26 @@ function SignInPage() {
         data: {
           credential: {
             id: credential.id,
-            rawId: btoa(String.fromCharCode(...new Uint8Array(credential.rawId))),
+            rawId: btoa(
+              String.fromCharCode(...new Uint8Array(credential.rawId)),
+            ),
             response: {
-              clientDataJSON: btoa(String.fromCharCode(...new Uint8Array(response.clientDataJSON))),
-              authenticatorData: btoa(String.fromCharCode(...new Uint8Array(response.authenticatorData))),
-              signature: btoa(String.fromCharCode(...new Uint8Array(response.signature))),
-              userHandle: response.userHandle ? btoa(String.fromCharCode(...new Uint8Array(response.userHandle))) : undefined,
+              clientDataJSON: btoa(
+                String.fromCharCode(...new Uint8Array(response.clientDataJSON)),
+              ),
+              authenticatorData: btoa(
+                String.fromCharCode(
+                  ...new Uint8Array(response.authenticatorData),
+                ),
+              ),
+              signature: btoa(
+                String.fromCharCode(...new Uint8Array(response.signature)),
+              ),
+              userHandle: response.userHandle
+                ? btoa(
+                    String.fromCharCode(...new Uint8Array(response.userHandle)),
+                  )
+                : undefined,
             },
             type: 'public-key',
           },
@@ -235,13 +268,13 @@ function SignInPage() {
     const newOtp = [...otpCode]
     newOtp[index] = value.slice(-1)
     setOtpCode(newOtp)
-    
+
     if (value && index < 5) {
       const next = document.getElementById(`otp-${index + 1}`)
       next?.focus()
     }
-    
-    if (newOtp.every(d => d) && newOtp.join('').length === 6) {
+
+    if (newOtp.every((d) => d) && newOtp.join('').length === 6) {
       otpVerifyMutation.mutate()
     }
   }
@@ -253,9 +286,10 @@ function SignInPage() {
     }
   }
 
-  const cardBg = effects.cardStyle === 'glass'
-    ? `rgba(${hexToRgb(colors.card)}, 0.6)`
-    : colors.card
+  const cardBg =
+    effects.cardStyle === 'glass'
+      ? `rgba(${hexToRgb(colors.card)}, 0.6)`
+      : colors.card
 
   return (
     <div className="w-full max-w-lg">
@@ -269,15 +303,20 @@ function SignInPage() {
           className="relative rounded-3xl overflow-hidden"
           style={{
             background: cardBg,
-            backdropFilter: effects.cardStyle === 'glass' ? 'blur(40px) saturate(180%)' : undefined,
+            backdropFilter:
+              effects.cardStyle === 'glass'
+                ? 'blur(40px) saturate(180%)'
+                : undefined,
             border: `1px solid ${colors.border}40`,
             boxShadow: `0 30px 60px -15px rgba(0, 0, 0, 0.3), 0 0 80px rgba(${hexToRgb(colors.primary)}, 0.1)`,
           }}
         >
           {/* Top Gradient Bar */}
-          <div 
+          <div
             className="h-1.5"
-            style={{ background: `linear-gradient(90deg, ${colors.primary}, ${colors.accent}, ${colors.primary})` }}
+            style={{
+              background: `linear-gradient(90deg, ${colors.primary}, ${colors.accent}, ${colors.primary})`,
+            }}
           />
 
           <div className="p-8 md:p-10">
@@ -294,12 +333,18 @@ function SignInPage() {
                 }}
               >
                 <Sparkles size={14} style={{ color: colors.primary }} />
-                <span className="text-xs font-semibold" style={{ color: colors.primary }}>
+                <span
+                  className="text-xs font-semibold"
+                  style={{ color: colors.primary }}
+                >
                   {t('signIn.badge')}
                 </span>
               </motion.div>
-              
-              <h1 className="text-3xl font-bold mb-2" style={{ color: colors.foreground }}>
+
+              <h1
+                className="text-3xl font-bold mb-2"
+                style={{ color: colors.foreground }}
+              >
                 {t('signIn.title')}
               </h1>
               <p className="text-sm" style={{ color: colors.foregroundMuted }}>
@@ -322,7 +367,7 @@ function SignInPage() {
                 >
                   <AlertCircle className="w-5 h-5 text-red-400 shrink-0" />
                   <p className="text-sm text-red-400">{error}</p>
-                  <button 
+                  <button
                     onClick={() => setError(null)}
                     className="ml-auto text-red-400 hover:text-red-300"
                   >
@@ -361,12 +406,18 @@ function SignInPage() {
                   {/* Divider */}
                   <div className="relative my-6">
                     <div className="absolute inset-0 flex items-center">
-                      <div className="w-full" style={{ borderTop: `1px solid ${colors.border}` }} />
+                      <div
+                        className="w-full"
+                        style={{ borderTop: `1px solid ${colors.border}` }}
+                      />
                     </div>
                     <div className="relative flex justify-center">
-                      <span 
+                      <span
                         className="px-4 text-xs font-medium"
-                        style={{ background: cardBg, color: colors.foregroundMuted }}
+                        style={{
+                          background: cardBg,
+                          color: colors.foregroundMuted,
+                        }}
                       >
                         {t('signIn.orContinueWith')}
                       </span>
@@ -384,8 +435,14 @@ function SignInPage() {
                         border: `1px solid ${colors.border}`,
                       }}
                     >
-                      <Lock className="w-6 h-6" style={{ color: colors.primary }} />
-                      <span className="text-xs font-medium" style={{ color: colors.foreground }}>
+                      <Lock
+                        className="w-6 h-6"
+                        style={{ color: colors.primary }}
+                      />
+                      <span
+                        className="text-xs font-medium"
+                        style={{ color: colors.foreground }}
+                      >
                         {t('signIn.methods.password')}
                       </span>
                     </button>
@@ -399,8 +456,14 @@ function SignInPage() {
                         border: `1px solid ${colors.border}`,
                       }}
                     >
-                      <Mail className="w-6 h-6" style={{ color: colors.accent }} />
-                      <span className="text-xs font-medium" style={{ color: colors.foreground }}>
+                      <Mail
+                        className="w-6 h-6"
+                        style={{ color: colors.accent }}
+                      />
+                      <span
+                        className="text-xs font-medium"
+                        style={{ color: colors.foreground }}
+                      >
                         {t('signIn.methods.otp')}
                       </span>
                     </button>
@@ -415,8 +478,14 @@ function SignInPage() {
                         border: `1px solid ${colors.border}`,
                       }}
                     >
-                      <Fingerprint className="w-6 h-6" style={{ color: '#22c55e' }} />
-                      <span className="text-xs font-medium" style={{ color: colors.foreground }}>
+                      <Fingerprint
+                        className="w-6 h-6"
+                        style={{ color: '#22c55e' }}
+                      />
+                      <span
+                        className="text-xs font-medium"
+                        style={{ color: colors.foreground }}
+                      >
                         {t('signIn.methods.passkey')}
                       </span>
                     </button>
@@ -431,12 +500,17 @@ function SignInPage() {
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
-                  onSubmit={form.handleSubmit((data) => signInMutation.mutate(data))}
+                  onSubmit={form.handleSubmit((data) =>
+                    signInMutation.mutate(data),
+                  )}
                   className="space-y-5"
                 >
                   <button
                     type="button"
-                    onClick={() => { setStep('method'); setError(null) }}
+                    onClick={() => {
+                      setStep('method')
+                      setError(null)
+                    }}
                     className="flex items-center gap-2 text-sm font-medium mb-4"
                     style={{ color: colors.foregroundMuted }}
                   >
@@ -446,13 +520,21 @@ function SignInPage() {
 
                   {/* Email */}
                   <div>
-                    <label className="block text-sm font-medium mb-2" style={{ color: colors.foreground }}>
+                    <label
+                      className="block text-sm font-medium mb-2"
+                      style={{ color: colors.foreground }}
+                    >
                       {t('signIn.email.label')}
                     </label>
                     <div className="relative">
                       <Mail
                         className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 transition-colors"
-                        style={{ color: focusedField === 'email' ? colors.primary : colors.foregroundMuted }}
+                        style={{
+                          color:
+                            focusedField === 'email'
+                              ? colors.primary
+                              : colors.foregroundMuted,
+                        }}
                       />
                       <input
                         {...form.register('email')}
@@ -478,7 +560,10 @@ function SignInPage() {
                   {/* Password */}
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <label className="text-sm font-medium" style={{ color: colors.foreground }}>
+                      <label
+                        className="text-sm font-medium"
+                        style={{ color: colors.foreground }}
+                      >
                         {t('signIn.password.label')}
                       </label>
                       <Link
@@ -492,7 +577,12 @@ function SignInPage() {
                     <div className="relative">
                       <Lock
                         className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 transition-colors"
-                        style={{ color: focusedField === 'password' ? colors.primary : colors.foregroundMuted }}
+                        style={{
+                          color:
+                            focusedField === 'password'
+                              ? colors.primary
+                              : colors.foregroundMuted,
+                        }}
                       />
                       <input
                         {...form.register('password')}
@@ -513,24 +603,39 @@ function SignInPage() {
                         className="absolute right-4 top-1/2 -translate-y-1/2 p-1"
                         style={{ color: colors.foregroundMuted }}
                       >
-                        {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                        {showPassword ? (
+                          <EyeOff className="w-5 h-5" />
+                        ) : (
+                          <Eye className="w-5 h-5" />
+                        )}
                       </button>
                     </div>
                   </div>
 
                   {/* Remember Me */}
                   <label className="flex items-center gap-3 cursor-pointer">
-                    <input type="checkbox" {...form.register('rememberMe')} className="sr-only" />
+                    <input
+                      type="checkbox"
+                      {...form.register('rememberMe')}
+                      className="sr-only"
+                    />
                     <div
                       className="w-5 h-5 rounded-md flex items-center justify-center transition-all"
                       style={{
-                        background: form.watch('rememberMe') ? colors.primary : 'transparent',
+                        background: form.watch('rememberMe')
+                          ? colors.primary
+                          : 'transparent',
                         border: `2px solid ${form.watch('rememberMe') ? colors.primary : colors.border}`,
                       }}
                     >
-                      {form.watch('rememberMe') && <Check className="w-3 h-3 text-white" />}
+                      {form.watch('rememberMe') && (
+                        <Check className="w-3 h-3 text-white" />
+                      )}
                     </div>
-                    <span className="text-sm" style={{ color: colors.foregroundMuted }}>
+                    <span
+                      className="text-sm"
+                      style={{ color: colors.foregroundMuted }}
+                    >
                       {t('signIn.rememberMe')}
                     </span>
                   </label>
@@ -538,8 +643,14 @@ function SignInPage() {
                   {/* Turnstile */}
                   <div>
                     <div className="flex items-center justify-center gap-2 mb-2">
-                      <Shield className="w-4 h-4" style={{ color: colors.foregroundMuted }} />
-                      <span className="text-xs" style={{ color: colors.foregroundMuted }}>
+                      <Shield
+                        className="w-4 h-4"
+                        style={{ color: colors.foregroundMuted }}
+                      />
+                      <span
+                        className="text-xs"
+                        style={{ color: colors.foregroundMuted }}
+                      >
                         {t('signIn.security.title')}
                       </span>
                     </div>
@@ -556,7 +667,9 @@ function SignInPage() {
                     type="submit"
                     disabled={signInMutation.isPending || !turnstileToken}
                     className="w-full py-4 rounded-xl font-bold text-white transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
-                    style={{ background: `linear-gradient(135deg, ${colors.primary}, ${colors.accent})` }}
+                    style={{
+                      background: `linear-gradient(135deg, ${colors.primary}, ${colors.accent})`,
+                    }}
                   >
                     {signInMutation.isPending ? (
                       <span className="flex items-center justify-center gap-2">
@@ -584,7 +697,10 @@ function SignInPage() {
                 >
                   <button
                     type="button"
-                    onClick={() => { setStep('method'); setError(null) }}
+                    onClick={() => {
+                      setStep('method')
+                      setError(null)
+                    }}
                     className="flex items-center gap-2 text-sm font-medium mb-4"
                     style={{ color: colors.foregroundMuted }}
                   >
@@ -593,22 +709,34 @@ function SignInPage() {
                   </button>
 
                   <div className="text-center mb-6">
-                    <div 
+                    <div
                       className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4"
                       style={{ background: `${colors.accent}20` }}
                     >
-                      <Mail className="w-8 h-8" style={{ color: colors.accent }} />
+                      <Mail
+                        className="w-8 h-8"
+                        style={{ color: colors.accent }}
+                      />
                     </div>
-                    <h2 className="text-xl font-bold mb-2" style={{ color: colors.foreground }}>
+                    <h2
+                      className="text-xl font-bold mb-2"
+                      style={{ color: colors.foreground }}
+                    >
                       {t('signIn.otp.title')}
                     </h2>
-                    <p className="text-sm" style={{ color: colors.foregroundMuted }}>
+                    <p
+                      className="text-sm"
+                      style={{ color: colors.foregroundMuted }}
+                    >
                       {t('signIn.otp.description')}
                     </p>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-2" style={{ color: colors.foreground }}>
+                    <label
+                      className="block text-sm font-medium mb-2"
+                      style={{ color: colors.foreground }}
+                    >
                       {t('signIn.otp.emailLabel')}
                     </label>
                     <input
@@ -630,7 +758,9 @@ function SignInPage() {
                     onClick={() => otpRequestMutation.mutate(otpEmail)}
                     disabled={!otpEmail || otpRequestMutation.isPending}
                     className="w-full py-4 rounded-xl font-bold text-white transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
-                    style={{ background: `linear-gradient(135deg, ${colors.primary}, ${colors.accent})` }}
+                    style={{
+                      background: `linear-gradient(135deg, ${colors.primary}, ${colors.accent})`,
+                    }}
                   >
                     {otpRequestMutation.isPending ? (
                       <Loader2 className="w-5 h-5 animate-spin mx-auto" />
@@ -652,7 +782,11 @@ function SignInPage() {
                 >
                   <button
                     type="button"
-                    onClick={() => { setStep('otp-email'); setError(null); setOtpCode(['', '', '', '', '', '']) }}
+                    onClick={() => {
+                      setStep('otp-email')
+                      setError(null)
+                      setOtpCode(['', '', '', '', '', ''])
+                    }}
                     className="flex items-center gap-2 text-sm font-medium mb-4"
                     style={{ color: colors.foregroundMuted }}
                   >
@@ -661,16 +795,25 @@ function SignInPage() {
                   </button>
 
                   <div className="text-center mb-6">
-                    <div 
+                    <div
                       className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4"
                       style={{ background: `${colors.primary}20` }}
                     >
-                      <Shield className="w-8 h-8" style={{ color: colors.primary }} />
+                      <Shield
+                        className="w-8 h-8"
+                        style={{ color: colors.primary }}
+                      />
                     </div>
-                    <h2 className="text-xl font-bold mb-2" style={{ color: colors.foreground }}>
+                    <h2
+                      className="text-xl font-bold mb-2"
+                      style={{ color: colors.foreground }}
+                    >
                       {t('signIn.otp.enterCode')}
                     </h2>
-                    <p className="text-sm" style={{ color: colors.foregroundMuted }}>
+                    <p
+                      className="text-sm"
+                      style={{ color: colors.foregroundMuted }}
+                    >
                       {t('signIn.otp.codeSent', { email: otpEmail })}
                     </p>
                   </div>
@@ -700,9 +843,14 @@ function SignInPage() {
                   <button
                     type="button"
                     onClick={() => otpVerifyMutation.mutate()}
-                    disabled={otpCode.join('').length !== 6 || otpVerifyMutation.isPending}
+                    disabled={
+                      otpCode.join('').length !== 6 ||
+                      otpVerifyMutation.isPending
+                    }
                     className="w-full py-4 rounded-xl font-bold text-white transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
-                    style={{ background: `linear-gradient(135deg, ${colors.primary}, ${colors.accent})` }}
+                    style={{
+                      background: `linear-gradient(135deg, ${colors.primary}, ${colors.accent})`,
+                    }}
                   >
                     {otpVerifyMutation.isPending ? (
                       <Loader2 className="w-5 h-5 animate-spin mx-auto" />
@@ -725,12 +873,17 @@ function SignInPage() {
             </AnimatePresence>
 
             {/* Sign Up Link */}
-            <div className="mt-8 pt-6 text-center" style={{ borderTop: `1px solid ${colors.border}` }}>
+            <div
+              className="mt-8 pt-6 text-center"
+              style={{ borderTop: `1px solid ${colors.border}` }}
+            >
               <p className="text-sm" style={{ color: colors.foregroundMuted }}>
                 {t('signIn.noAccount')}{' '}
                 <Link
                   to="/sign-up"
-                  search={search.redirect ? { redirect: search.redirect } : undefined}
+                  search={
+                    search.redirect ? { redirect: search.redirect } : undefined
+                  }
                   className="font-semibold hover:underline"
                   style={{ color: colors.primary }}
                 >

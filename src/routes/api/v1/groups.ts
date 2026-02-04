@@ -20,8 +20,11 @@ export const Route = createFileRoute('/api/v1/groups')({
 
         if (!authHeader?.startsWith('Bearer ')) {
           return new Response(
-            JSON.stringify({ error: 'Missing or invalid Authorization header', code: 'UNAUTHORIZED' }),
-            { status: 401, headers: { 'Content-Type': 'application/json' } }
+            JSON.stringify({
+              error: 'Missing or invalid Authorization header',
+              code: 'UNAUTHORIZED',
+            }),
+            { status: 401, headers: { 'Content-Type': 'application/json' } },
           )
         }
 
@@ -30,17 +33,29 @@ export const Route = createFileRoute('/api/v1/groups')({
 
         if (!validation.valid || !validation.apiKey) {
           return new Response(
-            JSON.stringify({ error: validation.error || 'Invalid API key', code: 'INVALID_API_KEY' }),
-            { status: 401, headers: { 'Content-Type': 'application/json' } }
+            JSON.stringify({
+              error: validation.error || 'Invalid API key',
+              code: 'INVALID_API_KEY',
+            }),
+            { status: 401, headers: { 'Content-Type': 'application/json' } },
           )
         }
 
         const permissions = validation.apiKey.permissions as ApiKeyPermissions
         if (!permissions.links?.read) {
-          await logApiRequest(validation.apiKey.id, '/api/v1/groups', 'GET', 403, Date.now() - startTime)
+          await logApiRequest(
+            validation.apiKey.id,
+            '/api/v1/groups',
+            'GET',
+            403,
+            Date.now() - startTime,
+          )
           return new Response(
-            JSON.stringify({ error: 'API key lacks links:read permission', code: 'FORBIDDEN' }),
-            { status: 403, headers: { 'Content-Type': 'application/json' } }
+            JSON.stringify({
+              error: 'API key lacks links:read permission',
+              code: 'FORBIDDEN',
+            }),
+            { status: 403, headers: { 'Content-Type': 'application/json' } },
           )
         }
 
@@ -61,7 +76,13 @@ export const Route = createFileRoute('/api/v1/groups')({
             .where(eq(linkGroups.userId, validation.apiKey.userId))
             .orderBy(asc(linkGroups.order))
 
-          await logApiRequest(validation.apiKey.id, '/api/v1/groups', 'GET', 200, Date.now() - startTime)
+          await logApiRequest(
+            validation.apiKey.id,
+            '/api/v1/groups',
+            'GET',
+            200,
+            Date.now() - startTime,
+          )
 
           return new Response(
             JSON.stringify({
@@ -78,14 +99,26 @@ export const Route = createFileRoute('/api/v1/groups')({
               })),
               total: groups.length,
             }),
-            { status: 200, headers: { 'Content-Type': 'application/json' } }
+            { status: 200, headers: { 'Content-Type': 'application/json' } },
           )
         } catch (error) {
           console.error('API Error [GET /api/v1/groups]:', error)
-          await logApiRequest(validation.apiKey.id, '/api/v1/groups', 'GET', 500, Date.now() - startTime, undefined, undefined, String(error))
+          await logApiRequest(
+            validation.apiKey.id,
+            '/api/v1/groups',
+            'GET',
+            500,
+            Date.now() - startTime,
+            undefined,
+            undefined,
+            String(error),
+          )
           return new Response(
-            JSON.stringify({ error: 'Internal server error', code: 'INTERNAL_ERROR' }),
-            { status: 500, headers: { 'Content-Type': 'application/json' } }
+            JSON.stringify({
+              error: 'Internal server error',
+              code: 'INTERNAL_ERROR',
+            }),
+            { status: 500, headers: { 'Content-Type': 'application/json' } },
           )
         }
       },
@@ -96,8 +129,11 @@ export const Route = createFileRoute('/api/v1/groups')({
 
         if (!authHeader?.startsWith('Bearer ')) {
           return new Response(
-            JSON.stringify({ error: 'Missing or invalid Authorization header', code: 'UNAUTHORIZED' }),
-            { status: 401, headers: { 'Content-Type': 'application/json' } }
+            JSON.stringify({
+              error: 'Missing or invalid Authorization header',
+              code: 'UNAUTHORIZED',
+            }),
+            { status: 401, headers: { 'Content-Type': 'application/json' } },
           )
         }
 
@@ -106,34 +142,57 @@ export const Route = createFileRoute('/api/v1/groups')({
 
         if (!validation.valid || !validation.apiKey) {
           return new Response(
-            JSON.stringify({ error: validation.error || 'Invalid API key', code: 'INVALID_API_KEY' }),
-            { status: 401, headers: { 'Content-Type': 'application/json' } }
+            JSON.stringify({
+              error: validation.error || 'Invalid API key',
+              code: 'INVALID_API_KEY',
+            }),
+            { status: 401, headers: { 'Content-Type': 'application/json' } },
           )
         }
 
         const permissions = validation.apiKey.permissions as ApiKeyPermissions
         if (!permissions.links?.write) {
-          await logApiRequest(validation.apiKey.id, '/api/v1/groups', 'POST', 403, Date.now() - startTime)
+          await logApiRequest(
+            validation.apiKey.id,
+            '/api/v1/groups',
+            'POST',
+            403,
+            Date.now() - startTime,
+          )
           return new Response(
-            JSON.stringify({ error: 'API key lacks links:write permission', code: 'FORBIDDEN' }),
-            { status: 403, headers: { 'Content-Type': 'application/json' } }
+            JSON.stringify({
+              error: 'API key lacks links:write permission',
+              code: 'FORBIDDEN',
+            }),
+            { status: 403, headers: { 'Content-Type': 'application/json' } },
           )
         }
 
         try {
-          const body = await request.json() as Record<string, unknown>
+          const body = (await request.json()) as Record<string, unknown>
 
           if (!body.name || typeof body.name !== 'string') {
-            await logApiRequest(validation.apiKey.id, '/api/v1/groups', 'POST', 400, Date.now() - startTime)
+            await logApiRequest(
+              validation.apiKey.id,
+              '/api/v1/groups',
+              'POST',
+              400,
+              Date.now() - startTime,
+            )
             return new Response(
-              JSON.stringify({ error: 'name is required', code: 'BAD_REQUEST' }),
-              { status: 400, headers: { 'Content-Type': 'application/json' } }
+              JSON.stringify({
+                error: 'name is required',
+                code: 'BAD_REQUEST',
+              }),
+              { status: 400, headers: { 'Content-Type': 'application/json' } },
             )
           }
 
           // Get max order
           const [maxOrder] = await db
-            .select({ max: sql<number>`COALESCE(MAX(${linkGroups.order}), -1)` })
+            .select({
+              max: sql<number>`COALESCE(MAX(${linkGroups.order}), -1)`,
+            })
             .from(linkGroups)
             .where(eq(linkGroups.userId, validation.apiKey.userId))
 
@@ -142,15 +201,34 @@ export const Route = createFileRoute('/api/v1/groups')({
             .values({
               userId: validation.apiKey.userId,
               name: (body.name as string).slice(0, 50),
-              icon: typeof body.icon === 'string' ? body.icon.slice(0, 50) : undefined,
-              color: typeof body.color === 'string' && /^#[0-9A-Fa-f]{6}$/.test(body.color) ? body.color : undefined,
-              isCollapsible: typeof body.isCollapsible === 'boolean' ? body.isCollapsible : false,
-              isCollapsed: typeof body.isCollapsed === 'boolean' ? body.isCollapsed : false,
+              icon:
+                typeof body.icon === 'string'
+                  ? body.icon.slice(0, 50)
+                  : undefined,
+              color:
+                typeof body.color === 'string' &&
+                /^#[0-9A-Fa-f]{6}$/.test(body.color)
+                  ? body.color
+                  : undefined,
+              isCollapsible:
+                typeof body.isCollapsible === 'boolean'
+                  ? body.isCollapsible
+                  : false,
+              isCollapsed:
+                typeof body.isCollapsed === 'boolean'
+                  ? body.isCollapsed
+                  : false,
               order: (maxOrder?.max ?? -1) + 1,
             })
             .returning()
 
-          await logApiRequest(validation.apiKey.id, '/api/v1/groups', 'POST', 201, Date.now() - startTime)
+          await logApiRequest(
+            validation.apiKey.id,
+            '/api/v1/groups',
+            'POST',
+            201,
+            Date.now() - startTime,
+          )
 
           return new Response(
             JSON.stringify({
@@ -166,14 +244,26 @@ export const Route = createFileRoute('/api/v1/groups')({
                 createdAt: newGroup?.createdAt,
               },
             }),
-            { status: 201, headers: { 'Content-Type': 'application/json' } }
+            { status: 201, headers: { 'Content-Type': 'application/json' } },
           )
         } catch (error) {
           console.error('API Error [POST /api/v1/groups]:', error)
-          await logApiRequest(validation.apiKey.id, '/api/v1/groups', 'POST', 500, Date.now() - startTime, undefined, undefined, String(error))
+          await logApiRequest(
+            validation.apiKey.id,
+            '/api/v1/groups',
+            'POST',
+            500,
+            Date.now() - startTime,
+            undefined,
+            undefined,
+            String(error),
+          )
           return new Response(
-            JSON.stringify({ error: 'Internal server error', code: 'INTERNAL_ERROR' }),
-            { status: 500, headers: { 'Content-Type': 'application/json' } }
+            JSON.stringify({
+              error: 'Internal server error',
+              code: 'INTERNAL_ERROR',
+            }),
+            { status: 500, headers: { 'Content-Type': 'application/json' } },
           )
         }
       },

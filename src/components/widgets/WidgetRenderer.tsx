@@ -44,36 +44,16 @@ export function WidgetRenderer({ widget }: WidgetRendererProps) {
       )
 
     case 'soundcloud':
-      return (
-        <SoundCloudPlaceholder
-          config={config}
-          title={widget.title}
-        />
-      )
+      return <SoundCloudPlaceholder config={config} title={widget.title} />
 
     case 'twitch':
-      return (
-        <TwitchPlaceholder
-          config={config}
-          title={widget.title}
-        />
-      )
+      return <TwitchPlaceholder config={config} title={widget.title} />
 
     case 'github':
-      return (
-        <GitHubPlaceholder
-          config={config}
-          title={widget.title}
-        />
-      )
+      return <GitHubPlaceholder config={config} title={widget.title} />
 
     case 'social_feed':
-      return (
-        <SocialFeedPlaceholder
-          config={config}
-          title={widget.title}
-        />
-      )
+      return <SocialFeedPlaceholder config={config} title={widget.title} />
 
     default:
       return (
@@ -83,13 +63,21 @@ export function WidgetRenderer({ widget }: WidgetRendererProps) {
           className="p-6 rounded-2xl backdrop-blur-xl bg-white/5 border border-white/10 text-center"
         >
           <Package size={32} className="mx-auto mb-2 text-white/40" />
-          <p className="text-white/60 text-sm">Unknown widget type: {widget.type}</p>
+          <p className="text-white/60 text-sm">
+            Unknown widget type: {widget.type}
+          </p>
         </motion.div>
       )
   }
 }
 
-function SoundCloudPlaceholder({ config, title }: { config: Record<string, unknown>; title: string | null }) {
+function SoundCloudPlaceholder({
+  config,
+  title,
+}: {
+  config: Record<string, unknown>
+  title: string | null
+}) {
   const trackUrl = config.trackUrl as string | undefined
 
   if (!trackUrl) {
@@ -128,7 +116,13 @@ function SoundCloudPlaceholder({ config, title }: { config: Record<string, unkno
   )
 }
 
-function TwitchPlaceholder({ config, title }: { config: Record<string, unknown>; title: string | null }) {
+function TwitchPlaceholder({
+  config,
+  title,
+}: {
+  config: Record<string, unknown>
+  title: string | null
+}) {
   const channelName = config.channelName as string | undefined
 
   if (!channelName) {
@@ -151,7 +145,9 @@ function TwitchPlaceholder({ config, title }: { config: Record<string, unknown>;
       className="p-6 rounded-2xl backdrop-blur-xl bg-linear-to-br from-purple-500/20 to-purple-900/20 border border-purple-500/20"
     >
       {title && (
-        <h3 className="text-lg font-bold text-white text-center mb-4">{title}</h3>
+        <h3 className="text-lg font-bold text-white text-center mb-4">
+          {title}
+        </h3>
       )}
       <div className="flex items-center justify-center gap-3">
         <Twitch size={24} className="text-purple-400" />
@@ -164,7 +160,13 @@ function TwitchPlaceholder({ config, title }: { config: Record<string, unknown>;
   )
 }
 
-function GitHubPlaceholder({ config, title }: { config: Record<string, unknown>; title: string | null }) {
+function GitHubPlaceholder({
+  config,
+  title,
+}: {
+  config: Record<string, unknown>
+  title: string | null
+}) {
   const username = config.username as string | undefined
 
   if (!username) {
@@ -187,7 +189,9 @@ function GitHubPlaceholder({ config, title }: { config: Record<string, unknown>;
       className="p-6 rounded-2xl backdrop-blur-xl bg-linear-to-br from-gray-800/50 to-gray-900/50 border border-white/10"
     >
       {title && (
-        <h3 className="text-lg font-bold text-white text-center mb-4">{title}</h3>
+        <h3 className="text-lg font-bold text-white text-center mb-4">
+          {title}
+        </h3>
       )}
       <div className="flex items-center justify-center gap-3">
         <Github size={24} className="text-white" />
@@ -207,7 +211,13 @@ function GitHubPlaceholder({ config, title }: { config: Record<string, unknown>;
   )
 }
 
-function SocialFeedPlaceholder({ config, title }: { config: Record<string, unknown>; title: string | null }) {
+function SocialFeedPlaceholder({
+  config,
+  title,
+}: {
+  config: Record<string, unknown>
+  title: string | null
+}) {
   const platform = config.platform as string | undefined
   const username = config.username as string | undefined
 
@@ -231,7 +241,9 @@ function SocialFeedPlaceholder({ config, title }: { config: Record<string, unkno
       className="p-6 rounded-2xl backdrop-blur-xl bg-white/5 border border-white/10"
     >
       {title && (
-        <h3 className="text-lg font-bold text-white text-center mb-4">{title}</h3>
+        <h3 className="text-lg font-bold text-white text-center mb-4">
+          {title}
+        </h3>
       )}
       <div className="flex items-center justify-center gap-3">
         <Smartphone size={24} className="text-white/60" />

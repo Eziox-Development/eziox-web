@@ -210,9 +210,7 @@ export const createCheckoutSessionFn = createServerFn({ method: 'POST' })
         .where(eq(users.id, user.id))
     }
 
-    const baseUrl =
-      process.env.APP_URL ||
-      'https://eziox.link'
+    const baseUrl = process.env.APP_URL || 'https://eziox.link'
     const isLifetime = data.tier === 'lifetime'
 
     const session = isLifetime
@@ -230,6 +228,19 @@ export const createCheckoutSessionFn = createServerFn({ method: 'POST' })
             name: 'auto',
           },
           billing_address_collection: 'auto',
+          // EU Consumer Rights: Consent for digital content (waives 14-day withdrawal right)
+          consent_collection: {
+            terms_of_service: 'required',
+          },
+          // Custom text for withdrawal policy
+          custom_text: {
+            terms_of_service_acceptance: {
+              message: 'I agree to the [Terms of Service](https://eziox.link/agb) and acknowledge that by purchasing this digital service, I expressly consent to immediate access and waive my 14-day withdrawal right as per EU Directive 2011/83/EU.',
+            },
+            submit: {
+              message: 'By completing this purchase, you agree to our [Withdrawal Policy](https://eziox.link/widerruf).',
+            },
+          },
           invoice_creation: {
             enabled: true,
             invoice_data: {
@@ -246,14 +257,27 @@ export const createCheckoutSessionFn = createServerFn({ method: 'POST' })
           success_url: `${baseUrl}/profile?tab=subscription&success=true`,
           cancel_url: `${baseUrl}/profile?tab=subscription&canceled=true`,
           metadata: { userId: user.id, tier: data.tier },
-          subscription_data: {
-            metadata: { userId: user.id, tier: data.tier },
-          },
           customer_update: {
             address: 'auto',
             name: 'auto',
           },
           billing_address_collection: 'auto',
+          // EU Consumer Rights: Consent for digital content (waives 14-day withdrawal right)
+          consent_collection: {
+            terms_of_service: 'required',
+          },
+          // Custom text for withdrawal policy
+          custom_text: {
+            terms_of_service_acceptance: {
+              message: 'I agree to the [Terms of Service](https://eziox.link/agb) and acknowledge that by purchasing this digital service, I expressly consent to immediate access and waive my 14-day withdrawal right as per EU Directive 2011/83/EU.',
+            },
+            submit: {
+              message: 'By completing this purchase, you agree to our [Withdrawal Policy](https://eziox.link/widerruf).',
+            },
+          },
+          subscription_data: {
+            metadata: { userId: user.id, tier: data.tier },
+          },
         })
 
     if (!session.url) {
@@ -282,8 +306,7 @@ export const createBillingPortalSessionFn = createServerFn({
     throw { message: 'No billing account found', status: 400 }
   }
 
-  const baseUrl =
-    process.env.APP_URL || 'https://eziox.link'
+  const baseUrl = process.env.APP_URL || 'https://eziox.link'
 
   const session = await stripe.billingPortal.sessions.create({
     customer: userData.stripeCustomerId,
@@ -435,12 +458,103 @@ export async function handleStripeWebhook(event: {
       const invoice = event.data.object as {
         subscription: string
         customer: string
+        attempt_count?: number
       }
 
       if (invoice.subscription) {
+        // Get current subscription to check failed payment count
+        const [currentSub] = await db
+          .select()
+          .from(subscriptions)
+          .where(eq(subscriptions.stripeSubscriptionId, invoice.subscription))
+          .limit(1)
+
+        if (currentSub) {
+          const newFailedCount = (currentSub.failedPaymentCount || 0) + 1
+          const MAX_FAILED_PAYMENTS = 3
+
+          if (newFailedCount >= MAX_FAILED_PAYMENTS) {
+            // Suspend subscription after 3 failed payments
+            await db
+              .update(subscriptions)
+              .set({
+                status: 'suspended',
+                failedPaymentCount: newFailedCount,
+                lastFailedPaymentAt: new Date(),
+                suspendedAt: new Date(),
+                suspensionReason: `Payment failed ${newFailedCount} times`,
+                updatedAt: new Date(),
+              })
+              .where(eq(subscriptions.stripeSubscriptionId, invoice.subscription))
+
+            // Downgrade user tier to free
+            await db
+              .update(users)
+              .set({
+                tier: 'free',
+                tierExpiresAt: null,
+                updatedAt: new Date(),
+              })
+              .where(eq(users.id, currentSub.userId))
+
+            // Send suspension notification
+            await createSubscriptionNotification(currentSub.userId, 'suspended', {
+              reason: 'payment_failed',
+              failedCount: newFailedCount,
+            })
+
+            // Send suspension email
+            const [userData] = await db
+              .select({ email: users.email, username: users.username })
+              .from(users)
+              .where(eq(users.id, currentSub.userId))
+              .limit(1)
+
+            if (userData?.email) {
+              await sendSubscriptionEmail(userData.email, 'suspended', {
+                username: userData.username || 'User',
+                tier: currentSub.tier,
+                reason: 'Multiple payment failures',
+              })
+            }
+          } else {
+            // Update failed count but keep past_due status
+            await db
+              .update(subscriptions)
+              .set({
+                status: 'past_due',
+                failedPaymentCount: newFailedCount,
+                lastFailedPaymentAt: new Date(),
+                updatedAt: new Date(),
+              })
+              .where(eq(subscriptions.stripeSubscriptionId, invoice.subscription))
+
+            // Send payment failed notification
+            await createSubscriptionNotification(currentSub.userId, 'payment_failed', {
+              failedCount: newFailedCount,
+              maxAttempts: MAX_FAILED_PAYMENTS,
+            })
+          }
+        }
+      }
+      break
+    }
+
+    case 'invoice.payment_succeeded': {
+      const invoice = event.data.object as {
+        subscription: string
+        customer: string
+      }
+
+      // Reset failed payment count on successful payment
+      if (invoice.subscription) {
         await db
           .update(subscriptions)
-          .set({ status: 'past_due', updatedAt: new Date() })
+          .set({
+            failedPaymentCount: 0,
+            lastFailedPaymentAt: null,
+            updatedAt: new Date(),
+          })
           .where(eq(subscriptions.stripeSubscriptionId, invoice.subscription))
       }
       break
@@ -514,12 +628,10 @@ async function handleSubscriptionCreated(
 
   if (user?.email) {
     const tierName = TIER_CONFIG[actualTier]?.name || actualTier
-    void sendSubscriptionEmail(
-      user.email,
-      user.username || 'User',
-      tierName,
-      'upgraded',
-    )
+    void sendSubscriptionEmail(user.email, 'upgraded', {
+      username: user.username || 'User',
+      tier: tierName,
+    })
   }
 }
 
@@ -584,12 +696,10 @@ async function handleOneTimePayment(
 
   if (user?.email) {
     const tierName = TIER_CONFIG[tier]?.name || tier
-    void sendSubscriptionEmail(
-      user.email,
-      user.username || 'User',
-      tierName,
-      'upgraded',
-    )
+    void sendSubscriptionEmail(user.email, 'upgraded', {
+      username: user.username || 'User',
+      tier: tierName,
+    })
   }
 }
 
@@ -660,12 +770,10 @@ async function handleSubscriptionUpdated(subscription: {
       if (user?.email) {
         const tierName =
           TIER_CONFIG[effectiveTier as TierType]?.name || effectiveTier
-        void sendSubscriptionEmail(
-          user.email,
-          user.username || 'User',
-          tierName,
-          'cancelled',
-        )
+        void sendSubscriptionEmail(user.email, 'cancelled', {
+          username: user.username || 'User',
+          tier: tierName,
+        })
       }
     }
   }
@@ -951,5 +1059,219 @@ export const adminAddCustomerCreditFn = createServerFn({ method: 'POST' })
     return {
       success: true,
       message: `Added €${(data.amountCents / 100).toFixed(2)} credit to ${targetUser.username || targetUser.email}`,
+    }
+  })
+
+// =============================================================================
+// ADMIN: Process Refund
+// =============================================================================
+
+export const adminProcessRefundFn = createServerFn({ method: 'POST' })
+  .inputValidator(
+    z.object({
+      userId: z.string().uuid(),
+      subscriptionId: z.string().optional(),
+      paymentIntentId: z.string().optional(),
+      reason: z.string().min(1).max(500),
+      refundType: z.enum(['full', 'partial', 'prorated']),
+      amountCents: z.number().min(0).optional(), // For partial refunds
+      cancelSubscription: z.boolean().default(true),
+      internalNotes: z.string().optional(),
+    }),
+  )
+  .handler(async ({ data }) => {
+    // Require admin
+    const token = getCookie('session-token')
+    if (!token) {
+      setResponseStatus(401)
+      throw { message: 'Not authenticated', status: 401 }
+    }
+    const admin = await validateSession(token)
+    if (!admin || (admin.role !== 'admin' && admin.role !== 'owner')) {
+      setResponseStatus(403)
+      throw { message: 'Admin access required', status: 403 }
+    }
+
+    if (!stripe) {
+      throw { message: 'Stripe is not configured', status: 500 }
+    }
+
+    // Get user and subscription info
+    const [targetUser] = await db
+      .select()
+      .from(users)
+      .where(eq(users.id, data.userId))
+      .limit(1)
+
+    if (!targetUser) {
+      throw { message: 'User not found', status: 404 }
+    }
+
+    // Get subscription if not provided
+    let subscriptionRecord
+    if (data.subscriptionId) {
+      ;[subscriptionRecord] = await db
+        .select()
+        .from(subscriptions)
+        .where(eq(subscriptions.stripeSubscriptionId, data.subscriptionId))
+        .limit(1)
+    } else {
+      ;[subscriptionRecord] = await db
+        .select()
+        .from(subscriptions)
+        .where(eq(subscriptions.userId, data.userId))
+        .limit(1)
+    }
+
+    let refundAmount = 0
+    let refundedPaymentIntent: string | null = null
+
+    // Process refund based on type
+    if (data.paymentIntentId) {
+      // Refund specific payment
+      if (data.refundType === 'full') {
+        const refund = await stripe.refunds.create({
+          payment_intent: data.paymentIntentId,
+          reason: 'requested_by_customer',
+          metadata: {
+            adminId: admin.id,
+            adminReason: data.reason,
+            internalNotes: data.internalNotes || '',
+          },
+        })
+        refundAmount = refund.amount
+      } else if (data.refundType === 'partial' && data.amountCents) {
+        const refund = await stripe.refunds.create({
+          payment_intent: data.paymentIntentId,
+          amount: data.amountCents,
+          reason: 'requested_by_customer',
+          metadata: {
+            adminId: admin.id,
+            adminReason: data.reason,
+            internalNotes: data.internalNotes || '',
+          },
+        })
+        refundAmount = refund.amount
+      }
+      refundedPaymentIntent = data.paymentIntentId
+    } else if (subscriptionRecord?.stripeSubscriptionId) {
+      // Get latest invoice for the subscription
+      const invoices = await stripe.invoices.list({
+        subscription: subscriptionRecord.stripeSubscriptionId,
+        limit: 1,
+      })
+
+      const latestInvoice = invoices.data[0] as { payment_intent?: string | { id: string }; amount_paid?: number } | undefined
+      const invoicePaymentIntent = latestInvoice?.payment_intent
+
+      if (latestInvoice && invoicePaymentIntent) {
+        const paymentIntentId = typeof invoicePaymentIntent === 'string' 
+          ? invoicePaymentIntent 
+          : invoicePaymentIntent.id
+
+        if (data.refundType === 'full') {
+          const refund = await stripe.refunds.create({
+            payment_intent: paymentIntentId,
+            reason: 'requested_by_customer',
+            metadata: {
+              adminId: admin.id,
+              adminReason: data.reason,
+              internalNotes: data.internalNotes || '',
+            },
+          })
+          refundAmount = refund.amount
+        } else if (data.refundType === 'prorated') {
+          // Calculate prorated amount based on remaining time
+          const now = Date.now()
+          const periodEnd = subscriptionRecord.currentPeriodEnd.getTime()
+          const periodStart = subscriptionRecord.currentPeriodStart.getTime()
+          const totalPeriod = periodEnd - periodStart
+          const remainingPeriod = Math.max(0, periodEnd - now)
+          const proratedRatio = remainingPeriod / totalPeriod
+
+          const proratedAmount = Math.round((latestInvoice.amount_paid || 0) * proratedRatio)
+
+          if (proratedAmount > 0) {
+            const refund = await stripe.refunds.create({
+              payment_intent: paymentIntentId,
+              amount: proratedAmount,
+              reason: 'requested_by_customer',
+              metadata: {
+                adminId: admin.id,
+                adminReason: data.reason,
+                refundType: 'prorated',
+                proratedRatio: proratedRatio.toFixed(4),
+                internalNotes: data.internalNotes || '',
+              },
+            })
+            refundAmount = refund.amount
+          }
+        } else if (data.refundType === 'partial' && data.amountCents) {
+          const refund = await stripe.refunds.create({
+            payment_intent: paymentIntentId,
+            amount: data.amountCents,
+            reason: 'requested_by_customer',
+            metadata: {
+              adminId: admin.id,
+              adminReason: data.reason,
+              internalNotes: data.internalNotes || '',
+            },
+          })
+          refundAmount = refund.amount
+        }
+        refundedPaymentIntent = paymentIntentId
+      }
+    }
+
+    // Cancel subscription if requested
+    if (data.cancelSubscription && subscriptionRecord?.stripeSubscriptionId) {
+      await stripe.subscriptions.cancel(subscriptionRecord.stripeSubscriptionId)
+
+      // Update subscription record
+      await db
+        .update(subscriptions)
+        .set({
+          status: 'canceled',
+          canceledAt: new Date(),
+          endedAt: new Date(),
+          updatedAt: new Date(),
+        })
+        .where(eq(subscriptions.stripeSubscriptionId, subscriptionRecord.stripeSubscriptionId))
+
+      // Downgrade user to free
+      await db
+        .update(users)
+        .set({
+          tier: 'free',
+          tierExpiresAt: null,
+          updatedAt: new Date(),
+        })
+        .where(eq(users.id, data.userId))
+    }
+
+    // Send refund notification and email
+    const refundAmountFormatted = `€${(refundAmount / 100).toFixed(2)}`
+    
+    await createSubscriptionNotification(data.userId, 'refunded', {
+      refundAmount: refundAmountFormatted,
+      reason: data.reason,
+    })
+
+    if (targetUser.email) {
+      await sendSubscriptionEmail(targetUser.email, 'refunded', {
+        username: targetUser.username || 'User',
+        tier: subscriptionRecord?.tier || 'subscription',
+        refundAmount: refundAmountFormatted,
+        reason: data.reason,
+      })
+    }
+
+    return {
+      success: true,
+      refundAmount: refundAmount,
+      refundAmountFormatted,
+      paymentIntentId: refundedPaymentIntent,
+      subscriptionCanceled: data.cancelSubscription,
+      message: `Refund of ${refundAmountFormatted} processed for ${targetUser.username || targetUser.email}`,
     }
   })

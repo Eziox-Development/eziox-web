@@ -192,7 +192,7 @@ export const SOCIAL_PLATFORMS = {
     color: '#FA243C',
     format: (username: string) => username.replace('@', ''),
   },
-  
+
   // Default/Website
   website: {
     name: 'Website',

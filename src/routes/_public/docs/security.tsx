@@ -38,50 +38,74 @@ export function SecurityDoc() {
       {/* Account Security */}
       <DocSection title={t(`${s}.accountSecurity.title`)}>
         <DocSubSection title={t(`${s}.accountSecurity.passwords.title`)}>
-          <DocParagraph>{t(`${s}.accountSecurity.passwords.intro`)}</DocParagraph>
+          <DocParagraph>
+            {t(`${s}.accountSecurity.passwords.intro`)}
+          </DocParagraph>
           <DocList
-            items={t(`${s}.accountSecurity.passwords.requirements`, {
-              returnObjects: true,
-            }) as string[]}
+            items={
+              t(`${s}.accountSecurity.passwords.requirements`, {
+                returnObjects: true,
+              }) as string[]
+            }
           />
-          <DocParagraph>{t(`${s}.accountSecurity.passwords.advanced`)}</DocParagraph>
+          <DocParagraph>
+            {t(`${s}.accountSecurity.passwords.advanced`)}
+          </DocParagraph>
           <DocList
-            items={t(`${s}.accountSecurity.passwords.advancedList`, {
-              returnObjects: true,
-            }) as string[]}
+            items={
+              t(`${s}.accountSecurity.passwords.advancedList`, {
+                returnObjects: true,
+              }) as string[]
+            }
           />
         </DocSubSection>
 
         <DocSubSection title={t(`${s}.accountSecurity.twoFactor.title`)}>
-          <DocParagraph>{t(`${s}.accountSecurity.twoFactor.intro`)}</DocParagraph>
+          <DocParagraph>
+            {t(`${s}.accountSecurity.twoFactor.intro`)}
+          </DocParagraph>
           <DocList
-            items={t(`${s}.accountSecurity.twoFactor.steps`, {
-              returnObjects: true,
-            }) as string[]}
+            items={
+              t(`${s}.accountSecurity.twoFactor.steps`, {
+                returnObjects: true,
+              }) as string[]
+            }
           />
-          <DocParagraph>{t(`${s}.accountSecurity.twoFactor.appsTitle`)}</DocParagraph>
+          <DocParagraph>
+            {t(`${s}.accountSecurity.twoFactor.appsTitle`)}
+          </DocParagraph>
           <DocList
-            items={t(`${s}.accountSecurity.twoFactor.apps`, {
-              returnObjects: true,
-            }) as string[]}
+            items={
+              t(`${s}.accountSecurity.twoFactor.apps`, {
+                returnObjects: true,
+              }) as string[]
+            }
           />
         </DocSubSection>
 
         <DocSubSection title={t(`${s}.accountSecurity.recoveryCodes.title`)}>
-          <DocParagraph>{t(`${s}.accountSecurity.recoveryCodes.intro`)}</DocParagraph>
+          <DocParagraph>
+            {t(`${s}.accountSecurity.recoveryCodes.intro`)}
+          </DocParagraph>
           <DocList
-            items={t(`${s}.accountSecurity.recoveryCodes.features`, {
-              returnObjects: true,
-            }) as string[]}
+            items={
+              t(`${s}.accountSecurity.recoveryCodes.features`, {
+                returnObjects: true,
+              }) as string[]
+            }
           />
         </DocSubSection>
 
         <DocSubSection title={t(`${s}.accountSecurity.loginProtection.title`)}>
-          <DocParagraph>{t(`${s}.accountSecurity.loginProtection.intro`)}</DocParagraph>
+          <DocParagraph>
+            {t(`${s}.accountSecurity.loginProtection.intro`)}
+          </DocParagraph>
           <DocList
-            items={t(`${s}.accountSecurity.loginProtection.features`, {
-              returnObjects: true,
-            }) as string[]}
+            items={
+              t(`${s}.accountSecurity.loginProtection.features`, {
+                returnObjects: true,
+              }) as string[]
+            }
           />
         </DocSubSection>
       </DocSection>
@@ -90,26 +114,34 @@ export function SecurityDoc() {
       <DocSection title={t(`${s}.dataProtection.title`)}>
         <DocSubSection title={t(`${s}.dataProtection.encryption.title`)}>
           <DocList
-            items={t(`${s}.dataProtection.encryption.items`, {
-              returnObjects: true,
-            }) as string[]}
+            items={
+              t(`${s}.dataProtection.encryption.items`, {
+                returnObjects: true,
+              }) as string[]
+            }
           />
         </DocSubSection>
 
         <DocSubSection title={t(`${s}.dataProtection.cookies.title`)}>
           <DocList
-            items={t(`${s}.dataProtection.cookies.items`, {
-              returnObjects: true,
-            }) as string[]}
+            items={
+              t(`${s}.dataProtection.cookies.items`, {
+                returnObjects: true,
+              }) as string[]
+            }
           />
         </DocSubSection>
 
         <DocSubSection title={t(`${s}.dataProtection.ipAnonymization.title`)}>
-          <DocParagraph>{t(`${s}.dataProtection.ipAnonymization.intro`)}</DocParagraph>
+          <DocParagraph>
+            {t(`${s}.dataProtection.ipAnonymization.intro`)}
+          </DocParagraph>
           <DocList
-            items={t(`${s}.dataProtection.ipAnonymization.items`, {
-              returnObjects: true,
-            }) as string[]}
+            items={
+              t(`${s}.dataProtection.ipAnonymization.items`, {
+                returnObjects: true,
+              }) as string[]
+            }
           />
         </DocSubSection>
       </DocSection>
@@ -119,30 +151,40 @@ export function SecurityDoc() {
         <DocSubSection title={t(`${s}.botProtection.turnstile.title`)}>
           <DocParagraph>{t(`${s}.botProtection.turnstile.intro`)}</DocParagraph>
           <DocList
-            items={t(`${s}.botProtection.turnstile.features`, {
-              returnObjects: true,
-            }) as string[]}
+            items={
+              t(`${s}.botProtection.turnstile.features`, {
+                returnObjects: true,
+              }) as string[]
+            }
           />
         </DocSubSection>
 
         <DocSubSection title={t(`${s}.botProtection.rateLimiting.title`)}>
-          <DocParagraph>{t(`${s}.botProtection.rateLimiting.intro`)}</DocParagraph>
+          <DocParagraph>
+            {t(`${s}.botProtection.rateLimiting.intro`)}
+          </DocParagraph>
           <DocTable
-            headers={t(`${s}.botProtection.rateLimiting.headers`, {
-              returnObjects: true,
-            }) as string[]}
-            rows={t(`${s}.botProtection.rateLimiting.rows`, {
-              returnObjects: true,
-            }) as string[][]}
+            headers={
+              t(`${s}.botProtection.rateLimiting.headers`, {
+                returnObjects: true,
+              }) as string[]
+            }
+            rows={
+              t(`${s}.botProtection.rateLimiting.rows`, {
+                returnObjects: true,
+              }) as string[][]
+            }
           />
         </DocSubSection>
 
         <DocSubSection title={t(`${s}.botProtection.ddos.title`)}>
           <DocParagraph>{t(`${s}.botProtection.ddos.intro`)}</DocParagraph>
           <DocList
-            items={t(`${s}.botProtection.ddos.features`, {
-              returnObjects: true,
-            }) as string[]}
+            items={
+              t(`${s}.botProtection.ddos.features`, {
+                returnObjects: true,
+              }) as string[]
+            }
           />
         </DocSubSection>
       </DocSection>
@@ -151,38 +193,52 @@ export function SecurityDoc() {
       <DocSection title={t(`${s}.inputValidation.title`)}>
         <DocParagraph>{t(`${s}.inputValidation.intro`)}</DocParagraph>
         <DocList
-          items={t(`${s}.inputValidation.items`, {
-            returnObjects: true,
-          }) as string[]}
+          items={
+            t(`${s}.inputValidation.items`, {
+              returnObjects: true,
+            }) as string[]
+          }
         />
       </DocSection>
 
       {/* Privacy Controls */}
       <DocSection title={t(`${s}.privacyControls.title`)}>
         <DocSubSection title={t(`${s}.privacyControls.dataExport.title`)}>
-          <DocParagraph>{t(`${s}.privacyControls.dataExport.intro`)}</DocParagraph>
+          <DocParagraph>
+            {t(`${s}.privacyControls.dataExport.intro`)}
+          </DocParagraph>
           <DocList
-            items={t(`${s}.privacyControls.dataExport.steps`, {
-              returnObjects: true,
-            }) as string[]}
+            items={
+              t(`${s}.privacyControls.dataExport.steps`, {
+                returnObjects: true,
+              }) as string[]
+            }
           />
         </DocSubSection>
 
         <DocSubSection title={t(`${s}.privacyControls.accountDeletion.title`)}>
-          <DocParagraph>{t(`${s}.privacyControls.accountDeletion.intro`)}</DocParagraph>
+          <DocParagraph>
+            {t(`${s}.privacyControls.accountDeletion.intro`)}
+          </DocParagraph>
           <DocList
-            items={t(`${s}.privacyControls.accountDeletion.steps`, {
-              returnObjects: true,
-            }) as string[]}
+            items={
+              t(`${s}.privacyControls.accountDeletion.steps`, {
+                returnObjects: true,
+              }) as string[]
+            }
           />
         </DocSubSection>
 
         <DocSubSection title={t(`${s}.privacyControls.cookieConsent.title`)}>
-          <DocParagraph>{t(`${s}.privacyControls.cookieConsent.intro`)}</DocParagraph>
+          <DocParagraph>
+            {t(`${s}.privacyControls.cookieConsent.intro`)}
+          </DocParagraph>
           <DocList
-            items={t(`${s}.privacyControls.cookieConsent.features`, {
-              returnObjects: true,
-            }) as string[]}
+            items={
+              t(`${s}.privacyControls.cookieConsent.features`, {
+                returnObjects: true,
+              }) as string[]
+            }
           />
         </DocSubSection>
       </DocSection>
@@ -191,17 +247,21 @@ export function SecurityDoc() {
       <DocSection title={t(`${s}.bestPractices.title`)}>
         <DocSubSection title={t(`${s}.bestPractices.dos.title`)}>
           <DocList
-            items={t(`${s}.bestPractices.dos.items`, {
-              returnObjects: true,
-            }) as string[]}
+            items={
+              t(`${s}.bestPractices.dos.items`, {
+                returnObjects: true,
+              }) as string[]
+            }
           />
         </DocSubSection>
 
         <DocSubSection title={t(`${s}.bestPractices.donts.title`)}>
           <DocList
-            items={t(`${s}.bestPractices.donts.items`, {
-              returnObjects: true,
-            }) as string[]}
+            items={
+              t(`${s}.bestPractices.donts.items`, {
+                returnObjects: true,
+              }) as string[]
+            }
           />
         </DocSubSection>
       </DocSection>
@@ -210,9 +270,11 @@ export function SecurityDoc() {
       <DocSection title={t(`${s}.reporting.title`)}>
         <DocParagraph>{t(`${s}.reporting.intro`)}</DocParagraph>
         <DocList
-          items={t(`${s}.reporting.contact`, {
-            returnObjects: true,
-          }) as string[]}
+          items={
+            t(`${s}.reporting.contact`, {
+              returnObjects: true,
+            }) as string[]
+          }
         />
         <DocParagraph>{t(`${s}.reporting.note`)}</DocParagraph>
       </DocSection>
@@ -221,9 +283,11 @@ export function SecurityDoc() {
       <DocSection title={t(`${s}.compliance.title`)}>
         <DocSubSection title={t(`${s}.compliance.gdpr.title`)}>
           <DocList
-            items={t(`${s}.compliance.gdpr.items`, {
-              returnObjects: true,
-            }) as string[]}
+            items={
+              t(`${s}.compliance.gdpr.items`, {
+                returnObjects: true,
+              }) as string[]
+            }
           />
         </DocSubSection>
         <DocParagraph>
@@ -240,9 +304,11 @@ export function SecurityDoc() {
         <DocBlockquote type="info">{t(`${s}.planned.note`)}</DocBlockquote>
         <DocParagraph>{t(`${s}.planned.intro`)}</DocParagraph>
         <DocList
-          items={t(`${s}.planned.items`, {
-            returnObjects: true,
-          }) as string[]}
+          items={
+            t(`${s}.planned.items`, {
+              returnObjects: true,
+            }) as string[]
+          }
         />
       </DocSection>
     </DocsLayout>

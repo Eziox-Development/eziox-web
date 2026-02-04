@@ -51,7 +51,10 @@ export function ApiDoc() {
       <DocSection title={t(`${s}.authentication.title`)}>
         <DocParagraph>
           {t(`${s}.authentication.intro`)}{' '}
-          <DocLink href="/profile?tab=api">{t(`${s}.authentication.dashboardLink`)}</DocLink>.
+          <DocLink href="/profile?tab=api">
+            {t(`${s}.authentication.dashboardLink`)}
+          </DocLink>
+          .
         </DocParagraph>
 
         <DocSubSection title={t(`${s}.authentication.keyFormat`)}>
@@ -62,7 +65,7 @@ export function ApiDoc() {
         <DocSubSection title={t(`${s}.authentication.usingKey`)}>
           <DocParagraph>{t(`${s}.authentication.usingKeyDesc`)}</DocParagraph>
           <DocCode language="bash">
-            {`curl -X GET "${(typeof window !== 'undefined' ? (window.location.hostname === 'localhost' ? window.location.hostname : window.location.origin) : 'https://eziox.link').replace('eziox.link', 'api.eziox.link')}/v1/profile" \\
+            {`curl -X GET "https://api.eziox.link/v1/profile" \\
   -H "Authorization: Bearer ezx_your_api_key_here"`}
           </DocCode>
         </DocSubSection>
@@ -105,7 +108,8 @@ X-RateLimit-Reset: 1706140800`}
 
       <DocSection title={t(`${s}.endpoints.title`)}>
         <DocBlockquote type="info">
-          {t(`${s}.endpoints.baseUrl`)}: `${(typeof window !== 'undefined' ? (window.location.hostname === 'localhost' ? 'localhost:5173' : window.location.hostname) : 'eziox.link').replace('eziox.link', 'api.eziox.link')}/v1`
+          {t(`${s}.endpoints.baseUrl`)}: `$
+          api.eziox.link/v1`
         </DocBlockquote>
 
         <DocSubSection title={t(`${s}.endpoints.getProfile`)}>

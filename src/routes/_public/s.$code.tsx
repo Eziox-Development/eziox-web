@@ -3,6 +3,7 @@ import { motion } from 'motion/react'
 import { useTranslation } from 'react-i18next'
 import { resolveShortLinkFn } from '@/server/functions/shortener'
 import { useTheme } from '@/components/layout/ThemeProvider'
+import { getAppHostname } from '@/lib/utils'
 import {
   LinkIcon,
   Home,
@@ -240,7 +241,7 @@ export function ShortLinkNotFound() {
                   className="font-mono text-sm"
                   style={{ color: theme.colors.primary }}
                 >
-                  {typeof window !== 'undefined' ? (window.location.hostname === 'localhost' ? 'localhost:5173' : window.location.hostname) : 'eziox.link'}/s/{code}
+                  {getAppHostname()}/s/{code}
                 </code>
               </motion.div>
 

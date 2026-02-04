@@ -79,7 +79,7 @@ export function PremiumDoc() {
             style={{ color: theme.colors.foregroundMuted }}
             strokeWidth={2}
           />
-        )
+        ),
       ),
     ]
   })
@@ -102,7 +102,9 @@ export function PremiumDoc() {
 
       <DocSection title={t(`${s}.pricing.title`)}>
         <DocTable
-          headers={t(`${s}.pricing.headers`, { returnObjects: true }) as string[]}
+          headers={
+            t(`${s}.pricing.headers`, { returnObjects: true }) as string[]
+          }
           rows={pricingRows}
         />
       </DocSection>
@@ -114,7 +116,9 @@ export function PremiumDoc() {
         />
         <DocSubSection title={t(`${s}.free.limitationsTitle`)}>
           <DocList
-            items={t(`${s}.free.limitations`, { returnObjects: true }) as string[]}
+            items={
+              t(`${s}.free.limitations`, { returnObjects: true }) as string[]
+            }
           />
         </DocSubSection>
       </DocSection>
@@ -129,7 +133,9 @@ export function PremiumDoc() {
 
         <DocSubSection title={t(`${s}.pro.otherTitle`)}>
           <DocList
-            items={t(`${s}.pro.otherFeatures`, { returnObjects: true }) as string[]}
+            items={
+              t(`${s}.pro.otherFeatures`, { returnObjects: true }) as string[]
+            }
           />
         </DocSubSection>
       </DocSection>
@@ -144,7 +150,9 @@ export function PremiumDoc() {
         <DocSubSection title={t(`${s}.creator.otherTitle`)}>
           <DocList
             items={
-              t(`${s}.creator.otherFeatures`, { returnObjects: true }) as string[]
+              t(`${s}.creator.otherFeatures`, {
+                returnObjects: true,
+              }) as string[]
             }
           />
         </DocSubSection>
@@ -153,7 +161,9 @@ export function PremiumDoc() {
       <DocSection title={t(`${s}.lifetime.title`)}>
         <DocParagraph>{t(`${s}.lifetime.intro`)}</DocParagraph>
         <DocList
-          items={t(`${s}.lifetime.features`, { returnObjects: true }) as string[]}
+          items={
+            t(`${s}.lifetime.features`, { returnObjects: true }) as string[]
+          }
         />
       </DocSection>
 

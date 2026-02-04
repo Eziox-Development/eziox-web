@@ -37,21 +37,29 @@ export function SpotifyDoc() {
       <DocSection title={t(`${s}.overview.title`)}>
         <DocParagraph>{t(`${s}.overview.intro`)}</DocParagraph>
         <DocList
-          items={t(`${s}.overview.features`, { returnObjects: true }) as string[]}
+          items={
+            t(`${s}.overview.features`, { returnObjects: true }) as string[]
+          }
         />
       </DocSection>
 
       <DocSection title={t(`${s}.setup.title`)}>
         <DocSubSection title={t(`${s}.setup.connect.title`)}>
           <DocList
-            items={t(`${s}.setup.connect.steps`, { returnObjects: true }) as string[]}
+            items={
+              t(`${s}.setup.connect.steps`, { returnObjects: true }) as string[]
+            }
           />
         </DocSubSection>
 
         <DocSubSection title={t(`${s}.setup.privacy.title`)}>
           <DocParagraph>{t(`${s}.setup.privacy.intro`)}</DocParagraph>
           <DocList
-            items={t(`${s}.setup.privacy.options`, { returnObjects: true }) as string[]}
+            items={
+              t(`${s}.setup.privacy.options`, {
+                returnObjects: true,
+              }) as string[]
+            }
           />
         </DocSubSection>
       </DocSection>
@@ -63,13 +71,21 @@ export function SpotifyDoc() {
 
         <DocSubSection title={t(`${s}.howItWorks.tokens.title`)}>
           <DocList
-            items={t(`${s}.howItWorks.tokens.items`, { returnObjects: true }) as string[]}
+            items={
+              t(`${s}.howItWorks.tokens.items`, {
+                returnObjects: true,
+              }) as string[]
+            }
           />
         </DocSubSection>
 
         <DocSubSection title={t(`${s}.howItWorks.privacy.title`)}>
           <DocList
-            items={t(`${s}.howItWorks.privacy.items`, { returnObjects: true }) as string[]}
+            items={
+              t(`${s}.howItWorks.privacy.items`, {
+                returnObjects: true,
+              }) as string[]
+            }
           />
         </DocSubSection>
       </DocSection>
@@ -77,19 +93,31 @@ export function SpotifyDoc() {
       <DocSection title={t(`${s}.troubleshooting.title`)}>
         <DocSubSection title={t(`${s}.troubleshooting.notShowing.title`)}>
           <DocList
-            items={t(`${s}.troubleshooting.notShowing.items`, { returnObjects: true }) as string[]}
+            items={
+              t(`${s}.troubleshooting.notShowing.items`, {
+                returnObjects: true,
+              }) as string[]
+            }
           />
         </DocSubSection>
 
         <DocSubSection title={t(`${s}.troubleshooting.wrongTrack.title`)}>
           <DocList
-            items={t(`${s}.troubleshooting.wrongTrack.items`, { returnObjects: true }) as string[]}
+            items={
+              t(`${s}.troubleshooting.wrongTrack.items`, {
+                returnObjects: true,
+              }) as string[]
+            }
           />
         </DocSubSection>
 
         <DocSubSection title={t(`${s}.troubleshooting.connection.title`)}>
           <DocList
-            items={t(`${s}.troubleshooting.connection.items`, { returnObjects: true }) as string[]}
+            items={
+              t(`${s}.troubleshooting.connection.items`, {
+                returnObjects: true,
+              }) as string[]
+            }
           />
         </DocSubSection>
       </DocSection>
@@ -97,7 +125,9 @@ export function SpotifyDoc() {
       <DocSection title={t(`${s}.disconnect.title`)}>
         <DocParagraph>{t(`${s}.disconnect.intro`)}</DocParagraph>
         <DocList
-          items={t(`${s}.disconnect.steps`, { returnObjects: true }) as string[]}
+          items={
+            t(`${s}.disconnect.steps`, { returnObjects: true }) as string[]
+          }
         />
         <DocParagraph>
           {t(`${s}.disconnect.revokePrefix`)}{' '}

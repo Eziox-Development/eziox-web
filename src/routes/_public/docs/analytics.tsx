@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
+import { getAppHostname } from '@/lib/utils'
 import {
   DocsLayout,
   DocSection,
@@ -17,7 +18,8 @@ export const Route = createFileRoute('/_public/docs/analytics')({
       { title: 'Analytics | Docs | Eziox' },
       {
         name: 'description',
-        content: 'Track your profile performance with detailed analytics and insights.',
+        content:
+          'Track your profile performance with detailed analytics and insights.',
       },
     ],
   }),
@@ -37,10 +39,14 @@ export function AnalyticsDoc() {
       <DocSection title={t('docs.pages.analytics.sections.overview.title')}>
         <DocParagraph>
           {t('docs.pages.analytics.sections.overview.intro', { link: '' })}
-          <DocLink href="/analytics">{typeof window !== 'undefined' ? (window.location.hostname === 'localhost' ? 'localhost:5173' : window.location.hostname) : 'eziox.link'}/analytics</DocLink>
+          <DocLink href="/analytics">
+            {getAppHostname()}/analytics
+          </DocLink>
         </DocParagraph>
 
-        <DocSubSection title={t('docs.pages.analytics.sections.overview.keyMetrics')}>
+        <DocSubSection
+          title={t('docs.pages.analytics.sections.overview.keyMetrics')}
+        >
           <DocTable
             headers={['Metric', 'Description']}
             rows={[

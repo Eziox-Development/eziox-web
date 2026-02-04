@@ -48,19 +48,34 @@ export async function verifyTurnstileToken(
     if (!data.success) {
       const errorCodes = data['error-codes'] || []
       console.warn('[Turnstile] Verification failed:', errorCodes)
-      
+
       // Handle specific error cases
       if (errorCodes.includes('timeout-or-duplicate')) {
-        return { success: false, error: 'Token expired or already used. Please refresh the page and try again.' }
+        return {
+          success: false,
+          error:
+            'Token expired or already used. Please refresh the page and try again.',
+        }
       }
       if (errorCodes.includes('invalid-input-response')) {
-        return { success: false, error: 'Invalid verification token. Please refresh the page and try again.' }
+        return {
+          success: false,
+          error:
+            'Invalid verification token. Please refresh the page and try again.',
+        }
       }
       if (errorCodes.includes('missing-input-response')) {
-        return { success: false, error: 'Verification required. Please complete the bot check.' }
+        return {
+          success: false,
+          error: 'Verification required. Please complete the bot check.',
+        }
       }
-      
-      return { success: false, error: 'Bot verification failed. Please refresh the page and try again.' }
+
+      return {
+        success: false,
+        error:
+          'Bot verification failed. Please refresh the page and try again.',
+      }
     }
 
     return { success: true }

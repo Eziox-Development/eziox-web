@@ -33,7 +33,8 @@ export const Route = createFileRoute('/_public/docs/')({
       { title: 'Documentation | Eziox' },
       {
         name: 'description',
-        content: 'Learn how to use Eziox with our comprehensive documentation and guides.',
+        content:
+          'Learn how to use Eziox with our comprehensive documentation and guides.',
       },
     ],
   }),
@@ -71,7 +72,13 @@ const CATEGORY_COLORS: Record<string, string> = {
   support: '#ec4899',
 }
 
-const categoryOrder = ['basics', 'features', 'integrations', 'account', 'support']
+const categoryOrder = [
+  'basics',
+  'features',
+  'integrations',
+  'account',
+  'support',
+]
 
 export function DocsIndexPage() {
   const { t } = useTranslation()
@@ -145,7 +152,10 @@ export function DocsIndexPage() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 flex items-start justify-center pt-[15vh]"
-            style={{ background: 'rgba(0, 0, 0, 0.6)', backdropFilter: 'blur(4px)' }}
+            style={{
+              background: 'rgba(0, 0, 0, 0.6)',
+              backdropFilter: 'blur(4px)',
+            }}
             onClick={() => setSearchOpen(false)}
           >
             <motion.div
@@ -161,8 +171,14 @@ export function DocsIndexPage() {
               }}
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex items-center gap-3 p-5 border-b" style={{ borderColor: theme.colors.border }}>
-                <Search size={22} style={{ color: theme.colors.foregroundMuted }} />
+              <div
+                className="flex items-center gap-3 p-5 border-b"
+                style={{ borderColor: theme.colors.border }}
+              >
+                <Search
+                  size={22}
+                  style={{ color: theme.colors.foregroundMuted }}
+                />
                 <input
                   type="text"
                   placeholder={t('docs.searchPlaceholder')}
@@ -176,7 +192,10 @@ export function DocsIndexPage() {
                   onClick={() => setSearchOpen(false)}
                   className="p-2 rounded-lg hover:bg-white/10 transition-colors"
                 >
-                  <X size={18} style={{ color: theme.colors.foregroundMuted }} />
+                  <X
+                    size={18}
+                    style={{ color: theme.colors.foregroundMuted }}
+                  />
                 </button>
               </div>
 
@@ -184,8 +203,18 @@ export function DocsIndexPage() {
                 {filteredDocs.length === 0 ? (
                   <div className="p-10 text-center">
                     <Search size={40} className="mx-auto mb-4 opacity-30" />
-                    <p className="font-medium mb-1" style={{ color: theme.colors.foreground }}>{t('docs.noResults')}</p>
-                    <p className="text-sm" style={{ color: theme.colors.foregroundMuted }}>{t('docs.noResultsDesc')}</p>
+                    <p
+                      className="font-medium mb-1"
+                      style={{ color: theme.colors.foreground }}
+                    >
+                      {t('docs.noResults')}
+                    </p>
+                    <p
+                      className="text-sm"
+                      style={{ color: theme.colors.foregroundMuted }}
+                    >
+                      {t('docs.noResultsDesc')}
+                    </p>
                   </div>
                 ) : (
                   categoryOrder.map((category) => {
@@ -194,7 +223,10 @@ export function DocsIndexPage() {
 
                     return (
                       <div key={category} className="mb-4">
-                        <p className="px-3 py-2 text-xs font-semibold uppercase tracking-wider" style={{ color: theme.colors.foregroundMuted }}>
+                        <p
+                          className="px-3 py-2 text-xs font-semibold uppercase tracking-wider"
+                          style={{ color: theme.colors.foregroundMuted }}
+                        >
                           {t(`docs.categories.${category}`)}
                         </p>
                         {docs.map((doc) => {
@@ -208,19 +240,37 @@ export function DocsIndexPage() {
                             >
                               <div
                                 className="w-10 h-10 flex items-center justify-center rounded-xl"
-                                style={{ background: `${CATEGORY_COLORS[doc.category]}15` }}
+                                style={{
+                                  background: `${CATEGORY_COLORS[doc.category]}15`,
+                                }}
                               >
-                                <DocIcon size={20} style={{ color: CATEGORY_COLORS[doc.category] }} />
+                                <DocIcon
+                                  size={20}
+                                  style={{
+                                    color: CATEGORY_COLORS[doc.category],
+                                  }}
+                                />
                               </div>
                               <div className="flex-1 min-w-0">
-                                <p className="font-medium truncate" style={{ color: theme.colors.foreground }}>
+                                <p
+                                  className="font-medium truncate"
+                                  style={{ color: theme.colors.foreground }}
+                                >
                                   {getText(doc.titleKey)}
                                 </p>
-                                <p className="text-sm truncate" style={{ color: theme.colors.foregroundMuted }}>
+                                <p
+                                  className="text-sm truncate"
+                                  style={{
+                                    color: theme.colors.foregroundMuted,
+                                  }}
+                                >
                                   {getText(doc.descriptionKey)}
                                 </p>
                               </div>
-                              <ChevronRight size={18} style={{ color: theme.colors.foregroundMuted }} />
+                              <ChevronRight
+                                size={18}
+                                style={{ color: theme.colors.foregroundMuted }}
+                              />
                             </Link>
                           )
                         })}
@@ -230,14 +280,30 @@ export function DocsIndexPage() {
                 )}
               </div>
 
-              <div className="flex items-center justify-between px-5 py-3 border-t text-xs" style={{ borderColor: theme.colors.border, color: theme.colors.foregroundMuted }}>
+              <div
+                className="flex items-center justify-between px-5 py-3 border-t text-xs"
+                style={{
+                  borderColor: theme.colors.border,
+                  color: theme.colors.foregroundMuted,
+                }}
+              >
                 <div className="flex items-center gap-4">
                   <span className="flex items-center gap-1">
-                    <kbd className="px-1.5 py-0.5 rounded" style={{ background: theme.colors.backgroundSecondary }}>↵</kbd>
+                    <kbd
+                      className="px-1.5 py-0.5 rounded"
+                      style={{ background: theme.colors.backgroundSecondary }}
+                    >
+                      ↵
+                    </kbd>
                     {t('common.open')}
                   </span>
                   <span className="flex items-center gap-1">
-                    <kbd className="px-1.5 py-0.5 rounded" style={{ background: theme.colors.backgroundSecondary }}>ESC</kbd>
+                    <kbd
+                      className="px-1.5 py-0.5 rounded"
+                      style={{ background: theme.colors.backgroundSecondary }}
+                    >
+                      ESC
+                    </kbd>
                     {t('common.close')}
                   </span>
                 </div>
@@ -273,14 +339,20 @@ export function DocsIndexPage() {
               }}
             >
               <BookOpen size={16} style={{ color: theme.colors.primary }} />
-              <span className="text-sm font-medium" style={{ color: theme.colors.foreground }}>
+              <span
+                className="text-sm font-medium"
+                style={{ color: theme.colors.foreground }}
+              >
                 {t('docs.title')}
               </span>
             </div>
 
             <h1
               className="text-5xl lg:text-7xl font-bold mb-6"
-              style={{ color: theme.colors.foreground, fontFamily: theme.typography.displayFont }}
+              style={{
+                color: theme.colors.foreground,
+                fontFamily: theme.typography.displayFont,
+              }}
             >
               {t('docs.title')}
             </h1>
@@ -303,14 +375,23 @@ export function DocsIndexPage() {
               }}
               whileHover={{ y: -2 }}
             >
-              <Search size={22} style={{ color: theme.colors.foregroundMuted }} />
-              <span className="flex-1 text-left" style={{ color: theme.colors.foregroundMuted }}>
+              <Search
+                size={22}
+                style={{ color: theme.colors.foregroundMuted }}
+              />
+              <span
+                className="flex-1 text-left"
+                style={{ color: theme.colors.foregroundMuted }}
+              >
                 {t('docs.searchPlaceholder')}
               </span>
               <div className="flex items-center gap-1">
                 <kbd
                   className="px-2 py-1 rounded-lg text-xs font-medium flex items-center gap-1"
-                  style={{ background: theme.colors.backgroundSecondary, color: theme.colors.foregroundMuted }}
+                  style={{
+                    background: theme.colors.backgroundSecondary,
+                    color: theme.colors.foregroundMuted,
+                  }}
                 >
                   <Command size={12} />K
                 </kbd>
@@ -331,7 +412,13 @@ export function DocsIndexPage() {
           >
             <div className="flex items-center gap-3 mb-2">
               <Sparkles size={20} style={{ color: theme.colors.primary }} />
-              <h2 className="text-2xl font-bold" style={{ color: theme.colors.foreground, fontFamily: theme.typography.displayFont }}>
+              <h2
+                className="text-2xl font-bold"
+                style={{
+                  color: theme.colors.foreground,
+                  fontFamily: theme.typography.displayFont,
+                }}
+              >
                 {t('docs.categories.basics')}
               </h2>
             </div>
@@ -343,7 +430,8 @@ export function DocsIndexPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {featuredDocs.map((doc, index) => {
               const IconComponent = ICON_MAP[doc.icon] || FileText
-              const categoryColor = CATEGORY_COLORS[doc.category] || theme.colors.primary
+              const categoryColor =
+                CATEGORY_COLORS[doc.category] || theme.colors.primary
 
               return (
                 <motion.div
@@ -353,7 +441,10 @@ export function DocsIndexPage() {
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.1 }}
                 >
-                  <Link to={`/docs/${doc.slug}` as '/'} className="block group h-full">
+                  <Link
+                    to={`/docs/${doc.slug}` as '/'}
+                    className="block group h-full"
+                  >
                     <div
                       className="h-full p-6 rounded-2xl transition-all duration-300 hover:scale-[1.02]"
                       style={{
@@ -365,20 +456,32 @@ export function DocsIndexPage() {
                         className="w-14 h-14 flex items-center justify-center rounded-2xl mb-5"
                         style={{ background: `${categoryColor}20` }}
                       >
-                        <IconComponent size={28} style={{ color: categoryColor }} />
+                        <IconComponent
+                          size={28}
+                          style={{ color: categoryColor }}
+                        />
                       </div>
 
-                      <h3 className="text-xl font-bold mb-2" style={{ color: theme.colors.foreground }}>
+                      <h3
+                        className="text-xl font-bold mb-2"
+                        style={{ color: theme.colors.foreground }}
+                      >
                         {getText(doc.titleKey)}
                       </h3>
 
-                      <p className="text-sm mb-4" style={{ color: theme.colors.foregroundMuted }}>
+                      <p
+                        className="text-sm mb-4"
+                        style={{ color: theme.colors.foregroundMuted }}
+                      >
                         {getText(doc.descriptionKey)}
                       </p>
 
                       <div className="flex items-center justify-between">
                         {doc.readTime && (
-                          <div className="flex items-center gap-1 text-xs" style={{ color: theme.colors.foregroundMuted }}>
+                          <div
+                            className="flex items-center gap-1 text-xs"
+                            style={{ color: theme.colors.foregroundMuted }}
+                          >
                             <Clock size={12} />
                             {t('docs.meta.readTime', { minutes: doc.readTime })}
                           </div>
@@ -401,14 +504,18 @@ export function DocsIndexPage() {
       </section>
 
       {/* All Docs by Category */}
-      <section className="py-16 px-4" style={{ background: theme.colors.backgroundSecondary }}>
+      <section
+        className="py-16 px-4"
+        style={{ background: theme.colors.backgroundSecondary }}
+      >
         <div className="max-w-6xl mx-auto">
           {categoryOrder.map((category, categoryIndex) => {
             const docs = groupedDocs[category]
             if (!docs || docs.length === 0) return null
 
             const CategoryIcon = CATEGORY_ICONS[category] || BookOpen
-            const categoryColor = CATEGORY_COLORS[category] || theme.colors.primary
+            const categoryColor =
+              CATEGORY_COLORS[category] || theme.colors.primary
 
             return (
               <motion.div
@@ -426,12 +533,21 @@ export function DocsIndexPage() {
                   >
                     <CategoryIcon size={20} style={{ color: categoryColor }} />
                   </div>
-                  <h2 className="text-2xl font-bold" style={{ color: theme.colors.foreground, fontFamily: theme.typography.displayFont }}>
+                  <h2
+                    className="text-2xl font-bold"
+                    style={{
+                      color: theme.colors.foreground,
+                      fontFamily: theme.typography.displayFont,
+                    }}
+                  >
                     {t(`docs.categories.${category}`)}
                   </h2>
                   <span
                     className="px-2.5 py-1 rounded-full text-xs font-medium"
-                    style={{ background: `${categoryColor}20`, color: categoryColor }}
+                    style={{
+                      background: `${categoryColor}20`,
+                      color: categoryColor,
+                    }}
                   >
                     {docs.length}
                   </span>
@@ -440,7 +556,8 @@ export function DocsIndexPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {docs.map((doc, index) => {
                     const IconComponent = ICON_MAP[doc.icon] || FileText
-                    const docColor = CATEGORY_COLORS[doc.category] || theme.colors.primary
+                    const docColor =
+                      CATEGORY_COLORS[doc.category] || theme.colors.primary
 
                     return (
                       <motion.div
@@ -450,7 +567,10 @@ export function DocsIndexPage() {
                         viewport={{ once: true }}
                         transition={{ delay: index * 0.05 }}
                       >
-                        <Link to={`/docs/${doc.slug}` as '/'} className="block group">
+                        <Link
+                          to={`/docs/${doc.slug}` as '/'}
+                          className="block group"
+                        >
                           <div
                             className="flex items-center gap-4 p-5 rounded-xl transition-all hover:scale-[1.01]"
                             style={{
@@ -462,21 +582,35 @@ export function DocsIndexPage() {
                               className="w-12 h-12 flex items-center justify-center rounded-xl shrink-0"
                               style={{ background: `${docColor}15` }}
                             >
-                              <IconComponent size={24} style={{ color: docColor }} />
+                              <IconComponent
+                                size={24}
+                                style={{ color: docColor }}
+                              />
                             </div>
 
                             <div className="flex-1 min-w-0">
-                              <h3 className="font-semibold mb-1 truncate" style={{ color: theme.colors.foreground }}>
+                              <h3
+                                className="font-semibold mb-1 truncate"
+                                style={{ color: theme.colors.foreground }}
+                              >
                                 {getText(doc.titleKey)}
                               </h3>
-                              <p className="text-sm truncate" style={{ color: theme.colors.foregroundMuted }}>
+                              <p
+                                className="text-sm truncate"
+                                style={{ color: theme.colors.foregroundMuted }}
+                              >
                                 {getText(doc.descriptionKey)}
                               </p>
                             </div>
 
                             <div className="flex items-center gap-3 shrink-0">
                               {doc.readTime && (
-                                <span className="text-xs hidden sm:block" style={{ color: theme.colors.foregroundMuted }}>
+                                <span
+                                  className="text-xs hidden sm:block"
+                                  style={{
+                                    color: theme.colors.foregroundMuted,
+                                  }}
+                                >
                                   {doc.readTime} min
                                 </span>
                               )}
@@ -507,7 +641,13 @@ export function DocsIndexPage() {
             viewport={{ once: true }}
             className="text-center mb-10"
           >
-            <h2 className="text-3xl font-bold mb-4" style={{ color: theme.colors.foreground, fontFamily: theme.typography.displayFont }}>
+            <h2
+              className="text-3xl font-bold mb-4"
+              style={{
+                color: theme.colors.foreground,
+                fontFamily: theme.typography.displayFont,
+              }}
+            >
               {t('docs.help.title')}
             </h2>
           </motion.div>
@@ -519,7 +659,7 @@ export function DocsIndexPage() {
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
             >
-              <Link to="/contact" className="block group">
+              <Link to="/support" className="block group">
                 <div
                   className="p-6 rounded-2xl text-center transition-all hover:scale-[1.02]"
                   style={{
@@ -531,9 +671,15 @@ export function DocsIndexPage() {
                     className="w-14 h-14 mx-auto flex items-center justify-center rounded-2xl mb-4"
                     style={{ background: `${theme.colors.primary}20` }}
                   >
-                    <HelpCircle size={28} style={{ color: theme.colors.primary }} />
+                    <HelpCircle
+                      size={28}
+                      style={{ color: theme.colors.primary }}
+                    />
                   </div>
-                  <h3 className="font-semibold mb-2" style={{ color: theme.colors.foreground }}>
+                  <h3
+                    className="font-semibold mb-2"
+                    style={{ color: theme.colors.foreground }}
+                  >
                     {t('docs.help.contactSupport')}
                   </h3>
                 </div>
@@ -560,7 +706,10 @@ export function DocsIndexPage() {
                   >
                     <Key size={28} style={{ color: '#3b82f6' }} />
                   </div>
-                  <h3 className="font-semibold mb-2" style={{ color: theme.colors.foreground }}>
+                  <h3
+                    className="font-semibold mb-2"
+                    style={{ color: theme.colors.foreground }}
+                  >
                     {t('docs.help.apiReference')}
                   </h3>
                 </div>
@@ -587,7 +736,10 @@ export function DocsIndexPage() {
                   >
                     <Crown size={28} style={{ color: '#f59e0b' }} />
                   </div>
-                  <h3 className="font-semibold mb-2" style={{ color: theme.colors.foreground }}>
+                  <h3
+                    className="font-semibold mb-2"
+                    style={{ color: theme.colors.foreground }}
+                  >
                     {t('docs.help.viewPricing')}
                   </h3>
                 </div>

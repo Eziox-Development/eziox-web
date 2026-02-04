@@ -20,7 +20,7 @@ const allBlockedWords: string[] = Object.values(config.categories).flat()
 
 // Compile regex patterns
 const compiledPatterns: RegExp[] = config.patterns.map(
-  (pattern) => new RegExp(pattern, 'gi')
+  (pattern) => new RegExp(pattern, 'gi'),
 )
 
 export interface ContentFilterResult {
@@ -76,7 +76,7 @@ export function checkContent(text: string): ContentFilterResult {
   // Check for spam patterns (repeated characters)
   const repeatedPattern = new RegExp(
     `(.)\\1{${config.settings.maxRepeatedChars},}`,
-    'i'
+    'i',
   )
   if (repeatedPattern.test(text)) {
     return {

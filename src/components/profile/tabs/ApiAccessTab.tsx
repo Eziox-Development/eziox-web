@@ -4,8 +4,28 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/hooks/use-auth'
-import { getApiKeysFn, createApiKeyFn, deleteApiKeyFn } from '@/server/functions/api-keys'
-import { Key, Plus, Trash2, Copy, Check, Eye, EyeOff, Loader2, ExternalLink, Shield, Clock, Activity, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react'
+import {
+  getApiKeysFn,
+  createApiKeyFn,
+  deleteApiKeyFn,
+} from '@/server/functions/api-keys'
+import {
+  Key,
+  Plus,
+  Trash2,
+  Copy,
+  Check,
+  Eye,
+  EyeOff,
+  Loader2,
+  ExternalLink,
+  Shield,
+  Clock,
+  Activity,
+  AlertCircle,
+  ChevronDown,
+  ChevronUp,
+} from 'lucide-react'
 import type { ApiKeyPermissions } from '@/server/functions/api-keys'
 
 const EXPIRATION_OPTIONS = [
@@ -61,13 +81,14 @@ export function ApiAccessTab() {
   const activeKeysCount = apiKeys.filter((k) => k.isActive).length
 
   const createMutation = useMutation({
-    mutationFn: () => createApiKey({ 
-      data: { 
-        name: newKeyName || 'Unnamed Key',
-        permissions,
-        expiresInDays: expirationDays || undefined,
-      } 
-    }),
+    mutationFn: () =>
+      createApiKey({
+        data: {
+          name: newKeyName || 'Unnamed Key',
+          permissions,
+          expiresInDays: expirationDays || undefined,
+        },
+      }),
     onSuccess: (data) => {
       void queryClient.invalidateQueries({ queryKey: ['api-keys'] })
       setNewKey(data.apiKey.key)
@@ -127,10 +148,14 @@ export function ApiAccessTab() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'text-green-400 bg-green-500/20'
-      case 'inactive': return 'text-yellow-400 bg-yellow-500/20'
-      case 'expired': return 'text-red-400 bg-red-500/20'
-      default: return 'text-foreground-muted bg-background-secondary'
+      case 'active':
+        return 'text-green-400 bg-green-500/20'
+      case 'inactive':
+        return 'text-yellow-400 bg-yellow-500/20'
+      case 'expired':
+        return 'text-red-400 bg-red-500/20'
+      default:
+        return 'text-foreground-muted bg-background-secondary'
     }
   }
 
@@ -145,19 +170,28 @@ export function ApiAccessTab() {
       {/* Header with Tier Limits */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-foreground">{t('dashboard.api.title')}</h2>
-          <p className="text-sm text-foreground-muted">{t('dashboard.api.subtitle')}</p>
+          <h2 className="text-xl font-bold text-foreground">
+            {t('dashboard.api.title')}
+          </h2>
+          <p className="text-sm text-foreground-muted">
+            {t('dashboard.api.subtitle')}
+          </p>
         </div>
         <div className="flex items-center gap-3">
           {/* Tier Limits Badge */}
           <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-background-secondary/50 border border-border">
             <Activity size={14} className="text-primary" />
             <span className="text-xs text-foreground-muted">
-              {t('dashboard.api.tierLimits.keys', { current: activeKeysCount, max: tierLimits.maxKeys })}
+              {t('dashboard.api.tierLimits.keys', {
+                current: activeKeysCount,
+                max: tierLimits.maxKeys,
+              })}
             </span>
             <span className="text-xs text-foreground-muted/50">•</span>
             <span className="text-xs text-foreground-muted">
-              {t('dashboard.api.tierLimits.rate', { count: tierLimits.rateLimit })}
+              {t('dashboard.api.tierLimits.rate', {
+                count: tierLimits.rateLimit,
+              })}
             </span>
           </div>
           <a
@@ -172,8 +206,12 @@ export function ApiAccessTab() {
             onClick={() => setIsCreating(true)}
             disabled={activeKeysCount >= tierLimits.maxKeys}
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium bg-linear-to-br from-primary to-accent text-primary-foreground disabled:opacity-50 disabled:cursor-not-allowed"
-            whileHover={{ scale: activeKeysCount >= tierLimits.maxKeys ? 1 : 1.02 }}
-            whileTap={{ scale: activeKeysCount >= tierLimits.maxKeys ? 1 : 0.98 }}
+            whileHover={{
+              scale: activeKeysCount >= tierLimits.maxKeys ? 1 : 1.02,
+            }}
+            whileTap={{
+              scale: activeKeysCount >= tierLimits.maxKeys ? 1 : 0.98,
+            }}
           >
             <Plus size={18} />
             {t('dashboard.api.createKey')}
@@ -192,11 +230,15 @@ export function ApiAccessTab() {
           >
             <div className="flex items-center gap-2 mb-2">
               <Check size={18} className="text-green-400" />
-              <p className="text-green-400 font-medium">{t('dashboard.api.keyCreated')}</p>
+              <p className="text-green-400 font-medium">
+                {t('dashboard.api.keyCreated')}
+              </p>
             </div>
             <div className="flex items-center gap-2 mb-3">
               <AlertCircle size={14} className="text-yellow-400" />
-              <p className="text-sm text-foreground-muted">{t('dashboard.api.keyCreatedWarning')}</p>
+              <p className="text-sm text-foreground-muted">
+                {t('dashboard.api.keyCreatedWarning')}
+              </p>
             </div>
             <div className="flex items-center gap-2">
               <code className="flex-1 px-4 py-3 rounded-xl bg-background-secondary/50 font-mono text-sm text-green-400 break-all">
@@ -206,7 +248,11 @@ export function ApiAccessTab() {
                 onClick={() => copyKey(newKey)}
                 className="p-3 rounded-xl bg-green-500/20 hover:bg-green-500/30 transition-colors duration-(--animation-speed)"
               >
-                {copiedKey === newKey ? <Check size={18} className="text-green-400" /> : <Copy size={18} className="text-green-400" />}
+                {copiedKey === newKey ? (
+                  <Check size={18} className="text-green-400" />
+                ) : (
+                  <Copy size={18} className="text-green-400" />
+                )}
               </button>
             </div>
             <button
@@ -228,11 +274,15 @@ export function ApiAccessTab() {
             exit={{ opacity: 0, height: 0 }}
             className="rounded-lg overflow-hidden bg-card/50 border border-border p-5"
           >
-            <h3 className="font-bold text-foreground mb-4">{t('dashboard.api.createKey')}</h3>
+            <h3 className="font-bold text-foreground mb-4">
+              {t('dashboard.api.createKey')}
+            </h3>
             <div className="space-y-5">
               {/* Key Name */}
               <div>
-                <label className="block text-sm font-medium text-foreground-muted mb-2">{t('dashboard.api.keyName')}</label>
+                <label className="block text-sm font-medium text-foreground-muted mb-2">
+                  {t('dashboard.api.keyName')}
+                </label>
                 <input
                   type="text"
                   value={newKeyName}
@@ -271,17 +321,29 @@ export function ApiAccessTab() {
                   <Shield size={14} className="inline mr-1" />
                   {t('dashboard.api.permissions')}
                 </label>
-                <p className="text-xs text-foreground-muted/70 mb-3">{t('dashboard.api.permissionsDescription')}</p>
+                <p className="text-xs text-foreground-muted/70 mb-3">
+                  {t('dashboard.api.permissionsDescription')}
+                </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {/* Profile Permissions */}
                   <div className="p-3 rounded-lg bg-background-secondary/50 border border-border">
-                    <p className="text-sm font-medium text-foreground mb-2">{t('dashboard.api.profile')}</p>
+                    <p className="text-sm font-medium text-foreground mb-2">
+                      {t('dashboard.api.profile')}
+                    </p>
                     <div className="flex gap-2">
                       <label className="flex items-center gap-1.5 text-xs text-foreground-muted cursor-pointer">
                         <input
                           type="checkbox"
                           checked={permissions.profile.read}
-                          onChange={(e) => setPermissions({ ...permissions, profile: { ...permissions.profile, read: e.target.checked } })}
+                          onChange={(e) =>
+                            setPermissions({
+                              ...permissions,
+                              profile: {
+                                ...permissions.profile,
+                                read: e.target.checked,
+                              },
+                            })
+                          }
                           className="rounded border-border"
                         />
                         {t('dashboard.api.read')}
@@ -290,7 +352,15 @@ export function ApiAccessTab() {
                         <input
                           type="checkbox"
                           checked={permissions.profile.write}
-                          onChange={(e) => setPermissions({ ...permissions, profile: { ...permissions.profile, write: e.target.checked } })}
+                          onChange={(e) =>
+                            setPermissions({
+                              ...permissions,
+                              profile: {
+                                ...permissions.profile,
+                                write: e.target.checked,
+                              },
+                            })
+                          }
                           className="rounded border-border"
                         />
                         {t('dashboard.api.write')}
@@ -299,13 +369,23 @@ export function ApiAccessTab() {
                   </div>
                   {/* Links Permissions */}
                   <div className="p-3 rounded-lg bg-background-secondary/50 border border-border">
-                    <p className="text-sm font-medium text-foreground mb-2">{t('dashboard.api.links')}</p>
+                    <p className="text-sm font-medium text-foreground mb-2">
+                      {t('dashboard.api.links')}
+                    </p>
                     <div className="flex gap-2">
                       <label className="flex items-center gap-1.5 text-xs text-foreground-muted cursor-pointer">
                         <input
                           type="checkbox"
                           checked={permissions.links.read}
-                          onChange={(e) => setPermissions({ ...permissions, links: { ...permissions.links, read: e.target.checked } })}
+                          onChange={(e) =>
+                            setPermissions({
+                              ...permissions,
+                              links: {
+                                ...permissions.links,
+                                read: e.target.checked,
+                              },
+                            })
+                          }
                           className="rounded border-border"
                         />
                         {t('dashboard.api.read')}
@@ -314,7 +394,15 @@ export function ApiAccessTab() {
                         <input
                           type="checkbox"
                           checked={permissions.links.write}
-                          onChange={(e) => setPermissions({ ...permissions, links: { ...permissions.links, write: e.target.checked } })}
+                          onChange={(e) =>
+                            setPermissions({
+                              ...permissions,
+                              links: {
+                                ...permissions.links,
+                                write: e.target.checked,
+                              },
+                            })
+                          }
                           className="rounded border-border"
                         />
                         {t('dashboard.api.write')}
@@ -323,7 +411,15 @@ export function ApiAccessTab() {
                         <input
                           type="checkbox"
                           checked={permissions.links.delete}
-                          onChange={(e) => setPermissions({ ...permissions, links: { ...permissions.links, delete: e.target.checked } })}
+                          onChange={(e) =>
+                            setPermissions({
+                              ...permissions,
+                              links: {
+                                ...permissions.links,
+                                delete: e.target.checked,
+                              },
+                            })
+                          }
                           className="rounded border-border"
                         />
                         {t('dashboard.api.delete')}
@@ -332,13 +428,20 @@ export function ApiAccessTab() {
                   </div>
                   {/* Analytics Permissions */}
                   <div className="p-3 rounded-lg bg-background-secondary/50 border border-border">
-                    <p className="text-sm font-medium text-foreground mb-2">{t('dashboard.api.analytics')}</p>
+                    <p className="text-sm font-medium text-foreground mb-2">
+                      {t('dashboard.api.analytics')}
+                    </p>
                     <div className="flex gap-2">
                       <label className="flex items-center gap-1.5 text-xs text-foreground-muted cursor-pointer">
                         <input
                           type="checkbox"
                           checked={permissions.analytics.read}
-                          onChange={(e) => setPermissions({ ...permissions, analytics: { read: e.target.checked } })}
+                          onChange={(e) =>
+                            setPermissions({
+                              ...permissions,
+                              analytics: { read: e.target.checked },
+                            })
+                          }
                           className="rounded border-border"
                         />
                         {t('dashboard.api.read')}
@@ -347,13 +450,23 @@ export function ApiAccessTab() {
                   </div>
                   {/* Templates Permissions */}
                   <div className="p-3 rounded-lg bg-background-secondary/50 border border-border">
-                    <p className="text-sm font-medium text-foreground mb-2">{t('dashboard.api.templates')}</p>
+                    <p className="text-sm font-medium text-foreground mb-2">
+                      {t('dashboard.api.templates')}
+                    </p>
                     <div className="flex gap-2">
                       <label className="flex items-center gap-1.5 text-xs text-foreground-muted cursor-pointer">
                         <input
                           type="checkbox"
                           checked={permissions.templates.read}
-                          onChange={(e) => setPermissions({ ...permissions, templates: { ...permissions.templates, read: e.target.checked } })}
+                          onChange={(e) =>
+                            setPermissions({
+                              ...permissions,
+                              templates: {
+                                ...permissions.templates,
+                                read: e.target.checked,
+                              },
+                            })
+                          }
                           className="rounded border-border"
                         />
                         {t('dashboard.api.read')}
@@ -362,7 +475,15 @@ export function ApiAccessTab() {
                         <input
                           type="checkbox"
                           checked={permissions.templates.apply}
-                          onChange={(e) => setPermissions({ ...permissions, templates: { ...permissions.templates, apply: e.target.checked } })}
+                          onChange={(e) =>
+                            setPermissions({
+                              ...permissions,
+                              templates: {
+                                ...permissions.templates,
+                                apply: e.target.checked,
+                              },
+                            })
+                          }
                           className="rounded border-border"
                         />
                         {t('dashboard.api.apply')}
@@ -387,7 +508,11 @@ export function ApiAccessTab() {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  {createMutation.isPending ? <Loader2 size={18} className="animate-spin" /> : <Plus size={18} />}
+                  {createMutation.isPending ? (
+                    <Loader2 size={18} className="animate-spin" />
+                  ) : (
+                    <Plus size={18} />
+                  )}
                   {t('dashboard.api.createKey')}
                 </motion.button>
               </div>
@@ -406,8 +531,12 @@ export function ApiAccessTab() {
           <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
             <Key size={32} className="text-primary/50" />
           </div>
-          <p className="text-foreground font-medium mb-1">{t('dashboard.api.noKeys')}</p>
-          <p className="text-sm text-foreground-muted">{t('dashboard.api.noKeysDescription')}</p>
+          <p className="text-foreground font-medium mb-1">
+            {t('dashboard.api.noKeys')}
+          </p>
+          <p className="text-sm text-foreground-muted">
+            {t('dashboard.api.noKeysDescription')}
+          </p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -432,35 +561,68 @@ export function ApiAccessTab() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <p className="font-medium text-foreground">{key.name}</p>
-                      <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${statusColor}`}>
+                      <span
+                        className={`px-2 py-0.5 rounded-full text-xs font-medium ${statusColor}`}
+                      >
                         {t(`dashboard.api.${status}`)}
                       </span>
                     </div>
                     <div className="flex items-center gap-2 mt-1">
                       <code className="text-xs text-foreground-muted font-mono">
-                        {visibleKeys.has(key.id) ? key.keyPrefix + '...' : maskKey(key.keyPrefix || '')}
+                        {visibleKeys.has(key.id)
+                          ? key.keyPrefix + '...'
+                          : maskKey(key.keyPrefix || '')}
                       </code>
-                      <button onClick={() => toggleKeyVisibility(key.id)} className="text-foreground-muted/50 hover:text-foreground-muted transition-colors duration-(--animation-speed)">
-                        {visibleKeys.has(key.id) ? <EyeOff size={12} /> : <Eye size={12} />}
+                      <button
+                        onClick={() => toggleKeyVisibility(key.id)}
+                        className="text-foreground-muted/50 hover:text-foreground-muted transition-colors duration-(--animation-speed)"
+                      >
+                        {visibleKeys.has(key.id) ? (
+                          <EyeOff size={12} />
+                        ) : (
+                          <Eye size={12} />
+                        )}
                       </button>
                     </div>
                   </div>
                   <div className="hidden sm:block text-right text-xs text-foreground-muted">
-                    <p>{t('dashboard.api.lastUsed')}: {key.lastUsedAt ? new Date(key.lastUsedAt).toLocaleDateString() : t('dashboard.api.never')}</p>
-                    <p>{t('dashboard.api.created')}: {new Date(key.createdAt).toLocaleDateString()}</p>
+                    <p>
+                      {t('dashboard.api.lastUsed')}:{' '}
+                      {key.lastUsedAt
+                        ? new Date(key.lastUsedAt).toLocaleDateString()
+                        : t('dashboard.api.never')}
+                    </p>
+                    <p>
+                      {t('dashboard.api.created')}:{' '}
+                      {new Date(key.createdAt).toLocaleDateString()}
+                    </p>
                   </div>
                   <div className="flex items-center gap-1">
                     <button
                       onClick={() => toggleKeyExpanded(key.id)}
                       className="p-2 rounded-lg hover:bg-background-secondary transition-colors duration-(--animation-speed)"
                     >
-                      {isExpanded ? <ChevronUp size={16} className="text-foreground-muted" /> : <ChevronDown size={16} className="text-foreground-muted" />}
+                      {isExpanded ? (
+                        <ChevronUp
+                          size={16}
+                          className="text-foreground-muted"
+                        />
+                      ) : (
+                        <ChevronDown
+                          size={16}
+                          className="text-foreground-muted"
+                        />
+                      )}
                     </button>
                     <button
                       onClick={() => copyKey(key.keyPrefix || '')}
                       className="p-2 rounded-lg hover:bg-background-secondary transition-colors duration-(--animation-speed)"
                     >
-                      {copiedKey === key.keyPrefix ? <Check size={16} className="text-green-400" /> : <Copy size={16} className="text-foreground-muted" />}
+                      {copiedKey === key.keyPrefix ? (
+                        <Check size={16} className="text-green-400" />
+                      ) : (
+                        <Copy size={16} className="text-foreground-muted" />
+                      )}
                     </button>
                     <button
                       onClick={() => deleteMutation.mutate(key.id)}
@@ -484,31 +646,61 @@ export function ApiAccessTab() {
                       <div className="p-4 bg-background-secondary/20 grid grid-cols-2 sm:grid-cols-4 gap-4">
                         {/* Rate Limit */}
                         <div>
-                          <p className="text-xs text-foreground-muted mb-1">{t('dashboard.api.rateLimit')}</p>
+                          <p className="text-xs text-foreground-muted mb-1">
+                            {t('dashboard.api.rateLimit')}
+                          </p>
                           <p className="text-sm font-medium text-foreground">
-                            {t('dashboard.api.rateLimitValue', { count: key.rateLimit || 1000 })}
+                            {t('dashboard.api.rateLimitValue', {
+                              count: key.rateLimit || 1000,
+                            })}
                           </p>
                         </div>
                         {/* Requests */}
                         <div>
-                          <p className="text-xs text-foreground-muted mb-1">{t('dashboard.api.requests')}</p>
-                          <p className="text-sm font-medium text-foreground">{key.requestCount || 0}</p>
+                          <p className="text-xs text-foreground-muted mb-1">
+                            {t('dashboard.api.requests')}
+                          </p>
+                          <p className="text-sm font-medium text-foreground">
+                            {key.requestCount || 0}
+                          </p>
                         </div>
                         {/* Expires */}
                         <div>
-                          <p className="text-xs text-foreground-muted mb-1">{t('dashboard.api.expires')}</p>
+                          <p className="text-xs text-foreground-muted mb-1">
+                            {t('dashboard.api.expires')}
+                          </p>
                           <p className="text-sm font-medium text-foreground">
-                            {key.expiresAt ? new Date(key.expiresAt).toLocaleDateString() : t('dashboard.api.noExpiry')}
+                            {key.expiresAt
+                              ? new Date(key.expiresAt).toLocaleDateString()
+                              : t('dashboard.api.noExpiry')}
                           </p>
                         </div>
                         {/* Permissions Summary */}
                         <div>
-                          <p className="text-xs text-foreground-muted mb-1">{t('dashboard.api.permissions')}</p>
+                          <p className="text-xs text-foreground-muted mb-1">
+                            {t('dashboard.api.permissions')}
+                          </p>
                           <div className="flex flex-wrap gap-1">
-                            {keyPermissions?.profile?.read && <span className="px-1.5 py-0.5 rounded text-xs bg-blue-500/20 text-blue-400">Profile</span>}
-                            {keyPermissions?.links?.read && <span className="px-1.5 py-0.5 rounded text-xs bg-green-500/20 text-green-400">Links</span>}
-                            {keyPermissions?.analytics?.read && <span className="px-1.5 py-0.5 rounded text-xs bg-purple-500/20 text-purple-400">Analytics</span>}
-                            {keyPermissions?.templates?.read && <span className="px-1.5 py-0.5 rounded text-xs bg-amber-500/20 text-amber-400">Templates</span>}
+                            {keyPermissions?.profile?.read && (
+                              <span className="px-1.5 py-0.5 rounded text-xs bg-blue-500/20 text-blue-400">
+                                Profile
+                              </span>
+                            )}
+                            {keyPermissions?.links?.read && (
+                              <span className="px-1.5 py-0.5 rounded text-xs bg-green-500/20 text-green-400">
+                                Links
+                              </span>
+                            )}
+                            {keyPermissions?.analytics?.read && (
+                              <span className="px-1.5 py-0.5 rounded text-xs bg-purple-500/20 text-purple-400">
+                                Analytics
+                              </span>
+                            )}
+                            {keyPermissions?.templates?.read && (
+                              <span className="px-1.5 py-0.5 rounded text-xs bg-amber-500/20 text-amber-400">
+                                Templates
+                              </span>
+                            )}
                           </div>
                         </div>
                       </div>

@@ -218,7 +218,9 @@ export function FollowModal({
                   @{username}
                 </h2>
                 <p className="text-sm opacity-60">
-                  {activeTab === 'followers' ? t('followModal.followers') : t('followModal.following')}
+                  {activeTab === 'followers'
+                    ? t('followModal.followers')
+                    : t('followModal.following')}
                 </p>
               </div>
             </div>
@@ -323,7 +325,8 @@ export function FollowModal({
 
             {searchQuery && (
               <p className="text-xs opacity-60 mt-2">
-                {filteredUsers.length} {t('followModal.results', { count: filteredUsers.length })}
+                {filteredUsers.length}{' '}
+                {t('followModal.results', { count: filteredUsers.length })}
               </p>
             )}
           </div>
@@ -350,12 +353,18 @@ export function FollowModal({
                   <Users className="w-8 h-8" style={{ color: accentColor }} />
                 </div>
                 <h3 className="text-lg font-semibold mb-2">
-                  {searchQuery ? t('followModal.noResults') : t(`followModal.no${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}`)}
+                  {searchQuery
+                    ? t('followModal.noResults')
+                    : t(
+                        `followModal.no${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}`,
+                      )}
                 </h3>
                 <p className="text-sm opacity-60 text-center max-w-sm">
                   {searchQuery
                     ? t('followModal.noUsersMatch', { query: searchQuery })
-                    : t(`followModal.no${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}Desc`)}
+                    : t(
+                        `followModal.no${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}Desc`,
+                      )}
                 </p>
               </div>
             ) : (

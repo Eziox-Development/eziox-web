@@ -607,11 +607,14 @@ export function ApiDocsPage() {
               {t('apiDocs.baseUrl.description')}
             </p>
             <CodeBlock
-              code={(typeof window !== 'undefined' ? (window.location.hostname === 'localhost' ? 'localhost:5173' : window.location.hostname) : 'eziox.link').replace('eziox.link', 'api.eziox.link')}
+              code={'api.eziox.link'}
               theme={theme}
               cardRadius={cardRadius}
               onCopy={() =>
-                copyToClipboard((typeof window !== 'undefined' ? (window.location.hostname === 'localhost' ? 'localhost:5173' : window.location.hostname) : 'eziox.link').replace('eziox.link', 'api.eziox.link'), 'baseurl')
+                copyToClipboard(
+                  'api.eziox.link',
+                  'baseurl',
+                )
               }
               copied={copiedId === 'baseurl'}
               language="text"

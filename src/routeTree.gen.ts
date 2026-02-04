@@ -23,19 +23,20 @@ import { Route as PublicVerifyEmailChangeRouteImport } from './routes/_public/ve
 import { Route as PublicVerifyEmailRouteImport } from './routes/_public/verify-email'
 import { Route as PublicTermsRouteImport } from './routes/_public/terms'
 import { Route as PublicTemplatesRouteImport } from './routes/_public/templates'
+import { Route as PublicTakedownRouteImport } from './routes/_public/takedown'
+import { Route as PublicSupportRouteImport } from './routes/_public/support'
 import { Route as PublicStatusRouteImport } from './routes/_public/status'
 import { Route as PublicPrivacyRouteImport } from './routes/_public/privacy'
 import { Route as PublicPricingRouteImport } from './routes/_public/pricing'
 import { Route as PublicPartnersRouteImport } from './routes/_public/partners'
+import { Route as PublicLicensingRouteImport } from './routes/_public/licensing'
 import { Route as PublicLeaderboardRouteImport } from './routes/_public/leaderboard'
 import { Route as PublicImprintRouteImport } from './routes/_public/imprint'
 import { Route as PublicCreatorsRouteImport } from './routes/_public/creators'
 import { Route as PublicCookiesRouteImport } from './routes/_public/cookies'
-import { Route as PublicContactRouteImport } from './routes/_public/contact'
 import { Route as PublicApiDocsRouteImport } from './routes/_public/api-docs'
 import { Route as PublicAboutRouteImport } from './routes/_public/about'
 import { Route as ProtectedThemeBuilderRouteImport } from './routes/_protected/theme-builder'
-import { Route as ProtectedShortenerRouteImport } from './routes/_protected/shortener'
 import { Route as ProtectedProfileRouteImport } from './routes/_protected/profile'
 import { Route as ProtectedPlaygroundRouteImport } from './routes/_protected/playground'
 import { Route as ProtectedAnalyticsRouteImport } from './routes/_protected/analytics'
@@ -65,9 +66,7 @@ import { Route as PublicDocsFaqRouteImport } from './routes/_public/docs/faq'
 import { Route as PublicDocsCustomizationRouteImport } from './routes/_public/docs/customization'
 import { Route as PublicDocsApiRouteImport } from './routes/_public/docs/api'
 import { Route as PublicDocsAnalyticsRouteImport } from './routes/_public/docs/analytics'
-import { Route as ProtectedAdminSettingsRouteImport } from './routes/_protected/admin/settings'
-import { Route as ProtectedAdminPartnerApplicationsRouteImport } from './routes/_protected/admin/partner-applications'
-import { Route as ProtectedAdminAbuseAlertsRouteImport } from './routes/_protected/admin/abuse-alerts'
+import { Route as ProtectedSupportTicketsRouteImport } from './routes/_protected/support/tickets'
 import { Route as ApiV1WidgetsIdRouteImport } from './routes/api/v1/widgets.$id'
 import { Route as ApiV1ProfileUsernameRouteImport } from './routes/api/v1/profile.$username'
 import { Route as ApiV1LinksIdRouteImport } from './routes/api/v1/links.$id'
@@ -141,6 +140,16 @@ const PublicTemplatesRoute = PublicTemplatesRouteImport.update({
   path: '/templates',
   getParentRoute: () => PublicRoute,
 } as any)
+const PublicTakedownRoute = PublicTakedownRouteImport.update({
+  id: '/takedown',
+  path: '/takedown',
+  getParentRoute: () => PublicRoute,
+} as any)
+const PublicSupportRoute = PublicSupportRouteImport.update({
+  id: '/support',
+  path: '/support',
+  getParentRoute: () => PublicRoute,
+} as any)
 const PublicStatusRoute = PublicStatusRouteImport.update({
   id: '/status',
   path: '/status',
@@ -159,6 +168,11 @@ const PublicPricingRoute = PublicPricingRouteImport.update({
 const PublicPartnersRoute = PublicPartnersRouteImport.update({
   id: '/partners',
   path: '/partners',
+  getParentRoute: () => PublicRoute,
+} as any)
+const PublicLicensingRoute = PublicLicensingRouteImport.update({
+  id: '/licensing',
+  path: '/licensing',
   getParentRoute: () => PublicRoute,
 } as any)
 const PublicLeaderboardRoute = PublicLeaderboardRouteImport.update({
@@ -181,11 +195,6 @@ const PublicCookiesRoute = PublicCookiesRouteImport.update({
   path: '/cookies',
   getParentRoute: () => PublicRoute,
 } as any)
-const PublicContactRoute = PublicContactRouteImport.update({
-  id: '/contact',
-  path: '/contact',
-  getParentRoute: () => PublicRoute,
-} as any)
 const PublicApiDocsRoute = PublicApiDocsRouteImport.update({
   id: '/api-docs',
   path: '/api-docs',
@@ -199,11 +208,6 @@ const PublicAboutRoute = PublicAboutRouteImport.update({
 const ProtectedThemeBuilderRoute = ProtectedThemeBuilderRouteImport.update({
   id: '/theme-builder',
   path: '/theme-builder',
-  getParentRoute: () => ProtectedRoute,
-} as any)
-const ProtectedShortenerRoute = ProtectedShortenerRouteImport.update({
-  id: '/shortener',
-  path: '/shortener',
   getParentRoute: () => ProtectedRoute,
 } as any)
 const ProtectedProfileRoute = ProtectedProfileRouteImport.update({
@@ -353,23 +357,11 @@ const PublicDocsAnalyticsRoute = PublicDocsAnalyticsRouteImport.update({
   path: '/docs/analytics',
   getParentRoute: () => PublicRoute,
 } as any)
-const ProtectedAdminSettingsRoute = ProtectedAdminSettingsRouteImport.update({
-  id: '/admin/settings',
-  path: '/admin/settings',
+const ProtectedSupportTicketsRoute = ProtectedSupportTicketsRouteImport.update({
+  id: '/support/tickets',
+  path: '/support/tickets',
   getParentRoute: () => ProtectedRoute,
 } as any)
-const ProtectedAdminPartnerApplicationsRoute =
-  ProtectedAdminPartnerApplicationsRouteImport.update({
-    id: '/admin/partner-applications',
-    path: '/admin/partner-applications',
-    getParentRoute: () => ProtectedRoute,
-  } as any)
-const ProtectedAdminAbuseAlertsRoute =
-  ProtectedAdminAbuseAlertsRouteImport.update({
-    id: '/admin/abuse-alerts',
-    path: '/admin/abuse-alerts',
-    getParentRoute: () => ProtectedRoute,
-  } as any)
 const ApiV1WidgetsIdRoute = ApiV1WidgetsIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -410,19 +402,20 @@ export interface FileRoutesByFullPath {
   '/analytics': typeof ProtectedAnalyticsRoute
   '/playground': typeof ProtectedPlaygroundRoute
   '/profile': typeof ProtectedProfileRoute
-  '/shortener': typeof ProtectedShortenerRoute
   '/theme-builder': typeof ProtectedThemeBuilderRoute
   '/about': typeof PublicAboutRoute
   '/api-docs': typeof PublicApiDocsRoute
-  '/contact': typeof PublicContactRoute
   '/cookies': typeof PublicCookiesRoute
   '/creators': typeof PublicCreatorsRoute
   '/imprint': typeof PublicImprintRoute
   '/leaderboard': typeof PublicLeaderboardRoute
+  '/licensing': typeof PublicLicensingRoute
   '/partners': typeof PublicPartnersRoute
   '/pricing': typeof PublicPricingRoute
   '/privacy': typeof PublicPrivacyRoute
   '/status': typeof PublicStatusRoute
+  '/support': typeof PublicSupportRoute
+  '/takedown': typeof PublicTakedownRoute
   '/templates': typeof PublicTemplatesRoute
   '/terms': typeof PublicTermsRoute
   '/verify-email': typeof PublicVerifyEmailRoute
@@ -432,9 +425,7 @@ export interface FileRoutesByFullPath {
   '/api/health': typeof ApiHealthRoute
   '/api/spotify-callback': typeof ApiSpotifyCallbackRoute
   '/': typeof PublicIndexRoute
-  '/admin/abuse-alerts': typeof ProtectedAdminAbuseAlertsRoute
-  '/admin/partner-applications': typeof ProtectedAdminPartnerApplicationsRoute
-  '/admin/settings': typeof ProtectedAdminSettingsRoute
+  '/support/tickets': typeof ProtectedSupportTicketsRoute
   '/docs/analytics': typeof PublicDocsAnalyticsRoute
   '/docs/api': typeof PublicDocsApiRoute
   '/docs/customization': typeof PublicDocsCustomizationRoute
@@ -473,19 +464,20 @@ export interface FileRoutesByTo {
   '/analytics': typeof ProtectedAnalyticsRoute
   '/playground': typeof ProtectedPlaygroundRoute
   '/profile': typeof ProtectedProfileRoute
-  '/shortener': typeof ProtectedShortenerRoute
   '/theme-builder': typeof ProtectedThemeBuilderRoute
   '/about': typeof PublicAboutRoute
   '/api-docs': typeof PublicApiDocsRoute
-  '/contact': typeof PublicContactRoute
   '/cookies': typeof PublicCookiesRoute
   '/creators': typeof PublicCreatorsRoute
   '/imprint': typeof PublicImprintRoute
   '/leaderboard': typeof PublicLeaderboardRoute
+  '/licensing': typeof PublicLicensingRoute
   '/partners': typeof PublicPartnersRoute
   '/pricing': typeof PublicPricingRoute
   '/privacy': typeof PublicPrivacyRoute
   '/status': typeof PublicStatusRoute
+  '/support': typeof PublicSupportRoute
+  '/takedown': typeof PublicTakedownRoute
   '/templates': typeof PublicTemplatesRoute
   '/terms': typeof PublicTermsRoute
   '/verify-email': typeof PublicVerifyEmailRoute
@@ -495,9 +487,7 @@ export interface FileRoutesByTo {
   '/api/health': typeof ApiHealthRoute
   '/api/spotify-callback': typeof ApiSpotifyCallbackRoute
   '/': typeof PublicIndexRoute
-  '/admin/abuse-alerts': typeof ProtectedAdminAbuseAlertsRoute
-  '/admin/partner-applications': typeof ProtectedAdminPartnerApplicationsRoute
-  '/admin/settings': typeof ProtectedAdminSettingsRoute
+  '/support/tickets': typeof ProtectedSupportTicketsRoute
   '/docs/analytics': typeof PublicDocsAnalyticsRoute
   '/docs/api': typeof PublicDocsApiRoute
   '/docs/customization': typeof PublicDocsCustomizationRoute
@@ -540,19 +530,20 @@ export interface FileRoutesById {
   '/_protected/analytics': typeof ProtectedAnalyticsRoute
   '/_protected/playground': typeof ProtectedPlaygroundRoute
   '/_protected/profile': typeof ProtectedProfileRoute
-  '/_protected/shortener': typeof ProtectedShortenerRoute
   '/_protected/theme-builder': typeof ProtectedThemeBuilderRoute
   '/_public/about': typeof PublicAboutRoute
   '/_public/api-docs': typeof PublicApiDocsRoute
-  '/_public/contact': typeof PublicContactRoute
   '/_public/cookies': typeof PublicCookiesRoute
   '/_public/creators': typeof PublicCreatorsRoute
   '/_public/imprint': typeof PublicImprintRoute
   '/_public/leaderboard': typeof PublicLeaderboardRoute
+  '/_public/licensing': typeof PublicLicensingRoute
   '/_public/partners': typeof PublicPartnersRoute
   '/_public/pricing': typeof PublicPricingRoute
   '/_public/privacy': typeof PublicPrivacyRoute
   '/_public/status': typeof PublicStatusRoute
+  '/_public/support': typeof PublicSupportRoute
+  '/_public/takedown': typeof PublicTakedownRoute
   '/_public/templates': typeof PublicTemplatesRoute
   '/_public/terms': typeof PublicTermsRoute
   '/_public/verify-email': typeof PublicVerifyEmailRoute
@@ -562,9 +553,7 @@ export interface FileRoutesById {
   '/api/health': typeof ApiHealthRoute
   '/api/spotify-callback': typeof ApiSpotifyCallbackRoute
   '/_public/': typeof PublicIndexRoute
-  '/_protected/admin/abuse-alerts': typeof ProtectedAdminAbuseAlertsRoute
-  '/_protected/admin/partner-applications': typeof ProtectedAdminPartnerApplicationsRoute
-  '/_protected/admin/settings': typeof ProtectedAdminSettingsRoute
+  '/_protected/support/tickets': typeof ProtectedSupportTicketsRoute
   '/_public/docs/analytics': typeof PublicDocsAnalyticsRoute
   '/_public/docs/api': typeof PublicDocsApiRoute
   '/_public/docs/customization': typeof PublicDocsCustomizationRoute
@@ -605,19 +594,20 @@ export interface FileRouteTypes {
     | '/analytics'
     | '/playground'
     | '/profile'
-    | '/shortener'
     | '/theme-builder'
     | '/about'
     | '/api-docs'
-    | '/contact'
     | '/cookies'
     | '/creators'
     | '/imprint'
     | '/leaderboard'
+    | '/licensing'
     | '/partners'
     | '/pricing'
     | '/privacy'
     | '/status'
+    | '/support'
+    | '/takedown'
     | '/templates'
     | '/terms'
     | '/verify-email'
@@ -627,9 +617,7 @@ export interface FileRouteTypes {
     | '/api/health'
     | '/api/spotify-callback'
     | '/'
-    | '/admin/abuse-alerts'
-    | '/admin/partner-applications'
-    | '/admin/settings'
+    | '/support/tickets'
     | '/docs/analytics'
     | '/docs/api'
     | '/docs/customization'
@@ -668,19 +656,20 @@ export interface FileRouteTypes {
     | '/analytics'
     | '/playground'
     | '/profile'
-    | '/shortener'
     | '/theme-builder'
     | '/about'
     | '/api-docs'
-    | '/contact'
     | '/cookies'
     | '/creators'
     | '/imprint'
     | '/leaderboard'
+    | '/licensing'
     | '/partners'
     | '/pricing'
     | '/privacy'
     | '/status'
+    | '/support'
+    | '/takedown'
     | '/templates'
     | '/terms'
     | '/verify-email'
@@ -690,9 +679,7 @@ export interface FileRouteTypes {
     | '/api/health'
     | '/api/spotify-callback'
     | '/'
-    | '/admin/abuse-alerts'
-    | '/admin/partner-applications'
-    | '/admin/settings'
+    | '/support/tickets'
     | '/docs/analytics'
     | '/docs/api'
     | '/docs/customization'
@@ -734,19 +721,20 @@ export interface FileRouteTypes {
     | '/_protected/analytics'
     | '/_protected/playground'
     | '/_protected/profile'
-    | '/_protected/shortener'
     | '/_protected/theme-builder'
     | '/_public/about'
     | '/_public/api-docs'
-    | '/_public/contact'
     | '/_public/cookies'
     | '/_public/creators'
     | '/_public/imprint'
     | '/_public/leaderboard'
+    | '/_public/licensing'
     | '/_public/partners'
     | '/_public/pricing'
     | '/_public/privacy'
     | '/_public/status'
+    | '/_public/support'
+    | '/_public/takedown'
     | '/_public/templates'
     | '/_public/terms'
     | '/_public/verify-email'
@@ -756,9 +744,7 @@ export interface FileRouteTypes {
     | '/api/health'
     | '/api/spotify-callback'
     | '/_public/'
-    | '/_protected/admin/abuse-alerts'
-    | '/_protected/admin/partner-applications'
-    | '/_protected/admin/settings'
+    | '/_protected/support/tickets'
     | '/_public/docs/analytics'
     | '/_public/docs/api'
     | '/_public/docs/customization'
@@ -906,6 +892,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicTemplatesRouteImport
       parentRoute: typeof PublicRoute
     }
+    '/_public/takedown': {
+      id: '/_public/takedown'
+      path: '/takedown'
+      fullPath: '/takedown'
+      preLoaderRoute: typeof PublicTakedownRouteImport
+      parentRoute: typeof PublicRoute
+    }
+    '/_public/support': {
+      id: '/_public/support'
+      path: '/support'
+      fullPath: '/support'
+      preLoaderRoute: typeof PublicSupportRouteImport
+      parentRoute: typeof PublicRoute
+    }
     '/_public/status': {
       id: '/_public/status'
       path: '/status'
@@ -932,6 +932,13 @@ declare module '@tanstack/react-router' {
       path: '/partners'
       fullPath: '/partners'
       preLoaderRoute: typeof PublicPartnersRouteImport
+      parentRoute: typeof PublicRoute
+    }
+    '/_public/licensing': {
+      id: '/_public/licensing'
+      path: '/licensing'
+      fullPath: '/licensing'
+      preLoaderRoute: typeof PublicLicensingRouteImport
       parentRoute: typeof PublicRoute
     }
     '/_public/leaderboard': {
@@ -962,13 +969,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicCookiesRouteImport
       parentRoute: typeof PublicRoute
     }
-    '/_public/contact': {
-      id: '/_public/contact'
-      path: '/contact'
-      fullPath: '/contact'
-      preLoaderRoute: typeof PublicContactRouteImport
-      parentRoute: typeof PublicRoute
-    }
     '/_public/api-docs': {
       id: '/_public/api-docs'
       path: '/api-docs'
@@ -988,13 +988,6 @@ declare module '@tanstack/react-router' {
       path: '/theme-builder'
       fullPath: '/theme-builder'
       preLoaderRoute: typeof ProtectedThemeBuilderRouteImport
-      parentRoute: typeof ProtectedRoute
-    }
-    '/_protected/shortener': {
-      id: '/_protected/shortener'
-      path: '/shortener'
-      fullPath: '/shortener'
-      preLoaderRoute: typeof ProtectedShortenerRouteImport
       parentRoute: typeof ProtectedRoute
     }
     '/_protected/profile': {
@@ -1200,25 +1193,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PublicDocsAnalyticsRouteImport
       parentRoute: typeof PublicRoute
     }
-    '/_protected/admin/settings': {
-      id: '/_protected/admin/settings'
-      path: '/admin/settings'
-      fullPath: '/admin/settings'
-      preLoaderRoute: typeof ProtectedAdminSettingsRouteImport
-      parentRoute: typeof ProtectedRoute
-    }
-    '/_protected/admin/partner-applications': {
-      id: '/_protected/admin/partner-applications'
-      path: '/admin/partner-applications'
-      fullPath: '/admin/partner-applications'
-      preLoaderRoute: typeof ProtectedAdminPartnerApplicationsRouteImport
-      parentRoute: typeof ProtectedRoute
-    }
-    '/_protected/admin/abuse-alerts': {
-      id: '/_protected/admin/abuse-alerts'
-      path: '/admin/abuse-alerts'
-      fullPath: '/admin/abuse-alerts'
-      preLoaderRoute: typeof ProtectedAdminAbuseAlertsRouteImport
+    '/_protected/support/tickets': {
+      id: '/_protected/support/tickets'
+      path: '/support/tickets'
+      fullPath: '/support/tickets'
+      preLoaderRoute: typeof ProtectedSupportTicketsRouteImport
       parentRoute: typeof ProtectedRoute
     }
     '/api/v1/widgets/$id': {
@@ -1281,11 +1260,8 @@ interface ProtectedRouteChildren {
   ProtectedAnalyticsRoute: typeof ProtectedAnalyticsRoute
   ProtectedPlaygroundRoute: typeof ProtectedPlaygroundRoute
   ProtectedProfileRoute: typeof ProtectedProfileRoute
-  ProtectedShortenerRoute: typeof ProtectedShortenerRoute
   ProtectedThemeBuilderRoute: typeof ProtectedThemeBuilderRoute
-  ProtectedAdminAbuseAlertsRoute: typeof ProtectedAdminAbuseAlertsRoute
-  ProtectedAdminPartnerApplicationsRoute: typeof ProtectedAdminPartnerApplicationsRoute
-  ProtectedAdminSettingsRoute: typeof ProtectedAdminSettingsRoute
+  ProtectedSupportTicketsRoute: typeof ProtectedSupportTicketsRoute
   ProtectedAdminIndexRoute: typeof ProtectedAdminIndexRoute
 }
 
@@ -1293,12 +1269,8 @@ const ProtectedRouteChildren: ProtectedRouteChildren = {
   ProtectedAnalyticsRoute: ProtectedAnalyticsRoute,
   ProtectedPlaygroundRoute: ProtectedPlaygroundRoute,
   ProtectedProfileRoute: ProtectedProfileRoute,
-  ProtectedShortenerRoute: ProtectedShortenerRoute,
   ProtectedThemeBuilderRoute: ProtectedThemeBuilderRoute,
-  ProtectedAdminAbuseAlertsRoute: ProtectedAdminAbuseAlertsRoute,
-  ProtectedAdminPartnerApplicationsRoute:
-    ProtectedAdminPartnerApplicationsRoute,
-  ProtectedAdminSettingsRoute: ProtectedAdminSettingsRoute,
+  ProtectedSupportTicketsRoute: ProtectedSupportTicketsRoute,
   ProtectedAdminIndexRoute: ProtectedAdminIndexRoute,
 }
 
@@ -1309,15 +1281,17 @@ const ProtectedRouteWithChildren = ProtectedRoute._addFileChildren(
 interface PublicRouteChildren {
   PublicAboutRoute: typeof PublicAboutRoute
   PublicApiDocsRoute: typeof PublicApiDocsRoute
-  PublicContactRoute: typeof PublicContactRoute
   PublicCookiesRoute: typeof PublicCookiesRoute
   PublicCreatorsRoute: typeof PublicCreatorsRoute
   PublicImprintRoute: typeof PublicImprintRoute
   PublicLeaderboardRoute: typeof PublicLeaderboardRoute
+  PublicLicensingRoute: typeof PublicLicensingRoute
   PublicPartnersRoute: typeof PublicPartnersRoute
   PublicPricingRoute: typeof PublicPricingRoute
   PublicPrivacyRoute: typeof PublicPrivacyRoute
   PublicStatusRoute: typeof PublicStatusRoute
+  PublicSupportRoute: typeof PublicSupportRoute
+  PublicTakedownRoute: typeof PublicTakedownRoute
   PublicTemplatesRoute: typeof PublicTemplatesRoute
   PublicTermsRoute: typeof PublicTermsRoute
   PublicVerifyEmailRoute: typeof PublicVerifyEmailRoute
@@ -1340,15 +1314,17 @@ interface PublicRouteChildren {
 const PublicRouteChildren: PublicRouteChildren = {
   PublicAboutRoute: PublicAboutRoute,
   PublicApiDocsRoute: PublicApiDocsRoute,
-  PublicContactRoute: PublicContactRoute,
   PublicCookiesRoute: PublicCookiesRoute,
   PublicCreatorsRoute: PublicCreatorsRoute,
   PublicImprintRoute: PublicImprintRoute,
   PublicLeaderboardRoute: PublicLeaderboardRoute,
+  PublicLicensingRoute: PublicLicensingRoute,
   PublicPartnersRoute: PublicPartnersRoute,
   PublicPricingRoute: PublicPricingRoute,
   PublicPrivacyRoute: PublicPrivacyRoute,
   PublicStatusRoute: PublicStatusRoute,
+  PublicSupportRoute: PublicSupportRoute,
+  PublicTakedownRoute: PublicTakedownRoute,
   PublicTemplatesRoute: PublicTemplatesRoute,
   PublicTermsRoute: PublicTermsRoute,
   PublicVerifyEmailRoute: PublicVerifyEmailRoute,

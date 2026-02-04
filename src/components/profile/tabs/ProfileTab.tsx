@@ -3,15 +3,29 @@ import { motion, AnimatePresence } from 'motion/react'
 import { useTranslation } from 'react-i18next'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
-import { getSpotifyConnectionFn, disconnectSpotifyFn } from '@/server/functions/spotify'
-import { getConnectedPlatformsFn, getOAuthUrlFn } from '@/server/functions/social-integrations'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { DatePicker } from '@/components/ui/date-picker'
+import {
+  getSpotifyConnectionFn,
+  disconnectSpotifyFn,
+} from '@/server/functions/spotify'
+import {
+  getConnectedPlatformsFn,
+  getOAuthUrlFn,
+} from '@/server/functions/social-integrations'
 import { uploadAvatarFn, uploadBannerFn } from '@/server/functions/upload'
+import { getAppHostname } from '@/lib/utils'
 import {
   User,
   AtSign,
   MapPin,
   Globe,
-  Cake,
   ChevronDown,
   Plus,
   Search,
@@ -30,12 +44,20 @@ import {
   SiTwitch,
   SiGithub,
 } from 'react-icons/si'
-import { SOCIAL_PLATFORMS, ADDITIONAL_PLATFORMS, CREATOR_TYPES, PRONOUNS_OPTIONS } from '../constants'
+import {
+  SOCIAL_PLATFORMS,
+  ADDITIONAL_PLATFORMS,
+  CREATOR_TYPES,
+  PRONOUNS_OPTIONS,
+} from '../constants'
 import type { ProfileFormData } from '../types'
 
 interface ProfileTabProps {
   formData: ProfileFormData
-  updateField: <K extends keyof ProfileFormData>(key: K, value: ProfileFormData[K]) => void
+  updateField: <K extends keyof ProfileFormData>(
+    key: K,
+    value: ProfileFormData[K],
+  ) => void
   updateSocial: (key: string, value: string) => void
   customPronouns: string
   setCustomPronouns: (v: string) => void
@@ -91,7 +113,7 @@ export function ProfileTab({
   })
 
   const connectPlatformMutation = useMutation({
-    mutationFn: (platform: 'discord' | 'steam' | 'twitch' | 'github') => 
+    mutationFn: (platform: 'discord' | 'steam' | 'twitch' | 'github') =>
       getOAuthUrlFn({ data: { platform } }),
     onSuccess: (data) => {
       if (data.url) {
@@ -140,11 +162,14 @@ export function ProfileTab({
   }
 
   const isPlatformConnected = (platform: string) => {
-    return connectedPlatforms?.integrations?.some(i => i.platform === platform) ?? false
+    return (
+      connectedPlatforms?.integrations?.some((i) => i.platform === platform) ??
+      false
+    )
   }
 
-  const filteredAdditional = ADDITIONAL_PLATFORMS.filter(
-    (p) => p.label.toLowerCase().includes(socialSearch.toLowerCase())
+  const filteredAdditional = ADDITIONAL_PLATFORMS.filter((p) =>
+    p.label.toLowerCase().includes(socialSearch.toLowerCase()),
   )
 
   return (
@@ -166,7 +191,9 @@ export function ProfileTab({
         <div className="p-5">
           {/* Banner */}
           <div className="mb-6">
-            <label className="block text-sm font-medium mb-2 text-foreground-muted">{t('dashboard.profile.banner')}</label>
+            <label className="block text-sm font-medium mb-2 text-foreground-muted">
+              {t('dashboard.profile.banner')}
+            </label>
             <div
               className="h-32 relative overflow-hidden cursor-pointer group rounded-lg bg-linear-to-br from-primary to-accent"
               style={{
@@ -180,7 +207,9 @@ export function ProfileTab({
                 ) : (
                   <>
                     <Upload size={24} className="text-white" />
-                    <span className="text-white text-sm font-medium">{t('dashboard.profile.uploadBanner')}</span>
+                    <span className="text-white text-sm font-medium">
+                      {t('dashboard.profile.uploadBanner')}
+                    </span>
                   </>
                 )}
               </div>
@@ -216,12 +245,16 @@ export function ProfileTab({
 
           {/* Avatar */}
           <div className="mb-6">
-            <label className="block text-sm font-medium mb-2 text-foreground-muted">{t('dashboard.profile.avatar')}</label>
+            <label className="block text-sm font-medium mb-2 text-foreground-muted">
+              {t('dashboard.profile.avatar')}
+            </label>
             <div className="flex items-center gap-4">
               <div
                 className="w-20 h-20 relative overflow-hidden cursor-pointer group rounded-lg bg-linear-to-br from-primary to-accent"
                 style={{
-                  background: avatar ? `url(${avatar}) center/cover` : undefined,
+                  background: avatar
+                    ? `url(${avatar}) center/cover`
+                    : undefined,
                 }}
                 onClick={() => avatarInputRef.current?.click()}
               >
@@ -290,13 +323,20 @@ export function ProfileTab({
             label={t('dashboard.profile.username')}
             icon={AtSign}
             value={formData.username}
-            onChange={(v) => updateField('username', v.toLowerCase().replace(/[^a-z0-9_-]/g, ''))}
+            onChange={(v) =>
+              updateField(
+                'username',
+                v.toLowerCase().replace(/[^a-z0-9_-]/g, ''),
+              )
+            }
             placeholder={t('dashboard.profile.usernamePlaceholder')}
-            hint={`${typeof window !== 'undefined' ? (window.location.hostname === 'localhost' ? 'localhost:5173' : window.location.hostname) : 'eziox.link'}/${formData.username || 'username'}`}
+            hint={`${getAppHostname()}/${formData.username || 'username'}`}
           />
 
           <div>
-            <label className="block text-sm font-medium text-foreground-muted mb-2">{t('dashboard.profile.bio')}</label>
+            <label className="block text-sm font-medium text-foreground-muted mb-2">
+              {t('dashboard.profile.bio')}
+            </label>
             <textarea
               value={formData.bio}
               onChange={(e) => updateField('bio', e.target.value)}
@@ -324,18 +364,24 @@ export function ProfileTab({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-foreground-muted mb-2">{t('dashboard.profile.pronouns')}</label>
-              <select
-                value={formData.pronouns}
-                onChange={(e) => updateField('pronouns', e.target.value)}
-                className="w-full px-4 py-3 rounded-xl bg-background-secondary border border-border text-foreground focus:outline-none focus:border-primary/50 transition-colors duration-(--animation-speed)"
+              <label className="block text-sm font-medium text-foreground-muted mb-2">
+                {t('dashboard.profile.pronouns')}
+              </label>
+              <Select
+                value={formData.pronouns || 'none'}
+                onValueChange={(value) => updateField('pronouns', value === 'none' ? '' : value)}
               >
-                {PRONOUNS_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value} className="bg-card">
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
+                <SelectTrigger className="w-full h-12">
+                  <SelectValue placeholder={t('dashboard.profile.selectPronouns', 'Select...')} />
+                </SelectTrigger>
+                <SelectContent>
+                  {PRONOUNS_OPTIONS.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               {formData.pronouns === 'custom' && (
                 <input
                   type="text"
@@ -348,21 +394,23 @@ export function ProfileTab({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-foreground-muted mb-2">{t('dashboard.profile.birthday')}</label>
-              <div className="relative">
-                <Cake size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground-muted/50" />
-                <input
-                  type="date"
-                  value={formData.birthday}
-                  onChange={(e) => updateField('birthday', e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 rounded-xl bg-background-secondary border border-border text-foreground focus:outline-none focus:border-primary/50 transition-colors duration-(--animation-speed)"
-                />
-              </div>
+              <label className="block text-sm font-medium text-foreground-muted mb-2">
+                {t('dashboard.profile.birthday')}
+              </label>
+              <DatePicker
+                value={formData.birthday}
+                onChange={(value) => updateField('birthday', value)}
+                placeholder={t('dashboard.profile.birthdayPlaceholder', 'Select your birthday')}
+                fromYear={1900}
+                toYear={new Date().getFullYear()}
+              />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-foreground-muted mb-2">{t('dashboard.profile.creatorType')}</label>
+            <label className="block text-sm font-medium text-foreground-muted mb-2">
+              {t('dashboard.profile.creatorType')}
+            </label>
             <div className="flex flex-wrap gap-2">
               {CREATOR_TYPES.filter((ct) => ct.value).map((type) => (
                 <button
@@ -370,7 +418,10 @@ export function ProfileTab({
                   onClick={() => {
                     const current = formData.creatorTypes || []
                     if (current.includes(type.value)) {
-                      updateField('creatorTypes', current.filter((t) => t !== type.value))
+                      updateField(
+                        'creatorTypes',
+                        current.filter((t) => t !== type.value),
+                      )
                     } else {
                       updateField('creatorTypes', [...current, type.value])
                     }
@@ -425,7 +476,10 @@ export function ProfileTab({
           >
             <Plus size={16} />
             {t('dashboard.profile.addMore')}
-            <ChevronDown size={16} className={`transition-transform duration-(--animation-speed) ${showMoreSocials ? 'rotate-180' : ''}`} />
+            <ChevronDown
+              size={16}
+              className={`transition-transform duration-(--animation-speed) ${showMoreSocials ? 'rotate-180' : ''}`}
+            />
           </button>
 
           <AnimatePresence>
@@ -437,7 +491,10 @@ export function ProfileTab({
                 className="space-y-3 overflow-hidden"
               >
                 <div className="relative">
-                  <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground-muted/50" />
+                  <Search
+                    size={16}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground-muted/50"
+                  />
                   <input
                     type="text"
                     value={socialSearch}
@@ -468,7 +525,9 @@ export function ProfileTab({
                       <input
                         type="text"
                         value={formData.socials[platform.key] || ''}
-                        onChange={(e) => updateSocial(platform.key, e.target.value)}
+                        onChange={(e) =>
+                          updateSocial(platform.key, e.target.value)
+                        }
                         placeholder={platform.placeholder}
                         className="flex-1 px-4 py-2.5 rounded-xl bg-background-secondary border border-border text-foreground placeholder-foreground-muted/50 focus:outline-none focus:border-primary/50 transition-colors duration-(--animation-speed)"
                       />
@@ -500,11 +559,17 @@ export function ProfileTab({
                 <SiSpotify size={20} className="text-green-500" />
               </div>
               <div>
-                <p className="font-medium text-foreground">{t('dashboard.profile.services.spotify.name')}</p>
+                <p className="font-medium text-foreground">
+                  {t('dashboard.profile.services.spotify.name')}
+                </p>
                 <p className="text-xs text-foreground-muted">
-                  {spotifyConnection?.connected 
-                    ? t('dashboard.profile.services.spotify.connectedSince', { 
-                        date: spotifyConnection.connectedAt ? new Date(spotifyConnection.connectedAt).toLocaleDateString() : ''
+                  {spotifyConnection?.connected
+                    ? t('dashboard.profile.services.spotify.connectedSince', {
+                        date: spotifyConnection.connectedAt
+                          ? new Date(
+                              spotifyConnection.connectedAt,
+                            ).toLocaleDateString()
+                          : '',
                       })
                     : t('dashboard.profile.services.spotify.description')}
                 </p>
@@ -537,13 +602,16 @@ export function ProfileTab({
           {/* Discord Service */}
           <div className="flex items-center justify-between p-4 rounded-xl bg-background-secondary/50 hover:bg-background-secondary/70 transition-all duration-300">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: '#5865F220' }}>
+              <div
+                className="w-10 h-10 rounded-xl flex items-center justify-center"
+                style={{ backgroundColor: '#5865F220' }}
+              >
                 <SiDiscord size={20} style={{ color: '#5865F2' }} />
               </div>
               <div>
                 <p className="font-medium text-foreground">Discord</p>
                 <p className="text-xs text-foreground-muted">
-                  {isPlatformConnected('discord') 
+                  {isPlatformConnected('discord')
                     ? t('integrations.connected_badge')
                     : t('dashboard.profile.services.discord.description')}
                 </p>
@@ -573,13 +641,16 @@ export function ProfileTab({
           {/* Twitch Service */}
           <div className="flex items-center justify-between p-4 rounded-xl bg-background-secondary/50 hover:bg-background-secondary/70 transition-all duration-300">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: '#9146FF20' }}>
+              <div
+                className="w-10 h-10 rounded-xl flex items-center justify-center"
+                style={{ backgroundColor: '#9146FF20' }}
+              >
                 <SiTwitch size={20} style={{ color: '#9146FF' }} />
               </div>
               <div>
                 <p className="font-medium text-foreground">Twitch</p>
                 <p className="text-xs text-foreground-muted">
-                  {isPlatformConnected('twitch') 
+                  {isPlatformConnected('twitch')
                     ? t('integrations.connected_badge')
                     : t('dashboard.profile.services.twitch.description')}
                 </p>
@@ -615,7 +686,7 @@ export function ProfileTab({
               <div>
                 <p className="font-medium text-foreground">GitHub</p>
                 <p className="text-xs text-foreground-muted">
-                  {isPlatformConnected('github') 
+                  {isPlatformConnected('github')
                     ? t('integrations.connected_badge')
                     : t('dashboard.profile.services.github.description')}
                 </p>
@@ -644,13 +715,16 @@ export function ProfileTab({
           {/* Steam Service */}
           <div className="flex items-center justify-between p-4 rounded-xl bg-background-secondary/50 hover:bg-background-secondary/70 transition-all duration-300">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: '#1b283820' }}>
+              <div
+                className="w-10 h-10 rounded-xl flex items-center justify-center"
+                style={{ backgroundColor: '#1b283820' }}
+              >
                 <SiSteam size={20} style={{ color: '#66c0f4' }} />
               </div>
               <div>
                 <p className="font-medium text-foreground">Steam</p>
                 <p className="text-xs text-foreground-muted">
-                  {isPlatformConnected('steam') 
+                  {isPlatformConnected('steam')
                     ? t('integrations.connected_badge')
                     : t('dashboard.profile.services.steam.description')}
                 </p>
@@ -708,9 +782,14 @@ function InputField({
 }) {
   return (
     <div>
-      <label className="block text-sm font-medium text-foreground-muted mb-2">{label}</label>
+      <label className="block text-sm font-medium text-foreground-muted mb-2">
+        {label}
+      </label>
       <div className="relative">
-        <Icon size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground-muted/50" />
+        <Icon
+          size={18}
+          className="absolute left-4 top-1/2 -translate-y-1/2 text-foreground-muted/50"
+        />
         <input
           type="text"
           value={value}

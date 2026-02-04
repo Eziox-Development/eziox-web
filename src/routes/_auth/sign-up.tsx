@@ -74,8 +74,12 @@ const signUpSchema = z
       .regex(/[A-Z]/, 'signUp.errors.password.uppercase')
       .regex(/[a-z]/, 'signUp.errors.password.lowercase')
       .regex(/[0-9]/, 'signUp.errors.password.number'),
-    confirmPassword: z.string().min(1, 'signUp.errors.confirmPassword.required'),
-    acceptTerms: z.boolean().refine((val) => val, { message: 'signUp.errors.terms.required' }),
+    confirmPassword: z
+      .string()
+      .min(1, 'signUp.errors.confirmPassword.required'),
+    acceptTerms: z
+      .boolean()
+      .refine((val) => val, { message: 'signUp.errors.terms.required' }),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: 'signUp.errors.confirmPassword.match',
@@ -139,20 +143,37 @@ function SignUpPage() {
   }, [password, t])
 
   const requirements = [
-    { label: t('signUp.password.requirements.minLength'), met: password?.length >= 8 },
-    { label: t('signUp.password.requirements.uppercase'), met: /[A-Z]/.test(password || '') },
-    { label: t('signUp.password.requirements.lowercase'), met: /[a-z]/.test(password || '') },
-    { label: t('signUp.password.requirements.number'), met: /[0-9]/.test(password || '') },
+    {
+      label: t('signUp.password.requirements.minLength'),
+      met: password?.length >= 8,
+    },
+    {
+      label: t('signUp.password.requirements.uppercase'),
+      met: /[A-Z]/.test(password || ''),
+    },
+    {
+      label: t('signUp.password.requirements.lowercase'),
+      met: /[a-z]/.test(password || ''),
+    },
+    {
+      label: t('signUp.password.requirements.number'),
+      met: /[0-9]/.test(password || ''),
+    },
   ]
 
   const resetTurnstileToken = () => {
     setTurnstileToken('')
     try {
-      ;(window as unknown as { resetTurnstileWidget?: () => void }).resetTurnstileWidget?.()
+      ;(
+        window as unknown as { resetTurnstileWidget?: () => void }
+      ).resetTurnstileWidget?.()
     } catch {
       const el = document.querySelector('iframe[title*="turnstile"]')
       if (el) {
-        (el as HTMLIFrameElement).contentWindow?.postMessage({ event: 'reset' }, '*')
+        ;(el as HTMLIFrameElement).contentWindow?.postMessage(
+          { event: 'reset' },
+          '*',
+        )
       }
     }
   }
@@ -177,7 +198,10 @@ function SignUpPage() {
         await navigate({ to: search.redirect || '/' })
         return
       }
-      if (err.message?.includes('Bot verification') || err.message?.includes('Token expired')) {
+      if (
+        err.message?.includes('Bot verification') ||
+        err.message?.includes('Token expired')
+      ) {
         resetTurnstileToken()
       }
       setError(err.message || t('signUp.errors.general'))
@@ -202,9 +226,10 @@ function SignUpPage() {
     return username && username.length >= 3 && email && email.includes('@')
   }
 
-  const cardBg = effects.cardStyle === 'glass'
-    ? `rgba(${hexToRgb(colors.card)}, 0.6)`
-    : colors.card
+  const cardBg =
+    effects.cardStyle === 'glass'
+      ? `rgba(${hexToRgb(colors.card)}, 0.6)`
+      : colors.card
 
   return (
     <div className="w-full max-w-lg">
@@ -218,15 +243,20 @@ function SignUpPage() {
           className="relative rounded-3xl overflow-hidden"
           style={{
             background: cardBg,
-            backdropFilter: effects.cardStyle === 'glass' ? 'blur(40px) saturate(180%)' : undefined,
+            backdropFilter:
+              effects.cardStyle === 'glass'
+                ? 'blur(40px) saturate(180%)'
+                : undefined,
             border: `1px solid ${colors.border}40`,
             boxShadow: `0 30px 60px -15px rgba(0, 0, 0, 0.3), 0 0 80px rgba(${hexToRgb(colors.primary)}, 0.1)`,
           }}
         >
           {/* Top Gradient Bar */}
-          <div 
+          <div
             className="h-1.5"
-            style={{ background: `linear-gradient(90deg, ${colors.accent}, ${colors.primary}, ${colors.accent})` }}
+            style={{
+              background: `linear-gradient(90deg, ${colors.accent}, ${colors.primary}, ${colors.accent})`,
+            }}
           />
 
           <div className="p-8 md:p-10">
@@ -243,12 +273,18 @@ function SignUpPage() {
                 }}
               >
                 <Rocket size={14} style={{ color: colors.accent }} />
-                <span className="text-xs font-semibold" style={{ color: colors.accent }}>
+                <span
+                  className="text-xs font-semibold"
+                  style={{ color: colors.accent }}
+                >
                   {t('signUp.badge')}
                 </span>
               </motion.div>
-              
-              <h1 className="text-3xl font-bold mb-2" style={{ color: colors.foreground }}>
+
+              <h1
+                className="text-3xl font-bold mb-2"
+                style={{ color: colors.foreground }}
+              >
                 {t('signUp.title')}
               </h1>
               <p className="text-sm" style={{ color: colors.foregroundMuted }}>
@@ -265,9 +301,10 @@ function SignUpPage() {
                     className="h-1.5 rounded-full transition-all"
                     style={{
                       width: step === s ? 32 : 8,
-                      background: ['details', 'password', 'verify'].indexOf(step) >= i 
-                        ? colors.primary 
-                        : colors.border,
+                      background:
+                        ['details', 'password', 'verify'].indexOf(step) >= i
+                          ? colors.primary
+                          : colors.border,
                     }}
                   />
                 ))}
@@ -289,7 +326,12 @@ function SignUpPage() {
                 >
                   <AlertCircle className="w-5 h-5 text-red-400 shrink-0" />
                   <p className="text-sm text-red-400">{error}</p>
-                  <button onClick={() => setError(null)} className="ml-auto text-red-400 hover:text-red-300">×</button>
+                  <button
+                    onClick={() => setError(null)}
+                    className="ml-auto text-red-400 hover:text-red-300"
+                  >
+                    ×
+                  </button>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -323,12 +365,18 @@ function SignUpPage() {
                   {/* Divider */}
                   <div className="relative my-6">
                     <div className="absolute inset-0 flex items-center">
-                      <div className="w-full" style={{ borderTop: `1px solid ${colors.border}` }} />
+                      <div
+                        className="w-full"
+                        style={{ borderTop: `1px solid ${colors.border}` }}
+                      />
                     </div>
                     <div className="relative flex justify-center">
-                      <span 
+                      <span
                         className="px-4 text-xs font-medium"
-                        style={{ background: cardBg, color: colors.foregroundMuted }}
+                        style={{
+                          background: cardBg,
+                          color: colors.foregroundMuted,
+                        }}
                       >
                         {t('signUp.orContinueWith')}
                       </span>
@@ -346,7 +394,10 @@ function SignUpPage() {
                       color: colors.foreground,
                     }}
                   >
-                    <Mail className="w-5 h-5" style={{ color: colors.primary }} />
+                    <Mail
+                      className="w-5 h-5"
+                      style={{ color: colors.primary }}
+                    />
                     {t('signUp.continueWithEmail')}
                   </button>
                 </motion.div>
@@ -363,7 +414,10 @@ function SignUpPage() {
                 >
                   <button
                     type="button"
-                    onClick={() => { setStep('method'); setError(null) }}
+                    onClick={() => {
+                      setStep('method')
+                      setError(null)
+                    }}
                     className="flex items-center gap-2 text-sm font-medium mb-4"
                     style={{ color: colors.foregroundMuted }}
                   >
@@ -373,13 +427,24 @@ function SignUpPage() {
 
                   {/* Name */}
                   <div>
-                    <label className="block text-sm font-medium mb-2" style={{ color: colors.foreground }}>
-                      {t('signUp.name.label')} <span style={{ color: colors.foregroundMuted }}>({t('common.optional')})</span>
+                    <label
+                      className="block text-sm font-medium mb-2"
+                      style={{ color: colors.foreground }}
+                    >
+                      {t('signUp.name.label')}{' '}
+                      <span style={{ color: colors.foregroundMuted }}>
+                        ({t('common.optional')})
+                      </span>
                     </label>
                     <div className="relative">
                       <User
                         className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 transition-colors"
-                        style={{ color: focusedField === 'name' ? colors.primary : colors.foregroundMuted }}
+                        style={{
+                          color:
+                            focusedField === 'name'
+                              ? colors.primary
+                              : colors.foregroundMuted,
+                        }}
                       />
                       <input
                         {...form.register('name')}
@@ -399,13 +464,21 @@ function SignUpPage() {
 
                   {/* Username */}
                   <div>
-                    <label className="block text-sm font-medium mb-2" style={{ color: colors.foreground }}>
+                    <label
+                      className="block text-sm font-medium mb-2"
+                      style={{ color: colors.foreground }}
+                    >
                       {t('signUp.username.label')} *
                     </label>
                     <div className="relative">
                       <span
                         className="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-medium transition-colors"
-                        style={{ color: focusedField === 'username' ? colors.primary : colors.foregroundMuted }}
+                        style={{
+                          color:
+                            focusedField === 'username'
+                              ? colors.primary
+                              : colors.foregroundMuted,
+                        }}
                       >
                         @
                       </span>
@@ -424,18 +497,31 @@ function SignUpPage() {
                       />
                     </div>
                     {form.formState.errors.username && (
-                      <p className="mt-2 text-xs text-red-400">{t(form.formState.errors.username.message || '')}</p>
+                      <p className="mt-2 text-xs text-red-400">
+                        {t(form.formState.errors.username.message || '')}
+                      </p>
                     )}
                     {username && !form.formState.errors.username && (
                       <motion.div
                         initial={{ opacity: 0, y: -5 }}
                         animate={{ opacity: 1, y: 0 }}
                         className="mt-2 p-3 rounded-lg"
-                        style={{ background: `${colors.primary}10`, border: `1px solid ${colors.primary}20` }}
+                        style={{
+                          background: `${colors.primary}10`,
+                          border: `1px solid ${colors.primary}20`,
+                        }}
                       >
-                        <p className="text-sm" style={{ color: colors.foregroundMuted }}>
+                        <p
+                          className="text-sm"
+                          style={{ color: colors.foregroundMuted }}
+                        >
                           {t('signUp.username.preview')}{' '}
-                          <span className="font-semibold" style={{ color: colors.primary }}>eziox.link/{username}</span>
+                          <span
+                            className="font-semibold"
+                            style={{ color: colors.primary }}
+                          >
+                            eziox.link/{username}
+                          </span>
                         </p>
                       </motion.div>
                     )}
@@ -443,13 +529,21 @@ function SignUpPage() {
 
                   {/* Email */}
                   <div>
-                    <label className="block text-sm font-medium mb-2" style={{ color: colors.foreground }}>
+                    <label
+                      className="block text-sm font-medium mb-2"
+                      style={{ color: colors.foreground }}
+                    >
                       {t('signUp.email.label')} *
                     </label>
                     <div className="relative">
                       <Mail
                         className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 transition-colors"
-                        style={{ color: focusedField === 'email' ? colors.primary : colors.foregroundMuted }}
+                        style={{
+                          color:
+                            focusedField === 'email'
+                              ? colors.primary
+                              : colors.foregroundMuted,
+                        }}
                       />
                       <input
                         {...form.register('email')}
@@ -466,7 +560,9 @@ function SignUpPage() {
                       />
                     </div>
                     {form.formState.errors.email && (
-                      <p className="mt-2 text-xs text-red-400">{t(form.formState.errors.email.message || '')}</p>
+                      <p className="mt-2 text-xs text-red-400">
+                        {t(form.formState.errors.email.message || '')}
+                      </p>
                     )}
                   </div>
 
@@ -475,7 +571,9 @@ function SignUpPage() {
                     onClick={() => setStep('password')}
                     disabled={!canProceedToPassword()}
                     className="w-full py-4 rounded-xl font-bold text-white transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
-                    style={{ background: `linear-gradient(135deg, ${colors.primary}, ${colors.accent})` }}
+                    style={{
+                      background: `linear-gradient(135deg, ${colors.primary}, ${colors.accent})`,
+                    }}
                   >
                     <span className="flex items-center justify-center gap-2">
                       {t('common.continue')}
@@ -496,7 +594,10 @@ function SignUpPage() {
                 >
                   <button
                     type="button"
-                    onClick={() => { setStep('details'); setError(null) }}
+                    onClick={() => {
+                      setStep('details')
+                      setError(null)
+                    }}
                     className="flex items-center gap-2 text-sm font-medium mb-4"
                     style={{ color: colors.foregroundMuted }}
                   >
@@ -506,13 +607,21 @@ function SignUpPage() {
 
                   {/* Password */}
                   <div>
-                    <label className="block text-sm font-medium mb-2" style={{ color: colors.foreground }}>
+                    <label
+                      className="block text-sm font-medium mb-2"
+                      style={{ color: colors.foreground }}
+                    >
                       {t('signUp.password.label')} *
                     </label>
                     <div className="relative">
                       <Lock
                         className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 transition-colors"
-                        style={{ color: focusedField === 'password' ? colors.primary : colors.foregroundMuted }}
+                        style={{
+                          color:
+                            focusedField === 'password'
+                              ? colors.primary
+                              : colors.foregroundMuted,
+                        }}
                       />
                       <input
                         {...form.register('password')}
@@ -533,7 +642,11 @@ function SignUpPage() {
                         className="absolute right-4 top-1/2 -translate-y-1/2 p-1"
                         style={{ color: colors.foregroundMuted }}
                       >
-                        {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                        {showPassword ? (
+                          <EyeOff className="w-5 h-5" />
+                        ) : (
+                          <Eye className="w-5 h-5" />
+                        )}
                       </button>
                     </div>
 
@@ -550,7 +663,10 @@ function SignUpPage() {
                               key={i}
                               className="h-1.5 flex-1 rounded-full transition-all"
                               style={{
-                                background: i <= passwordStrength.score ? passwordStrength.color : colors.border,
+                                background:
+                                  i <= passwordStrength.score
+                                    ? passwordStrength.color
+                                    : colors.border,
                               }}
                             />
                           ))}
@@ -561,7 +677,9 @@ function SignUpPage() {
                               key={req.label}
                               className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full"
                               style={{
-                                background: req.met ? 'rgba(34, 197, 94, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+                                background: req.met
+                                  ? 'rgba(34, 197, 94, 0.1)'
+                                  : 'rgba(239, 68, 68, 0.1)',
                                 color: req.met ? '#22c55e' : '#ef4444',
                               }}
                             >
@@ -576,13 +694,21 @@ function SignUpPage() {
 
                   {/* Confirm Password */}
                   <div>
-                    <label className="block text-sm font-medium mb-2" style={{ color: colors.foreground }}>
+                    <label
+                      className="block text-sm font-medium mb-2"
+                      style={{ color: colors.foreground }}
+                    >
                       {t('signUp.confirmPassword.label')} *
                     </label>
                     <div className="relative">
                       <Lock
                         className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 transition-colors"
-                        style={{ color: focusedField === 'confirmPassword' ? colors.primary : colors.foregroundMuted }}
+                        style={{
+                          color:
+                            focusedField === 'confirmPassword'
+                              ? colors.primary
+                              : colors.foregroundMuted,
+                        }}
                       />
                       <input
                         {...form.register('confirmPassword')}
@@ -603,20 +729,32 @@ function SignUpPage() {
                         className="absolute right-4 top-1/2 -translate-y-1/2 p-1"
                         style={{ color: colors.foregroundMuted }}
                       >
-                        {showConfirm ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                        {showConfirm ? (
+                          <EyeOff className="w-5 h-5" />
+                        ) : (
+                          <Eye className="w-5 h-5" />
+                        )}
                       </button>
                     </div>
                     {form.formState.errors.confirmPassword && (
-                      <p className="mt-2 text-xs text-red-400">{t(form.formState.errors.confirmPassword.message || '')}</p>
+                      <p className="mt-2 text-xs text-red-400">
+                        {t(form.formState.errors.confirmPassword.message || '')}
+                      </p>
                     )}
                   </div>
 
                   <button
                     type="button"
                     onClick={() => setStep('verify')}
-                    disabled={!password || requirements.some(r => !r.met) || form.watch('confirmPassword') !== password}
+                    disabled={
+                      !password ||
+                      requirements.some((r) => !r.met) ||
+                      form.watch('confirmPassword') !== password
+                    }
                     className="w-full py-4 rounded-xl font-bold text-white transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
-                    style={{ background: `linear-gradient(135deg, ${colors.primary}, ${colors.accent})` }}
+                    style={{
+                      background: `linear-gradient(135deg, ${colors.primary}, ${colors.accent})`,
+                    }}
                   >
                     <span className="flex items-center justify-center gap-2">
                       {t('common.continue')}
@@ -633,12 +771,17 @@ function SignUpPage() {
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
-                  onSubmit={form.handleSubmit((data) => signUpMutation.mutate(data))}
+                  onSubmit={form.handleSubmit((data) =>
+                    signUpMutation.mutate(data),
+                  )}
                   className="space-y-5"
                 >
                   <button
                     type="button"
-                    onClick={() => { setStep('password'); setError(null) }}
+                    onClick={() => {
+                      setStep('password')
+                      setError(null)
+                    }}
                     className="flex items-center gap-2 text-sm font-medium mb-4"
                     style={{ color: colors.foregroundMuted }}
                   >
@@ -647,25 +790,54 @@ function SignUpPage() {
                   </button>
 
                   {/* Summary */}
-                  <div 
+                  <div
                     className="p-4 rounded-xl space-y-3"
-                    style={{ background: colors.backgroundSecondary, border: `1px solid ${colors.border}` }}
+                    style={{
+                      background: colors.backgroundSecondary,
+                      border: `1px solid ${colors.border}`,
+                    }}
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-sm" style={{ color: colors.foregroundMuted }}>{t('signUp.username.label')}</span>
-                      <span className="font-medium" style={{ color: colors.foreground }}>@{form.watch('username')}</span>
+                      <span
+                        className="text-sm"
+                        style={{ color: colors.foregroundMuted }}
+                      >
+                        {t('signUp.username.label')}
+                      </span>
+                      <span
+                        className="font-medium"
+                        style={{ color: colors.foreground }}
+                      >
+                        @{form.watch('username')}
+                      </span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm" style={{ color: colors.foregroundMuted }}>{t('signUp.email.label')}</span>
-                      <span className="font-medium" style={{ color: colors.foreground }}>{form.watch('email')}</span>
+                      <span
+                        className="text-sm"
+                        style={{ color: colors.foregroundMuted }}
+                      >
+                        {t('signUp.email.label')}
+                      </span>
+                      <span
+                        className="font-medium"
+                        style={{ color: colors.foreground }}
+                      >
+                        {form.watch('email')}
+                      </span>
                     </div>
                   </div>
 
                   {/* Turnstile */}
                   <div>
                     <div className="flex items-center justify-center gap-2 mb-2">
-                      <Shield className="w-4 h-4" style={{ color: colors.foregroundMuted }} />
-                      <span className="text-xs" style={{ color: colors.foregroundMuted }}>
+                      <Shield
+                        className="w-4 h-4"
+                        style={{ color: colors.foregroundMuted }}
+                      />
+                      <span
+                        className="text-xs"
+                        style={{ color: colors.foregroundMuted }}
+                      >
                         {t('signUp.security.title')}
                       </span>
                     </div>
@@ -678,33 +850,64 @@ function SignUpPage() {
 
                   {/* Terms */}
                   <label className="flex items-start gap-3 cursor-pointer">
-                    <input type="checkbox" {...form.register('acceptTerms')} className="sr-only" />
+                    <input
+                      type="checkbox"
+                      {...form.register('acceptTerms')}
+                      className="sr-only"
+                    />
                     <div
                       className="w-5 h-5 mt-0.5 rounded-md flex items-center justify-center transition-all shrink-0"
                       style={{
-                        background: form.watch('acceptTerms') ? colors.primary : 'transparent',
+                        background: form.watch('acceptTerms')
+                          ? colors.primary
+                          : 'transparent',
                         border: `2px solid ${form.watch('acceptTerms') ? colors.primary : colors.border}`,
                       }}
                     >
-                      {form.watch('acceptTerms') && <Check className="w-3 h-3 text-white" />}
+                      {form.watch('acceptTerms') && (
+                        <Check className="w-3 h-3 text-white" />
+                      )}
                     </div>
-                    <span className="text-sm" style={{ color: colors.foregroundMuted }}>
+                    <span
+                      className="text-sm"
+                      style={{ color: colors.foregroundMuted }}
+                    >
                       {t('signUp.terms.prefix')}{' '}
-                      <Link to="/terms" className="underline" style={{ color: colors.primary }}>{t('signUp.terms.terms')}</Link>
-                      {' '}&{' '}
-                      <Link to="/privacy" className="underline" style={{ color: colors.primary }}>{t('signUp.terms.privacy')}</Link>
+                      <Link
+                        to="/terms"
+                        className="underline"
+                        style={{ color: colors.primary }}
+                      >
+                        {t('signUp.terms.terms')}
+                      </Link>{' '}
+                      &{' '}
+                      <Link
+                        to="/privacy"
+                        className="underline"
+                        style={{ color: colors.primary }}
+                      >
+                        {t('signUp.terms.privacy')}
+                      </Link>
                     </span>
                   </label>
                   {form.formState.errors.acceptTerms && (
-                    <p className="text-xs text-red-400">{t(form.formState.errors.acceptTerms.message || '')}</p>
+                    <p className="text-xs text-red-400">
+                      {t(form.formState.errors.acceptTerms.message || '')}
+                    </p>
                   )}
 
                   {/* Submit */}
                   <button
                     type="submit"
-                    disabled={signUpMutation.isPending || !turnstileToken || !form.watch('acceptTerms')}
+                    disabled={
+                      signUpMutation.isPending ||
+                      !turnstileToken ||
+                      !form.watch('acceptTerms')
+                    }
                     className="w-full py-4 rounded-xl font-bold text-white transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
-                    style={{ background: `linear-gradient(135deg, ${colors.primary}, ${colors.accent})` }}
+                    style={{
+                      background: `linear-gradient(135deg, ${colors.primary}, ${colors.accent})`,
+                    }}
                   >
                     {signUpMutation.isPending ? (
                       <span className="flex items-center justify-center gap-2">
@@ -723,12 +926,17 @@ function SignUpPage() {
             </AnimatePresence>
 
             {/* Sign In Link */}
-            <div className="mt-8 pt-6 text-center" style={{ borderTop: `1px solid ${colors.border}` }}>
+            <div
+              className="mt-8 pt-6 text-center"
+              style={{ borderTop: `1px solid ${colors.border}` }}
+            >
               <p className="text-sm" style={{ color: colors.foregroundMuted }}>
                 {t('signUp.hasAccount')}{' '}
                 <Link
                   to="/sign-in"
-                  search={search.redirect ? { redirect: search.redirect } : undefined}
+                  search={
+                    search.redirect ? { redirect: search.redirect } : undefined
+                  }
                   className="font-semibold hover:underline"
                   style={{ color: colors.primary }}
                 >

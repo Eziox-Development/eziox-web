@@ -49,8 +49,7 @@ export function GettingStartedDoc() {
 
       <DocSection title={t(`${s}.profile.title`)}>
         <DocParagraph>
-          {t(`${s}.profile.intro`)}{' '}
-          <DocLink href="/profile">Dashboard</DocLink>
+          {t(`${s}.profile.intro`)} <DocLink href="/profile">Dashboard</DocLink>
         </DocParagraph>
 
         <DocSubSection title={t(`${s}.profile.basicTitle`)}>
@@ -135,10 +134,12 @@ export function GettingStartedDoc() {
             t(`${s}.themes.tableHeaders.0`),
             t(`${s}.themes.tableHeaders.1`),
           ]}
-          rows={t(`${s}.themes.tableRows`, { returnObjects: true }) as [
-            string,
-            string,
-          ][]}
+          rows={
+            t(`${s}.themes.tableRows`, { returnObjects: true }) as [
+              string,
+              string,
+            ][]
+          }
         />
         <DocSubSection title={t(`${s}.themes.changeTitle`)}>
           <DocList
@@ -163,7 +164,7 @@ export function GettingStartedDoc() {
         />
         <DocParagraph>
           {t(`${s}.next.helpPrefix`)}{' '}
-          <DocLink href="/contact">{t(`${s}.next.contactLabel`)}</DocLink>{' '}
+          <DocLink href="/support">{t(`${s}.next.contactLabel`)}</DocLink>{' '}
           {t(`${s}.next.helpInfix`)}{' '}
           <DocLink href="/docs/faq">{t(`${s}.next.faqLabel`)}</DocLink>{' '}
           {t(`${s}.next.helpSuffix`)}

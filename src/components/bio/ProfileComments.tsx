@@ -79,7 +79,8 @@ export function ProfileComments({
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['profileComments', profileUserId],
-    queryFn: () => getComments({ data: { profileUserId, limit: 50, offset: 0 } }),
+    queryFn: () =>
+      getComments({ data: { profileUserId, limit: 50, offset: 0 } }),
   })
 
   const createMutation = useMutation({
@@ -88,14 +89,18 @@ export function ProfileComments({
     onSuccess: () => {
       setNewComment('')
       setIsWriting(false)
-      void queryClient.invalidateQueries({ queryKey: ['profileComments', profileUserId] })
+      void queryClient.invalidateQueries({
+        queryKey: ['profileComments', profileUserId],
+      })
     },
   })
 
   const deleteMutation = useMutation({
     mutationFn: (commentId: string) => deleteComment({ data: { commentId } }),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ['profileComments', profileUserId] })
+      void queryClient.invalidateQueries({
+        queryKey: ['profileComments', profileUserId],
+      })
     },
   })
 
@@ -108,13 +113,31 @@ export function ProfileComments({
         else next.delete(commentId)
         return next
       })
-      void queryClient.invalidateQueries({ queryKey: ['profileComments', profileUserId] })
+      void queryClient.invalidateQueries({
+        queryKey: ['profileComments', profileUserId],
+      })
     },
   })
 
   const reportMutation = useMutation({
-    mutationFn: ({ commentId, reason }: { commentId: string; reason: string }) =>
-      reportComment({ data: { commentId, reason: reason as 'spam' | 'harassment' | 'hate_speech' | 'inappropriate' | 'other' } }),
+    mutationFn: ({
+      commentId,
+      reason,
+    }: {
+      commentId: string
+      reason: string
+    }) =>
+      reportComment({
+        data: {
+          commentId,
+          reason: reason as
+            | 'spam'
+            | 'harassment'
+            | 'hate_speech'
+            | 'inappropriate'
+            | 'other',
+        },
+      }),
     onSuccess: () => {
       setReportingComment(null)
       setReportReason('')
@@ -124,7 +147,9 @@ export function ProfileComments({
   const pinMutation = useMutation({
     mutationFn: (commentId: string) => togglePin({ data: { commentId } }),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ['profileComments', profileUserId] })
+      void queryClient.invalidateQueries({
+        queryKey: ['profileComments', profileUserId],
+      })
     },
   })
 
@@ -145,13 +170,13 @@ export function ProfileComments({
   }
 
   const rawComments = data?.comments || []
-  
+
   // Sort comments
   const comments = [...rawComments].sort((a: Comment, b: Comment) => {
     // Pinned always first
     if (a.isPinned && !b.isPinned) return -1
     if (!a.isPinned && b.isPinned) return 1
-    
+
     switch (sortBy) {
       case 'oldest':
         return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
@@ -176,7 +201,8 @@ export function ProfileComments({
       viewport={{ once: true }}
       className="rounded-2xl overflow-hidden"
       style={{
-        background: 'linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02))',
+        background:
+          'linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02))',
         border: '1px solid rgba(255,255,255,0.08)',
         borderRadius,
       }}
@@ -187,7 +213,7 @@ export function ProfileComments({
           <MessageCircle size={20} />
           {t('bioPage.comments.title')} ({comments.length})
         </h2>
-        
+
         <div className="flex items-center gap-2">
           {/* Sort Dropdown */}
           <div className="relative">
@@ -198,7 +224,7 @@ export function ProfileComments({
               {sortLabels[sortBy]}
               <ChevronDown size={14} />
             </button>
-            
+
             <AnimatePresence>
               {showSortMenu && (
                 <motion.div
@@ -207,20 +233,24 @@ export function ProfileComments({
                   exit={{ opacity: 0, y: -5 }}
                   className="absolute right-0 top-full mt-1 z-20 py-1 rounded-lg bg-[#1a1a24] border border-white/10 shadow-xl min-w-[140px]"
                 >
-                  {(['newest', 'oldest', 'popular'] as SortOption[]).map((option) => (
-                    <button
-                      key={option}
-                      onClick={() => {
-                        setSortBy(option)
-                        setShowSortMenu(false)
-                      }}
-                      className={`w-full px-3 py-2 text-left text-sm transition-colors ${
-                        sortBy === option ? 'text-purple-400 bg-white/5' : 'text-white/70 hover:bg-white/5'
-                      }`}
-                    >
-                      {sortLabels[option]}
-                    </button>
-                  ))}
+                  {(['newest', 'oldest', 'popular'] as SortOption[]).map(
+                    (option) => (
+                      <button
+                        key={option}
+                        onClick={() => {
+                          setSortBy(option)
+                          setShowSortMenu(false)
+                        }}
+                        className={`w-full px-3 py-2 text-left text-sm transition-colors ${
+                          sortBy === option
+                            ? 'text-purple-400 bg-white/5'
+                            : 'text-white/70 hover:bg-white/5'
+                        }`}
+                      >
+                        {sortLabels[option]}
+                      </button>
+                    ),
+                  )}
                 </motion.div>
               )}
             </AnimatePresence>
@@ -255,8 +285,12 @@ export function ProfileComments({
         ) : comments.length === 0 ? (
           <div className="text-center py-12">
             <MessageCircle className="w-12 h-12 mx-auto mb-4 text-white/20" />
-            <p className="font-medium text-white/60">{t('bioPage.comments.noComments')}</p>
-            <p className="text-sm text-white/40 mt-1">{t('bioPage.comments.beFirst')}</p>
+            <p className="font-medium text-white/60">
+              {t('bioPage.comments.noComments')}
+            </p>
+            <p className="text-sm text-white/40 mt-1">
+              {t('bioPage.comments.beFirst')}
+            </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -270,8 +304,11 @@ export function ProfileComments({
                   transition={{ delay: index * 0.02 }}
                   className="relative p-4 rounded-xl group"
                   style={{
-                    background: 'linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01))',
-                    border: comment.isPinned ? '1px solid rgba(139, 92, 246, 0.4)' : '1px solid rgba(255,255,255,0.06)',
+                    background:
+                      'linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01))',
+                    border: comment.isPinned
+                      ? '1px solid rgba(139, 92, 246, 0.4)'
+                      : '1px solid rgba(255,255,255,0.06)',
                   }}
                 >
                   {/* Pinned Badge */}
@@ -284,10 +321,16 @@ export function ProfileComments({
 
                   {/* Header */}
                   <div className="flex items-start gap-2 mb-2">
-                    <Link to="/$username" params={{ username: comment.author.username }}>
+                    <Link
+                      to="/$username"
+                      params={{ username: comment.author.username }}
+                    >
                       <div
                         className="w-8 h-8 rounded-full overflow-hidden shrink-0"
-                        style={{ background: 'linear-gradient(135deg, #8b5cf6, #06b6d4)' }}
+                        style={{
+                          background:
+                            'linear-gradient(135deg, #8b5cf6, #06b6d4)',
+                        }}
                       >
                         {comment.author.avatar ? (
                           <img
@@ -297,12 +340,16 @@ export function ProfileComments({
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-white text-xs font-bold">
-                            {(comment.author.name?.[0] || comment.author.username?.[0] || 'U').toUpperCase()}
+                            {(
+                              comment.author.name?.[0] ||
+                              comment.author.username?.[0] ||
+                              'U'
+                            ).toUpperCase()}
                           </div>
                         )}
                       </div>
                     </Link>
-                    
+
                     <div className="flex-1 min-w-0">
                       <Link
                         to="/$username"
@@ -311,13 +358,19 @@ export function ProfileComments({
                       >
                         {comment.author.name || comment.author.username}
                       </Link>
-                      <span className="text-white/40 text-xs">{formatDate(comment.createdAt)}</span>
+                      <span className="text-white/40 text-xs">
+                        {formatDate(comment.createdAt)}
+                      </span>
                     </div>
 
                     {/* More Menu */}
                     <div className="relative opacity-0 group-hover:opacity-100 transition-opacity">
                       <button
-                        onClick={() => setActiveMenu(activeMenu === comment.id ? null : comment.id)}
+                        onClick={() =>
+                          setActiveMenu(
+                            activeMenu === comment.id ? null : comment.id,
+                          )
+                        }
                         className="p-1 text-white/40 hover:text-white/60 transition-colors"
                       >
                         <MoreHorizontal size={14} />
@@ -340,10 +393,13 @@ export function ProfileComments({
                                 className="w-full px-3 py-1.5 text-left text-xs text-white/70 hover:bg-white/5 flex items-center gap-2"
                               >
                                 <Pin size={12} />
-                                {comment.isPinned ? t('bioPage.comments.unpin') : t('bioPage.comments.pin')}
+                                {comment.isPinned
+                                  ? t('bioPage.comments.unpin')
+                                  : t('bioPage.comments.pin')}
                               </button>
                             )}
-                            {(isProfileOwner || comment.author.id === currentUserId) && (
+                            {(isProfileOwner ||
+                              comment.author.id === currentUserId) && (
                               <button
                                 onClick={() => {
                                   deleteMutation.mutate(comment.id)
@@ -355,18 +411,19 @@ export function ProfileComments({
                                 {t('bioPage.comments.delete')}
                               </button>
                             )}
-                            {currentUserId && comment.author.id !== currentUserId && (
-                              <button
-                                onClick={() => {
-                                  setReportingComment(comment.id)
-                                  setActiveMenu(null)
-                                }}
-                                className="w-full px-3 py-1.5 text-left text-xs text-white/70 hover:bg-white/5 flex items-center gap-2"
-                              >
-                                <Flag size={12} />
-                                {t('bioPage.comments.report')}
-                              </button>
-                            )}
+                            {currentUserId &&
+                              comment.author.id !== currentUserId && (
+                                <button
+                                  onClick={() => {
+                                    setReportingComment(comment.id)
+                                    setActiveMenu(null)
+                                  }}
+                                  className="w-full px-3 py-1.5 text-left text-xs text-white/70 hover:bg-white/5 flex items-center gap-2"
+                                >
+                                  <Flag size={12} />
+                                  {t('bioPage.comments.report')}
+                                </button>
+                              )}
                           </motion.div>
                         )}
                       </AnimatePresence>
@@ -381,7 +438,9 @@ export function ProfileComments({
                   {/* Footer */}
                   <div className="flex items-center gap-3 mt-3 pt-2 border-t border-white/5">
                     <button
-                      onClick={() => currentUserId && likeMutation.mutate(comment.id)}
+                      onClick={() =>
+                        currentUserId && likeMutation.mutate(comment.id)
+                      }
                       disabled={!currentUserId || likeMutation.isPending}
                       className={`flex items-center gap-1 text-xs transition-colors ${
                         likedComments.has(comment.id)
@@ -389,10 +448,17 @@ export function ProfileComments({
                           : 'text-white/40 hover:text-pink-400'
                       }`}
                     >
-                      <Heart size={12} fill={likedComments.has(comment.id) ? 'currentColor' : 'none'} />
+                      <Heart
+                        size={12}
+                        fill={
+                          likedComments.has(comment.id)
+                            ? 'currentColor'
+                            : 'none'
+                        }
+                      />
                       <span>{comment.likes}</span>
                     </button>
-                    
+
                     <Sparkles size={12} className="text-white/20 ml-auto" />
                   </div>
                 </motion.div>
@@ -455,7 +521,9 @@ export function ProfileComments({
                   className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/40 resize-none focus:outline-none focus:border-white/20 transition-colors"
                 />
                 <div className="flex items-center justify-between mt-3">
-                  <span className="text-xs text-white/30">{newComment.length}/500</span>
+                  <span className="text-xs text-white/30">
+                    {newComment.length}/500
+                  </span>
                   <motion.button
                     type="submit"
                     disabled={!newComment.trim() || createMutation.isPending}
@@ -476,7 +544,8 @@ export function ProfileComments({
                 {createMutation.isError && (
                   <p className="mt-3 text-sm text-red-400 flex items-center gap-1">
                     <AlertCircle size={14} />
-                    {(createMutation.error as Error)?.message || t('bioPage.comments.errors.failed')}
+                    {(createMutation.error as Error)?.message ||
+                      t('bioPage.comments.errors.failed')}
                   </p>
                 )}
               </form>
@@ -510,7 +579,13 @@ export function ProfileComments({
               </p>
 
               <div className="space-y-2 mb-4">
-                {['spam', 'harassment', 'hate_speech', 'inappropriate', 'other'].map((reason) => (
+                {[
+                  'spam',
+                  'harassment',
+                  'hate_speech',
+                  'inappropriate',
+                  'other',
+                ].map((reason) => (
                   <button
                     key={reason}
                     onClick={() => setReportReason(reason)}
@@ -535,7 +610,10 @@ export function ProfileComments({
                 <button
                   onClick={() => {
                     if (reportReason && reportingComment) {
-                      reportMutation.mutate({ commentId: reportingComment, reason: reportReason })
+                      reportMutation.mutate({
+                        commentId: reportingComment,
+                        reason: reportReason,
+                      })
                     }
                   }}
                   disabled={!reportReason || reportMutation.isPending}

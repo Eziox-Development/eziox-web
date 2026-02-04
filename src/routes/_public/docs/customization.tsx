@@ -160,11 +160,31 @@ export function CustomizationDoc() {
           <DocTable
             headers={['Type', 'Description', 'Tier']}
             rows={[
-              [t(`${s}.backgrounds.typesTable.0.0`), t(`${s}.backgrounds.typesTable.0.1`), t(`${s}.backgrounds.typesTable.0.2`)],
-              [t(`${s}.backgrounds.typesTable.1.0`), t(`${s}.backgrounds.typesTable.1.1`), t(`${s}.backgrounds.typesTable.1.2`)],
-              [t(`${s}.backgrounds.typesTable.2.0`), t(`${s}.backgrounds.typesTable.2.1`), t(`${s}.backgrounds.typesTable.2.2`)],
-              [t(`${s}.backgrounds.typesTable.3.0`), t(`${s}.backgrounds.typesTable.3.1`), t(`${s}.backgrounds.typesTable.3.2`)],
-              [t(`${s}.backgrounds.typesTable.4.0`), t(`${s}.backgrounds.typesTable.4.1`), t(`${s}.backgrounds.typesTable.4.2`)],
+              [
+                t(`${s}.backgrounds.typesTable.0.0`),
+                t(`${s}.backgrounds.typesTable.0.1`),
+                t(`${s}.backgrounds.typesTable.0.2`),
+              ],
+              [
+                t(`${s}.backgrounds.typesTable.1.0`),
+                t(`${s}.backgrounds.typesTable.1.1`),
+                t(`${s}.backgrounds.typesTable.1.2`),
+              ],
+              [
+                t(`${s}.backgrounds.typesTable.2.0`),
+                t(`${s}.backgrounds.typesTable.2.1`),
+                t(`${s}.backgrounds.typesTable.2.2`),
+              ],
+              [
+                t(`${s}.backgrounds.typesTable.3.0`),
+                t(`${s}.backgrounds.typesTable.3.1`),
+                t(`${s}.backgrounds.typesTable.3.2`),
+              ],
+              [
+                t(`${s}.backgrounds.typesTable.4.0`),
+                t(`${s}.backgrounds.typesTable.4.1`),
+                t(`${s}.backgrounds.typesTable.4.2`),
+              ],
             ]}
           />
         </DocSubSection>
@@ -195,7 +215,8 @@ export function CustomizationDoc() {
         <DocParagraph>
           {t(`${s}.bestPractices.inspiration`).split('Templates Gallery')[0]}
           <DocLink href="/templates">Templates Gallery</DocLink>
-          {t(`${s}.bestPractices.inspiration`).split('Templates Gallery')[1] || '.'}
+          {t(`${s}.bestPractices.inspiration`).split('Templates Gallery')[1] ||
+            '.'}
         </DocParagraph>
       </DocSection>
     </DocsLayout>

@@ -76,16 +76,22 @@ export function SecurityTab({ currentUser }: SecurityTabProps) {
       }
 
       // Get registration options
-      const { options } = await getRegistrationOptions({ data: { name: passkeyName || 'Passkey' } })
+      const { options } = await getRegistrationOptions({
+        data: { name: passkeyName || 'Passkey' },
+      })
 
       // Convert challenge to ArrayBuffer
-      const challengeBuffer = Uint8Array.from(options.challenge, (c) => c.charCodeAt(0))
-      const userIdBuffer = Uint8Array.from(options.user.id, (c) => c.charCodeAt(0))
+      const challengeBuffer = Uint8Array.from(options.challenge, (c) =>
+        c.charCodeAt(0),
+      )
+      const userIdBuffer = Uint8Array.from(options.user.id, (c) =>
+        c.charCodeAt(0),
+      )
 
       // Create credential
       let credential: PublicKeyCredential | null = null
       try {
-        credential = await navigator.credentials.create({
+        credential = (await navigator.credentials.create({
           publicKey: {
             challenge: challengeBuffer,
             rp: options.rp,
@@ -98,7 +104,7 @@ export function SecurityTab({ currentUser }: SecurityTabProps) {
             attestation: options.attestation as AttestationConveyancePreference,
             authenticatorSelection: options.authenticatorSelection,
           },
-        }) as PublicKeyCredential
+        })) as PublicKeyCredential
       } catch (err) {
         // Catch WebAuthn errors and provide user-friendly messages
         if (err instanceof Error) {
@@ -130,13 +136,25 @@ export function SecurityTab({ currentUser }: SecurityTabProps) {
         data: {
           credential: {
             id: credential.id,
-            rawId: btoa(String.fromCharCode(...new Uint8Array(credential.rawId))),
+            rawId: btoa(
+              String.fromCharCode(...new Uint8Array(credential.rawId)),
+            ),
             response: {
-              clientDataJSON: btoa(String.fromCharCode(...new Uint8Array(response.clientDataJSON))),
-              attestationObject: btoa(String.fromCharCode(...new Uint8Array(response.attestationObject))),
+              clientDataJSON: btoa(
+                String.fromCharCode(...new Uint8Array(response.clientDataJSON)),
+              ),
+              attestationObject: btoa(
+                String.fromCharCode(
+                  ...new Uint8Array(response.attestationObject),
+                ),
+              ),
             },
             type: 'public-key',
-            authenticatorAttachment: (credential as PublicKeyCredential & { authenticatorAttachment?: string }).authenticatorAttachment,
+            authenticatorAttachment: (
+              credential as PublicKeyCredential & {
+                authenticatorAttachment?: string
+              }
+            ).authenticatorAttachment,
           },
         },
       })
@@ -172,7 +190,13 @@ export function SecurityTab({ currentUser }: SecurityTabProps) {
   })
 
   const renamePasskeyMutation = useMutation({
-    mutationFn: async ({ passkeyId, name }: { passkeyId: string; name: string }) => {
+    mutationFn: async ({
+      passkeyId,
+      name,
+    }: {
+      passkeyId: string
+      name: string
+    }) => {
       await renamePasskey({ data: { passkeyId, name } })
     },
     onSuccess: () => {
@@ -201,7 +225,10 @@ export function SecurityTab({ currentUser }: SecurityTabProps) {
     <div className="space-y-8">
       {/* Header */}
       <div>
-        <h2 className="text-2xl font-bold mb-2" style={{ color: colors.foreground }}>
+        <h2
+          className="text-2xl font-bold mb-2"
+          style={{ color: colors.foreground }}
+        >
           {t('security.title')}
         </h2>
         <p className="text-sm" style={{ color: colors.foregroundMuted }}>
@@ -257,10 +284,16 @@ export function SecurityTab({ currentUser }: SecurityTabProps) {
               className="w-10 h-10 rounded-xl flex items-center justify-center"
               style={{ background: `rgba(${hexToRgb(colors.primary)}, 0.1)` }}
             >
-              <Fingerprint className="w-5 h-5" style={{ color: colors.primary }} />
+              <Fingerprint
+                className="w-5 h-5"
+                style={{ color: colors.primary }}
+              />
             </div>
             <div>
-              <h3 className="font-semibold" style={{ color: colors.foreground }}>
+              <h3
+                className="font-semibold"
+                style={{ color: colors.foreground }}
+              >
                 {t('security.passkeys.title')}
               </h3>
               <p className="text-xs" style={{ color: colors.foregroundMuted }}>
@@ -296,7 +329,10 @@ export function SecurityTab({ currentUser }: SecurityTabProps) {
             >
               <div className="flex items-center gap-3 mb-4">
                 <Shield className="w-5 h-5" style={{ color: colors.primary }} />
-                <h4 className="font-medium" style={{ color: colors.foreground }}>
+                <h4
+                  className="font-medium"
+                  style={{ color: colors.foreground }}
+                >
                   {t('security.passkeys.addNew')}
                 </h4>
               </div>
@@ -348,11 +384,17 @@ export function SecurityTab({ currentUser }: SecurityTabProps) {
         {/* Passkeys List */}
         {passkeysLoading ? (
           <div className="flex items-center justify-center py-8">
-            <Loader2 className="w-6 h-6 animate-spin" style={{ color: colors.foregroundMuted }} />
+            <Loader2
+              className="w-6 h-6 animate-spin"
+              style={{ color: colors.foregroundMuted }}
+            />
           </div>
         ) : passkeys.length === 0 ? (
           <div className="text-center py-8">
-            <Key className="w-12 h-12 mx-auto mb-3" style={{ color: colors.foregroundMuted }} />
+            <Key
+              className="w-12 h-12 mx-auto mb-3"
+              style={{ color: colors.foregroundMuted }}
+            />
             <p className="text-sm" style={{ color: colors.foregroundMuted }}>
               {t('security.passkeys.empty')}
             </p>
@@ -372,12 +414,20 @@ export function SecurityTab({ currentUser }: SecurityTabProps) {
                 <div className="flex items-center gap-4">
                   <div
                     className="w-10 h-10 rounded-lg flex items-center justify-center"
-                    style={{ background: `rgba(${hexToRgb(colors.accent)}, 0.1)` }}
+                    style={{
+                      background: `rgba(${hexToRgb(colors.accent)}, 0.1)`,
+                    }}
                   >
                     {passkey.deviceType === 'platform' ? (
-                      <Monitor className="w-5 h-5" style={{ color: colors.accent }} />
+                      <Monitor
+                        className="w-5 h-5"
+                        style={{ color: colors.accent }}
+                      />
                     ) : (
-                      <Smartphone className="w-5 h-5" style={{ color: colors.accent }} />
+                      <Smartphone
+                        className="w-5 h-5"
+                        style={{ color: colors.accent }}
+                      />
                     )}
                   </div>
                   <div>
@@ -396,7 +446,12 @@ export function SecurityTab({ currentUser }: SecurityTabProps) {
                           autoFocus
                         />
                         <button
-                          onClick={() => renamePasskeyMutation.mutate({ passkeyId: passkey.id, name: editName })}
+                          onClick={() =>
+                            renamePasskeyMutation.mutate({
+                              passkeyId: passkey.id,
+                              name: editName,
+                            })
+                          }
                           className="p-1 rounded hover:bg-white/10"
                         >
                           <Check className="w-4 h-4 text-green-400" />
@@ -412,18 +467,26 @@ export function SecurityTab({ currentUser }: SecurityTabProps) {
                         </button>
                       </div>
                     ) : (
-                      <p className="font-medium" style={{ color: colors.foreground }}>
+                      <p
+                        className="font-medium"
+                        style={{ color: colors.foreground }}
+                      >
                         {passkey.name}
                       </p>
                     )}
-                    <div className="flex items-center gap-3 text-xs" style={{ color: colors.foregroundMuted }}>
+                    <div
+                      className="flex items-center gap-3 text-xs"
+                      style={{ color: colors.foregroundMuted }}
+                    >
                       <span className="flex items-center gap-1">
                         <Clock className="w-3 h-3" />
-                        {t('security.passkeys.created')}: {formatDate(passkey.createdAt)}
+                        {t('security.passkeys.created')}:{' '}
+                        {formatDate(passkey.createdAt)}
                       </span>
                       {passkey.lastUsedAt && (
                         <span>
-                          {t('security.passkeys.lastUsed')}: {formatDate(passkey.lastUsedAt)}
+                          {t('security.passkeys.lastUsed')}:{' '}
+                          {formatDate(passkey.lastUsedAt)}
                         </span>
                       )}
                     </div>
@@ -496,7 +559,9 @@ export function SecurityTab({ currentUser }: SecurityTabProps) {
                 {t('security.otp.enabled')}
               </p>
               <p className="text-xs" style={{ color: colors.foregroundMuted }}>
-                {t('security.otp.enabledDescription', { email: currentUser.email })}
+                {t('security.otp.enabledDescription', {
+                  email: currentUser.email,
+                })}
               </p>
             </div>
           </div>
@@ -517,8 +582,14 @@ export function SecurityTab({ currentUser }: SecurityTabProps) {
         <ul className="space-y-3">
           {['passkey', 'unique', 'phishing'].map((tip) => (
             <li key={tip} className="flex items-start gap-3">
-              <Shield className="w-4 h-4 mt-0.5 shrink-0" style={{ color: colors.primary }} />
-              <span className="text-sm" style={{ color: colors.foregroundMuted }}>
+              <Shield
+                className="w-4 h-4 mt-0.5 shrink-0"
+                style={{ color: colors.primary }}
+              />
+              <span
+                className="text-sm"
+                style={{ color: colors.foregroundMuted }}
+              >
                 {t(`security.tips.${tip}`)}
               </span>
             </li>

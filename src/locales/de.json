@@ -61,7 +61,9 @@
     "learnMore": "Mehr erfahren",
     "viewAll": "Alle anzeigen",
     "seeMore": "Mehr anzeigen",
-    "showLess": "Weniger anzeigen"
+    "showLess": "Weniger anzeigen",
+    "refresh": "Aktualisieren",
+    "clear": "Löschen"
   },
   "nav": {
     "home": "Startseite",
@@ -1586,7 +1588,7 @@
       },
       "contact": {
         "title": "Kontaktmöglichkeiten",
-        "content": "**E-Mail-Adresse:** [contact@eziox.link](mailto:contact@eziox.link)\n\n**Kontaktformular:** [https://eziox.link/contact](https://eziox.link/contact)"
+        "content": "**E-Mail-Adresse:** [contact@eziox.link](mailto:contact@eziox.link)\n\n**Kontaktformular:** [https://eziox.link/support](https://eziox.link/support)"
       },
       "disputeResolution": {
         "title": "Verbraucherstreitbeilegung",
@@ -1701,7 +1703,7 @@
       },
       "contact": {
         "title": "Kontakt",
-        "content": "Bei Fragen zur Verwendung von Cookies:\n\n**E-Mail:** privacy@eziox.link\n**Website:** https://eziox.link/contact\n\nFür allgemeine Datenschutzanfragen siehe unsere Datenschutzerklärung."
+        "content": "Bei Fragen zur Verwendung von Cookies:\n\n**E-Mail:** privacy@eziox.link\n**Website:** https://eziox.link/support\n\nFür allgemeine Datenschutzanfragen siehe unsere Datenschutzerklärung."
       }
     },
     "relatedLinks": {
@@ -1739,7 +1741,9 @@
       "terms": "Nutzungsbedingungen",
       "cookies": "Cookie-Richtlinie",
       "cancellation": "Widerrufsbelehrung",
-      "imprint": "Impressum"
+      "imprint": "Impressum",
+      "takedown": "DMCA / Takedown",
+      "licensing": "Kommerzielle Lizenzierung"
     },
     "stats": {
       "creators": "Creator",
@@ -1973,7 +1977,7 @@
       },
       "widerrufsrecht": {
         "title": "Widerrufsrecht",
-        "content": "Sie haben das Recht, binnen 14 Tagen ohne Angabe von Gründen diesen Vertrag zu widerrufen.\n\nDie Widerrufsfrist beträgt 14 Tage ab dem Tag des Vertragsabschlusses.\n\nUm Ihr Widerrufsrecht auszuüben, müssen Sie uns (Nattapat Pongsuwan, Rohstorf 59, 21397 Vastorf, Deutschland, E-Mail-Adresse: [contact@eziox.link](mailto:contact@eziox.link)) mittels einer eindeutigen Erklärung (z. B. ein mit der Post versandter Brief oder eine E-Mail) über Ihren Entschluss, diesen Vertrag zu widerrufen, informieren.\n\nSie können das Muster-Widerrufsformular oder eine andere eindeutige Erklärung auch auf unserer Webseite [https://eziox.link/contact](https://eziox.link/contact) elektronisch ausfüllen und übermitteln. Machen Sie von dieser Möglichkeit Gebrauch, so werden wir Ihnen unverzüglich (z. B. per E-Mail) eine Bestätigung über den Eingang eines solchen Widerrufs übermitteln.\n\nZur Wahrung der Widerrufsfrist reicht es aus, dass Sie die Mitteilung über die Ausübung des Widerrufsrechts vor Ablauf der Widerrufsfrist absenden."
+        "content": "Sie haben das Recht, binnen 14 Tagen ohne Angabe von Gründen diesen Vertrag zu widerrufen.\n\nDie Widerrufsfrist beträgt 14 Tage ab dem Tag des Vertragsabschlusses.\n\nUm Ihr Widerrufsrecht auszuüben, müssen Sie uns (Nattapat Pongsuwan, Rohstorf 59, 21397 Vastorf, Deutschland, E-Mail-Adresse: [contact@eziox.link](mailto:contact@eziox.link)) mittels einer eindeutigen Erklärung (z. B. ein mit der Post versandter Brief oder eine E-Mail) über Ihren Entschluss, diesen Vertrag zu widerrufen, informieren.\n\nSie können das Muster-Widerrufsformular oder eine andere eindeutige Erklärung auch auf unserer Webseite [https://eziox.link/support](https://eziox.link/support) elektronisch ausfüllen und übermitteln. Machen Sie von dieser Möglichkeit Gebrauch, so werden wir Ihnen unverzüglich (z. B. per E-Mail) eine Bestätigung über den Eingang eines solchen Widerrufs übermitteln.\n\nZur Wahrung der Widerrufsfrist reicht es aus, dass Sie die Mitteilung über die Ausübung des Widerrufsrechts vor Ablauf der Widerrufsfrist absenden."
       },
       "folgen": {
         "title": "Folgen des Widerrufs",
@@ -2436,6 +2440,7 @@
       "premium": "Premium",
       "account": "Konto",
       "quickLinks": "Schnellzugriff",
+      "support": "Support",
       "admin": "Admin",
       "adminPanel": "Admin Panel",
       "partnerApps": "Partner Apps",
@@ -2446,6 +2451,8 @@
       "profileDesc": "Bearbeite deine Profilinfos",
       "links": "Links",
       "linksDesc": "Verwalte deine Links",
+      "shortener": "URL-Kürzer",
+      "shortenerDesc": "Kurzlinks erstellen & verwalten",
       "widgets": "Widgets",
       "widgetsDesc": "Interaktive Widgets hinzufügen",
       "integrations": "Integrationen",
@@ -2463,7 +2470,9 @@
       "settings": "Einstellungen",
       "settingsDesc": "Kontoeinstellungen",
       "privacy": "Datenschutz",
-      "privacyDesc": "Datenschutzkontrollen"
+      "privacyDesc": "Datenschutzkontrollen",
+      "security": "Sicherheit",
+      "securityDesc": "Passwort & Sicherheitsoptionen"
     },
     "quickLinks": {
       "myBioPage": "Meine Bio-Seite",
@@ -2471,7 +2480,9 @@
       "analytics": "Analytics",
       "leaderboard": "Rangliste",
       "playground": "Playground",
-      "themeBuilder": "Theme Builder"
+      "themeBuilder": "Theme Builder",
+      "myTickets": "Meine Tickets",
+      "helpCenter": "Hilfe-Center"
     },
     "stats": {
       "profileViews": "Profilaufrufe",
@@ -3685,7 +3696,12 @@
                 "Gib den 6-stelligen Code zur Bestätigung ein"
               ],
               "appsTitle": "Unterstützte Apps:",
-              "apps": ["Google Authenticator", "Authy", "1Password", "Bitwarden"]
+              "apps": [
+                "Google Authenticator",
+                "Authy",
+                "1Password",
+                "Bitwarden"
+              ]
             },
             "recoveryCodes": {
               "title": "Wiederherstellungscodes",
@@ -3999,7 +4015,7 @@
             "contactSupport": "Wie kontaktiere ich den Support?",
             "contactSupportOptions": [
               "E-Mail: support@eziox.link",
-              "Kontaktformular: eziox.link/contact",
+              "Kontaktformular: eziox.link/support",
               "Discord: Kommt bald"
             ],
             "foundBug": "Ich habe einen Bug gefunden!",
@@ -4073,6 +4089,593 @@
       "passkey": "Verwende Passkeys für die sicherste und bequemste Anmeldung",
       "unique": "Verwende niemals dasselbe Passwort für verschiedene Dienste",
       "phishing": "Überprüfe immer, dass du auf eziox.link bist, bevor du dich anmeldest"
+    }
+  },
+  "admin": {
+    "title": "Admin Panel",
+    "accessRestricted": "Zugriff eingeschränkt",
+    "accessRestrictedDesc": "Dieser Bereich erfordert erhöhte Berechtigungen.",
+    "currentRole": "Aktuelle Rolle",
+    "ownerAccess": "Owner-Zugriff",
+    "adminAccess": "Admin-Zugriff",
+    "adminModeActive": "Admin-Modus aktiv",
+    "actionsLogged": "Alle Aktionen werden aus Sicherheitsgründen protokolliert.",
+    "tabs": {
+      "overview": "Übersicht",
+      "overviewDesc": "Dashboard & Statistiken",
+      "userManager": "Benutzerverwaltung",
+      "userManagerDesc": "Badges & Stufen",
+      "moderation": "Moderation",
+      "moderationDesc": "Sperren & Einsprüche",
+      "abuse": "Missbrauchsmeldungen",
+      "abuseDesc": "Fair Use Policy",
+      "security": "Sicherheit",
+      "securityDesc": "Sicherheitsüberwachung",
+      "tickets": "Tickets",
+      "ticketsDesc": "Support-Anfragen",
+      "partners": "Partner",
+      "partnersDesc": "Bewerbungen",
+      "legal": "Rechtliches",
+      "legalDesc": "Takedowns & Lizenzen",
+      "compliance": "Compliance",
+      "complianceDesc": "Lizenzüberwachung",
+      "settings": "Einstellungen",
+      "settingsDesc": "Seitenkonfiguration"
+    },
+    "security": {
+      "title": "Sicherheitsüberwachung",
+      "description": "Sicherheitsereignisse, Anomalien und Bedrohungen überwachen",
+      "stats": {
+        "totalEvents": "Ereignisse gesamt",
+        "unresolvedEvents": "Ungelöst",
+        "criticalEvents": "Kritisch",
+        "trend": "24h Trend"
+      },
+      "filters": {
+        "all": "Alle Ereignisse",
+        "unresolved": "Ungelöst",
+        "critical": "Nur kritische"
+      },
+      "severity": {
+        "low": "Niedrig",
+        "medium": "Mittel",
+        "high": "Hoch",
+        "critical": "Kritisch"
+      },
+      "eventTypes": {
+        "auth": "Authentifizierung",
+        "rateLimit": "Rate-Limiting",
+        "account": "Konto",
+        "content": "Inhalt",
+        "api": "API",
+        "system": "System"
+      },
+      "table": {
+        "event": "Ereignis",
+        "severity": "Schweregrad",
+        "user": "Benutzer",
+        "ip": "IP-Adresse",
+        "time": "Zeit",
+        "actions": "Aktionen"
+      },
+      "actions": {
+        "resolve": "Lösen",
+        "viewDetails": "Details anzeigen",
+        "blockIp": "IP blockieren"
+      },
+      "noEvents": "Keine Sicherheitsereignisse gefunden",
+      "resolved": "Gelöst",
+      "resolvedBy": "Gelöst von",
+      "trend": {
+        "increasing": "Steigend",
+        "decreasing": "Fallend",
+        "stable": "Stabil"
+      }
+    },
+    "tickets": {
+      "title": "Support-Tickets",
+      "description": "Support-Anfragen verwalten und beantworten",
+      "list": "Tickets",
+      "noTickets": "Keine Tickets gefunden",
+      "selectTicket": "Wähle ein Ticket aus, um Details anzuzeigen",
+      "search": "Tickets suchen...",
+      "refresh": "Aktualisieren",
+      "replySent": "Antwort gesendet",
+      "statusUpdated": "Status aktualisiert",
+      "priorityUpdated": "Priorität aktualisiert",
+      "noteAdded": "Interne Notiz hinzugefügt",
+      "replyPlaceholder": "Schreibe deine Antwort...",
+      "internalNotePlaceholder": "Interne Notiz (nicht sichtbar für Benutzer)...",
+      "addNote": "Notiz hinzufügen",
+      "cancel": "Abbrechen",
+      "filters": {
+        "allStatus": "Alle Status",
+        "allCategories": "Alle Kategorien",
+        "allPriorities": "Alle Prioritäten"
+      },
+      "status": {
+        "open": "Offen",
+        "in_progress": "In Bearbeitung",
+        "waiting_user": "Wartet auf Benutzer",
+        "waiting_admin": "Wartet auf Admin",
+        "resolved": "Gelöst",
+        "closed": "Geschlossen"
+      },
+      "priority": {
+        "low": "Niedrig",
+        "normal": "Normal",
+        "high": "Hoch",
+        "urgent": "Dringend"
+      },
+      "category": {
+        "general": "Allgemein",
+        "technical": "Technisch",
+        "billing": "Abrechnung",
+        "account": "Konto",
+        "security": "Sicherheit",
+        "abuse": "Missbrauch",
+        "legal": "Rechtlich",
+        "partnership": "Partnerschaft",
+        "feature": "Feature",
+        "withdrawal": "Widerruf",
+        "dmca": "DMCA",
+        "gdpr": "DSGVO"
+      },
+      "stats": {
+        "open": "Offen",
+        "inProgress": "In Bearbeitung",
+        "waitingAdmin": "Wartet auf Admin",
+        "urgent": "Dringend",
+        "today": "Heute"
+      }
+    },
+    "withdrawal": {
+      "title": "Widerrufsanträge",
+      "description": "Widerrufs- und Erstattungsanträge verwalten",
+      "stats": {
+        "pending": "Ausstehend",
+        "processing": "In Bearbeitung",
+        "completed": "Abgeschlossen",
+        "rejected": "Abgelehnt"
+      },
+      "requestTypes": {
+        "subscription_cancellation": "Abo-Kündigung",
+        "refund": "Erstattungsantrag",
+        "data_deletion": "Datenlöschung"
+      },
+      "status": {
+        "pending": "Ausstehend",
+        "processing": "In Bearbeitung",
+        "approved": "Genehmigt",
+        "rejected": "Abgelehnt",
+        "completed": "Abgeschlossen"
+      },
+      "actions": {
+        "approve": "Genehmigen",
+        "reject": "Ablehnen",
+        "process": "Bearbeiten"
+      },
+      "noRequests": "Keine Widerrufsanträge gefunden"
+    },
+    "compliance": {
+      "title": "Lizenz-Compliance",
+      "description": "Kommerzielle Lizenzen verwalten und Compliance-Verstöße überwachen",
+      "overview": "Übersicht",
+      "licenses": "Lizenzen",
+      "violations": "Verstöße",
+      "createLicense": "Lizenz erstellen",
+      "createLicenseTitle": "Neue kommerzielle Lizenz ausstellen",
+      "noLicenses": "Keine kommerziellen Lizenzen gefunden",
+      "noViolations": "Keine Compliance-Verstöße gefunden",
+      "stats": {
+        "activeLicenses": "Aktive Lizenzen",
+        "pendingViolations": "Ausstehende Verstöße",
+        "criticalViolations": "Kritische Verstöße",
+        "recentViolations": "Letzte (7 Tage)",
+        "pendingInquiries": "Ausstehende Anfragen"
+      },
+      "licenseStatus": {
+        "all": "Alle",
+        "active": "Aktiv",
+        "suspended": "Suspendiert",
+        "expired": "Abgelaufen",
+        "revoked": "Widerrufen"
+      }
+    },
+    "legal": {
+      "title": "Rechtliche Verwaltung",
+      "description": "DMCA-Takedown-Anfragen und kommerzielle Lizenzanfragen bearbeiten",
+      "takedowns": "Takedown-Anfragen",
+      "licensing": "Lizenzanfragen",
+      "noRequests": "Keine Takedown-Anfragen gefunden",
+      "noInquiries": "Keine Lizenzanfragen gefunden",
+      "status": {
+        "all": "Alle",
+        "pending": "Ausstehend",
+        "reviewing": "In Prüfung",
+        "approved": "Genehmigt",
+        "rejected": "Abgelehnt"
+      },
+      "licenseStatus": {
+        "all": "Alle",
+        "new": "Neu",
+        "contacted": "Kontaktiert",
+        "negotiating": "In Verhandlung",
+        "closed_won": "Abgeschlossen (Gewonnen)",
+        "closed_lost": "Abgeschlossen (Verloren)"
+      }
+    },
+    "overview": {
+      "welcome": "Willkommen zurück, Admin",
+      "welcomeDesc": "Das passiert heute auf deiner Plattform.",
+      "quickActions": "Schnellaktionen",
+      "recentActivity": "Letzte Aktivitäten",
+      "activityComingSoon": "Aktivitätsfeed kommt bald",
+      "manageUsers": "Benutzer verwalten",
+      "reviewBans": "Sperren prüfen",
+      "checkAlerts": "Meldungen prüfen",
+      "partnerApps": "Partner-Bewerbungen"
+    },
+    "stats": {
+      "totalUsers": "Benutzer gesamt",
+      "activeBans": "Aktive Sperren",
+      "pendingAppeals": "Offene Einsprüche",
+      "partnerApps": "Partner-Bewerbungen",
+      "admins": "Admins",
+      "withBadges": "Mit Badges",
+      "totalBadges": "Badges gesamt"
+    },
+    "userManager": {
+      "title": "Benutzerverwaltung",
+      "selectUser": "Benutzer auswählen",
+      "managing": "Verwalte {{name}}",
+      "searchPlaceholder": "Benutzer suchen...",
+      "allRoles": "Alle Rollen",
+      "noUsers": "Keine Benutzer gefunden",
+      "loadingUsers": "Lade Benutzer...",
+      "badges": "Badges",
+      "tier": "Stufe",
+      "selectTier": "Stufe zum Zuweisen auswählen",
+      "currentTier": "Aktuell",
+      "tierWarning": "Manuelle Stufenänderungen umgehen Stripe. Nur für Geschenke, Tests oder Support-Fälle verwenden.",
+      "badgeCount": "{{count}} Badges",
+      "basicAccess": "Basis-Zugang",
+      "proFeatures": "€2.99/Monat Features",
+      "creatorFeatures": "€4,99/Monat Features",
+      "lifetimeAccess": "Permanenter Zugang"
+    },
+    "moderation": {
+      "title": "Moderation",
+      "description": "Sperren, Einsprüche & Multi-Accounts verwalten",
+      "tabs": {
+        "users": "Benutzer",
+        "appeals": "Einsprüche",
+        "multiAccount": "Multi-Account",
+        "logs": "Protokolle"
+      },
+      "stats": {
+        "activeBans": "Aktive Sperren",
+        "pendingAppeals": "Offene Einsprüche",
+        "detectedMultiAccounts": "Multi-Accounts",
+        "blockedContent": "Blockierte Inhalte"
+      },
+      "searchPlaceholder": "Benutzer nach Name, E-Mail oder Benutzername suchen...",
+      "perPage": "Pro Seite",
+      "page": "Seite",
+      "of": "von",
+      "totalUsers": "Benutzer gesamt",
+      "searchHint": "Mindestens 2 Zeichen eingeben",
+      "noResults": "Keine Benutzer gefunden",
+      "noAppeals": "Keine offenen Einsprüche",
+      "noMultiAccounts": "Keine Multi-Accounts erkannt",
+      "noLogs": "Keine Moderationsprotokolle",
+      "banned": "Gesperrt",
+      "ban": "Sperren",
+      "unban": "Entsperren",
+      "banUser": "Benutzer sperren",
+      "banType": "Sperrtyp",
+      "temporary": "Temporär",
+      "permanent": "Permanent",
+      "shadowBan": "Shadow Ban",
+      "hours": "Stunden",
+      "days": "Tage",
+      "weeks": "Wochen",
+      "months": "Monate",
+      "years": "Jahre",
+      "reason": "Grund",
+      "reasonPlaceholder": "Sperrgrund eingeben (für Benutzer sichtbar)...",
+      "internalNotes": "Interne Notizen",
+      "internalNotesPlaceholder": "Nur für Admins sichtbar...",
+      "confirmBan": "Sperre bestätigen",
+      "banReason": "Sperrgrund",
+      "tier": "Stufe",
+      "role": "Rolle",
+      "name": "Name",
+      "pendingReview": "Prüfung ausstehend",
+      "originalReason": "Ursprünglicher Grund",
+      "appealMessage": "Einspruchsnachricht",
+      "responsePlaceholder": "Antwort eingeben...",
+      "approve": "Genehmigen",
+      "reject": "Ablehnen",
+      "ipMatch": "IP-Übereinstimmung",
+      "fingerprintMatch": "Fingerprint-Übereinstimmung",
+      "confidence": "Konfidenz",
+      "confirm": "Bestätigen",
+      "allow": "Erlauben",
+      "falsePositive": "Falsch positiv",
+      "shadow": "Shadow Ban"
+    },
+    "abuse": {
+      "title": "Missbrauchsmeldungen",
+      "description": "Fair Use Policy Überwachung und Durchsetzung",
+      "newAlerts": "Neue Meldungen",
+      "awaitingReview": "Warten auf Prüfung",
+      "critical": "Kritisch",
+      "immediateAction": "Sofortige Aktion erforderlich",
+      "warnings": "Warnungen",
+      "shouldReview": "Sollten geprüft werden",
+      "last24h": "Letzte 24h",
+      "totalToday": "Meldungen heute",
+      "status": "Status",
+      "selectStatus": "Status auswählen",
+      "allStatus": "Alle Status",
+      "new": "Neu",
+      "reviewed": "Geprüft",
+      "resolved": "Gelöst",
+      "falsePositive": "Falsch positiv",
+      "severity": "Schweregrad",
+      "selectSeverity": "Schweregrad auswählen",
+      "allSeverity": "Alle Schweregrade",
+      "warning": "Warnung",
+      "info": "Info",
+      "alerts": "Meldungen",
+      "allClear": "Alles klar!",
+      "noAlerts": "Keine Meldungen entsprechen deinen Filtern.",
+      "review": "Prüfen",
+      "reviewAndAction": "Prüfen und Maßnahmen ergreifen",
+      "user": "Benutzer",
+      "email": "E-Mail",
+      "alertType": "Meldungstyp",
+      "created": "Erstellt",
+      "descriptionLabel": "Beschreibung",
+      "metadata": "Metadaten",
+      "previousNotes": "Vorherige Notizen",
+      "reviewNotes": "Prüfnotizen",
+      "addNotes": "Notizen zu dieser Meldung hinzufügen...",
+      "markReviewed": "Als geprüft markieren",
+      "markResolved": "Als gelöst markieren",
+      "statusUpdated": "Meldungsstatus erfolgreich aktualisiert",
+      "statusUpdateFailed": "Fehler beim Aktualisieren des Status",
+      "sent": "Gesendet",
+      "dangerZone": "Gefahrenzone",
+      "deleteLink": "Link löschen",
+      "banUser": "Benutzer sperren",
+      "banUserConfirm": "Diesen Benutzer sperren?",
+      "banReasonPlaceholder": "Sperrgrund eingeben...",
+      "confirmBan": "Sperre bestätigen",
+      "userBanned": "Benutzer wurde gesperrt",
+      "banFailed": "Fehler beim Sperren des Benutzers",
+      "linkDeleted": "Link wurde gelöscht",
+      "deleteFailed": "Fehler beim Löschen des Links"
+    },
+    "partners": {
+      "title": "Partner-Bewerbungen",
+      "description": "Partnerschaftsanfragen prüfen und verwalten",
+      "pendingReview": "{{count}} ausstehend",
+      "total": "Gesamt",
+      "pending": "Ausstehend",
+      "reviewing": "In Prüfung",
+      "approved": "Genehmigt",
+      "rejected": "Abgelehnt",
+      "searchPlaceholder": "Nach Name, Benutzername, E-Mail oder Firma suchen...",
+      "all": "Alle",
+      "category": "Kategorie",
+      "loading": "Lade Bewerbungen...",
+      "loadFailed": "Laden fehlgeschlagen",
+      "tryAgain": "Bewerbungen konnten nicht geladen werden. Bitte erneut versuchen.",
+      "noApplications": "Keine Bewerbungen gefunden",
+      "adjustFilters": "Versuche, deine Filter anzupassen",
+      "noSubmissions": "Es wurden noch keine Partner-Bewerbungen eingereicht",
+      "applied": "Beworben",
+      "email": "E-Mail",
+      "website": "Website",
+      "company": "Firma",
+      "audienceSize": "Reichweite",
+      "categoryDetails": "Kategorie-Details",
+      "descriptionLabel": "Beschreibung",
+      "adminNotes": "Admin-Notizen",
+      "adminNotesPlaceholder": "Interne Notizen zu dieser Bewerbung hinzufügen...",
+      "markReviewing": "In Prüfung setzen",
+      "approve": "Genehmigen",
+      "reject": "Ablehnen"
+    },
+    "settings": {
+      "title": "Seiteneinstellungen",
+      "ownerOnly": "Nur für Owner",
+      "ownerRequired": "Owner-Zugriff erforderlich",
+      "ownerRequiredDesc": "Dieser Bereich erfordert Owner-Berechtigungen.",
+      "maintenanceMode": "Wartungsmodus",
+      "siteInMaintenance": "Seite ist im Wartungsmodus",
+      "siteAccessible": "Seite ist öffentlich zugänglich",
+      "disableMaintenance": "Wartung deaktivieren",
+      "enableMaintenance": "Wartung aktivieren",
+      "maintenanceActive": "Wartungsmodus ist aktiv.",
+      "maintenanceActiveDesc": "Nur du und erlaubte E-Mails können auf die Seite zugreifen.",
+      "maintenanceMessage": "Wartungsnachricht",
+      "messagePlaceholder": "Nachricht für Besucher während der Wartung...",
+      "defaultMaintenanceMessage": "Wir führen gerade Wartungsarbeiten durch. Bitte schaue später wieder vorbei.",
+      "estimatedEndTime": "Geschätzte Endzeit (optional)",
+      "estimatedEndTimeDesc": "Lege fest, wann die Wartung voraussichtlich abgeschlossen ist.",
+      "date": "Datum",
+      "hour": "Stunde",
+      "minute": "Minute",
+      "estimatedReturn": "Geschätzte Rückkehr",
+      "allowedUsers": "Erlaubte Benutzer (können Wartung umgehen)",
+      "allowedUsersDesc": "Dein Owner-Konto hat immer Zugriff. Suche nach Benutzern, um ihnen während der Wartung Zugriff zu gewähren.",
+      "searchUsersPlaceholder": "Benutzer nach Name, Benutzername oder E-Mail suchen...",
+      "noUsersFound": "Keine Benutzer gefunden. Drücke Enter, um als E-Mail hinzuzufügen.",
+      "saveSettings": "Einstellungen speichern",
+      "updateFailed": "Fehler beim Aktualisieren der Einstellungen",
+      "toggleFailed": "Fehler beim Umschalten des Wartungsmodus"
+    }
+  },
+  "takedown": {
+    "title": "DMCA & Takedown-Anfrage",
+    "description": "Melden Sie Inhalte, die Ihre Rechte verletzen oder gegen unsere Richtlinien verstoßen",
+    "submit": "Anfrage einreichen",
+    "error": "Anfrage konnte nicht eingereicht werden. Bitte versuchen Sie es erneut.",
+    "step1": {
+      "title": "Welche Art von Anspruch?",
+      "description": "Wählen Sie die Kategorie, die Ihre Beschwerde am besten beschreibt"
+    },
+    "step2": {
+      "title": "Inhaltsinformationen",
+      "contentType": "Inhaltstyp",
+      "contentUrl": "Inhalts-URL",
+      "reportedUsername": "Gemeldeter Benutzername (optional)",
+      "originalWorkUrl": "URL des Originalwerks"
+    },
+    "step3": {
+      "title": "Ihre Informationen",
+      "name": "Vollständiger Name",
+      "email": "E-Mail-Adresse",
+      "company": "Unternehmen (optional)",
+      "phone": "Telefon (optional)",
+      "description": "Beschreibung der Rechtsverletzung",
+      "descriptionPlaceholder": "Bitte beschreiben Sie detailliert, wie dieser Inhalt Ihre Rechte verletzt...",
+      "minChars": "Mindestzeichen"
+    },
+    "step4": {
+      "title": "Rechtliche Erklärungen",
+      "warning": "Das Einreichen einer falschen DMCA-Beschwerde kann rechtliche Konsequenzen haben. Bitte stellen Sie sicher, dass alle Angaben korrekt sind.",
+      "goodFaith": "Ich bin in gutem Glauben der Überzeugung, dass die Nutzung des Materials in der beanstandeten Weise nicht vom Urheberrechtsinhaber, seinem Vertreter oder dem Gesetz autorisiert ist.",
+      "accuracy": "Ich erkläre an Eides statt, dass die Informationen in dieser Mitteilung korrekt sind und dass ich der Urheberrechtsinhaber bin oder berechtigt bin, im Namen des Inhabers zu handeln."
+    },
+    "claimTypes": {
+      "copyright": "Urheberrecht",
+      "copyrightDesc": "Unbefugte Nutzung Ihres Werks",
+      "trademark": "Markenrecht",
+      "trademarkDesc": "Missbrauch Ihrer Marke/Logo",
+      "defamation": "Verleumdung",
+      "defamationDesc": "Falsche Aussagen über Sie",
+      "privacy": "Datenschutz",
+      "privacyDesc": "Persönliche Daten ohne Zustimmung",
+      "other": "Sonstiges",
+      "otherDesc": "Andere Richtlinienverstöße"
+    },
+    "contentTypes": {
+      "profile": "Profil",
+      "link": "Link",
+      "image": "Bild",
+      "bio": "Bio-Text",
+      "username": "Benutzername",
+      "other": "Sonstiges"
+    },
+    "submitted": {
+      "title": "Anfrage eingereicht",
+      "description": "Wir haben Ihre Takedown-Anfrage erhalten und werden sie innerhalb von 48-72 Stunden prüfen.",
+      "requestId": "Anfrage-ID",
+      "timeline": "Sie erhalten eine E-Mail-Benachrichtigung, sobald eine Entscheidung getroffen wurde."
+    },
+    "info": {
+      "title": "Wichtige Informationen",
+      "description": "Falsche Ansprüche können zu rechtlicher Haftung führen. Der Inhaltsinhaber kann Widerspruch einlegen. Wir erfüllen DMCA- und EU-DSA-Anforderungen."
+    }
+  },
+  "licensing": {
+    "title": "Kommerzielle Lizenzierung",
+    "description": "Hol dir eine kommerzielle Lizenz für Eziox für dein Unternehmen",
+    "error": "Anfrage konnte nicht eingereicht werden. Bitte versuche es erneut.",
+    "info": {
+      "sourceAvailable": "Quellcode verfügbar",
+      "sourceAvailableDesc": "Code einsehen und studieren zum Lernen und Evaluieren",
+      "nonCommercial": "Nicht-kommerziell kostenlos",
+      "nonCommercialDesc": "Kostenlos für persönliche Projekte, Bildung und Non-Profits",
+      "commercial": "Kommerzielle Lizenz",
+      "commercialDesc": "Erforderlich für geschäftliche Nutzung, SaaS oder Monetarisierung"
+    },
+    "types": {
+      "commercial": "Kommerziell",
+      "enterprise": "Enterprise",
+      "saas": "SaaS",
+      "reseller": "Wiederverkäufer",
+      "other": "Sonstiges"
+    },
+    "budgets": {
+      "under_1k": "< 1.000 €",
+      "1k_5k": "1.000 € - 5.000 €",
+      "5k_10k": "5.000 € - 10.000 €",
+      "10k_plus": "10.000 €+",
+      "enterprise": "Enterprise"
+    },
+    "timelines": {
+      "immediate": "Sofort",
+      "1_month": "1 Monat",
+      "3_months": "3 Monate",
+      "6_months": "6 Monate",
+      "exploring": "Nur erkunden"
+    },
+    "form": {
+      "title": "Lizenzanfrage",
+      "licenseType": "Lizenztyp",
+      "name": "Vollständiger Name",
+      "email": "E-Mail-Adresse",
+      "company": "Firmenname",
+      "website": "Firmenwebsite",
+      "useCase": "Beschreibe deinen Anwendungsfall",
+      "useCasePlaceholder": "Erzähl uns, wie du Eziox kommerziell nutzen möchtest...",
+      "minChars": "Mindestzeichen",
+      "expectedUsers": "Erwartete Benutzer",
+      "budget": "Budgetrahmen",
+      "timeline": "Zeitrahmen",
+      "additionalNotes": "Zusätzliche Anmerkungen",
+      "directContact": "Oder kontaktiere uns direkt",
+      "submit": "Anfrage einreichen"
+    },
+    "submitted": {
+      "title": "Anfrage eingereicht",
+      "description": "Vielen Dank für dein Interesse an der kommerziellen Lizenzierung von Eziox.",
+      "referenceId": "Referenz-ID",
+      "timeline": "Unser Business-Team wird dich innerhalb von 1-2 Werktagen kontaktieren."
+    }
+  },
+  "support": {
+    "viewMyTickets": "Meine Tickets anzeigen",
+    "tickets": {
+      "title": "Meine Tickets",
+      "description": "Deine Support-Anfragen anzeigen und verwalten",
+      "yourTickets": "Deine Tickets",
+      "newTicket": "Neues Ticket",
+      "refresh": "Aktualisieren",
+      "filterByStatus": "Nach Status filtern:",
+      "allStatus": "Alle Status",
+      "noTickets": "Keine Tickets gefunden",
+      "createFirst": "Erstelle dein erstes Ticket",
+      "selectTicket": "Wähle ein Ticket aus, um Details anzuzeigen",
+      "loading": "Laden...",
+      "replySent": "Antwort gesendet",
+      "replyError": "Antwort konnte nicht gesendet werden",
+      "replyPlaceholder": "Schreibe deine Antwort...",
+      "closeTicket": "Ticket schließen",
+      "ticketClosed": "Ticket geschlossen",
+      "closeError": "Ticket konnte nicht geschlossen werden",
+      "originalRequest": "Ursprüngliche Anfrage",
+      "supportTeam": "Support-Team",
+      "you": "Du",
+      "status": {
+        "open": "Offen",
+        "in_progress": "In Bearbeitung",
+        "waiting_user": "Wartet auf dich",
+        "waiting_admin": "Wartet auf Support",
+        "resolved": "Gelöst",
+        "closed": "Geschlossen"
+      },
+      "priority": {
+        "low": "Niedrig",
+        "normal": "Normal",
+        "high": "Hoch",
+        "urgent": "Dringend"
+      }
     }
   }
 }

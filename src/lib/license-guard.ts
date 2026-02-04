@@ -22,13 +22,15 @@ const _d = [
 ]
 
 // Decode domains at runtime
-const LICENSED_DOMAINS = _d.map(d => {
-  try {
-    return atob(d)
-  } catch {
-    return ''
-  }
-}).filter(Boolean)
+const LICENSED_DOMAINS = _d
+  .map((d) => {
+    try {
+      return atob(d)
+    } catch {
+      return ''
+    }
+  })
+  .filter(Boolean)
 
 // Integrity hash - do not modify
 const INTEGRITY_CHECK = 'ez10x_2026_v1'
@@ -65,9 +67,11 @@ function printLicenseNotice(): void {
   if (typeof console === 'undefined' || !_originalConsole) return
 
   const styles = {
-    header: 'background: linear-gradient(90deg, #8b5cf6, #06b6d4); color: white; font-size: 14px; font-weight: bold; padding: 10px 20px; border-radius: 8px 8px 0 0;',
+    header:
+      'background: linear-gradient(90deg, #8b5cf6, #06b6d4); color: white; font-size: 14px; font-weight: bold; padding: 10px 20px; border-radius: 8px 8px 0 0;',
     body: 'background: #1a1a2e; color: #e2e8f0; font-size: 12px; padding: 8px 20px; line-height: 1.6;',
-    footer: 'background: #1a1a2e; color: #64748b; font-size: 11px; padding: 8px 20px; border-radius: 0 0 8px 8px;',
+    footer:
+      'background: #1a1a2e; color: #64748b; font-size: 11px; padding: 8px 20px; border-radius: 0 0 8px 8px;',
     link: 'color: #8b5cf6; text-decoration: underline;',
     success: 'color: #22c55e;',
     warning: 'color: #f59e0b;',
@@ -75,9 +79,18 @@ function printLicenseNotice(): void {
 
   _originalConsole.log('%c 🔐 EZIOX LICENSE ', styles.header)
   _originalConsole.log('%c PolyForm Noncommercial 1.0.0 ', styles.body)
-  _originalConsole.log('%c ✅ Personal use, education, research ', styles.body + styles.success)
-  _originalConsole.log('%c ❌ Commercial use, SaaS, selling ', styles.body + styles.warning)
-  _originalConsole.log('%c © 2026 Eziox Development | business@eziox.link ', styles.footer)
+  _originalConsole.log(
+    '%c ✅ Personal use, education, research ',
+    styles.body + styles.success,
+  )
+  _originalConsole.log(
+    '%c ❌ Commercial use, SaaS, selling ',
+    styles.body + styles.warning,
+  )
+  _originalConsole.log(
+    '%c © 2026 Eziox Development | business@eziox.link ',
+    styles.footer,
+  )
 }
 
 /**
@@ -160,7 +173,7 @@ function setupAntiTampering(): void {
       if (_originalConsole) {
         _originalConsole.error(
           '%c⚠️ INTEGRITY VIOLATION DETECTED',
-          'color: #ef4444; font-size: 16px; font-weight: bold;'
+          'color: #ef4444; font-size: 16px; font-weight: bold;',
         )
       }
     }
@@ -175,15 +188,15 @@ function warnUnlicensedDomain(): void {
 
   _originalConsole.warn(
     '%c⚠️ UNLICENSED DOMAIN',
-    'background: #ef4444; color: white; font-size: 14px; font-weight: bold; padding: 5px 10px; border-radius: 4px;'
+    'background: #ef4444; color: white; font-size: 14px; font-weight: bold; padding: 5px 10px; border-radius: 4px;',
   )
   _originalConsole.warn(
     '%cThis domain is not licensed to run Eziox.',
-    'color: #f59e0b; font-size: 12px;'
+    'color: #f59e0b; font-size: 12px;',
   )
   _originalConsole.warn(
     '%cCommercial use requires a license: business@eziox.link',
-    'color: #3b82f6; font-size: 12px;'
+    'color: #3b82f6; font-size: 12px;',
   )
 
   // Add watermark to page for unlicensed domains
@@ -276,7 +289,9 @@ export function getLicenseInfo() {
 if (typeof window !== 'undefined') {
   // Use requestIdleCallback or setTimeout for non-blocking init
   if ('requestIdleCallback' in window) {
-    (window as Window & { requestIdleCallback: (cb: () => void) => void }).requestIdleCallback(() => initLicenseGuard())
+    ;(
+      window as Window & { requestIdleCallback: (cb: () => void) => void }
+    ).requestIdleCallback(() => initLicenseGuard())
   } else {
     setTimeout(initLicenseGuard, 0)
   }

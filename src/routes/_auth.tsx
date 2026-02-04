@@ -27,7 +27,7 @@ function hexToRgb(hex: string): string {
 function AuthLayout() {
   const { theme } = useTheme()
   const { colors, effects } = theme
-  
+
   const glowOpacity =
     effects.glowIntensity === 'none'
       ? 0
@@ -36,7 +36,7 @@ function AuthLayout() {
         : effects.glowIntensity === 'medium'
           ? 0.15
           : 0.2
-  
+
   return (
     <div
       className="min-h-screen relative overflow-hidden"
@@ -89,11 +89,11 @@ function AuthLayout() {
       </div>
 
       {/* Grid Pattern Overlay */}
-      <div 
+      <div
         className="fixed inset-0 pointer-events-none opacity-[0.02]"
         style={{
           backgroundImage: `linear-gradient(${colors.foreground} 1px, transparent 1px), linear-gradient(90deg, ${colors.foreground} 1px, transparent 1px)`,
-          backgroundSize: '50px 50px'
+          backgroundSize: '50px 50px',
         }}
       />
 
@@ -106,25 +106,25 @@ function AuthLayout() {
               whileTap={{ scale: 0.95 }}
               className="relative"
             >
-              <img 
-                src="/icon.png" 
-                alt="Eziox" 
+              <img
+                src="/icon.png"
+                alt="Eziox"
                 className="w-10 h-10 rounded-xl"
                 style={{
-                  boxShadow: `0 4px 20px ${colors.primary}40`
+                  boxShadow: `0 4px 20px ${colors.primary}40`,
                 }}
               />
             </motion.div>
-            <span 
+            <span
               className="text-xl font-bold group-hover:opacity-80 transition-opacity hidden sm:block"
               style={{ color: colors.foreground }}
             >
               Eziox
             </span>
           </Link>
-          
+
           <div className="flex items-center gap-3">
-            <Link 
+            <Link
               to="/"
               className="text-sm font-medium px-4 py-2 rounded-lg transition-all hover:opacity-80"
               style={{ color: colors.foregroundMuted }}
@@ -134,7 +134,7 @@ function AuthLayout() {
           </div>
         </div>
       </header>
-      
+
       {/* Main Content */}
       <main className="min-h-screen flex items-center justify-center pt-20 pb-10 px-4">
         <Outlet />

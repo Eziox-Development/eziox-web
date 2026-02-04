@@ -77,7 +77,7 @@ export function SettingsTab({ currentUser }: SettingsTabProps) {
   const deleteAllOtherSessions = useServerFn(deleteAllOtherSessionsFn)
   const getNotificationSettings = useServerFn(getNotificationSettingsFn)
   const updateNotificationSettings = useServerFn(updateNotificationSettingsFn)
-  
+
   // Queries
   const { data: twoFactorStatus } = useQuery({
     queryKey: ['2fa-status'],
@@ -94,10 +94,10 @@ export function SettingsTab({ currentUser }: SettingsTabProps) {
     queryFn: () => getNotificationSettings(),
   })
 
-  
   // Mutations
   const emailMutation = useMutation({
-    mutationFn: () => requestEmailChange({ data: { newEmail, password: currentPassword } }),
+    mutationFn: () =>
+      requestEmailChange({ data: { newEmail, password: currentPassword } }),
     onSuccess: () => {
       setShowEmailChange(false)
       setNewEmail('')
@@ -119,7 +119,9 @@ export function SettingsTab({ currentUser }: SettingsTabProps) {
   const exportDataMutation = useMutation({
     mutationFn: () => exportUserData(),
     onSuccess: (data) => {
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+      const blob = new Blob([JSON.stringify(data, null, 2)], {
+        type: 'application/json',
+      })
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
@@ -178,13 +180,15 @@ export function SettingsTab({ currentUser }: SettingsTabProps) {
   })
 
   const notificationMutation = useMutation({
-    mutationFn: (settings: Record<string, boolean>) => updateNotificationSettings({ data: settings }),
+    mutationFn: (settings: Record<string, boolean>) =>
+      updateNotificationSettings({ data: settings }),
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ['notification-settings'] })
+      void queryClient.invalidateQueries({
+        queryKey: ['notification-settings'],
+      })
     },
   })
 
-  
   const copyCode = async (code: string) => {
     await navigator.clipboard.writeText(code)
     setCopiedCode(code)
@@ -205,7 +209,11 @@ export function SettingsTab({ currentUser }: SettingsTabProps) {
   const getDeviceIcon = (userAgent: string | null) => {
     if (!userAgent) return <Monitor size={20} />
     const ua = userAgent.toLowerCase()
-    if (ua.includes('mobile') || ua.includes('android') || ua.includes('iphone')) {
+    if (
+      ua.includes('mobile') ||
+      ua.includes('android') ||
+      ua.includes('iphone')
+    ) {
       return <Smartphone size={20} />
     }
     return <Monitor size={20} />
@@ -216,26 +224,46 @@ export function SettingsTab({ currentUser }: SettingsTabProps) {
     const ua = userAgent.toLowerCase()
     let browser = 'Unknown'
     let os = 'Unknown'
-    
+
     if (ua.includes('chrome')) browser = 'Chrome'
     else if (ua.includes('firefox')) browser = 'Firefox'
     else if (ua.includes('safari')) browser = 'Safari'
     else if (ua.includes('edge')) browser = 'Edge'
-    
+
     if (ua.includes('windows')) os = 'Windows'
     else if (ua.includes('mac')) os = 'macOS'
     else if (ua.includes('linux')) os = 'Linux'
     else if (ua.includes('android')) os = 'Android'
     else if (ua.includes('iphone') || ua.includes('ipad')) os = 'iOS'
-    
+
     return `${browser} on ${os}`
   }
 
-  const sections: { id: SettingsSection; icon: React.ReactNode; label: string }[] = [
-    { id: 'account', icon: <Mail size={18} />, label: t('dashboard.settings.account') },
-    { id: 'security', icon: <Shield size={18} />, label: t('dashboard.settings.security') },
-    { id: 'notifications', icon: <Bell size={18} />, label: t('dashboard.settings.notifications') },
-    { id: 'danger', icon: <AlertTriangle size={18} />, label: t('dashboard.settings.dangerZone') },
+  const sections: {
+    id: SettingsSection
+    icon: React.ReactNode
+    label: string
+  }[] = [
+    {
+      id: 'account',
+      icon: <Mail size={18} />,
+      label: t('dashboard.settings.account'),
+    },
+    {
+      id: 'security',
+      icon: <Shield size={18} />,
+      label: t('dashboard.settings.security'),
+    },
+    {
+      id: 'notifications',
+      icon: <Bell size={18} />,
+      label: t('dashboard.settings.notifications'),
+    },
+    {
+      id: 'danger',
+      icon: <AlertTriangle size={18} />,
+      label: t('dashboard.settings.dangerZone'),
+    },
   ]
 
   return (
@@ -248,8 +276,12 @@ export function SettingsTab({ currentUser }: SettingsTabProps) {
     >
       {/* Header */}
       <div>
-        <h2 className="text-xl font-bold text-foreground">{t('dashboard.settings.title')}</h2>
-        <p className="text-sm text-foreground-muted">{t('dashboard.settings.subtitle')}</p>
+        <h2 className="text-xl font-bold text-foreground">
+          {t('dashboard.settings.title')}
+        </h2>
+        <p className="text-sm text-foreground-muted">
+          {t('dashboard.settings.subtitle')}
+        </p>
       </div>
 
       {/* Section Navigation */}
@@ -288,7 +320,9 @@ export function SettingsTab({ currentUser }: SettingsTabProps) {
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <p className="font-medium text-foreground">{t('dashboard.settings.email')}</p>
+                    <p className="font-medium text-foreground">
+                      {t('dashboard.settings.email')}
+                    </p>
                     {currentUser.emailVerified ? (
                       <span className="flex items-center gap-1 text-xs text-green-400 bg-green-500/20 px-2 py-0.5 rounded-full">
                         <CheckCircle size={12} />
@@ -301,7 +335,9 @@ export function SettingsTab({ currentUser }: SettingsTabProps) {
                       </span>
                     )}
                   </div>
-                  <p className="text-sm text-foreground-muted">{currentUser.email}</p>
+                  <p className="text-sm text-foreground-muted">
+                    {currentUser.email}
+                  </p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
@@ -311,7 +347,11 @@ export function SettingsTab({ currentUser }: SettingsTabProps) {
                     disabled={resendVerificationMutation.isPending}
                     className="px-3 py-2 rounded-xl text-sm bg-yellow-500/20 text-yellow-400 hover:bg-yellow-500/30 transition-colors duration-(--animation-speed)"
                   >
-                    {resendVerificationMutation.isPending ? <Loader2 size={14} className="animate-spin" /> : t('dashboard.settings.resendVerification')}
+                    {resendVerificationMutation.isPending ? (
+                      <Loader2 size={14} className="animate-spin" />
+                    ) : (
+                      t('dashboard.settings.resendVerification')
+                    )}
                   </button>
                 )}
                 <button
@@ -346,7 +386,9 @@ export function SettingsTab({ currentUser }: SettingsTabProps) {
                     className="w-full px-4 py-3 rounded-xl bg-background-secondary border border-border text-foreground placeholder-foreground-muted/50 focus:outline-none focus:border-primary/50 transition-colors duration-(--animation-speed)"
                   />
                   {emailMutation.isSuccess && (
-                    <p className="text-sm text-green-400">{t('dashboard.settings.emailChangeSuccess')}</p>
+                    <p className="text-sm text-green-400">
+                      {t('dashboard.settings.emailChangeSuccess')}
+                    </p>
                   )}
                   <div className="flex gap-2">
                     <button
@@ -357,10 +399,16 @@ export function SettingsTab({ currentUser }: SettingsTabProps) {
                     </button>
                     <button
                       onClick={() => emailMutation.mutate()}
-                      disabled={!newEmail || !currentPassword || emailMutation.isPending}
+                      disabled={
+                        !newEmail || !currentPassword || emailMutation.isPending
+                      }
                       className="flex-1 py-3 rounded-xl font-medium text-primary-foreground bg-linear-to-r from-primary to-accent disabled:opacity-50 flex items-center justify-center gap-2"
                     >
-                      {emailMutation.isPending ? <Loader2 size={18} className="animate-spin" /> : <Check size={18} />}
+                      {emailMutation.isPending ? (
+                        <Loader2 size={18} className="animate-spin" />
+                      ) : (
+                        <Check size={18} />
+                      )}
                       {t('dashboard.save')}
                     </button>
                   </div>
@@ -377,7 +425,9 @@ export function SettingsTab({ currentUser }: SettingsTabProps) {
                   <Lock size={24} className="text-primary" />
                 </div>
                 <div>
-                  <p className="font-medium text-foreground">{t('dashboard.settings.password')}</p>
+                  <p className="font-medium text-foreground">
+                    {t('dashboard.settings.password')}
+                  </p>
                   <p className="text-sm text-foreground-muted">••••••••••••</p>
                 </div>
               </div>
@@ -398,8 +448,12 @@ export function SettingsTab({ currentUser }: SettingsTabProps) {
                   <Download size={24} className="text-purple-400" />
                 </div>
                 <div>
-                  <p className="font-medium text-foreground">{t('dashboard.settings.dataExport')}</p>
-                  <p className="text-sm text-foreground-muted">{t('dashboard.settings.dataExportDesc')}</p>
+                  <p className="font-medium text-foreground">
+                    {t('dashboard.settings.dataExport')}
+                  </p>
+                  <p className="text-sm text-foreground-muted">
+                    {t('dashboard.settings.dataExportDesc')}
+                  </p>
                 </div>
               </div>
               <button
@@ -407,8 +461,14 @@ export function SettingsTab({ currentUser }: SettingsTabProps) {
                 disabled={exportDataMutation.isPending}
                 className="px-4 py-2 rounded-xl bg-purple-500/20 text-purple-400 hover:bg-purple-500/30 transition-colors duration-(--animation-speed) flex items-center gap-2"
               >
-                {exportDataMutation.isPending ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />}
-                {exportDataMutation.isPending ? t('dashboard.settings.exportingData') : t('dashboard.settings.exportData')}
+                {exportDataMutation.isPending ? (
+                  <Loader2 size={16} className="animate-spin" />
+                ) : (
+                  <Download size={16} />
+                )}
+                {exportDataMutation.isPending
+                  ? t('dashboard.settings.exportingData')
+                  : t('dashboard.settings.exportData')}
               </button>
             </div>
           </div>
@@ -426,14 +486,31 @@ export function SettingsTab({ currentUser }: SettingsTabProps) {
           <div className="rounded-lg overflow-hidden bg-card/50 border border-border p-5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${twoFactorStatus?.enabled ? 'bg-green-500/20' : 'bg-yellow-500/20'}`}>
-                  <Shield size={24} className={twoFactorStatus?.enabled ? 'text-green-400' : 'text-yellow-400'} />
+                <div
+                  className={`w-12 h-12 rounded-xl flex items-center justify-center ${twoFactorStatus?.enabled ? 'bg-green-500/20' : 'bg-yellow-500/20'}`}
+                >
+                  <Shield
+                    size={24}
+                    className={
+                      twoFactorStatus?.enabled
+                        ? 'text-green-400'
+                        : 'text-yellow-400'
+                    }
+                  />
                 </div>
                 <div>
-                  <p className="font-medium text-foreground">{t('dashboard.settings.twoFactor')}</p>
-                  <p className="text-sm text-foreground-muted">{t('dashboard.settings.twoFactorDesc')}</p>
-                  <p className={`text-xs mt-1 ${twoFactorStatus?.enabled ? 'text-green-400' : 'text-yellow-400'}`}>
-                    {twoFactorStatus?.enabled ? t('dashboard.settings.twoFactorEnabled') : t('dashboard.settings.twoFactorDisabled')}
+                  <p className="font-medium text-foreground">
+                    {t('dashboard.settings.twoFactor')}
+                  </p>
+                  <p className="text-sm text-foreground-muted">
+                    {t('dashboard.settings.twoFactorDesc')}
+                  </p>
+                  <p
+                    className={`text-xs mt-1 ${twoFactorStatus?.enabled ? 'text-green-400' : 'text-yellow-400'}`}
+                  >
+                    {twoFactorStatus?.enabled
+                      ? t('dashboard.settings.twoFactorEnabled')
+                      : t('dashboard.settings.twoFactorDisabled')}
                   </p>
                 </div>
               </div>
@@ -450,7 +527,11 @@ export function SettingsTab({ currentUser }: SettingsTabProps) {
                   disabled={setup2FAMutation.isPending}
                   className="px-4 py-2 rounded-xl bg-green-500/20 text-green-400 hover:bg-green-500/30 transition-colors duration-(--animation-speed) flex items-center gap-2"
                 >
-                  {setup2FAMutation.isPending ? <Loader2 size={16} className="animate-spin" /> : <Key size={16} />}
+                  {setup2FAMutation.isPending ? (
+                    <Loader2 size={16} className="animate-spin" />
+                  ) : (
+                    <Key size={16} />
+                  )}
                   {t('dashboard.settings.setup2FA')}
                 </button>
               )}
@@ -465,32 +546,55 @@ export function SettingsTab({ currentUser }: SettingsTabProps) {
                   exit={{ opacity: 0, height: 0 }}
                   className="mt-4 pt-4 border-t border-border space-y-4"
                 >
-                  <p className="text-sm text-foreground-muted">{t('dashboard.settings.scan2FACode')}</p>
+                  <p className="text-sm text-foreground-muted">
+                    {t('dashboard.settings.scan2FACode')}
+                  </p>
                   <div className="flex justify-center">
-                    <img src={qrCodeUrl} alt="2FA QR Code" className="w-48 h-48 rounded-lg bg-white p-2" />
+                    <img
+                      src={qrCodeUrl}
+                      alt="2FA QR Code"
+                      className="w-48 h-48 rounded-lg bg-white p-2"
+                    />
                   </div>
-                  <p className="text-sm text-foreground-muted">{t('dashboard.settings.enter2FACode')}</p>
+                  <p className="text-sm text-foreground-muted">
+                    {t('dashboard.settings.enter2FACode')}
+                  </p>
                   <input
                     type="text"
                     value={twoFactorCode}
-                    onChange={(e) => setTwoFactorCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                    onChange={(e) =>
+                      setTwoFactorCode(
+                        e.target.value.replace(/\D/g, '').slice(0, 6),
+                      )
+                    }
                     placeholder="000000"
                     maxLength={6}
                     className="w-full px-4 py-3 rounded-xl bg-background-secondary border border-border text-foreground text-center text-2xl tracking-widest font-mono placeholder-foreground-muted/50 focus:outline-none focus:border-primary/50 transition-colors duration-(--animation-speed)"
                   />
                   <div className="flex gap-2">
                     <button
-                      onClick={() => { setShow2FASetup(false); setQrCodeUrl(null); setTwoFactorCode('') }}
+                      onClick={() => {
+                        setShow2FASetup(false)
+                        setQrCodeUrl(null)
+                        setTwoFactorCode('')
+                      }}
                       className="flex-1 py-3 rounded-xl font-medium text-foreground-muted bg-background-secondary hover:bg-background-secondary/80 transition-colors duration-(--animation-speed)"
                     >
                       {t('dashboard.cancel')}
                     </button>
                     <button
                       onClick={() => enable2FAMutation.mutate()}
-                      disabled={twoFactorCode.length !== 6 || enable2FAMutation.isPending}
+                      disabled={
+                        twoFactorCode.length !== 6 ||
+                        enable2FAMutation.isPending
+                      }
                       className="flex-1 py-3 rounded-xl font-medium text-primary-foreground bg-linear-to-r from-primary to-accent disabled:opacity-50 flex items-center justify-center gap-2"
                     >
-                      {enable2FAMutation.isPending ? <Loader2 size={18} className="animate-spin" /> : <Check size={18} />}
+                      {enable2FAMutation.isPending ? (
+                        <Loader2 size={18} className="animate-spin" />
+                      ) : (
+                        <Check size={18} />
+                      )}
                       {t('dashboard.settings.enable2FA')}
                     </button>
                   </div>
@@ -507,28 +611,44 @@ export function SettingsTab({ currentUser }: SettingsTabProps) {
                   exit={{ opacity: 0, height: 0 }}
                   className="mt-4 pt-4 border-t border-border space-y-4"
                 >
-                  <p className="text-sm text-foreground-muted">{t('dashboard.settings.enter2FACode')}</p>
+                  <p className="text-sm text-foreground-muted">
+                    {t('dashboard.settings.enter2FACode')}
+                  </p>
                   <input
                     type="text"
                     value={twoFactorCode}
-                    onChange={(e) => setTwoFactorCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                    onChange={(e) =>
+                      setTwoFactorCode(
+                        e.target.value.replace(/\D/g, '').slice(0, 6),
+                      )
+                    }
                     placeholder="000000"
                     maxLength={6}
                     className="w-full px-4 py-3 rounded-xl bg-background-secondary border border-border text-foreground text-center text-2xl tracking-widest font-mono placeholder-foreground-muted/50 focus:outline-none focus:border-primary/50 transition-colors duration-(--animation-speed)"
                   />
                   <div className="flex gap-2">
                     <button
-                      onClick={() => { setShow2FADisable(false); setTwoFactorCode('') }}
+                      onClick={() => {
+                        setShow2FADisable(false)
+                        setTwoFactorCode('')
+                      }}
                       className="flex-1 py-3 rounded-xl font-medium text-foreground-muted bg-background-secondary hover:bg-background-secondary/80 transition-colors duration-(--animation-speed)"
                     >
                       {t('dashboard.cancel')}
                     </button>
                     <button
                       onClick={() => disable2FAMutation.mutate()}
-                      disabled={twoFactorCode.length !== 6 || disable2FAMutation.isPending}
+                      disabled={
+                        twoFactorCode.length !== 6 ||
+                        disable2FAMutation.isPending
+                      }
                       className="flex-1 py-3 rounded-xl font-medium text-white bg-red-500 disabled:opacity-50 flex items-center justify-center gap-2"
                     >
-                      {disable2FAMutation.isPending ? <Loader2 size={18} className="animate-spin" /> : <Shield size={18} />}
+                      {disable2FAMutation.isPending ? (
+                        <Loader2 size={18} className="animate-spin" />
+                      ) : (
+                        <Shield size={18} />
+                      )}
                       {t('dashboard.settings.disable2FA')}
                     </button>
                   </div>
@@ -546,7 +666,9 @@ export function SettingsTab({ currentUser }: SettingsTabProps) {
                   className="mt-4 pt-4 border-t border-border space-y-4"
                 >
                   <div className="flex items-center justify-between">
-                    <p className="font-medium text-foreground">{t('dashboard.settings.recoveryCodes')}</p>
+                    <p className="font-medium text-foreground">
+                      {t('dashboard.settings.recoveryCodes')}
+                    </p>
                     <button
                       onClick={downloadRecoveryCodes}
                       className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm bg-background-secondary text-foreground-muted hover:bg-background-secondary/80 transition-colors"
@@ -555,7 +677,9 @@ export function SettingsTab({ currentUser }: SettingsTabProps) {
                       {t('dashboard.settings.downloadCodes')}
                     </button>
                   </div>
-                  <p className="text-sm text-yellow-400">{t('dashboard.settings.recoveryCodesDesc')}</p>
+                  <p className="text-sm text-yellow-400">
+                    {t('dashboard.settings.recoveryCodesDesc')}
+                  </p>
                   <div className="grid grid-cols-2 gap-2">
                     {recoveryCodes.map((code, index) => (
                       <button
@@ -564,7 +688,11 @@ export function SettingsTab({ currentUser }: SettingsTabProps) {
                         className="flex items-center justify-between px-3 py-2 rounded-lg bg-background-secondary/50 font-mono text-sm text-foreground hover:bg-background-secondary transition-colors"
                       >
                         {code}
-                        {copiedCode === code ? <Check size={14} className="text-green-400" /> : <Copy size={14} className="text-foreground-muted" />}
+                        {copiedCode === code ? (
+                          <Check size={14} className="text-green-400" />
+                        ) : (
+                          <Copy size={14} className="text-foreground-muted" />
+                        )}
                       </button>
                     ))}
                   </div>
@@ -587,20 +715,30 @@ export function SettingsTab({ currentUser }: SettingsTabProps) {
                   <Monitor size={24} className="text-cyan-400" />
                 </div>
                 <div>
-                  <p className="font-medium text-foreground">{t('dashboard.settings.sessions')}</p>
-                  <p className="text-sm text-foreground-muted">{t('dashboard.settings.sessionsDesc')}</p>
+                  <p className="font-medium text-foreground">
+                    {t('dashboard.settings.sessions')}
+                  </p>
+                  <p className="text-sm text-foreground-muted">
+                    {t('dashboard.settings.sessionsDesc')}
+                  </p>
                 </div>
               </div>
-              {sessionsData && sessionsData.sessions.filter(s => !s.isCurrent).length > 0 && (
-                <button
-                  onClick={() => deleteAllSessionsMutation.mutate()}
-                  disabled={deleteAllSessionsMutation.isPending}
-                  className="px-4 py-2 rounded-xl bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors duration-(--animation-speed) flex items-center gap-2"
-                >
-                  {deleteAllSessionsMutation.isPending ? <Loader2 size={16} className="animate-spin" /> : <LogOut size={16} />}
-                  {t('dashboard.settings.logoutAll')}
-                </button>
-              )}
+              {sessionsData &&
+                sessionsData.sessions.filter((s) => !s.isCurrent).length >
+                  0 && (
+                  <button
+                    onClick={() => deleteAllSessionsMutation.mutate()}
+                    disabled={deleteAllSessionsMutation.isPending}
+                    className="px-4 py-2 rounded-xl bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-colors duration-(--animation-speed) flex items-center gap-2"
+                  >
+                    {deleteAllSessionsMutation.isPending ? (
+                      <Loader2 size={16} className="animate-spin" />
+                    ) : (
+                      <LogOut size={16} />
+                    )}
+                    {t('dashboard.settings.logoutAll')}
+                  </button>
+                )}
             </div>
 
             {sessionsLoading ? (
@@ -608,7 +746,9 @@ export function SettingsTab({ currentUser }: SettingsTabProps) {
                 <Loader2 size={24} className="animate-spin text-primary" />
               </div>
             ) : sessionsData?.sessions.length === 0 ? (
-              <p className="text-sm text-foreground-muted text-center py-4">{t('dashboard.settings.noOtherSessions')}</p>
+              <p className="text-sm text-foreground-muted text-center py-4">
+                {t('dashboard.settings.noOtherSessions')}
+              </p>
             ) : (
               <div className="space-y-2">
                 {sessionsData?.sessions.map((session) => (
@@ -624,11 +764,19 @@ export function SettingsTab({ currentUser }: SettingsTabProps) {
                         <p className="text-sm font-medium text-foreground">
                           {formatUserAgent(session.userAgent)}
                           {session.isCurrent && (
-                            <span className="ml-2 text-xs text-primary">({t('dashboard.settings.currentSession')})</span>
+                            <span className="ml-2 text-xs text-primary">
+                              ({t('dashboard.settings.currentSession')})
+                            </span>
                           )}
                         </p>
                         <p className="text-xs text-foreground-muted">
-                          {session.ipAddress} • {t('dashboard.settings.lastActive')}: {session.lastActivityAt ? new Date(session.lastActivityAt).toLocaleDateString() : 'N/A'}
+                          {session.ipAddress} •{' '}
+                          {t('dashboard.settings.lastActive')}:{' '}
+                          {session.lastActivityAt
+                            ? new Date(
+                                session.lastActivityAt,
+                              ).toLocaleDateString()
+                            : 'N/A'}
                         </p>
                       </div>
                     </div>
@@ -662,41 +810,66 @@ export function SettingsTab({ currentUser }: SettingsTabProps) {
                 <Bell size={24} className="text-amber-400" />
               </div>
               <div>
-                <p className="font-medium text-foreground">{t('dashboard.settings.notifications')}</p>
-                <p className="text-sm text-foreground-muted">{t('dashboard.settings.notificationsDesc')}</p>
+                <p className="font-medium text-foreground">
+                  {t('dashboard.settings.notifications')}
+                </p>
+                <p className="text-sm text-foreground-muted">
+                  {t('dashboard.settings.notificationsDesc')}
+                </p>
               </div>
             </div>
 
             <div className="space-y-3">
               {[
-                { key: 'notifyNewFollower', label: t('dashboard.settings.notifyNewFollower') },
-                { key: 'notifyMilestones', label: t('dashboard.settings.notifyMilestones') },
-                { key: 'notifySystemUpdates', label: t('dashboard.settings.notifySystemUpdates') },
+                {
+                  key: 'notifyNewFollower',
+                  label: t('dashboard.settings.notifyNewFollower'),
+                },
+                {
+                  key: 'notifyMilestones',
+                  label: t('dashboard.settings.notifyMilestones'),
+                },
+                {
+                  key: 'notifySystemUpdates',
+                  label: t('dashboard.settings.notifySystemUpdates'),
+                },
               ].map((item) => {
-                const isEnabled = notificationData?.settings?.[item.key as keyof typeof notificationData.settings] ?? true
+                const isEnabled =
+                  notificationData?.settings?.[
+                    item.key as keyof typeof notificationData.settings
+                  ] ?? true
                 return (
-                  <div key={item.key} className="flex items-center justify-between p-3 rounded-lg bg-background-secondary/50 hover:bg-background-secondary/70 transition-all duration-(--animation-speed) group">
-                    <span className="text-sm text-foreground">{item.label}</span>
+                  <div
+                    key={item.key}
+                    className="flex items-center justify-between p-3 rounded-lg bg-background-secondary/50 hover:bg-background-secondary/70 transition-all duration-(--animation-speed) group"
+                  >
+                    <span className="text-sm text-foreground">
+                      {item.label}
+                    </span>
                     <button
-                      onClick={() => notificationMutation.mutate({ [item.key]: !isEnabled })}
+                      onClick={() =>
+                        notificationMutation.mutate({ [item.key]: !isEnabled })
+                      }
                       className={`relative w-14 h-7 rounded-full transition-all duration-300 ease-out ${
-                        isEnabled 
-                          ? 'bg-linear-to-r from-primary to-accent shadow-lg shadow-primary/25' 
+                        isEnabled
+                          ? 'bg-linear-to-r from-primary to-accent shadow-lg shadow-primary/25'
                           : 'bg-background-secondary border border-border/50'
                       }`}
                     >
                       <div
                         className={`absolute top-0.5 w-6 h-6 rounded-full bg-white shadow-md transition-all duration-300 ease-out ${
-                          isEnabled 
-                            ? 'translate-x-7 scale-95' 
+                          isEnabled
+                            ? 'translate-x-7 scale-95'
                             : 'translate-x-0.5 scale-100'
                         }`}
                       >
-                        <div className={`absolute inset-0 rounded-full transition-opacity duration-300 ${
-                          isEnabled 
-                            ? 'bg-linear-to-br from-white to-gray-100' 
-                            : 'bg-linear-to-br from-gray-100 to-gray-200'
-                        }`} />
+                        <div
+                          className={`absolute inset-0 rounded-full transition-opacity duration-300 ${
+                            isEnabled
+                              ? 'bg-linear-to-br from-white to-gray-100'
+                              : 'bg-linear-to-br from-gray-100 to-gray-200'
+                          }`}
+                        />
                       </div>
                       {/* Glow effect when enabled */}
                       {isEnabled && (
@@ -709,38 +882,66 @@ export function SettingsTab({ currentUser }: SettingsTabProps) {
             </div>
 
             <div className="mt-6 pt-4 border-t border-border">
-              <p className="font-medium text-foreground mb-3">{t('dashboard.settings.emailNotifications')}</p>
+              <p className="font-medium text-foreground mb-3">
+                {t('dashboard.settings.emailNotifications')}
+              </p>
               <div className="space-y-3">
                 {[
-                  { key: 'emailLoginAlerts', label: t('dashboard.settings.emailLoginAlerts') },
-                  { key: 'emailSecurityAlerts', label: t('dashboard.settings.emailSecurityAlerts') },
-                  { key: 'emailWeeklyDigest', label: t('dashboard.settings.emailWeeklyDigest') },
-                  { key: 'emailProductUpdates', label: t('dashboard.settings.emailProductUpdates') },
+                  {
+                    key: 'emailLoginAlerts',
+                    label: t('dashboard.settings.emailLoginAlerts'),
+                  },
+                  {
+                    key: 'emailSecurityAlerts',
+                    label: t('dashboard.settings.emailSecurityAlerts'),
+                  },
+                  {
+                    key: 'emailWeeklyDigest',
+                    label: t('dashboard.settings.emailWeeklyDigest'),
+                  },
+                  {
+                    key: 'emailProductUpdates',
+                    label: t('dashboard.settings.emailProductUpdates'),
+                  },
                 ].map((item) => {
-                  const isEnabled = notificationData?.settings?.[item.key as keyof typeof notificationData.settings] ?? true
+                  const isEnabled =
+                    notificationData?.settings?.[
+                      item.key as keyof typeof notificationData.settings
+                    ] ?? true
                   return (
-                    <div key={item.key} className="flex items-center justify-between p-3 rounded-lg bg-background-secondary/50 hover:bg-background-secondary/70 transition-all duration-(--animation-speed) group">
-                      <span className="text-sm text-foreground">{item.label}</span>
+                    <div
+                      key={item.key}
+                      className="flex items-center justify-between p-3 rounded-lg bg-background-secondary/50 hover:bg-background-secondary/70 transition-all duration-(--animation-speed) group"
+                    >
+                      <span className="text-sm text-foreground">
+                        {item.label}
+                      </span>
                       <button
-                        onClick={() => notificationMutation.mutate({ [item.key]: !isEnabled })}
+                        onClick={() =>
+                          notificationMutation.mutate({
+                            [item.key]: !isEnabled,
+                          })
+                        }
                         className={`relative w-14 h-7 rounded-full transition-all duration-300 ease-out ${
-                          isEnabled 
-                            ? 'bg-linear-to-r from-primary to-accent shadow-lg shadow-primary/25' 
+                          isEnabled
+                            ? 'bg-linear-to-r from-primary to-accent shadow-lg shadow-primary/25'
                             : 'bg-background-secondary border border-border/50'
                         }`}
                       >
                         <div
                           className={`absolute top-0.5 w-6 h-6 rounded-full bg-white shadow-md transition-all duration-300 ease-out ${
-                            isEnabled 
-                              ? 'translate-x-7 scale-95' 
+                            isEnabled
+                              ? 'translate-x-7 scale-95'
                               : 'translate-x-0.5 scale-100'
                           }`}
                         >
-                          <div className={`absolute inset-0 rounded-full transition-opacity duration-300 ${
-                            isEnabled 
-                              ? 'bg-linear-to-br from-white to-gray-100' 
-                              : 'bg-linear-to-br from-gray-100 to-gray-200'
-                          }`} />
+                          <div
+                            className={`absolute inset-0 rounded-full transition-opacity duration-300 ${
+                              isEnabled
+                                ? 'bg-linear-to-br from-white to-gray-100'
+                                : 'bg-linear-to-br from-gray-100 to-gray-200'
+                            }`}
+                          />
                         </div>
                         {/* Glow effect when enabled */}
                         {isEnabled && (
@@ -756,7 +957,6 @@ export function SettingsTab({ currentUser }: SettingsTabProps) {
         </motion.div>
       )}
 
-      
       {/* Danger Zone Section */}
       {activeSection === 'danger' && (
         <motion.div
@@ -771,8 +971,12 @@ export function SettingsTab({ currentUser }: SettingsTabProps) {
             </h3>
             <div className="flex items-center justify-between">
               <div>
-                <p className="font-medium text-foreground">{t('dashboard.settings.deleteAccount')}</p>
-                <p className="text-sm text-foreground-muted">{t('dashboard.settings.deleteWarning')}</p>
+                <p className="font-medium text-foreground">
+                  {t('dashboard.settings.deleteAccount')}
+                </p>
+                <p className="text-sm text-foreground-muted">
+                  {t('dashboard.settings.deleteWarning')}
+                </p>
               </div>
               <button
                 onClick={() => setShowDeleteConfirm(!showDeleteConfirm)}
@@ -791,7 +995,9 @@ export function SettingsTab({ currentUser }: SettingsTabProps) {
                   exit={{ opacity: 0, height: 0 }}
                   className="mt-4 pt-4 border-t border-red-500/20 space-y-3"
                 >
-                  <p className="text-sm text-red-400">{t('dashboard.settings.deleteConfirmText')}</p>
+                  <p className="text-sm text-red-400">
+                    {t('dashboard.settings.deleteConfirmText')}
+                  </p>
                   <input
                     type="text"
                     value={deleteConfirmText}
@@ -808,17 +1014,28 @@ export function SettingsTab({ currentUser }: SettingsTabProps) {
                   />
                   <div className="flex gap-2">
                     <button
-                      onClick={() => { setShowDeleteConfirm(false); setDeleteConfirmText('') }}
+                      onClick={() => {
+                        setShowDeleteConfirm(false)
+                        setDeleteConfirmText('')
+                      }}
                       className="flex-1 py-3 rounded-xl font-medium text-foreground-muted bg-background-secondary hover:bg-background-secondary/80 transition-colors duration-(--animation-speed)"
                     >
                       {t('dashboard.cancel')}
                     </button>
                     <button
                       onClick={() => deleteMutation.mutate()}
-                      disabled={deleteConfirmText !== 'DELETE' || !currentPassword || deleteMutation.isPending}
+                      disabled={
+                        deleteConfirmText !== 'DELETE' ||
+                        !currentPassword ||
+                        deleteMutation.isPending
+                      }
                       className="flex-1 py-3 rounded-xl font-medium text-white bg-red-500 disabled:opacity-50 flex items-center justify-center gap-2"
                     >
-                      {deleteMutation.isPending ? <Loader2 size={18} className="animate-spin" /> : <Trash2 size={18} />}
+                      {deleteMutation.isPending ? (
+                        <Loader2 size={18} className="animate-spin" />
+                      ) : (
+                        <Trash2 size={18} />
+                      )}
                       {t('dashboard.settings.deleteAccount')}
                     </button>
                   </div>

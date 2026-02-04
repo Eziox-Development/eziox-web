@@ -13,8 +13,11 @@ export const Route = createFileRoute('/api/check-username')({
 
           if (!username) {
             return new Response(
-              JSON.stringify({ available: false, error: 'Username is required' }),
-              { status: 400, headers: { 'Content-Type': 'application/json' } }
+              JSON.stringify({
+                available: false,
+                error: 'Username is required',
+              }),
+              { status: 400, headers: { 'Content-Type': 'application/json' } },
             )
           }
 
@@ -22,28 +25,80 @@ export const Route = createFileRoute('/api/check-username')({
           const usernameRegex = /^[a-zA-Z0-9_-]{3,30}$/
           if (!usernameRegex.test(username)) {
             return new Response(
-              JSON.stringify({ available: false, error: 'Invalid username format' }),
-              { status: 400, headers: { 'Content-Type': 'application/json' } }
+              JSON.stringify({
+                available: false,
+                error: 'Invalid username format',
+              }),
+              { status: 400, headers: { 'Content-Type': 'application/json' } },
             )
           }
 
           // Check reserved usernames
           const reservedUsernames = [
-            'admin', 'administrator', 'root', 'system', 'support', 'help',
-            'api', 'www', 'mail', 'email', 'ftp', 'ssh', 'login', 'signup',
-            'sign-up', 'signin', 'sign-in', 'register', 'auth', 'oauth',
-            'profile', 'settings', 'dashboard', 'account', 'user', 'users',
-            'eziox', 'official', 'staff', 'team', 'mod', 'moderator',
-            'about', 'contact', 'privacy', 'terms', 'tos', 'legal',
-            'docs', 'documentation', 'blog', 'news', 'pricing', 'plans',
-            'creators', 'leaderboard', 'explore', 'discover', 'search',
-            'home', 'index', 'null', 'undefined', 'test', 'demo',
+            'admin',
+            'administrator',
+            'root',
+            'system',
+            'support',
+            'help',
+            'api',
+            'www',
+            'mail',
+            'email',
+            'ftp',
+            'ssh',
+            'login',
+            'signup',
+            'sign-up',
+            'signin',
+            'sign-in',
+            'register',
+            'auth',
+            'oauth',
+            'profile',
+            'settings',
+            'dashboard',
+            'account',
+            'user',
+            'users',
+            'eziox',
+            'official',
+            'staff',
+            'team',
+            'mod',
+            'moderator',
+            'about',
+            'contact',
+            'privacy',
+            'terms',
+            'tos',
+            'legal',
+            'docs',
+            'documentation',
+            'blog',
+            'news',
+            'pricing',
+            'plans',
+            'creators',
+            'leaderboard',
+            'explore',
+            'discover',
+            'search',
+            'home',
+            'index',
+            'null',
+            'undefined',
+            'test',
+            'demo',
           ]
 
           if (reservedUsernames.includes(username.toLowerCase())) {
             return new Response(
-              JSON.stringify({ available: false, error: 'Username is reserved' }),
-              { status: 200, headers: { 'Content-Type': 'application/json' } }
+              JSON.stringify({
+                available: false,
+                error: 'Username is reserved',
+              }),
+              { status: 200, headers: { 'Content-Type': 'application/json' } },
             )
           }
 
@@ -58,13 +113,16 @@ export const Route = createFileRoute('/api/check-username')({
 
           return new Response(
             JSON.stringify({ available, username: username.toLowerCase() }),
-            { status: 200, headers: { 'Content-Type': 'application/json' } }
+            { status: 200, headers: { 'Content-Type': 'application/json' } },
           )
         } catch (error) {
           console.error('Error checking username:', error)
           return new Response(
-            JSON.stringify({ available: false, error: 'Internal server error' }),
-            { status: 500, headers: { 'Content-Type': 'application/json' } }
+            JSON.stringify({
+              available: false,
+              error: 'Internal server error',
+            }),
+            { status: 500, headers: { 'Content-Type': 'application/json' } },
           )
         }
       },

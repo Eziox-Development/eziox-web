@@ -30,15 +30,17 @@ export function DateTimePicker({
 }: DateTimePickerProps) {
   const { i18n, t } = useTranslation()
   const locale = i18n.language === 'de' ? de : enUS
-  
+
   const [open, setOpen] = React.useState(false)
-  const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(() => {
-    if (value) {
-      const parsed = new Date(value)
-      return isValid(parsed) ? parsed : undefined
-    }
-    return undefined
-  })
+  const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(
+    () => {
+      if (value) {
+        const parsed = new Date(value)
+        return isValid(parsed) ? parsed : undefined
+      }
+      return undefined
+    },
+  )
   const [hours, setHours] = React.useState(() => {
     if (value) {
       const parsed = new Date(value)
@@ -54,13 +56,16 @@ export function DateTimePicker({
     return 0
   })
 
-  const updateValue = React.useCallback((date: Date | undefined, h: number, m: number) => {
-    if (date && onChange) {
-      const newDate = new Date(date)
-      newDate.setHours(h, m, 0, 0)
-      onChange(newDate.toISOString())
-    }
-  }, [onChange])
+  const updateValue = React.useCallback(
+    (date: Date | undefined, h: number, m: number) => {
+      if (date && onChange) {
+        const newDate = new Date(date)
+        newDate.setHours(h, m, 0, 0)
+        onChange(newDate.toISOString())
+      }
+    },
+    [onChange],
+  )
 
   const handleDateSelect = (date: Date | undefined) => {
     setSelectedDate(date)
@@ -95,14 +100,19 @@ export function DateTimePicker({
           className={cn(
             'w-full justify-start text-left font-normal bg-background-secondary border-border hover:bg-background-secondary/80',
             !displayValue && 'text-muted-foreground',
-            className
+            className,
           )}
         >
           <CalendarIcon className="mr-2 h-4 w-4 text-primary" />
-          {displayValue || <span className="text-foreground-muted">{placeholder}</span>}
+          {displayValue || (
+            <span className="text-foreground-muted">{placeholder}</span>
+          )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0 bg-card border-border" align="start">
+      <PopoverContent
+        className="w-auto p-0 bg-card border-border"
+        align="start"
+      >
         <div className="flex flex-col sm:flex-row">
           {/* Calendar */}
           <div className="p-3 border-b sm:border-b-0 sm:border-r border-border">
@@ -115,7 +125,7 @@ export function DateTimePicker({
               className="rounded-lg"
             />
           </div>
-          
+
           {/* Time Picker */}
           <div className="p-4 flex flex-col items-center justify-center min-w-[140px]">
             <div className="flex items-center gap-2 mb-3">
@@ -124,7 +134,7 @@ export function DateTimePicker({
                 {t('common.time', 'Time')}
               </span>
             </div>
-            
+
             <div className="flex items-center gap-1">
               {/* Hours */}
               <div className="flex flex-col items-center">
@@ -133,8 +143,18 @@ export function DateTimePicker({
                   onClick={() => handleHoursChange(hours + 1)}
                   className="p-1.5 rounded-lg hover:bg-background-secondary transition-colors text-foreground-muted hover:text-foreground"
                 >
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 15l7-7 7 7"
+                    />
                   </svg>
                 </button>
                 <input
@@ -151,14 +171,26 @@ export function DateTimePicker({
                   onClick={() => handleHoursChange(hours - 1)}
                   className="p-1.5 rounded-lg hover:bg-background-secondary transition-colors text-foreground-muted hover:text-foreground"
                 >
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
                   </svg>
                 </button>
               </div>
-              
-              <span className="text-2xl font-bold text-foreground-muted px-1">:</span>
-              
+
+              <span className="text-2xl font-bold text-foreground-muted px-1">
+                :
+              </span>
+
               {/* Minutes */}
               <div className="flex flex-col items-center">
                 <button
@@ -166,8 +198,18 @@ export function DateTimePicker({
                   onClick={() => handleMinutesChange(minutes + 5)}
                   className="p-1.5 rounded-lg hover:bg-background-secondary transition-colors text-foreground-muted hover:text-foreground"
                 >
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 15l7-7 7 7"
+                    />
                   </svg>
                 </button>
                 <input
@@ -184,13 +226,23 @@ export function DateTimePicker({
                   onClick={() => handleMinutesChange(minutes - 5)}
                   className="p-1.5 rounded-lg hover:bg-background-secondary transition-colors text-foreground-muted hover:text-foreground"
                 >
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
                   </svg>
                 </button>
               </div>
             </div>
-            
+
             {/* Quick time presets */}
             <div className="flex gap-1 mt-4">
               {[
@@ -210,7 +262,7 @@ export function DateTimePicker({
                     'px-2 py-1 text-xs rounded-md transition-all',
                     hours === preset.h && minutes === preset.m
                       ? 'bg-primary text-primary-foreground'
-                      : 'bg-background-secondary text-foreground-muted hover:text-foreground hover:bg-background-secondary/80'
+                      : 'bg-background-secondary text-foreground-muted hover:text-foreground hover:bg-background-secondary/80',
                   )}
                 >
                   {preset.label}
@@ -219,7 +271,7 @@ export function DateTimePicker({
             </div>
           </div>
         </div>
-        
+
         {/* Footer */}
         <div className="flex items-center justify-between p-3 border-t border-border bg-background-secondary/30">
           <Button

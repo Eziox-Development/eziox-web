@@ -20,8 +20,11 @@ export const Route = createFileRoute('/api/v1/widgets/$id')({
 
         if (!authHeader?.startsWith('Bearer ')) {
           return new Response(
-            JSON.stringify({ error: 'Missing or invalid Authorization header', code: 'UNAUTHORIZED' }),
-            { status: 401, headers: { 'Content-Type': 'application/json' } }
+            JSON.stringify({
+              error: 'Missing or invalid Authorization header',
+              code: 'UNAUTHORIZED',
+            }),
+            { status: 401, headers: { 'Content-Type': 'application/json' } },
           )
         }
 
@@ -30,17 +33,29 @@ export const Route = createFileRoute('/api/v1/widgets/$id')({
 
         if (!validation.valid || !validation.apiKey) {
           return new Response(
-            JSON.stringify({ error: validation.error || 'Invalid API key', code: 'INVALID_API_KEY' }),
-            { status: 401, headers: { 'Content-Type': 'application/json' } }
+            JSON.stringify({
+              error: validation.error || 'Invalid API key',
+              code: 'INVALID_API_KEY',
+            }),
+            { status: 401, headers: { 'Content-Type': 'application/json' } },
           )
         }
 
         const permissions = validation.apiKey.permissions as ApiKeyPermissions
         if (!permissions.profile?.read) {
-          await logApiRequest(validation.apiKey.id, `/api/v1/widgets/${params.id}`, 'GET', 403, Date.now() - startTime)
+          await logApiRequest(
+            validation.apiKey.id,
+            `/api/v1/widgets/${params.id}`,
+            'GET',
+            403,
+            Date.now() - startTime,
+          )
           return new Response(
-            JSON.stringify({ error: 'API key lacks profile:read permission', code: 'FORBIDDEN' }),
-            { status: 403, headers: { 'Content-Type': 'application/json' } }
+            JSON.stringify({
+              error: 'API key lacks profile:read permission',
+              code: 'FORBIDDEN',
+            }),
+            { status: 403, headers: { 'Content-Type': 'application/json' } },
           )
         }
 
@@ -48,18 +63,35 @@ export const Route = createFileRoute('/api/v1/widgets/$id')({
           const [widget] = await db
             .select()
             .from(profileWidgets)
-            .where(and(eq(profileWidgets.id, params.id as string), eq(profileWidgets.userId, validation.apiKey.userId)))
+            .where(
+              and(
+                eq(profileWidgets.id, params.id as string),
+                eq(profileWidgets.userId, validation.apiKey.userId),
+              ),
+            )
             .limit(1)
 
           if (!widget) {
-            await logApiRequest(validation.apiKey.id, `/api/v1/widgets/${params.id}`, 'GET', 404, Date.now() - startTime)
+            await logApiRequest(
+              validation.apiKey.id,
+              `/api/v1/widgets/${params.id}`,
+              'GET',
+              404,
+              Date.now() - startTime,
+            )
             return new Response(
               JSON.stringify({ error: 'Widget not found', code: 'NOT_FOUND' }),
-              { status: 404, headers: { 'Content-Type': 'application/json' } }
+              { status: 404, headers: { 'Content-Type': 'application/json' } },
             )
           }
 
-          await logApiRequest(validation.apiKey.id, `/api/v1/widgets/${params.id}`, 'GET', 200, Date.now() - startTime)
+          await logApiRequest(
+            validation.apiKey.id,
+            `/api/v1/widgets/${params.id}`,
+            'GET',
+            200,
+            Date.now() - startTime,
+          )
 
           return new Response(
             JSON.stringify({
@@ -73,14 +105,26 @@ export const Route = createFileRoute('/api/v1/widgets/$id')({
               createdAt: widget.createdAt,
               updatedAt: widget.updatedAt,
             }),
-            { status: 200, headers: { 'Content-Type': 'application/json' } }
+            { status: 200, headers: { 'Content-Type': 'application/json' } },
           )
         } catch (error) {
           console.error('API Error [GET /api/v1/widgets/:id]:', error)
-          await logApiRequest(validation.apiKey.id, `/api/v1/widgets/${params.id}`, 'GET', 500, Date.now() - startTime, undefined, undefined, String(error))
+          await logApiRequest(
+            validation.apiKey.id,
+            `/api/v1/widgets/${params.id}`,
+            'GET',
+            500,
+            Date.now() - startTime,
+            undefined,
+            undefined,
+            String(error),
+          )
           return new Response(
-            JSON.stringify({ error: 'Internal server error', code: 'INTERNAL_ERROR' }),
-            { status: 500, headers: { 'Content-Type': 'application/json' } }
+            JSON.stringify({
+              error: 'Internal server error',
+              code: 'INTERNAL_ERROR',
+            }),
+            { status: 500, headers: { 'Content-Type': 'application/json' } },
           )
         }
       },
@@ -91,8 +135,11 @@ export const Route = createFileRoute('/api/v1/widgets/$id')({
 
         if (!authHeader?.startsWith('Bearer ')) {
           return new Response(
-            JSON.stringify({ error: 'Missing or invalid Authorization header', code: 'UNAUTHORIZED' }),
-            { status: 401, headers: { 'Content-Type': 'application/json' } }
+            JSON.stringify({
+              error: 'Missing or invalid Authorization header',
+              code: 'UNAUTHORIZED',
+            }),
+            { status: 401, headers: { 'Content-Type': 'application/json' } },
           )
         }
 
@@ -101,17 +148,29 @@ export const Route = createFileRoute('/api/v1/widgets/$id')({
 
         if (!validation.valid || !validation.apiKey) {
           return new Response(
-            JSON.stringify({ error: validation.error || 'Invalid API key', code: 'INVALID_API_KEY' }),
-            { status: 401, headers: { 'Content-Type': 'application/json' } }
+            JSON.stringify({
+              error: validation.error || 'Invalid API key',
+              code: 'INVALID_API_KEY',
+            }),
+            { status: 401, headers: { 'Content-Type': 'application/json' } },
           )
         }
 
         const permissions = validation.apiKey.permissions as ApiKeyPermissions
         if (!permissions.profile?.write) {
-          await logApiRequest(validation.apiKey.id, `/api/v1/widgets/${params.id}`, 'PATCH', 403, Date.now() - startTime)
+          await logApiRequest(
+            validation.apiKey.id,
+            `/api/v1/widgets/${params.id}`,
+            'PATCH',
+            403,
+            Date.now() - startTime,
+          )
           return new Response(
-            JSON.stringify({ error: 'API key lacks profile:write permission', code: 'FORBIDDEN' }),
-            { status: 403, headers: { 'Content-Type': 'application/json' } }
+            JSON.stringify({
+              error: 'API key lacks profile:write permission',
+              code: 'FORBIDDEN',
+            }),
+            { status: 403, headers: { 'Content-Type': 'application/json' } },
           )
         }
 
@@ -119,23 +178,37 @@ export const Route = createFileRoute('/api/v1/widgets/$id')({
           const [existingWidget] = await db
             .select({ id: profileWidgets.id })
             .from(profileWidgets)
-            .where(and(eq(profileWidgets.id, params.id as string), eq(profileWidgets.userId, validation.apiKey.userId)))
+            .where(
+              and(
+                eq(profileWidgets.id, params.id as string),
+                eq(profileWidgets.userId, validation.apiKey.userId),
+              ),
+            )
             .limit(1)
 
           if (!existingWidget) {
-            await logApiRequest(validation.apiKey.id, `/api/v1/widgets/${params.id}`, 'PATCH', 404, Date.now() - startTime)
+            await logApiRequest(
+              validation.apiKey.id,
+              `/api/v1/widgets/${params.id}`,
+              'PATCH',
+              404,
+              Date.now() - startTime,
+            )
             return new Response(
               JSON.stringify({ error: 'Widget not found', code: 'NOT_FOUND' }),
-              { status: 404, headers: { 'Content-Type': 'application/json' } }
+              { status: 404, headers: { 'Content-Type': 'application/json' } },
             )
           }
 
-          const body = await request.json() as Record<string, unknown>
+          const body = (await request.json()) as Record<string, unknown>
           const updates: Record<string, unknown> = { updatedAt: new Date() }
 
-          if (typeof body.title === 'string') updates.title = body.title.slice(0, 100)
-          if (typeof body.isActive === 'boolean') updates.isActive = body.isActive
-          if (typeof body.config === 'object' && body.config !== null) updates.config = body.config
+          if (typeof body.title === 'string')
+            updates.title = body.title.slice(0, 100)
+          if (typeof body.isActive === 'boolean')
+            updates.isActive = body.isActive
+          if (typeof body.config === 'object' && body.config !== null)
+            updates.config = body.config
 
           const [updatedWidget] = await db
             .update(profileWidgets)
@@ -143,7 +216,13 @@ export const Route = createFileRoute('/api/v1/widgets/$id')({
             .where(eq(profileWidgets.id, params.id as string))
             .returning()
 
-          await logApiRequest(validation.apiKey.id, `/api/v1/widgets/${params.id}`, 'PATCH', 200, Date.now() - startTime)
+          await logApiRequest(
+            validation.apiKey.id,
+            `/api/v1/widgets/${params.id}`,
+            'PATCH',
+            200,
+            Date.now() - startTime,
+          )
 
           return new Response(
             JSON.stringify({
@@ -158,14 +237,26 @@ export const Route = createFileRoute('/api/v1/widgets/$id')({
                 updatedAt: updatedWidget?.updatedAt,
               },
             }),
-            { status: 200, headers: { 'Content-Type': 'application/json' } }
+            { status: 200, headers: { 'Content-Type': 'application/json' } },
           )
         } catch (error) {
           console.error('API Error [PATCH /api/v1/widgets/:id]:', error)
-          await logApiRequest(validation.apiKey.id, `/api/v1/widgets/${params.id}`, 'PATCH', 500, Date.now() - startTime, undefined, undefined, String(error))
+          await logApiRequest(
+            validation.apiKey.id,
+            `/api/v1/widgets/${params.id}`,
+            'PATCH',
+            500,
+            Date.now() - startTime,
+            undefined,
+            undefined,
+            String(error),
+          )
           return new Response(
-            JSON.stringify({ error: 'Internal server error', code: 'INTERNAL_ERROR' }),
-            { status: 500, headers: { 'Content-Type': 'application/json' } }
+            JSON.stringify({
+              error: 'Internal server error',
+              code: 'INTERNAL_ERROR',
+            }),
+            { status: 500, headers: { 'Content-Type': 'application/json' } },
           )
         }
       },
@@ -176,8 +267,11 @@ export const Route = createFileRoute('/api/v1/widgets/$id')({
 
         if (!authHeader?.startsWith('Bearer ')) {
           return new Response(
-            JSON.stringify({ error: 'Missing or invalid Authorization header', code: 'UNAUTHORIZED' }),
-            { status: 401, headers: { 'Content-Type': 'application/json' } }
+            JSON.stringify({
+              error: 'Missing or invalid Authorization header',
+              code: 'UNAUTHORIZED',
+            }),
+            { status: 401, headers: { 'Content-Type': 'application/json' } },
           )
         }
 
@@ -186,46 +280,87 @@ export const Route = createFileRoute('/api/v1/widgets/$id')({
 
         if (!validation.valid || !validation.apiKey) {
           return new Response(
-            JSON.stringify({ error: validation.error || 'Invalid API key', code: 'INVALID_API_KEY' }),
-            { status: 401, headers: { 'Content-Type': 'application/json' } }
+            JSON.stringify({
+              error: validation.error || 'Invalid API key',
+              code: 'INVALID_API_KEY',
+            }),
+            { status: 401, headers: { 'Content-Type': 'application/json' } },
           )
         }
 
         const permissions = validation.apiKey.permissions as ApiKeyPermissions
         if (!permissions.profile?.write) {
-          await logApiRequest(validation.apiKey.id, `/api/v1/widgets/${params.id}`, 'DELETE', 403, Date.now() - startTime)
+          await logApiRequest(
+            validation.apiKey.id,
+            `/api/v1/widgets/${params.id}`,
+            'DELETE',
+            403,
+            Date.now() - startTime,
+          )
           return new Response(
-            JSON.stringify({ error: 'API key lacks profile:write permission', code: 'FORBIDDEN' }),
-            { status: 403, headers: { 'Content-Type': 'application/json' } }
+            JSON.stringify({
+              error: 'API key lacks profile:write permission',
+              code: 'FORBIDDEN',
+            }),
+            { status: 403, headers: { 'Content-Type': 'application/json' } },
           )
         }
 
         try {
           const result = await db
             .delete(profileWidgets)
-            .where(and(eq(profileWidgets.id, params.id as string), eq(profileWidgets.userId, validation.apiKey.userId)))
+            .where(
+              and(
+                eq(profileWidgets.id, params.id as string),
+                eq(profileWidgets.userId, validation.apiKey.userId),
+              ),
+            )
             .returning({ id: profileWidgets.id })
 
           if (result.length === 0) {
-            await logApiRequest(validation.apiKey.id, `/api/v1/widgets/${params.id}`, 'DELETE', 404, Date.now() - startTime)
+            await logApiRequest(
+              validation.apiKey.id,
+              `/api/v1/widgets/${params.id}`,
+              'DELETE',
+              404,
+              Date.now() - startTime,
+            )
             return new Response(
               JSON.stringify({ error: 'Widget not found', code: 'NOT_FOUND' }),
-              { status: 404, headers: { 'Content-Type': 'application/json' } }
+              { status: 404, headers: { 'Content-Type': 'application/json' } },
             )
           }
 
-          await logApiRequest(validation.apiKey.id, `/api/v1/widgets/${params.id}`, 'DELETE', 200, Date.now() - startTime)
-
-          return new Response(
-            JSON.stringify({ success: true }),
-            { status: 200, headers: { 'Content-Type': 'application/json' } }
+          await logApiRequest(
+            validation.apiKey.id,
+            `/api/v1/widgets/${params.id}`,
+            'DELETE',
+            200,
+            Date.now() - startTime,
           )
+
+          return new Response(JSON.stringify({ success: true }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          })
         } catch (error) {
           console.error('API Error [DELETE /api/v1/widgets/:id]:', error)
-          await logApiRequest(validation.apiKey.id, `/api/v1/widgets/${params.id}`, 'DELETE', 500, Date.now() - startTime, undefined, undefined, String(error))
+          await logApiRequest(
+            validation.apiKey.id,
+            `/api/v1/widgets/${params.id}`,
+            'DELETE',
+            500,
+            Date.now() - startTime,
+            undefined,
+            undefined,
+            String(error),
+          )
           return new Response(
-            JSON.stringify({ error: 'Internal server error', code: 'INTERNAL_ERROR' }),
-            { status: 500, headers: { 'Content-Type': 'application/json' } }
+            JSON.stringify({
+              error: 'Internal server error',
+              code: 'INTERNAL_ERROR',
+            }),
+            { status: 500, headers: { 'Content-Type': 'application/json' } },
           )
         }
       },

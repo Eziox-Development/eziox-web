@@ -36,7 +36,7 @@ const CITIES = [
   { name: 'Budapest', country: 'Hungary', lat: 47.4979, lon: 19.0402 },
   { name: 'Moscow', country: 'Russia', lat: 55.7558, lon: 37.6173 },
   { name: 'Istanbul', country: 'Turkey', lat: 41.0082, lon: 28.9784 },
-  
+
   // North America
   { name: 'New York', country: 'USA', lat: 40.7128, lon: -74.006 },
   { name: 'Los Angeles', country: 'USA', lat: 34.0522, lon: -118.2437 },
@@ -51,7 +51,7 @@ const CITIES = [
   { name: 'Vancouver', country: 'Canada', lat: 49.2827, lon: -123.1207 },
   { name: 'Montreal', country: 'Canada', lat: 45.5017, lon: -73.5673 },
   { name: 'Mexico City', country: 'Mexico', lat: 19.4326, lon: -99.1332 },
-  
+
   // Asia
   { name: 'Tokyo', country: 'Japan', lat: 35.6762, lon: 139.6503 },
   { name: 'Osaka', country: 'Japan', lat: 34.6937, lon: 135.5023 },
@@ -65,7 +65,7 @@ const CITIES = [
   { name: 'Delhi', country: 'India', lat: 28.7041, lon: 77.1025 },
   { name: 'Dubai', country: 'UAE', lat: 25.2048, lon: 55.2708 },
   { name: 'Tel Aviv', country: 'Israel', lat: 32.0853, lon: 34.7818 },
-  
+
   // South America
   { name: 'São Paulo', country: 'Brazil', lat: -23.5505, lon: -46.6333 },
   { name: 'Rio de Janeiro', country: 'Brazil', lat: -22.9068, lon: -43.1729 },
@@ -73,12 +73,12 @@ const CITIES = [
   { name: 'Lima', country: 'Peru', lat: -12.0464, lon: -77.0428 },
   { name: 'Bogotá', country: 'Colombia', lat: 4.711, lon: -74.0721 },
   { name: 'Santiago', country: 'Chile', lat: -33.4489, lon: -70.6693 },
-  
+
   // Oceania
   { name: 'Sydney', country: 'Australia', lat: -33.8688, lon: 151.2093 },
   { name: 'Melbourne', country: 'Australia', lat: -37.8136, lon: 144.9631 },
   { name: 'Auckland', country: 'New Zealand', lat: -36.8509, lon: 174.7645 },
-  
+
   // Africa
   { name: 'Cairo', country: 'Egypt', lat: 30.0444, lon: 31.2357 },
   { name: 'Cape Town', country: 'South Africa', lat: -33.9249, lon: 18.4241 },
@@ -112,11 +112,11 @@ export function LocationSearch({
     return CITIES.filter(
       (city) =>
         city.name.toLowerCase().includes(searchLower) ||
-        city.country.toLowerCase().includes(searchLower)
+        city.country.toLowerCase().includes(searchLower),
     ).slice(0, 10)
   }, [search])
 
-  const handleSelect = (city: typeof CITIES[0]) => {
+  const handleSelect = (city: (typeof CITIES)[0]) => {
     const locationStr = `${city.name}, ${city.country}`
     setSearch(locationStr)
     onChange?.(locationStr, { lat: city.lat, lon: city.lon })
@@ -136,13 +136,13 @@ export function LocationSearch({
       case 'ArrowDown':
         e.preventDefault()
         setHighlightedIndex((prev) =>
-          prev < filteredCities.length - 1 ? prev + 1 : 0
+          prev < filteredCities.length - 1 ? prev + 1 : 0,
         )
         break
       case 'ArrowUp':
         e.preventDefault()
         setHighlightedIndex((prev) =>
-          prev > 0 ? prev - 1 : filteredCities.length - 1
+          prev > 0 ? prev - 1 : filteredCities.length - 1,
         )
         break
       case 'Enter':
@@ -182,7 +182,10 @@ export function LocationSearch({
           onFocus={() => setIsOpen(true)}
           onBlur={() => setTimeout(() => setIsOpen(false), 200)}
           onKeyDown={handleKeyDown}
-          placeholder={placeholder || t('dashboard.widgets.config.searchLocation', 'Search for a city...')}
+          placeholder={
+            placeholder ||
+            t('dashboard.widgets.config.searchLocation', 'Search for a city...')
+          }
           className="w-full pl-9 pr-8 py-2 rounded-lg bg-background-secondary border border-border text-foreground text-sm placeholder-foreground-muted/50 focus:outline-none focus:border-primary/50 transition-colors"
         />
         {search && (
@@ -215,7 +218,7 @@ export function LocationSearch({
                 'w-full px-3 py-2 flex items-center gap-2 text-left text-sm transition-colors',
                 index === highlightedIndex
                   ? 'bg-primary/10 text-foreground'
-                  : 'text-foreground-muted hover:bg-background-secondary'
+                  : 'text-foreground-muted hover:bg-background-secondary',
               )}
             >
               <MapPin className="h-4 w-4 shrink-0 text-primary" />

@@ -35,7 +35,8 @@ type PrivacySection = 'visibility' | 'data' | 'gdpr'
 export function PrivacyTab({ currentUser }: PrivacyTabProps) {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
-  const [activeSection, setActiveSection] = useState<PrivacySection>('visibility')
+  const [activeSection, setActiveSection] =
+    useState<PrivacySection>('visibility')
   const [isExporting, setIsExporting] = useState(false)
 
   // Server functions
@@ -51,7 +52,8 @@ export function PrivacyTab({ currentUser }: PrivacyTabProps) {
 
   // Mutations
   const privacyMutation = useMutation({
-    mutationFn: (settings: Record<string, boolean>) => updatePrivacySettings({ data: settings }),
+    mutationFn: (settings: Record<string, boolean>) =>
+      updatePrivacySettings({ data: settings }),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['privacy-settings'] })
     },
@@ -62,7 +64,9 @@ export function PrivacyTab({ currentUser }: PrivacyTabProps) {
     setIsExporting(true)
     try {
       const data = await exportUserData()
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+      const blob = new Blob([JSON.stringify(data, null, 2)], {
+        type: 'application/json',
+      })
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
@@ -79,46 +83,73 @@ export function PrivacyTab({ currentUser }: PrivacyTabProps) {
   }
 
   // Toggle component
-  const Toggle = ({ enabled, onChange, color = 'primary' }: { enabled: boolean; onChange: () => void; color?: 'primary' | 'green' | 'orange' }) => {
+  const Toggle = ({
+    enabled,
+    onChange,
+    color = 'primary',
+  }: {
+    enabled: boolean
+    onChange: () => void
+    color?: 'primary' | 'green' | 'orange'
+  }) => {
     const colorClasses = {
       primary: 'bg-linear-to-r from-primary to-accent shadow-primary/25',
       green: 'bg-linear-to-r from-green-500 to-emerald-500 shadow-green-500/25',
-      orange: 'bg-linear-to-r from-orange-500 to-amber-500 shadow-orange-500/25',
+      orange:
+        'bg-linear-to-r from-orange-500 to-amber-500 shadow-orange-500/25',
     }
-    
+
     return (
       <button
         onClick={onChange}
         className={`relative w-14 h-7 rounded-full transition-all duration-300 ease-out ${
-          enabled 
-            ? `${colorClasses[color]} shadow-lg` 
+          enabled
+            ? `${colorClasses[color]} shadow-lg`
             : 'bg-background-secondary border border-border/50'
         }`}
       >
         <div
           className={`absolute top-0.5 w-6 h-6 rounded-full bg-white shadow-md transition-all duration-300 ease-out ${
-            enabled 
-              ? 'translate-x-7 scale-95' 
-              : 'translate-x-0.5 scale-100'
+            enabled ? 'translate-x-7 scale-95' : 'translate-x-0.5 scale-100'
           }`}
         >
-          <div className={`absolute inset-0 rounded-full transition-opacity duration-300 ${
-            enabled 
-              ? 'bg-linear-to-br from-white to-gray-100' 
-              : 'bg-linear-to-br from-gray-100 to-gray-200'
-          }`} />
+          <div
+            className={`absolute inset-0 rounded-full transition-opacity duration-300 ${
+              enabled
+                ? 'bg-linear-to-br from-white to-gray-100'
+                : 'bg-linear-to-br from-gray-100 to-gray-200'
+            }`}
+          />
         </div>
         {enabled && (
-          <div className={`absolute inset-0 rounded-full ${colorClasses[color].replace('shadow-lg', '')} opacity-20 animate-pulse`} />
+          <div
+            className={`absolute inset-0 rounded-full ${colorClasses[color].replace('shadow-lg', '')} opacity-20 animate-pulse`}
+          />
         )}
       </button>
     )
   }
 
-  const sections: { id: PrivacySection; icon: React.ReactNode; label: string }[] = [
-    { id: 'visibility', icon: <Eye size={18} />, label: t('dashboard.privacy.profileVisibility') },
-    { id: 'data', icon: <BarChart3 size={18} />, label: t('dashboard.privacy.dataCollection') },
-    { id: 'gdpr', icon: <Shield size={18} />, label: t('dashboard.privacy.gdprTitle') },
+  const sections: {
+    id: PrivacySection
+    icon: React.ReactNode
+    label: string
+  }[] = [
+    {
+      id: 'visibility',
+      icon: <Eye size={18} />,
+      label: t('dashboard.privacy.profileVisibility'),
+    },
+    {
+      id: 'data',
+      icon: <BarChart3 size={18} />,
+      label: t('dashboard.privacy.dataCollection'),
+    },
+    {
+      id: 'gdpr',
+      icon: <Shield size={18} />,
+      label: t('dashboard.privacy.gdprTitle'),
+    },
   ]
 
   return (
@@ -131,8 +162,12 @@ export function PrivacyTab({ currentUser }: PrivacyTabProps) {
     >
       {/* Header */}
       <div>
-        <h2 className="text-xl font-bold text-foreground">{t('dashboard.privacy.title')}</h2>
-        <p className="text-sm text-foreground-muted">{t('dashboard.privacy.subtitle')}</p>
+        <h2 className="text-xl font-bold text-foreground">
+          {t('dashboard.privacy.title')}
+        </h2>
+        <p className="text-sm text-foreground-muted">
+          {t('dashboard.privacy.subtitle')}
+        </p>
       </div>
 
       {/* Section Navigation */}
@@ -166,17 +201,26 @@ export function PrivacyTab({ currentUser }: PrivacyTabProps) {
             {/* Profile Visibility */}
             <div className="rounded-lg overflow-hidden bg-card/50 border border-border p-5">
               <div className="flex items-center gap-4 mb-4">
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-                  privacyData?.settings?.isPublic !== false ? 'bg-green-500/20' : 'bg-orange-500/20'
-                }`}>
-                  {privacyData?.settings?.isPublic !== false 
-                    ? <Eye size={24} className="text-green-400" /> 
-                    : <EyeOff size={24} className="text-orange-400" />
-                  }
+                <div
+                  className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                    privacyData?.settings?.isPublic !== false
+                      ? 'bg-green-500/20'
+                      : 'bg-orange-500/20'
+                  }`}
+                >
+                  {privacyData?.settings?.isPublic !== false ? (
+                    <Eye size={24} className="text-green-400" />
+                  ) : (
+                    <EyeOff size={24} className="text-orange-400" />
+                  )}
                 </div>
                 <div className="flex-1">
-                  <p className="font-medium text-foreground">{t('dashboard.privacy.profileVisibility')}</p>
-                  <p className="text-sm text-foreground-muted">{t('dashboard.privacy.profileVisibilityDesc')}</p>
+                  <p className="font-medium text-foreground">
+                    {t('dashboard.privacy.profileVisibility')}
+                  </p>
+                  <p className="text-sm text-foreground-muted">
+                    {t('dashboard.privacy.profileVisibilityDesc')}
+                  </p>
                 </div>
               </div>
 
@@ -190,15 +234,26 @@ export function PrivacyTab({ currentUser }: PrivacyTabProps) {
                   }`}
                 >
                   <div className="flex items-center gap-3 mb-2">
-                    <Globe size={20} className={privacyData?.settings?.isPublic !== false ? 'text-green-400' : 'text-foreground-muted'} />
-                    <span className={`font-medium ${privacyData?.settings?.isPublic !== false ? 'text-green-400' : 'text-foreground'}`}>
+                    <Globe
+                      size={20}
+                      className={
+                        privacyData?.settings?.isPublic !== false
+                          ? 'text-green-400'
+                          : 'text-foreground-muted'
+                      }
+                    />
+                    <span
+                      className={`font-medium ${privacyData?.settings?.isPublic !== false ? 'text-green-400' : 'text-foreground'}`}
+                    >
                       {t('dashboard.privacy.public')}
                     </span>
                     {privacyData?.settings?.isPublic !== false && (
                       <Check size={16} className="text-green-400 ml-auto" />
                     )}
                   </div>
-                  <p className="text-xs text-foreground-muted text-left">{t('dashboard.privacy.publicDesc')}</p>
+                  <p className="text-xs text-foreground-muted text-left">
+                    {t('dashboard.privacy.publicDesc')}
+                  </p>
                 </button>
 
                 <button
@@ -210,15 +265,26 @@ export function PrivacyTab({ currentUser }: PrivacyTabProps) {
                   }`}
                 >
                   <div className="flex items-center gap-3 mb-2">
-                    <EyeOff size={20} className={privacyData?.settings?.isPublic === false ? 'text-orange-400' : 'text-foreground-muted'} />
-                    <span className={`font-medium ${privacyData?.settings?.isPublic === false ? 'text-orange-400' : 'text-foreground'}`}>
+                    <EyeOff
+                      size={20}
+                      className={
+                        privacyData?.settings?.isPublic === false
+                          ? 'text-orange-400'
+                          : 'text-foreground-muted'
+                      }
+                    />
+                    <span
+                      className={`font-medium ${privacyData?.settings?.isPublic === false ? 'text-orange-400' : 'text-foreground'}`}
+                    >
                       {t('dashboard.privacy.private')}
                     </span>
                     {privacyData?.settings?.isPublic === false && (
                       <Check size={16} className="text-orange-400 ml-auto" />
                     )}
                   </div>
-                  <p className="text-xs text-foreground-muted text-left">{t('dashboard.privacy.privateDesc')}</p>
+                  <p className="text-xs text-foreground-muted text-left">
+                    {t('dashboard.privacy.privateDesc')}
+                  </p>
                 </button>
               </div>
             </div>
@@ -233,46 +299,83 @@ export function PrivacyTab({ currentUser }: PrivacyTabProps) {
               {/* Show Activity Toggle */}
               <div className="flex items-center justify-between p-4 rounded-xl bg-background-secondary/50 hover:bg-background-secondary/70 transition-all duration-300">
                 <div className="flex items-center gap-4">
-                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                    privacyData?.settings?.showActivity !== false ? 'bg-primary/20' : 'bg-background-secondary'
-                  }`}>
-                    <Activity size={20} className={privacyData?.settings?.showActivity !== false ? 'text-primary' : 'text-foreground-muted'} />
+                  <div
+                    className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                      privacyData?.settings?.showActivity !== false
+                        ? 'bg-primary/20'
+                        : 'bg-background-secondary'
+                    }`}
+                  >
+                    <Activity
+                      size={20}
+                      className={
+                        privacyData?.settings?.showActivity !== false
+                          ? 'text-primary'
+                          : 'text-foreground-muted'
+                      }
+                    />
                   </div>
                   <div>
-                    <p className="font-medium text-foreground">{t('dashboard.privacy.showActivity')}</p>
-                    <p className="text-xs text-foreground-muted">{t('dashboard.privacy.showActivityDesc')}</p>
+                    <p className="font-medium text-foreground">
+                      {t('dashboard.privacy.showActivity')}
+                    </p>
+                    <p className="text-xs text-foreground-muted">
+                      {t('dashboard.privacy.showActivityDesc')}
+                    </p>
                   </div>
                 </div>
                 <Toggle
                   enabled={privacyData?.settings?.showActivity !== false}
-                  onChange={() => privacyMutation.mutate({ showActivity: !(privacyData?.settings?.showActivity !== false) })}
+                  onChange={() =>
+                    privacyMutation.mutate({
+                      showActivity: !(
+                        privacyData?.settings?.showActivity !== false
+                      ),
+                    })
+                  }
                 />
               </div>
 
               {/* Search Engine Indexing */}
               <div className="flex items-center justify-between p-4 rounded-xl bg-background-secondary/50 hover:bg-background-secondary/70 transition-all duration-300">
                 <div className="flex items-center gap-4">
-                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                    privacyData?.settings?.isPublic !== false ? 'bg-blue-500/20' : 'bg-background-secondary'
-                  }`}>
-                    <Search size={20} className={privacyData?.settings?.isPublic !== false ? 'text-blue-400' : 'text-foreground-muted'} />
+                  <div
+                    className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                      privacyData?.settings?.isPublic !== false
+                        ? 'bg-blue-500/20'
+                        : 'bg-background-secondary'
+                    }`}
+                  >
+                    <Search
+                      size={20}
+                      className={
+                        privacyData?.settings?.isPublic !== false
+                          ? 'text-blue-400'
+                          : 'text-foreground-muted'
+                      }
+                    />
                   </div>
                   <div>
-                    <p className="font-medium text-foreground">{t('dashboard.privacy.searchEngines')}</p>
+                    <p className="font-medium text-foreground">
+                      {t('dashboard.privacy.searchEngines')}
+                    </p>
                     <p className="text-xs text-foreground-muted">
-                      {privacyData?.settings?.isPublic !== false 
+                      {privacyData?.settings?.isPublic !== false
                         ? t('dashboard.privacy.searchEnginesEnabled')
-                        : t('dashboard.privacy.searchEnginesDisabled')
-                      }
+                        : t('dashboard.privacy.searchEnginesDisabled')}
                     </p>
                   </div>
                 </div>
-                <div className={`px-3 py-1.5 rounded-lg text-xs font-medium ${
-                  privacyData?.settings?.isPublic !== false
-                    ? 'bg-blue-500/20 text-blue-400'
-                    : 'bg-background-secondary text-foreground-muted'
-                }`}>
-                  {privacyData?.settings?.isPublic !== false ? t('dashboard.privacy.analyticsEnabled') : t('dashboard.privacy.analyticsDisabled')}
+                <div
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium ${
+                    privacyData?.settings?.isPublic !== false
+                      ? 'bg-blue-500/20 text-blue-400'
+                      : 'bg-background-secondary text-foreground-muted'
+                  }`}
+                >
+                  {privacyData?.settings?.isPublic !== false
+                    ? t('dashboard.privacy.analyticsEnabled')
+                    : t('dashboard.privacy.analyticsDisabled')}
                 </div>
               </div>
             </div>
@@ -295,8 +398,12 @@ export function PrivacyTab({ currentUser }: PrivacyTabProps) {
                   <BarChart3 size={24} className="text-accent" />
                 </div>
                 <div className="flex-1">
-                  <p className="font-medium text-foreground">{t('dashboard.privacy.analyticsTracking')}</p>
-                  <p className="text-sm text-foreground-muted">{t('dashboard.privacy.analyticsDesc')}</p>
+                  <p className="font-medium text-foreground">
+                    {t('dashboard.privacy.analyticsTracking')}
+                  </p>
+                  <p className="text-sm text-foreground-muted">
+                    {t('dashboard.privacy.analyticsDesc')}
+                  </p>
                 </div>
                 <div className="px-3 py-1.5 rounded-lg bg-green-500/20 text-green-400 text-sm font-medium">
                   {t('dashboard.privacy.analyticsEnabled')}
@@ -314,8 +421,12 @@ export function PrivacyTab({ currentUser }: PrivacyTabProps) {
                   <Download size={24} className="text-blue-400" />
                 </div>
                 <div className="flex-1">
-                  <p className="font-medium text-foreground">{t('dashboard.privacy.dataExport')}</p>
-                  <p className="text-sm text-foreground-muted">{t('dashboard.privacy.dataExportDesc')}</p>
+                  <p className="font-medium text-foreground">
+                    {t('dashboard.privacy.dataExport')}
+                  </p>
+                  <p className="text-sm text-foreground-muted">
+                    {t('dashboard.privacy.dataExportDesc')}
+                  </p>
                 </div>
               </div>
               <button
@@ -336,7 +447,6 @@ export function PrivacyTab({ currentUser }: PrivacyTabProps) {
                 )}
               </button>
             </div>
-
           </motion.div>
         )}
 
@@ -356,8 +466,12 @@ export function PrivacyTab({ currentUser }: PrivacyTabProps) {
                   <Shield size={24} className="text-indigo-400" />
                 </div>
                 <div>
-                  <p className="font-medium text-foreground">{t('dashboard.privacy.gdprTitle')}</p>
-                  <p className="text-sm text-foreground-muted">{t('dashboard.privacy.gdprDesc')}</p>
+                  <p className="font-medium text-foreground">
+                    {t('dashboard.privacy.gdprTitle')}
+                  </p>
+                  <p className="text-sm text-foreground-muted">
+                    {t('dashboard.privacy.gdprDesc')}
+                  </p>
                 </div>
               </div>
 
@@ -367,8 +481,12 @@ export function PrivacyTab({ currentUser }: PrivacyTabProps) {
                   <div className="flex items-center gap-3">
                     <FileText size={20} className="text-green-400" />
                     <div>
-                      <p className="font-medium text-foreground text-sm">{t('dashboard.privacy.rightToAccess')}</p>
-                      <p className="text-xs text-foreground-muted">{t('dashboard.privacy.rightToAccessDesc')}</p>
+                      <p className="font-medium text-foreground text-sm">
+                        {t('dashboard.privacy.rightToAccess')}
+                      </p>
+                      <p className="text-xs text-foreground-muted">
+                        {t('dashboard.privacy.rightToAccessDesc')}
+                      </p>
                     </div>
                   </div>
                   <button
@@ -376,7 +494,11 @@ export function PrivacyTab({ currentUser }: PrivacyTabProps) {
                     disabled={isExporting}
                     className="px-4 py-2 rounded-lg bg-green-500/20 text-green-400 hover:bg-green-500/30 transition-colors text-sm font-medium flex items-center gap-2"
                   >
-                    {isExporting ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />}
+                    {isExporting ? (
+                      <Loader2 size={14} className="animate-spin" />
+                    ) : (
+                      <Download size={14} />
+                    )}
                     {t('dashboard.privacy.export')}
                   </button>
                 </div>
@@ -386,8 +508,12 @@ export function PrivacyTab({ currentUser }: PrivacyTabProps) {
                   <div className="flex items-center gap-3">
                     <Trash2 size={20} className="text-red-400" />
                     <div>
-                      <p className="font-medium text-foreground text-sm">{t('dashboard.privacy.rightToErasure')}</p>
-                      <p className="text-xs text-foreground-muted">{t('dashboard.privacy.rightToErasureDesc')}</p>
+                      <p className="font-medium text-foreground text-sm">
+                        {t('dashboard.privacy.rightToErasure')}
+                      </p>
+                      <p className="text-xs text-foreground-muted">
+                        {t('dashboard.privacy.rightToErasureDesc')}
+                      </p>
                     </div>
                   </div>
                   <a
@@ -404,8 +530,12 @@ export function PrivacyTab({ currentUser }: PrivacyTabProps) {
                   <div className="flex items-center gap-3">
                     <Download size={20} className="text-blue-400" />
                     <div>
-                      <p className="font-medium text-foreground text-sm">{t('dashboard.privacy.rightToPortability')}</p>
-                      <p className="text-xs text-foreground-muted">{t('dashboard.privacy.rightToPortabilityDesc')}</p>
+                      <p className="font-medium text-foreground text-sm">
+                        {t('dashboard.privacy.rightToPortability')}
+                      </p>
+                      <p className="text-xs text-foreground-muted">
+                        {t('dashboard.privacy.rightToPortabilityDesc')}
+                      </p>
                     </div>
                   </div>
                   <button
@@ -413,7 +543,11 @@ export function PrivacyTab({ currentUser }: PrivacyTabProps) {
                     disabled={isExporting}
                     className="px-4 py-2 rounded-lg bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 transition-colors text-sm font-medium flex items-center gap-2"
                   >
-                    {isExporting ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />}
+                    {isExporting ? (
+                      <Loader2 size={14} className="animate-spin" />
+                    ) : (
+                      <Download size={14} />
+                    )}
                     {t('dashboard.privacy.export')}
                   </button>
                 </div>
@@ -428,22 +562,36 @@ export function PrivacyTab({ currentUser }: PrivacyTabProps) {
               </h3>
               <div className="grid grid-cols-2 gap-4">
                 <div className="p-3 rounded-lg bg-background-secondary/50">
-                  <p className="text-xs text-foreground-muted mb-1">{t('dashboard.privacy.accountUsername')}</p>
-                  <p className="font-medium text-foreground">@{currentUser.username}</p>
+                  <p className="text-xs text-foreground-muted mb-1">
+                    {t('dashboard.privacy.accountUsername')}
+                  </p>
+                  <p className="font-medium text-foreground">
+                    @{currentUser.username}
+                  </p>
                 </div>
                 <div className="p-3 rounded-lg bg-background-secondary/50">
-                  <p className="text-xs text-foreground-muted mb-1">{t('dashboard.privacy.accountCreated')}</p>
+                  <p className="text-xs text-foreground-muted mb-1">
+                    {t('dashboard.privacy.accountCreated')}
+                  </p>
                   <p className="font-medium text-foreground">
                     {new Date(currentUser.createdAt).toLocaleDateString()}
                   </p>
                 </div>
                 <div className="p-3 rounded-lg bg-background-secondary/50">
-                  <p className="text-xs text-foreground-muted mb-1">{t('dashboard.privacy.accountEmail')}</p>
-                  <p className="font-medium text-foreground truncate">{currentUser.email}</p>
+                  <p className="text-xs text-foreground-muted mb-1">
+                    {t('dashboard.privacy.accountEmail')}
+                  </p>
+                  <p className="font-medium text-foreground truncate">
+                    {currentUser.email}
+                  </p>
                 </div>
                 <div className="p-3 rounded-lg bg-background-secondary/50">
-                  <p className="text-xs text-foreground-muted mb-1">{t('dashboard.privacy.accountTier')}</p>
-                  <p className="font-medium text-foreground capitalize">{currentUser.tier}</p>
+                  <p className="text-xs text-foreground-muted mb-1">
+                    {t('dashboard.privacy.accountTier')}
+                  </p>
+                  <p className="font-medium text-foreground capitalize">
+                    {currentUser.tier}
+                  </p>
                 </div>
               </div>
             </div>

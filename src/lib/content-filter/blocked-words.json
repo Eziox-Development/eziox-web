@@ -15,20 +15,8 @@
       "depp",
       "trottel"
     ],
-    "insults_en": [
-      "asshole",
-      "bitch",
-      "bastard",
-      "idiot",
-      "moron",
-      "dumbass"
-    ],
-    "slurs_de": [
-      "kanake",
-      "neger",
-      "nazi",
-      "zigeuner"
-    ],
+    "insults_en": ["asshole", "bitch", "bastard", "idiot", "moron", "dumbass"],
+    "slurs_de": ["kanake", "neger", "nazi", "zigeuner"],
     "slurs_en": [
       "nigger",
       "nigga",
@@ -39,12 +27,7 @@
       "chink",
       "kike"
     ],
-    "profanity_de": [
-      "fick",
-      "ficken",
-      "scheiße",
-      "scheisse"
-    ],
+    "profanity_de": ["fick", "ficken", "scheiße", "scheisse"],
     "profanity_en": [
       "fuck",
       "fucking",
@@ -66,12 +49,7 @@
       "i will kill you",
       "go die"
     ],
-    "harassment": [
-      "behindert",
-      "autist",
-      "mongo",
-      "spasti"
-    ]
+    "harassment": ["behindert", "autist", "mongo", "spasti"]
   },
   "patterns": [
     "f+u+c+k+",

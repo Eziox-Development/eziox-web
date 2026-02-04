@@ -3,14 +3,36 @@ import { useQuery } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/hooks/use-auth'
-import { getCurrentSubscriptionFn, createBillingPortalSessionFn } from '@/server/functions/subscriptions'
-import { Crown, Check, Zap, Sparkles, ExternalLink, ArrowRight, Shield, Loader2, Heart } from 'lucide-react'
+import {
+  getCurrentSubscriptionFn,
+  createBillingPortalSessionFn,
+} from '@/server/functions/subscriptions'
+import {
+  Crown,
+  Check,
+  Zap,
+  Sparkles,
+  ExternalLink,
+  ArrowRight,
+  Shield,
+  Loader2,
+  Heart,
+} from 'lucide-react'
 import { Link } from '@tanstack/react-router'
 
 const PLAN_IDS = ['free', 'pro', 'creator', 'lifetime'] as const
-type PlanId = typeof PLAN_IDS[number]
+type PlanId = (typeof PLAN_IDS)[number]
 
-const PLAN_CONFIGS: Record<PlanId, { gradient: string; popular?: boolean; featureKeys: string[]; primary: string; badge?: string }> = {
+const PLAN_CONFIGS: Record<
+  PlanId,
+  {
+    gradient: string
+    popular?: boolean
+    featureKeys: string[]
+    primary: string
+    badge?: string
+  }
+> = {
   free: {
     gradient: 'from-gray-500 to-gray-600',
     primary: '#6b7280',
@@ -20,12 +42,27 @@ const PLAN_CONFIGS: Record<PlanId, { gradient: string; popular?: boolean; featur
     gradient: 'from-purple-500 to-pink-500',
     popular: true,
     primary: '#3b82f6',
-    featureKeys: ['links', 'analytics', 'themes', 'support', 'api', 'customization'],
+    featureKeys: [
+      'links',
+      'analytics',
+      'themes',
+      'support',
+      'api',
+      'customization',
+    ],
   },
   creator: {
     gradient: 'from-amber-500 to-orange-500',
     primary: '#f59e0b',
-    featureKeys: ['everything', 'css', 'animated', 'video', 'whitelabel', 'support', 'advanced'],
+    featureKeys: [
+      'everything',
+      'css',
+      'animated',
+      'video',
+      'whitelabel',
+      'support',
+      'advanced',
+    ],
   },
   lifetime: {
     gradient: 'from-emerald-500 to-teal-500',
@@ -48,7 +85,6 @@ export function SubscriptionTab() {
   })
 
   const currentTier = currentUser?.tier || 'free'
-
 
   const handleManageBilling = async () => {
     try {
@@ -78,9 +114,14 @@ export function SubscriptionTab() {
       className="space-y-6"
     >
       <div>
-        <h2 className="text-xl font-bold text-foreground">{t('dashboard.subscription.title')}</h2>
+        <h2 className="text-xl font-bold text-foreground">
+          {t('dashboard.subscription.title')}
+        </h2>
         <p className="text-sm text-foreground-muted">
-          {t('dashboard.subscription.currentPlan')}: <span className="text-primary font-medium capitalize">{currentTier}</span>
+          {t('dashboard.subscription.currentPlan')}:{' '}
+          <span className="text-primary font-medium capitalize">
+            {currentTier}
+          </span>
         </p>
       </div>
 
@@ -92,10 +133,17 @@ export function SubscriptionTab() {
                 <Crown size={24} className="text-primary-foreground" />
               </div>
               <div>
-                <p className="font-bold text-foreground capitalize">{currentTier} Plan</p>
+                <p className="font-bold text-foreground capitalize">
+                  {currentTier} Plan
+                </p>
                 <p className="text-sm text-foreground-muted">
                   {subscription.subscription?.currentPeriodEnd && (
-                    <>{t('dashboard.subscription.nextBilling')}: {new Date(subscription.subscription.currentPeriodEnd).toLocaleDateString()}</>
+                    <>
+                      {t('dashboard.subscription.nextBilling')}:{' '}
+                      {new Date(
+                        subscription.subscription.currentPeriodEnd,
+                      ).toLocaleDateString()}
+                    </>
                   )}
                 </p>
               </div>
@@ -122,7 +170,9 @@ export function SubscriptionTab() {
             <motion.div
               key={planId}
               className={`rounded-lg overflow-hidden border p-5 relative ${
-                config.popular ? 'border-primary/50 bg-primary/5' : 'border-border bg-card/50'
+                config.popular
+                  ? 'border-primary/50 bg-primary/5'
+                  : 'border-border bg-card/50'
               }`}
               whileHover={{ scale: 1.02 }}
             >
@@ -132,11 +182,18 @@ export function SubscriptionTab() {
                 </div>
               )}
 
-              <div className={`w-12 h-12 rounded-xl flex items-center justify-center bg-linear-to-br ${config.gradient} mb-4`}>
-                {planId === 'free' ? <Zap size={24} className="text-white" /> :
-                 planId === 'pro' ? <Sparkles size={24} className="text-white" /> :
-                 planId === 'creator' ? <Crown size={24} className="text-white" /> :
-                 <Heart size={24} className="text-white" />}
+              <div
+                className={`w-12 h-12 rounded-xl flex items-center justify-center bg-linear-to-br ${config.gradient} mb-4`}
+              >
+                {planId === 'free' ? (
+                  <Zap size={24} className="text-white" />
+                ) : planId === 'pro' ? (
+                  <Sparkles size={24} className="text-white" />
+                ) : planId === 'creator' ? (
+                  <Crown size={24} className="text-white" />
+                ) : (
+                  <Heart size={24} className="text-white" />
+                )}
               </div>
 
               <h3 className="text-xl font-bold text-foreground">
@@ -147,23 +204,39 @@ export function SubscriptionTab() {
                   {t(`dashboard.subscription.plans.${planId}.price`)}
                 </span>
                 <span className="text-foreground-muted">
-                  {planId === 'lifetime' ? t('pricing.billingType.oneTime') : t('dashboard.subscription.perMonth')}
+                  {planId === 'lifetime'
+                    ? t('pricing.billingType.oneTime')
+                    : t('dashboard.subscription.perMonth')}
                 </span>
               </div>
 
               <ul className="space-y-2 mb-6">
                 {config.featureKeys.map((featureKey) => (
-                  <li key={featureKey} className="flex items-center gap-2 text-sm text-foreground-muted">
+                  <li
+                    key={featureKey}
+                    className="flex items-center gap-2 text-sm text-foreground-muted"
+                  >
                     <Check size={16} className="text-green-400 shrink-0" />
-                    {t(`dashboard.subscription.plans.${planId}.features.${featureKey}`)}
+                    {t(
+                      `dashboard.subscription.plans.${planId}.features.${featureKey}`,
+                    )}
                   </li>
                 ))}
               </ul>
 
               {isCurrent ? (
-                <div className="w-full py-3 rounded-xl text-center font-medium flex items-center justify-center gap-2 bg-background-secondary border border-border" style={{ color: config.primary }}>
-                  {planId === 'lifetime' ? <Heart size={16} /> : <Shield size={16} />}
-                  {planId === 'lifetime' ? t('dashboard.subscription.lifetimeAccess') : t('dashboard.subscription.currentPlan')}
+                <div
+                  className="w-full py-3 rounded-xl text-center font-medium flex items-center justify-center gap-2 bg-background-secondary border border-border"
+                  style={{ color: config.primary }}
+                >
+                  {planId === 'lifetime' ? (
+                    <Heart size={16} />
+                  ) : (
+                    <Shield size={16} />
+                  )}
+                  {planId === 'lifetime'
+                    ? t('dashboard.subscription.lifetimeAccess')
+                    : t('dashboard.subscription.currentPlan')}
                 </div>
               ) : isUpgrade && planId !== 'lifetime' ? (
                 <Link to="/pricing">

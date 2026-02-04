@@ -1,6 +1,20 @@
 import { motion } from 'motion/react'
 import { useTranslation } from 'react-i18next'
-import { Shield, Award, Star, Zap, Crown, Gift, Users, Code, Sparkles, Heart, Bug, Trophy, UserCheck } from 'lucide-react'
+import {
+  Shield,
+  Award,
+  Star,
+  Zap,
+  Crown,
+  Gift,
+  Users,
+  Code,
+  Sparkles,
+  Heart,
+  Bug,
+  Trophy,
+  UserCheck,
+} from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
 interface BadgesTabProps {
@@ -21,28 +35,108 @@ interface BadgeConfig {
 }
 
 const BADGE_CONFIGS: Record<string, BadgeConfig> = {
-  early_adopter: { id: 'early_adopter', icon: Star, color: '#f59e0b', gradient: 'from-amber-500 to-orange-500' },
-  verified: { id: 'verified', icon: Shield, color: '#22c55e', gradient: 'from-green-500 to-emerald-500' },
-  premium: { id: 'premium', icon: Crown, color: '#8b5cf6', gradient: 'from-purple-500 to-pink-500' },
-  creator: { id: 'creator', icon: Sparkles, color: '#06b6d4', gradient: 'from-cyan-500 to-blue-500' },
-  lifetime: { id: 'lifetime', icon: Crown, color: '#fbbf24', gradient: 'from-yellow-400 to-amber-500' },
-  referrer_bronze: { id: 'referrer_bronze', icon: Gift, color: '#cd7f32', gradient: 'from-amber-600 to-amber-800' },
-  referrer_silver: { id: 'referrer_silver', icon: Gift, color: '#c0c0c0', gradient: 'from-gray-300 to-gray-500' },
-  referrer_gold: { id: 'referrer_gold', icon: Gift, color: '#ffd700', gradient: 'from-yellow-400 to-amber-500' },
-  community: { id: 'community', icon: Users, color: '#ec4899', gradient: 'from-pink-500 to-rose-500' },
-  developer: { id: 'developer', icon: Code, color: '#3b82f6', gradient: 'from-blue-500 to-indigo-500' },
-  supporter: { id: 'supporter', icon: Heart, color: '#ef4444', gradient: 'from-red-500 to-pink-500' },
-  partner: { id: 'partner', icon: UserCheck, color: '#10b981', gradient: 'from-emerald-500 to-teal-500' },
-  staff: { id: 'staff', icon: Zap, color: '#a855f7', gradient: 'from-violet-500 to-purple-500' },
-  bug_hunter: { id: 'bug_hunter', icon: Bug, color: '#f97316', gradient: 'from-orange-500 to-red-500' },
-  top_creator: { id: 'top_creator', icon: Trophy, color: '#eab308', gradient: 'from-yellow-500 to-orange-500' },
+  early_adopter: {
+    id: 'early_adopter',
+    icon: Star,
+    color: '#f59e0b',
+    gradient: 'from-amber-500 to-orange-500',
+  },
+  verified: {
+    id: 'verified',
+    icon: Shield,
+    color: '#22c55e',
+    gradient: 'from-green-500 to-emerald-500',
+  },
+  premium: {
+    id: 'premium',
+    icon: Crown,
+    color: '#8b5cf6',
+    gradient: 'from-purple-500 to-pink-500',
+  },
+  creator: {
+    id: 'creator',
+    icon: Sparkles,
+    color: '#06b6d4',
+    gradient: 'from-cyan-500 to-blue-500',
+  },
+  lifetime: {
+    id: 'lifetime',
+    icon: Crown,
+    color: '#fbbf24',
+    gradient: 'from-yellow-400 to-amber-500',
+  },
+  referrer_bronze: {
+    id: 'referrer_bronze',
+    icon: Gift,
+    color: '#cd7f32',
+    gradient: 'from-amber-600 to-amber-800',
+  },
+  referrer_silver: {
+    id: 'referrer_silver',
+    icon: Gift,
+    color: '#c0c0c0',
+    gradient: 'from-gray-300 to-gray-500',
+  },
+  referrer_gold: {
+    id: 'referrer_gold',
+    icon: Gift,
+    color: '#ffd700',
+    gradient: 'from-yellow-400 to-amber-500',
+  },
+  community: {
+    id: 'community',
+    icon: Users,
+    color: '#ec4899',
+    gradient: 'from-pink-500 to-rose-500',
+  },
+  developer: {
+    id: 'developer',
+    icon: Code,
+    color: '#3b82f6',
+    gradient: 'from-blue-500 to-indigo-500',
+  },
+  supporter: {
+    id: 'supporter',
+    icon: Heart,
+    color: '#ef4444',
+    gradient: 'from-red-500 to-pink-500',
+  },
+  partner: {
+    id: 'partner',
+    icon: UserCheck,
+    color: '#10b981',
+    gradient: 'from-emerald-500 to-teal-500',
+  },
+  staff: {
+    id: 'staff',
+    icon: Zap,
+    color: '#a855f7',
+    gradient: 'from-violet-500 to-purple-500',
+  },
+  bug_hunter: {
+    id: 'bug_hunter',
+    icon: Bug,
+    color: '#f97316',
+    gradient: 'from-orange-500 to-red-500',
+  },
+  top_creator: {
+    id: 'top_creator',
+    icon: Trophy,
+    color: '#eab308',
+    gradient: 'from-yellow-500 to-orange-500',
+  },
 }
 
-const DEFAULT_CONFIG: BadgeConfig = { id: 'unknown', icon: Shield, color: '#6366f1', gradient: 'from-purple-500 to-cyan-500' }
+const DEFAULT_CONFIG: BadgeConfig = {
+  id: 'unknown',
+  icon: Shield,
+  color: '#6366f1',
+  gradient: 'from-purple-500 to-cyan-500',
+}
 
-export function BadgesTab({ 
-  badges, 
-  referralCount, 
+export function BadgesTab({
+  badges,
+  referralCount,
   isEarlyAdopter,
   tier = 'free',
   hasApiKeys = false,
@@ -54,24 +148,41 @@ export function BadgesTab({
   // Build the list of all possible badges with their earned status
   const allBadges = [
     // Account badges
-    { id: 'early_adopter', earned: isEarlyAdopter || badges.includes('early_adopter') },
+    {
+      id: 'early_adopter',
+      earned: isEarlyAdopter || badges.includes('early_adopter'),
+    },
     { id: 'verified', earned: badges.includes('verified') },
-    
+
     // Subscription badges
-    { id: 'premium', earned: tier === 'pro' || tier === 'creator' || tier === 'lifetime' || badges.includes('premium') },
-    { id: 'creator', earned: tier === 'creator' || tier === 'lifetime' || badges.includes('creator') },
-    { id: 'lifetime', earned: tier === 'lifetime' || badges.includes('lifetime') },
-    
+    {
+      id: 'premium',
+      earned:
+        tier === 'pro' ||
+        tier === 'creator' ||
+        tier === 'lifetime' ||
+        badges.includes('premium'),
+    },
+    {
+      id: 'creator',
+      earned:
+        tier === 'creator' || tier === 'lifetime' || badges.includes('creator'),
+    },
+    {
+      id: 'lifetime',
+      earned: tier === 'lifetime' || badges.includes('lifetime'),
+    },
+
     // Referral badges
     { id: 'referrer_bronze', earned: referralCount >= 5 },
     { id: 'referrer_silver', earned: referralCount >= 25 },
     { id: 'referrer_gold', earned: referralCount >= 100 },
-    
+
     // Activity badges
     { id: 'community', earned: badges.includes('community') },
     { id: 'developer', earned: hasApiKeys || badges.includes('developer') },
     { id: 'supporter', earned: badges.includes('supporter') },
-    
+
     // Special badges
     { id: 'partner', earned: isPartner || badges.includes('partner') },
     { id: 'staff', earned: isStaff || badges.includes('staff') },
@@ -95,7 +206,9 @@ export function BadgesTab({
       className="space-y-6"
     >
       <div>
-        <h2 className="text-xl font-bold text-foreground">{t('dashboard.badges.title')}</h2>
+        <h2 className="text-xl font-bold text-foreground">
+          {t('dashboard.badges.title')}
+        </h2>
         <p className="text-sm text-foreground-muted">
           {earnedBadges.length} {t('dashboard.badges.earned')}
         </p>
@@ -119,14 +232,20 @@ export function BadgesTab({
                   transition={{ delay: i * 0.05 }}
                   className="p-4 rounded-lg bg-background-secondary/30 text-center group hover:bg-background-secondary/50 transition-colors duration-(--animation-speed)"
                 >
-                  <div className={`w-14 h-14 mx-auto mb-3 rounded-xl flex items-center justify-center bg-linear-to-br ${config.gradient}`}>
+                  <div
+                    className={`w-14 h-14 mx-auto mb-3 rounded-xl flex items-center justify-center bg-linear-to-br ${config.gradient}`}
+                  >
                     <Icon size={28} className="text-white" />
                   </div>
                   <p className="font-medium text-foreground text-sm">
-                    {t(`dashboard.badges.items.${badge.id}.name`, { defaultValue: badge.id })}
+                    {t(`dashboard.badges.items.${badge.id}.name`, {
+                      defaultValue: badge.id,
+                    })}
                   </p>
                   <p className="text-xs text-foreground-muted mt-1">
-                    {t(`dashboard.badges.items.${badge.id}.description`, { defaultValue: '' })}
+                    {t(`dashboard.badges.items.${badge.id}.description`, {
+                      defaultValue: '',
+                    })}
                   </p>
                 </motion.div>
               )
@@ -146,15 +265,22 @@ export function BadgesTab({
               const config = getBadgeConfig(badge.id)
               const Icon = config.icon
               return (
-                <div key={badge.id} className="p-4 rounded-lg bg-background-secondary/20 text-center opacity-40">
+                <div
+                  key={badge.id}
+                  className="p-4 rounded-lg bg-background-secondary/20 text-center opacity-40"
+                >
                   <div className="w-14 h-14 mx-auto mb-3 rounded-xl flex items-center justify-center bg-background-secondary/50">
                     <Icon size={28} className="text-foreground-muted" />
                   </div>
                   <p className="font-medium text-foreground-muted text-sm">
-                    {t(`dashboard.badges.items.${badge.id}.name`, { defaultValue: badge.id })}
+                    {t(`dashboard.badges.items.${badge.id}.name`, {
+                      defaultValue: badge.id,
+                    })}
                   </p>
                   <p className="text-xs text-foreground-muted/50 mt-1">
-                    {t(`dashboard.badges.items.${badge.id}.description`, { defaultValue: '' })}
+                    {t(`dashboard.badges.items.${badge.id}.description`, {
+                      defaultValue: '',
+                    })}
                   </p>
                 </div>
               )
@@ -166,8 +292,12 @@ export function BadgesTab({
       {earnedBadges.length === 0 && (
         <div className="rounded-lg overflow-hidden bg-card/50 border border-border p-12 text-center">
           <Shield size={48} className="mx-auto mb-4 text-foreground-muted/30" />
-          <p className="text-foreground-muted mb-2">{t('dashboard.badges.noBadges')}</p>
-          <p className="text-sm text-foreground-muted/50">{t('dashboard.badges.keepGoing')}</p>
+          <p className="text-foreground-muted mb-2">
+            {t('dashboard.badges.noBadges')}
+          </p>
+          <p className="text-sm text-foreground-muted/50">
+            {t('dashboard.badges.keepGoing')}
+          </p>
         </div>
       )}
     </motion.div>

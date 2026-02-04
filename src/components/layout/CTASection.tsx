@@ -82,7 +82,10 @@ export function CTASection() {
                           color: 'white',
                         }}
                       >
-                        {!currentUser.profile?.avatar && (currentUser.name || currentUser.username).charAt(0).toUpperCase()}
+                        {!currentUser.profile?.avatar &&
+                          (currentUser.name || currentUser.username)
+                            .charAt(0)
+                            .toUpperCase()}
                       </div>
                       <motion.div
                         className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full flex items-center justify-center"
@@ -120,7 +123,10 @@ export function CTASection() {
 
                 {/* Right: Action buttons */}
                 <div className="flex flex-col sm:flex-row gap-3">
-                  <Link to="/$username" params={{ username: currentUser.username }}>
+                  <Link
+                    to="/$username"
+                    params={{ username: currentUser.username }}
+                  >
                     <motion.button
                       className="group flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl font-semibold text-white min-w-[160px]"
                       style={{
@@ -132,7 +138,10 @@ export function CTASection() {
                     >
                       <ExternalLink size={18} />
                       {t('home.cta.loggedIn.viewPage')}
-                      <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
+                      <ArrowRight
+                        size={16}
+                        className="transition-transform group-hover:translate-x-1"
+                      />
                     </motion.button>
                   </Link>
                   <Link to="/analytics">
@@ -146,7 +155,10 @@ export function CTASection() {
                       whileHover={{ scale: 1.02, y: -2 }}
                       whileTap={{ scale: 0.98 }}
                     >
-                      <BarChart3 size={18} style={{ color: theme.colors.primary }} />
+                      <BarChart3
+                        size={18}
+                        style={{ color: theme.colors.primary }}
+                      />
                       {t('home.cta.loggedIn.analytics')}
                     </motion.button>
                   </Link>
@@ -161,7 +173,10 @@ export function CTASection() {
                       whileHover={{ scale: 1.02, y: -2 }}
                       whileTap={{ scale: 0.98 }}
                     >
-                      <Settings size={18} style={{ color: theme.colors.foregroundMuted }} />
+                      <Settings
+                        size={18}
+                        style={{ color: theme.colors.foregroundMuted }}
+                      />
                       {t('home.cta.loggedIn.settings')}
                     </motion.button>
                   </Link>
@@ -257,7 +272,10 @@ export function CTASection() {
             {[
               { icon: Zap, label: t('home.cta.guest.features.free') },
               { icon: Palette, label: t('home.cta.guest.features.themes') },
-              { icon: TrendingUp, label: t('home.cta.guest.features.analytics') },
+              {
+                icon: TrendingUp,
+                label: t('home.cta.guest.features.analytics'),
+              },
             ].map((feature, i) => (
               <motion.div
                 key={i}
@@ -271,7 +289,10 @@ export function CTASection() {
                   border: `1px solid ${theme.colors.border}`,
                 }}
               >
-                <feature.icon size={16} style={{ color: theme.colors.primary }} />
+                <feature.icon
+                  size={16}
+                  style={{ color: theme.colors.primary }}
+                />
                 <span
                   className="text-sm font-medium"
                   style={{ color: theme.colors.foreground }}
@@ -297,7 +318,10 @@ export function CTASection() {
                 <span className="relative z-10 flex items-center gap-2">
                   <Rocket size={20} />
                   {t('home.cta.guest.createPage')}
-                  <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
+                  <ArrowRight
+                    size={18}
+                    className="transition-transform group-hover:translate-x-1"
+                  />
                 </span>
                 <motion.div
                   className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity"

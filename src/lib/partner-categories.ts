@@ -1016,12 +1016,7 @@ export const CONTENT_TYPES: ContentType[] = [
 // VTUBER MODELS
 // ============================================================================
 
-export type VTuberModelType = 
-  | 'live2d'
-  | '3d'
-  | 'both'
-  | 'png'
-  | 'hybrid'
+export type VTuberModelType = 'live2d' | '3d' | 'both' | 'png' | 'hybrid'
 
 export const VTUBER_MODEL_TYPES = [
   { id: 'live2d', label: '2D (Live2D)' },

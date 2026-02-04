@@ -82,7 +82,7 @@ export function MediaLibraryTab() {
   const { theme } = useTheme()
   const queryClient = useQueryClient()
   const fileInputRef = useRef<HTMLInputElement>(null)
-  
+
   // State
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [searchQuery, setSearchQuery] = useState('')
@@ -116,7 +116,13 @@ export function MediaLibraryTab() {
   // Queries
   const { data: mediaData, isLoading: loadingMedia } = useQuery({
     queryKey: ['media-library', selectedFolder, searchQuery],
-    queryFn: () => getMediaLibraryFn({ data: { folder: selectedFolder || undefined, search: searchQuery || undefined } }),
+    queryFn: () =>
+      getMediaLibraryFn({
+        data: {
+          folder: selectedFolder || undefined,
+          search: searchQuery || undefined,
+        },
+      }),
   })
 
   const { data: foldersData } = useQuery({
@@ -133,8 +139,10 @@ export function MediaLibraryTab() {
   const uploadMutation = useMutation({
     mutationFn: async (file: File) => {
       const base64 = await fileToBase64(file)
-      const result = await uploadMediaFn({ data: { image: base64, folder: selectedFolder || undefined } })
-      
+      const result = await uploadMediaFn({
+        data: { image: base64, folder: selectedFolder || undefined },
+      })
+
       // Add to media library
       await addMediaItemFn({
         data: {
@@ -146,7 +154,7 @@ export function MediaLibraryTab() {
           folder: selectedFolder || undefined,
         },
       })
-      
+
       return result
     },
     onSuccess: () => {
@@ -202,35 +210,41 @@ export function MediaLibraryTab() {
     return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`
   }
 
-  const handleFileUpload = useCallback(async (files: FileList | null) => {
-    if (!files || files.length === 0) return
-    
-    setIsUploading(true)
-    setUploadProgress(0)
-    
-    const totalFiles = files.length
-    let completed = 0
-    
-    for (const file of Array.from(files)) {
-      if (!file.type.startsWith('image/')) continue
-      
-      try {
-        await uploadMutation.mutateAsync(file)
-        completed++
-        setUploadProgress(Math.round((completed / totalFiles) * 100))
-      } catch (error) {
-        console.error('Upload failed:', error)
-      }
-    }
-    
-    setIsUploading(false)
-    setUploadProgress(0)
-  }, [uploadMutation])
+  const handleFileUpload = useCallback(
+    async (files: FileList | null) => {
+      if (!files || files.length === 0) return
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault()
-    void handleFileUpload(e.dataTransfer.files)
-  }, [handleFileUpload])
+      setIsUploading(true)
+      setUploadProgress(0)
+
+      const totalFiles = files.length
+      let completed = 0
+
+      for (const file of Array.from(files)) {
+        if (!file.type.startsWith('image/')) continue
+
+        try {
+          await uploadMutation.mutateAsync(file)
+          completed++
+          setUploadProgress(Math.round((completed / totalFiles) * 100))
+        } catch (error) {
+          console.error('Upload failed:', error)
+        }
+      }
+
+      setIsUploading(false)
+      setUploadProgress(0)
+    },
+    [uploadMutation],
+  )
+
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault()
+      void handleFileUpload(e.dataTransfer.files)
+    },
+    [handleFileUpload],
+  )
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault()
@@ -248,7 +262,9 @@ export function MediaLibraryTab() {
 
   const selectAll = () => {
     if (mediaData?.items) {
-      setSelectedItems(new Set(mediaData.items.map((item: MediaItem) => item.id)))
+      setSelectedItems(
+        new Set(mediaData.items.map((item: MediaItem) => item.id)),
+      )
     }
   }
 
@@ -265,25 +281,27 @@ export function MediaLibraryTab() {
   // Loading state
   if (loadingMedia && !mediaData) {
     return (
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         className="flex flex-col items-center justify-center py-20 gap-4"
       >
         <div className="relative">
-          <div 
+          <div
             className="w-16 h-16 rounded-full border-2 animate-spin"
-            style={{ 
+            style={{
               borderColor: theme.colors.primary + '20',
-              borderTopColor: theme.colors.primary 
+              borderTopColor: theme.colors.primary,
             }}
           />
-          <Sparkles 
-            className="absolute inset-0 m-auto h-6 w-6" 
+          <Sparkles
+            className="absolute inset-0 m-auto h-6 w-6"
             style={{ color: theme.colors.primary }}
           />
         </div>
-        <p style={{ color: theme.colors.foregroundMuted }}>{t('common.loading')}</p>
+        <p style={{ color: theme.colors.foregroundMuted }}>
+          {t('common.loading')}
+        </p>
       </motion.div>
     )
   }
@@ -295,31 +313,31 @@ export function MediaLibraryTab() {
       className="space-y-6"
     >
       {/* Hero Header */}
-      <div 
+      <div
         className="relative overflow-hidden rounded-2xl border p-6"
         style={{
           background: `linear-gradient(135deg, ${theme.colors.primary}10, transparent, ${theme.colors.accent}10)`,
-          borderColor: theme.colors.border + '50'
+          borderColor: theme.colors.border + '50',
         }}
       >
-        <div 
+        <div
           className="absolute top-0 right-0 w-64 h-64 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"
           style={{ backgroundColor: theme.colors.primary + '15' }}
         />
-        
+
         <div className="relative flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <div 
+              <div
                 className="p-2 rounded-lg"
                 style={{ backgroundColor: theme.colors.primary + '20' }}
               >
-                <ImageIcon 
-                  className="h-5 w-5" 
+                <ImageIcon
+                  className="h-5 w-5"
                   style={{ color: theme.colors.primary }}
                 />
               </div>
-              <h1 
+              <h1
                 className="text-2xl md:text-3xl font-bold"
                 style={{ color: theme.colors.foreground }}
               >
@@ -330,30 +348,42 @@ export function MediaLibraryTab() {
               {t('mediaLibrary.description')}
             </p>
           </div>
-          
+
           {/* Stats */}
           <div className="flex items-center gap-4">
-            <div 
+            <div
               className="flex items-center gap-2 px-4 py-2 rounded-full backdrop-blur border"
               style={{
                 backgroundColor: theme.colors.background + 'cc',
-                borderColor: theme.colors.border + '50'
+                borderColor: theme.colors.border + '50',
               }}
             >
-              <ImageIcon className="h-4 w-4" style={{ color: theme.colors.primary }} />
-              <span className="text-sm font-medium" style={{ color: theme.colors.foreground }}>
+              <ImageIcon
+                className="h-4 w-4"
+                style={{ color: theme.colors.primary }}
+              />
+              <span
+                className="text-sm font-medium"
+                style={{ color: theme.colors.foreground }}
+              >
                 {stats.totalItems} {t('mediaLibrary.files')}
               </span>
             </div>
-            <div 
+            <div
               className="flex items-center gap-2 px-4 py-2 rounded-full backdrop-blur border"
               style={{
                 backgroundColor: theme.colors.background + 'cc',
-                borderColor: theme.colors.border + '50'
+                borderColor: theme.colors.border + '50',
               }}
             >
-              <HardDrive className="h-4 w-4" style={{ color: theme.colors.accent }} />
-              <span className="text-sm font-medium" style={{ color: theme.colors.foreground }}>
+              <HardDrive
+                className="h-4 w-4"
+                style={{ color: theme.colors.accent }}
+              />
+              <span
+                className="text-sm font-medium"
+                style={{ color: theme.colors.foreground }}
+              >
                 {formatFileSize(stats.totalSize)}
               </span>
             </div>
@@ -362,13 +392,13 @@ export function MediaLibraryTab() {
       </div>
 
       {/* Toolbar */}
-      <div 
+      <div
         className={`flex flex-col sm:flex-row gap-4 p-4 rounded-xl ${cardStyle}`}
       >
         {/* Search */}
         <div className="relative flex-1">
-          <Search 
-            className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" 
+          <Search
+            className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4"
             style={{ color: theme.colors.foregroundMuted }}
           />
           <Input
@@ -379,7 +409,7 @@ export function MediaLibraryTab() {
             style={{
               backgroundColor: theme.colors.background,
               borderColor: theme.colors.border + '50',
-              color: theme.colors.foreground
+              color: theme.colors.foreground,
             }}
           />
         </div>
@@ -387,11 +417,11 @@ export function MediaLibraryTab() {
         {/* Folder Filter */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button 
+            <Button
               variant="outline"
               style={{
                 borderColor: theme.colors.border + '50',
-                color: theme.colors.foreground
+                color: theme.colors.foreground,
               }}
             >
               <FolderOpen className="h-4 w-4 mr-2" />
@@ -404,7 +434,10 @@ export function MediaLibraryTab() {
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             {folders.map((folder) => (
-              <DropdownMenuItem key={folder} onClick={() => setSelectedFolder(folder)}>
+              <DropdownMenuItem
+                key={folder}
+                onClick={() => setSelectedFolder(folder)}
+              >
                 <FolderOpen className="h-4 w-4 mr-2" />
                 {folder}
               </DropdownMenuItem>
@@ -418,7 +451,7 @@ export function MediaLibraryTab() {
         </DropdownMenu>
 
         {/* View Toggle */}
-        <div 
+        <div
           className="flex rounded-lg border overflow-hidden"
           style={{ borderColor: theme.colors.border + '50' }}
         >
@@ -426,8 +459,14 @@ export function MediaLibraryTab() {
             onClick={() => setViewMode('grid')}
             className="p-2 transition-colors"
             style={{
-              backgroundColor: viewMode === 'grid' ? theme.colors.primary + '20' : 'transparent',
-              color: viewMode === 'grid' ? theme.colors.primary : theme.colors.foregroundMuted
+              backgroundColor:
+                viewMode === 'grid'
+                  ? theme.colors.primary + '20'
+                  : 'transparent',
+              color:
+                viewMode === 'grid'
+                  ? theme.colors.primary
+                  : theme.colors.foregroundMuted,
             }}
           >
             <Grid3X3 className="h-4 w-4" />
@@ -436,8 +475,14 @@ export function MediaLibraryTab() {
             onClick={() => setViewMode('list')}
             className="p-2 transition-colors"
             style={{
-              backgroundColor: viewMode === 'list' ? theme.colors.primary + '20' : 'transparent',
-              color: viewMode === 'list' ? theme.colors.primary : theme.colors.foregroundMuted
+              backgroundColor:
+                viewMode === 'list'
+                  ? theme.colors.primary + '20'
+                  : 'transparent',
+              color:
+                viewMode === 'list'
+                  ? theme.colors.primary
+                  : theme.colors.foregroundMuted,
             }}
           >
             <List className="h-4 w-4" />
@@ -479,16 +524,16 @@ export function MediaLibraryTab() {
             className={`flex items-center justify-between p-4 rounded-xl ${cardStyle}`}
           >
             <div className="flex items-center gap-2">
-              <Badge 
-                style={{ 
+              <Badge
+                style={{
                   backgroundColor: theme.colors.primary + '20',
-                  color: theme.colors.primary 
+                  color: theme.colors.primary,
                 }}
               >
                 {selectedItems.size} {t('mediaLibrary.selected')}
               </Badge>
-              <Button 
-                variant="ghost" 
+              <Button
+                variant="ghost"
                 size="sm"
                 onClick={() => setSelectedItems(new Set())}
                 style={{ color: theme.colors.foregroundMuted }}
@@ -496,8 +541,8 @@ export function MediaLibraryTab() {
                 <X className="h-4 w-4 mr-1" />
                 {t('common.cancel')}
               </Button>
-              <Button 
-                variant="ghost" 
+              <Button
+                variant="ghost"
                 size="sm"
                 onClick={selectAll}
                 style={{ color: theme.colors.foregroundMuted }}
@@ -509,12 +554,12 @@ export function MediaLibraryTab() {
             <div className="flex items-center gap-2">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     size="sm"
                     style={{
                       borderColor: theme.colors.border + '50',
-                      color: theme.colors.foreground
+                      color: theme.colors.foreground,
                     }}
                   >
                     <FolderOpen className="h-4 w-4 mr-2" />
@@ -522,22 +567,34 @@ export function MediaLibraryTab() {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
-                  <DropdownMenuItem onClick={() => moveMutation.mutate({ ids: Array.from(selectedItems), folder: null })}>
+                  <DropdownMenuItem
+                    onClick={() =>
+                      moveMutation.mutate({
+                        ids: Array.from(selectedItems),
+                        folder: null,
+                      })
+                    }
+                  >
                     {t('mediaLibrary.noFolder')}
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   {folders.map((folder) => (
-                    <DropdownMenuItem 
-                      key={folder} 
-                      onClick={() => moveMutation.mutate({ ids: Array.from(selectedItems), folder })}
+                    <DropdownMenuItem
+                      key={folder}
+                      onClick={() =>
+                        moveMutation.mutate({
+                          ids: Array.from(selectedItems),
+                          folder,
+                        })
+                      }
                     >
                       {folder}
                     </DropdownMenuItem>
                   ))}
                 </DropdownMenuContent>
               </DropdownMenu>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 size="sm"
                 onClick={() => setBulkDeleteConfirm(true)}
                 className="text-red-500 hover:text-red-600 hover:bg-red-500/10"
@@ -560,21 +617,30 @@ export function MediaLibraryTab() {
         }`}
         style={{
           borderColor: theme.colors.border + '50',
-          backgroundColor: theme.colors.background + '50'
+          backgroundColor: theme.colors.background + '50',
         }}
       >
         <div className="flex flex-col items-center gap-3">
-          <div 
+          <div
             className="p-4 rounded-full"
             style={{ backgroundColor: theme.colors.primary + '10' }}
           >
-            <Upload className="h-8 w-8" style={{ color: theme.colors.primary }} />
+            <Upload
+              className="h-8 w-8"
+              style={{ color: theme.colors.primary }}
+            />
           </div>
           <div>
-            <p className="font-medium" style={{ color: theme.colors.foreground }}>
+            <p
+              className="font-medium"
+              style={{ color: theme.colors.foreground }}
+            >
               {t('mediaLibrary.dropzone.title')}
             </p>
-            <p className="text-sm" style={{ color: theme.colors.foregroundMuted }}>
+            <p
+              className="text-sm"
+              style={{ color: theme.colors.foregroundMuted }}
+            >
               {t('mediaLibrary.dropzone.subtitle')}
             </p>
           </div>
@@ -588,17 +654,26 @@ export function MediaLibraryTab() {
           animate={{ opacity: 1 }}
           className="flex flex-col items-center justify-center py-16 gap-4"
         >
-          <div 
+          <div
             className="p-6 rounded-full"
             style={{ backgroundColor: theme.colors.primary + '10' }}
           >
-            <ImageIcon className="h-12 w-12" style={{ color: theme.colors.primary }} />
+            <ImageIcon
+              className="h-12 w-12"
+              style={{ color: theme.colors.primary }}
+            />
           </div>
           <div className="text-center">
-            <p className="font-medium" style={{ color: theme.colors.foreground }}>
+            <p
+              className="font-medium"
+              style={{ color: theme.colors.foreground }}
+            >
               {t('mediaLibrary.empty.title')}
             </p>
-            <p className="text-sm" style={{ color: theme.colors.foregroundMuted }}>
+            <p
+              className="text-sm"
+              style={{ color: theme.colors.foregroundMuted }}
+            >
               {t('mediaLibrary.empty.subtitle')}
             </p>
           </div>
@@ -624,7 +699,7 @@ export function MediaLibraryTab() {
                 selectedItems.has(item.id) ? 'ring-2' : ''
               }`}
               style={{
-                borderColor: theme.colors.border + '30'
+                borderColor: theme.colors.border + '30',
               }}
               onClick={() => toggleSelectItem(item.id)}
             >
@@ -633,20 +708,26 @@ export function MediaLibraryTab() {
                 alt={item.alt || item.filename}
                 className="w-full h-full object-cover"
               />
-              
+
               {/* Hover Overlay */}
-              <div 
+              <div
                 className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2"
                 style={{ backgroundColor: 'rgba(0,0,0,0.6)' }}
               >
                 <button
-                  onClick={(e) => { e.stopPropagation(); setPreviewItem(item) }}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setPreviewItem(item)
+                  }}
                   className="p-2 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
                 >
                   <Eye className="h-4 w-4 text-white" />
                 </button>
                 <button
-                  onClick={(e) => { e.stopPropagation(); void copyToClipboard(item.url) }}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    void copyToClipboard(item.url)
+                  }}
                   className="p-2 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
                 >
                   {copiedUrl === item.url ? (
@@ -656,7 +737,10 @@ export function MediaLibraryTab() {
                   )}
                 </button>
                 <button
-                  onClick={(e) => { e.stopPropagation(); setDeleteConfirm(item) }}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setDeleteConfirm(item)
+                  }}
                   className="p-2 rounded-full bg-white/20 hover:bg-red-500/50 transition-colors"
                 >
                   <Trash2 className="h-4 w-4 text-white" />
@@ -664,25 +748,37 @@ export function MediaLibraryTab() {
               </div>
 
               {/* Selection Checkbox */}
-              <div 
+              <div
                 className={`absolute top-2 left-2 w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
-                  selectedItems.has(item.id) ? '' : 'opacity-0 group-hover:opacity-100'
+                  selectedItems.has(item.id)
+                    ? ''
+                    : 'opacity-0 group-hover:opacity-100'
                 }`}
                 style={{
-                  backgroundColor: selectedItems.has(item.id) ? theme.colors.primary : 'rgba(255,255,255,0.8)',
-                  borderColor: selectedItems.has(item.id) ? theme.colors.primary : theme.colors.border
+                  backgroundColor: selectedItems.has(item.id)
+                    ? theme.colors.primary
+                    : 'rgba(255,255,255,0.8)',
+                  borderColor: selectedItems.has(item.id)
+                    ? theme.colors.primary
+                    : theme.colors.border,
                 }}
               >
-                {selectedItems.has(item.id) && <Check className="h-3 w-3 text-white" />}
+                {selectedItems.has(item.id) && (
+                  <Check className="h-3 w-3 text-white" />
+                )}
               </div>
 
               {/* File Info */}
-              <div 
+              <div
                 className="absolute bottom-0 left-0 right-0 p-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                style={{ background: 'linear-gradient(transparent, rgba(0,0,0,0.8))' }}
+                style={{
+                  background: 'linear-gradient(transparent, rgba(0,0,0,0.8))',
+                }}
               >
                 <p className="text-xs text-white truncate">{item.filename}</p>
-                <p className="text-xs text-white/60">{formatFileSize(item.size)}</p>
+                <p className="text-xs text-white/60">
+                  {formatFileSize(item.size)}
+                </p>
               </div>
             </motion.div>
           ))}
@@ -700,7 +796,7 @@ export function MediaLibraryTab() {
               }`}
               style={{
                 backgroundColor: theme.colors.card + '50',
-                borderColor: theme.colors.border + '30'
+                borderColor: theme.colors.border + '30',
               }}
               onClick={() => toggleSelectItem(item.id)}
             >
@@ -715,16 +811,21 @@ export function MediaLibraryTab() {
 
               {/* Info */}
               <div className="flex-1 min-w-0">
-                <p 
+                <p
                   className="font-medium truncate"
                   style={{ color: theme.colors.foreground }}
                 >
                   {item.filename}
                 </p>
-                <div className="flex items-center gap-3 text-sm" style={{ color: theme.colors.foregroundMuted }}>
+                <div
+                  className="flex items-center gap-3 text-sm"
+                  style={{ color: theme.colors.foregroundMuted }}
+                >
                   <span>{formatFileSize(item.size)}</span>
                   {item.width && item.height && (
-                    <span>{item.width} × {item.height}</span>
+                    <span>
+                      {item.width} × {item.height}
+                    </span>
                   )}
                   {item.folder && (
                     <Badge variant="outline" className="text-xs">
@@ -737,22 +838,47 @@ export function MediaLibraryTab() {
               {/* Actions */}
               <div className="flex items-center gap-1">
                 <button
-                  onClick={(e) => { e.stopPropagation(); setPreviewItem(item) }}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setPreviewItem(item)
+                  }}
                   className="p-2 rounded-lg transition-colors"
                   style={{ color: theme.colors.foregroundMuted }}
-                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = theme.colors.primary + '10'}
-                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.backgroundColor =
+                      theme.colors.primary + '10')
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.backgroundColor = 'transparent')
+                  }
                 >
                   <Eye className="h-4 w-4" />
                 </button>
                 <button
-                  onClick={(e) => { e.stopPropagation(); void copyToClipboard(item.url) }}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    void copyToClipboard(item.url)
+                  }}
                   className="p-2 rounded-lg transition-colors"
-                  style={{ color: copiedUrl === item.url ? '#10b981' : theme.colors.foregroundMuted }}
-                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = theme.colors.primary + '10'}
-                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                  style={{
+                    color:
+                      copiedUrl === item.url
+                        ? '#10b981'
+                        : theme.colors.foregroundMuted,
+                  }}
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.backgroundColor =
+                      theme.colors.primary + '10')
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.backgroundColor = 'transparent')
+                  }
                 >
-                  {copiedUrl === item.url ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                  {copiedUrl === item.url ? (
+                    <Check className="h-4 w-4" />
+                  ) : (
+                    <Copy className="h-4 w-4" />
+                  )}
                 </button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -765,21 +891,25 @@ export function MediaLibraryTab() {
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => window.open(item.url, '_blank')}>
+                    <DropdownMenuItem
+                      onClick={() => window.open(item.url, '_blank')}
+                    >
                       <ExternalLink className="h-4 w-4 mr-2" />
                       {t('mediaLibrary.openInNewTab')}
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => {
-                      const a = document.createElement('a')
-                      a.href = item.url
-                      a.download = item.filename
-                      a.click()
-                    }}>
+                    <DropdownMenuItem
+                      onClick={() => {
+                        const a = document.createElement('a')
+                        a.href = item.url
+                        a.download = item.filename
+                        a.click()
+                      }}
+                    >
                       <Download className="h-4 w-4 mr-2" />
                       {t('mediaLibrary.download')}
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem 
+                    <DropdownMenuItem
                       onClick={() => setDeleteConfirm(item)}
                       className="text-red-500"
                     >
@@ -804,7 +934,9 @@ export function MediaLibraryTab() {
                 <span className="flex items-center gap-2">
                   {formatFileSize(previewItem.size)}
                   {previewItem.width && previewItem.height && (
-                    <span>• {previewItem.width} × {previewItem.height}</span>
+                    <span>
+                      • {previewItem.width} × {previewItem.height}
+                    </span>
                   )}
                 </span>
               )}
@@ -820,11 +952,22 @@ export function MediaLibraryTab() {
             </div>
           )}
           <DialogFooter>
-            <Button variant="outline" onClick={() => previewItem && void copyToClipboard(previewItem.url)}>
+            <Button
+              variant="outline"
+              onClick={() =>
+                previewItem && void copyToClipboard(previewItem.url)
+              }
+            >
               <Copy className="h-4 w-4 mr-2" />
-              {copiedUrl === previewItem?.url ? t('common.copied') : t('mediaLibrary.copyUrl')}
+              {copiedUrl === previewItem?.url
+                ? t('common.copied')
+                : t('mediaLibrary.copyUrl')}
             </Button>
-            <Button onClick={() => previewItem && window.open(previewItem.url, '_blank')}>
+            <Button
+              onClick={() =>
+                previewItem && window.open(previewItem.url, '_blank')
+              }
+            >
               <ExternalLink className="h-4 w-4 mr-2" />
               {t('mediaLibrary.openInNewTab')}
             </Button>
@@ -833,18 +976,27 @@ export function MediaLibraryTab() {
       </Dialog>
 
       {/* Delete Confirmation */}
-      <AlertDialog open={!!deleteConfirm} onOpenChange={() => setDeleteConfirm(null)}>
+      <AlertDialog
+        open={!!deleteConfirm}
+        onOpenChange={() => setDeleteConfirm(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t('mediaLibrary.deleteConfirm.title')}</AlertDialogTitle>
+            <AlertDialogTitle>
+              {t('mediaLibrary.deleteConfirm.title')}
+            </AlertDialogTitle>
             <AlertDialogDescription>
-              {t('mediaLibrary.deleteConfirm.description', { filename: deleteConfirm?.filename })}
+              {t('mediaLibrary.deleteConfirm.description', {
+                filename: deleteConfirm?.filename,
+              })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => deleteConfirm && deleteMutation.mutate(deleteConfirm.id)}
+              onClick={() =>
+                deleteConfirm && deleteMutation.mutate(deleteConfirm.id)
+              }
               className="bg-red-500 hover:bg-red-600"
             >
               {deleteMutation.isPending ? (
@@ -861,15 +1013,21 @@ export function MediaLibraryTab() {
       <AlertDialog open={bulkDeleteConfirm} onOpenChange={setBulkDeleteConfirm}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t('mediaLibrary.bulkDeleteConfirm.title')}</AlertDialogTitle>
+            <AlertDialogTitle>
+              {t('mediaLibrary.bulkDeleteConfirm.title')}
+            </AlertDialogTitle>
             <AlertDialogDescription>
-              {t('mediaLibrary.bulkDeleteConfirm.description', { count: selectedItems.size })}
+              {t('mediaLibrary.bulkDeleteConfirm.description', {
+                count: selectedItems.size,
+              })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => bulkDeleteMutation.mutate(Array.from(selectedItems))}
+              onClick={() =>
+                bulkDeleteMutation.mutate(Array.from(selectedItems))
+              }
               className="bg-red-500 hover:bg-red-600"
             >
               {bulkDeleteMutation.isPending ? (
@@ -900,7 +1058,7 @@ export function MediaLibraryTab() {
             <Button variant="outline" onClick={() => setNewFolderDialog(false)}>
               {t('common.cancel')}
             </Button>
-            <Button 
+            <Button
               onClick={() => {
                 if (newFolderName.trim()) {
                   setSelectedFolder(newFolderName.trim())

@@ -35,7 +35,8 @@ const CATEGORIES: {
 ]
 
 export function ThemeSwitcher() {
-  const { theme, setTheme, themes, themesByCategory, isTransitioning } = useTheme()
+  const { theme, setTheme, themes, themesByCategory, isTransitioning } =
+    useTheme()
   const { currentUser } = useAuth()
   const [isOpen, setIsOpen] = useState(false)
   const [activeCategory, setActiveCategory] = useState<ThemeCategory>(
@@ -55,7 +56,9 @@ export function ThemeSwitcher() {
       <motion.button
         onClick={() => setIsOpen(!isOpen)}
         className={`flex items-center justify-center w-10 h-10 rounded-lg transition-all duration-(--animation-speed) border border-border ${
-          isOpen ? 'bg-linear-to-br from-primary to-accent text-primary-foreground' : 'bg-background-secondary text-foreground'
+          isOpen
+            ? 'bg-linear-to-br from-primary to-accent text-primary-foreground'
+            : 'bg-background-secondary text-foreground'
         }`}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
@@ -113,7 +116,9 @@ export function ThemeSwitcher() {
                         key={cat.id}
                         onClick={() => setActiveCategory(cat.id)}
                         className={`flex flex-col items-center gap-1 px-2 py-2.5 rounded-xl text-xs font-medium transition-all duration-(--animation-speed) ${
-                          isActive ? 'bg-linear-to-br from-primary to-accent text-primary-foreground' : 'bg-background-secondary text-foreground-muted'
+                          isActive
+                            ? 'bg-linear-to-br from-primary to-accent text-primary-foreground'
+                            : 'bg-background-secondary text-foreground-muted'
                         }`}
                         whileHover={{ scale: 1.03 }}
                         whileTap={{ scale: 0.97 }}
@@ -130,7 +135,10 @@ export function ThemeSwitcher() {
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
                     {currentCategoryInfo && (
-                      <currentCategoryInfo.icon size={16} className="text-primary" />
+                      <currentCategoryInfo.icon
+                        size={16}
+                        className="text-primary"
+                      />
                     )}
                     <span className="text-sm font-semibold text-foreground">
                       {currentCategoryInfo?.label} Themes
@@ -176,7 +184,9 @@ export function ThemeSwitcher() {
                         {isPremium && !isActive && (
                           <div
                             className={`absolute top-2 right-2 flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[9px] font-bold text-white ${
-                              isLocked ? 'bg-primary/30' : 'bg-linear-to-r from-violet-500 to-pink-500'
+                              isLocked
+                                ? 'bg-primary/30'
+                                : 'bg-linear-to-r from-violet-500 to-pink-500'
                             }`}
                           >
                             {isLocked ? <Lock size={8} /> : <Crown size={8} />}
@@ -196,10 +206,14 @@ export function ThemeSwitcher() {
                             />
                           ))}
                         </div>
-                        <p className={`text-sm font-semibold text-left ${isActive ? 'text-white' : 'text-foreground'}`}>
+                        <p
+                          className={`text-sm font-semibold text-left ${isActive ? 'text-white' : 'text-foreground'}`}
+                        >
                           {t.name}
                         </p>
-                        <p className={`text-[10px] text-left truncate w-full ${isActive ? 'text-white/70' : 'text-foreground-muted'}`}>
+                        <p
+                          className={`text-[10px] text-left truncate w-full ${isActive ? 'text-white/70' : 'text-foreground-muted'}`}
+                        >
                           {t.description}
                         </p>
                       </motion.button>

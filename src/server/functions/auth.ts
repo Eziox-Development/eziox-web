@@ -69,18 +69,38 @@ import {
 import { parseUserAgent, formatUserAgent } from '../lib/user-agent'
 import { anonymizeIP } from '../lib/ip-utils'
 import { verifyTurnstileToken } from '../lib/turnstile'
-import { logSecurityEvent } from '../lib/security-logger'
+import { logSecurityEventLegacy as logSecurityEvent } from '../lib/security-monitoring'
+import { recordLogin } from '@/server/lib/multi-account-detection'
+import { checkBanStatus } from '@/server/lib/account-suspension'
+import {
+  moderateUsername,
+  validateProfileContentExtended,
+  validateUrl,
+  detectSuspiciousActivity,
+  logModerationAction,
+} from '@/server/lib/content-moderation'
+import { createAbuseAlert } from '@/server/lib/abuse-detection'
+import { sendOtpEmail } from '../lib/email'
 import {
   validatePassword,
   checkPasswordBreach,
   containsUserInfo,
 } from '@/lib/password-security'
 import { db } from '../db'
-import { sessions, profiles, users, passkeys } from '../db/schema'
+import {
+  sessions,
+  profiles,
+  users,
+  passkeys,
+  spotifyConnections,
+  userLinks,
+  userStats,
+  activityLog,
+  referrals,
+} from '../db/schema'
 import { eq, and, ne, desc } from 'drizzle-orm'
 
 const emailSchema = z
-  .string()
   .email('Please enter a valid email address')
   .min(5, 'Email is too short')
   .max(255, 'Email is too long')
@@ -154,7 +174,8 @@ export const signUpFn = createServerFn({ method: 'POST' })
     if (!turnstileResult.success) {
       setResponseStatus(403)
       throw {
-        message: turnstileResult.error || 'Bot verification failed. Please try again.',
+        message:
+          turnstileResult.error || 'Bot verification failed. Please try again.',
         status: 403,
       }
     }
@@ -186,6 +207,19 @@ export const signUpFn = createServerFn({ method: 'POST' })
       if (existingUsername) {
         setResponseStatus(409)
         throw { message: 'This username is already taken', status: 409 }
+      }
+
+      // Content moderation: Check username for offensive words and reserved names
+      const usernameModeration = await moderateUsername(username)
+      if (!usernameModeration.isAllowed) {
+        setResponseStatus(400)
+        throw {
+          message:
+            usernameModeration.reason === 'reserved_username'
+              ? 'This username is reserved and cannot be used'
+              : 'This username contains inappropriate content',
+          status: 400,
+        }
       }
 
       // Comprehensive password validation with all security features
@@ -313,7 +347,8 @@ export const signInFn = createServerFn({ method: 'POST' })
     if (!turnstileResult.success) {
       setResponseStatus(403)
       throw {
-        message: turnstileResult.error || 'Bot verification failed. Please try again.',
+        message:
+          turnstileResult.error || 'Bot verification failed. Please try again.',
         status: 403,
       }
     }
@@ -345,6 +380,18 @@ export const signInFn = createServerFn({ method: 'POST' })
           message:
             'Account temporarily locked due to too many failed attempts. Please try again later.',
           status: 423,
+        }
+      }
+
+      const banStatus = await checkBanStatus(user.id)
+      if (banStatus.isBanned) {
+        setResponseStatus(403)
+        const expiresMessage = banStatus.expiresAt
+          ? ` until ${banStatus.expiresAt.toLocaleDateString()}`
+          : ''
+        throw {
+          message: `Your account has been suspended${expiresMessage}. Reason: ${banStatus.reason || 'Violation of terms of service'}`,
+          status: 403,
         }
       }
 
@@ -384,6 +431,14 @@ export const signInFn = createServerFn({ method: 'POST' })
 
       await recordSuccessfulLogin(user.id, ip)
       await updateLastActive(user.id)
+
+      void recordLogin({
+        userId: user.id,
+        ipAddress: rawIP,
+        userAgent: userAgentRaw || undefined,
+        loginMethod: 'password',
+        success: true,
+      })
 
       void sendLoginNotificationEmail(
         user.email,
@@ -561,6 +616,81 @@ export const updateProfileFn = createServerFn({ method: 'POST' })
       }
     }
 
+    // Content Moderation: Validate bio content
+    if (data.bio) {
+      const bioValidation = validateProfileContentExtended(data.bio)
+      if (!bioValidation.isAllowed) {
+        await logModerationAction(user.id, 'profile', data.bio, {
+          isAllowed: false,
+          reason: bioValidation.reason || 'inappropriate_content',
+          severity: bioValidation.severity,
+          action: 'blocked',
+        })
+        if (bioValidation.severity === 'critical') {
+          await createAbuseAlert({
+            userId: user.id,
+            alertType: 'profile_violation',
+            severity: 'critical',
+            title: 'Profile bio contains prohibited content',
+            description: `Blocked profile bio update: ${bioValidation.reason}`,
+            metadata: { category: bioValidation.category, confidence: bioValidation.confidence },
+          })
+        }
+        setResponseStatus(400)
+        throw {
+          message: 'Your bio contains content that violates our community guidelines.',
+          status: 400,
+          code: 'INAPPROPRIATE_CONTENT',
+        }
+      }
+    }
+
+    // Content Moderation: Validate website URL
+    if (data.website) {
+      const urlValidation = validateUrl(data.website)
+      if (!urlValidation.isAllowed) {
+        await logModerationAction(user.id, 'profile', data.website, {
+          isAllowed: false,
+          reason: urlValidation.reason || 'malicious_url',
+          severity: 'critical',
+          action: 'blocked',
+        })
+        await createAbuseAlert({
+          userId: user.id,
+          alertType: 'malicious_link',
+          severity: 'critical',
+          title: 'Malicious website URL blocked',
+          description: `Blocked malicious website URL: ${urlValidation.reason}`,
+          metadata: { url: data.website, warnings: urlValidation.warnings },
+        })
+        setResponseStatus(400)
+        throw {
+          message: 'This website URL has been flagged as potentially harmful.',
+          status: 400,
+          code: 'MALICIOUS_URL_BLOCKED',
+        }
+      }
+    }
+
+    // Suspicious activity check for profile updates
+    const activityCheck = await detectSuspiciousActivity(user.id, 'profile_update')
+    if (activityCheck.actions.includes('block')) {
+      await createAbuseAlert({
+        userId: user.id,
+        alertType: 'suspicious_activity',
+        severity: 'high',
+        title: 'Suspicious profile update activity',
+        description: 'Profile update blocked due to suspicious activity patterns',
+        metadata: { riskScore: activityCheck.riskScore, details: activityCheck.details },
+      })
+      setResponseStatus(403)
+      throw {
+        message: 'Your account has been flagged for suspicious activity. Please contact support.',
+        status: 403,
+        code: 'SUSPICIOUS_ACTIVITY',
+      }
+    }
+
     try {
       // Update user fields
       if (data.name || data.username) {
@@ -633,7 +763,8 @@ export const requestPasswordResetFn = createServerFn({ method: 'POST' })
     if (!turnstileResult.success) {
       setResponseStatus(403)
       throw {
-        message: turnstileResult.error || 'Bot verification failed. Please try again.',
+        message:
+          turnstileResult.error || 'Bot verification failed. Please try again.',
         status: 403,
       }
     }
@@ -1015,10 +1146,6 @@ export const deleteAccountFn = createServerFn({ method: 'POST' })
       throw { message: 'Invalid password', status: 401 }
     }
 
-    const { db } = await import('../db')
-    const { spotifyConnections, sessions, users } = await import('../db/schema')
-    const { eq } = await import('drizzle-orm')
-
     // Revoke all OAuth tokens (Spotify)
     await db
       .delete(spotifyConnections)
@@ -1056,19 +1183,6 @@ export const exportUserDataFn = createServerFn({ method: 'GET' }).handler(
       setResponseStatus(401)
       throw { message: 'Not authenticated', status: 401 }
     }
-
-    const { db } = await import('../db')
-    const {
-      users,
-      profiles,
-      userLinks,
-      userStats,
-      sessions,
-      activityLog,
-      referrals,
-      spotifyConnections,
-    } = await import('../db/schema')
-    const { eq } = await import('drizzle-orm')
 
     const [userData] = await db
       .select()
@@ -1457,7 +1571,12 @@ export const deleteSessionFn = createServerFn({ method: 'POST' })
     const [session] = await db
       .select()
       .from(sessions)
-      .where(and(eq(sessions.id, data.sessionId), eq(sessions.userId, currentUser.id)))
+      .where(
+        and(
+          eq(sessions.id, data.sessionId),
+          eq(sessions.userId, currentUser.id),
+        ),
+      )
       .limit(1)
 
     if (!session) {
@@ -1471,32 +1590,32 @@ export const deleteSessionFn = createServerFn({ method: 'POST' })
   })
 
 // Delete all sessions except current
-export const deleteAllOtherSessionsFn = createServerFn({ method: 'POST' }).handler(
-  async () => {
-    const { currentUser } = await authMiddleware()
-    if (!currentUser) {
-      setResponseStatus(401)
-      throw { message: 'Not authenticated', status: 401 }
-    }
+export const deleteAllOtherSessionsFn = createServerFn({
+  method: 'POST',
+}).handler(async () => {
+  const { currentUser } = await authMiddleware()
+  if (!currentUser) {
+    setResponseStatus(401)
+    throw { message: 'Not authenticated', status: 401 }
+  }
 
-    const currentToken = getCookie('session-token')
-    if (!currentToken) {
-      setResponseStatus(401)
-      throw { message: 'No active session', status: 401 }
-    }
+  const currentToken = getCookie('session-token')
+  if (!currentToken) {
+    setResponseStatus(401)
+    throw { message: 'No active session', status: 401 }
+  }
 
-    await db
-      .delete(sessions)
-      .where(
-        and(
-          eq(sessions.userId, currentUser.id),
-          ne(sessions.token, currentToken)
-        )
-      )
+  await db
+    .delete(sessions)
+    .where(
+      and(
+        eq(sessions.userId, currentUser.id),
+        ne(sessions.token, currentToken),
+      ),
+    )
 
-    return { success: true }
-  },
-)
+  return { success: true }
+})
 
 // Update notification settings
 export const updateNotificationSettingsFn = createServerFn({ method: 'POST' })
@@ -1530,41 +1649,41 @@ export const updateNotificationSettingsFn = createServerFn({ method: 'POST' })
   })
 
 // Get notification settings
-export const getNotificationSettingsFn = createServerFn({ method: 'GET' }).handler(
-  async () => {
-    const { currentUser } = await authMiddleware()
-    if (!currentUser) {
-      setResponseStatus(401)
-      throw { message: 'Not authenticated', status: 401 }
-    }
+export const getNotificationSettingsFn = createServerFn({
+  method: 'GET',
+}).handler(async () => {
+  const { currentUser } = await authMiddleware()
+  if (!currentUser) {
+    setResponseStatus(401)
+    throw { message: 'Not authenticated', status: 401 }
+  }
 
-    const [profile] = await db
-      .select({
-        notifyNewFollower: profiles.notifyNewFollower,
-        notifyMilestones: profiles.notifyMilestones,
-        notifySystemUpdates: profiles.notifySystemUpdates,
-        emailLoginAlerts: profiles.emailLoginAlerts,
-        emailSecurityAlerts: profiles.emailSecurityAlerts,
-        emailWeeklyDigest: profiles.emailWeeklyDigest,
-        emailProductUpdates: profiles.emailProductUpdates,
-      })
-      .from(profiles)
-      .where(eq(profiles.userId, currentUser.id))
-      .limit(1)
+  const [profile] = await db
+    .select({
+      notifyNewFollower: profiles.notifyNewFollower,
+      notifyMilestones: profiles.notifyMilestones,
+      notifySystemUpdates: profiles.notifySystemUpdates,
+      emailLoginAlerts: profiles.emailLoginAlerts,
+      emailSecurityAlerts: profiles.emailSecurityAlerts,
+      emailWeeklyDigest: profiles.emailWeeklyDigest,
+      emailProductUpdates: profiles.emailProductUpdates,
+    })
+    .from(profiles)
+    .where(eq(profiles.userId, currentUser.id))
+    .limit(1)
 
-    return {
-      settings: profile || {
-        notifyNewFollower: true,
-        notifyMilestones: true,
-        notifySystemUpdates: true,
-        emailLoginAlerts: true,
-        emailSecurityAlerts: true,
-        emailWeeklyDigest: true,
-        emailProductUpdates: true,
-      },
-    }
-  },
-)
+  return {
+    settings: profile || {
+      notifyNewFollower: true,
+      notifyMilestones: true,
+      notifySystemUpdates: true,
+      emailLoginAlerts: true,
+      emailSecurityAlerts: true,
+      emailWeeklyDigest: true,
+      emailProductUpdates: true,
+    },
+  }
+})
 
 // Update privacy settings
 export const updatePrivacySettingsFn = createServerFn({ method: 'POST' })
@@ -1623,7 +1742,10 @@ export const getPrivacySettingsFn = createServerFn({ method: 'GET' }).handler(
 // OTP (One-Time Password) Authentication
 // ============================================================================
 
-const otpCodes = new Map<string, { code: string; expiresAt: Date; attempts: number }>()
+const otpCodes = new Map<
+  string,
+  { code: string; expiresAt: Date; attempts: number }
+>()
 
 function generateOtpCode(): string {
   return Math.floor(100000 + Math.random() * 900000).toString()
@@ -1647,7 +1769,10 @@ export const requestOtpFn = createServerFn({ method: 'POST' })
     )
     if (!rateLimit.allowed) {
       setResponseStatus(429)
-      throw { message: 'Too many OTP requests. Please try again later.', status: 429 }
+      throw {
+        message: 'Too many OTP requests. Please try again later.',
+        status: 429,
+      }
     }
 
     // Check if user exists
@@ -1666,7 +1791,6 @@ export const requestOtpFn = createServerFn({ method: 'POST' })
 
     // Send email
     try {
-      const { sendOtpEmail } = await import('../lib/email')
       await sendOtpEmail(email, code, user.name || user.username)
     } catch (error) {
       console.error('Failed to send OTP email:', error)
@@ -1699,28 +1823,40 @@ export const signInWithOtpFn = createServerFn({ method: 'POST' })
     )
     if (!rateLimit.allowed) {
       setResponseStatus(429)
-      throw { message: 'Too many verification attempts. Please try again later.', status: 429 }
+      throw {
+        message: 'Too many verification attempts. Please try again later.',
+        status: 429,
+      }
     }
 
     // Get stored OTP
     const storedOtp = otpCodes.get(email.toLowerCase())
     if (!storedOtp) {
       setResponseStatus(400)
-      throw { message: 'No OTP request found. Please request a new code.', status: 400 }
+      throw {
+        message: 'No OTP request found. Please request a new code.',
+        status: 400,
+      }
     }
 
     // Check expiration
     if (new Date() > storedOtp.expiresAt) {
       otpCodes.delete(email.toLowerCase())
       setResponseStatus(400)
-      throw { message: 'OTP code has expired. Please request a new code.', status: 400 }
+      throw {
+        message: 'OTP code has expired. Please request a new code.',
+        status: 400,
+      }
     }
 
     // Check attempts
     if (storedOtp.attempts >= 5) {
       otpCodes.delete(email.toLowerCase())
       setResponseStatus(400)
-      throw { message: 'Too many failed attempts. Please request a new code.', status: 400 }
+      throw {
+        message: 'Too many failed attempts. Please request a new code.',
+        status: 400,
+      }
     }
 
     // Verify code
@@ -1743,7 +1879,10 @@ export const signInWithOtpFn = createServerFn({ method: 'POST' })
     // Check if account is locked
     if (await isAccountLocked(user.id)) {
       setResponseStatus(403)
-      throw { message: 'Account is temporarily locked. Please try again later.', status: 403 }
+      throw {
+        message: 'Account is temporarily locked. Please try again later.',
+        status: 403,
+      }
     }
 
     // Create session
@@ -1753,6 +1892,14 @@ export const signInWithOtpFn = createServerFn({ method: 'POST' })
       throw { message: 'Failed to create session.', status: 500 }
     }
     await recordSuccessfulLogin(user.id, ip)
+
+    void recordLogin({
+      userId: user.id,
+      ipAddress: rawIP,
+      userAgent: userAgentRaw || undefined,
+      loginMethod: 'otp',
+      success: true,
+    })
 
     // Set session cookie
     setCookie('session-token', session.token, COOKIE_OPTIONS)
@@ -1811,9 +1958,9 @@ export const getPasskeysFn = createServerFn({ method: 'GET' }).handler(
     } catch {
       // Return a generic error message to the client
       setResponseStatus(500)
-      throw { 
-        message: 'Failed to load passkeys. Please try again later.', 
-        status: 500 
+      throw {
+        message: 'Failed to load passkeys. Please try again later.',
+        status: 500,
       }
     }
   },
@@ -1824,7 +1971,9 @@ const registerPasskeyOptionsSchema = z.object({
   name: z.string().min(1).max(100).optional(),
 })
 
-export const getPasskeyRegistrationOptionsFn = createServerFn({ method: 'POST' })
+export const getPasskeyRegistrationOptionsFn = createServerFn({
+  method: 'POST',
+})
   .inputValidator(registerPasskeyOptionsSchema)
   .handler(async ({ data }) => {
     const { currentUser } = await authMiddleware()
@@ -1845,11 +1994,13 @@ export const getPasskeyRegistrationOptionsFn = createServerFn({ method: 'POST' }
     }
 
     const rpName = 'Eziox'
-    const rpID = process.env.APP_URL ? new URL(process.env.APP_URL).hostname : 'localhost'
-    
+    const rpID = process.env.APP_URL
+      ? new URL(process.env.APP_URL).hostname
+      : 'localhost'
+
     // Generate challenge
     const challenge = crypto.randomUUID() + crypto.randomUUID()
-    
+
     // Store challenge temporarily (in production, use Redis or similar)
     const challengeKey = `passkey-challenge:${currentUser.id}`
     passkeyChallengess.set(challengeKey, {
@@ -1871,7 +2022,7 @@ export const getPasskeyRegistrationOptionsFn = createServerFn({ method: 'POST' }
           displayName: currentUser.name || currentUser.username,
         },
         pubKeyCredParams: [
-          { alg: -7, type: 'public-key' },   // ES256
+          { alg: -7, type: 'public-key' }, // ES256
           { alg: -257, type: 'public-key' }, // RS256
         ],
         timeout: 60000,
@@ -1889,7 +2040,10 @@ export const getPasskeyRegistrationOptionsFn = createServerFn({ method: 'POST' }
   })
 
 // Temporary storage for challenges (in production, use Redis)
-const passkeyChallengess = new Map<string, { challenge: string; name: string; expiresAt: Date }>()
+const passkeyChallengess = new Map<
+  string,
+  { challenge: string; name: string; expiresAt: Date }
+>()
 
 // Verify and save passkey registration
 const verifyPasskeyRegistrationSchema = z.object({
@@ -1926,14 +2080,18 @@ export const verifyPasskeyRegistrationFn = createServerFn({ method: 'POST' })
 
     // Verify the credential (simplified - in production use @simplewebauthn/server)
     const { credential } = data
-    
+
     // Decode client data
     const clientDataJSON = JSON.parse(
-      Buffer.from(credential.response.clientDataJSON, 'base64').toString('utf-8')
+      Buffer.from(credential.response.clientDataJSON, 'base64').toString(
+        'utf-8',
+      ),
     )
 
     // Verify challenge
-    const expectedChallenge = Buffer.from(storedChallenge.challenge).toString('base64url')
+    const expectedChallenge = Buffer.from(storedChallenge.challenge).toString(
+      'base64url',
+    )
     if (clientDataJSON.challenge !== expectedChallenge) {
       setResponseStatus(400)
       throw { message: 'Invalid challenge', status: 400 }
@@ -1956,7 +2114,10 @@ export const verifyPasskeyRegistrationFn = createServerFn({ method: 'POST' })
           credentialId: credential.id,
           publicKey: credential.response.attestationObject,
           counter: 0,
-          deviceType: credential.authenticatorAttachment === 'platform' ? 'platform' : 'cross-platform',
+          deviceType:
+            credential.authenticatorAttachment === 'platform'
+              ? 'platform'
+              : 'cross-platform',
           backedUp: false,
           transports: JSON.stringify(['internal']),
           name: storedChallenge.name,
@@ -1964,7 +2125,10 @@ export const verifyPasskeyRegistrationFn = createServerFn({ method: 'POST' })
         .returning()
     } catch {
       setResponseStatus(500)
-      throw { message: 'Failed to save passkey. Please try again.', status: 500 }
+      throw {
+        message: 'Failed to save passkey. Please try again.',
+        status: 500,
+      }
     }
 
     const newPasskey = result[0]
@@ -2007,13 +2171,21 @@ export const deletePasskeyFn = createServerFn({ method: 'POST' })
 
     let deleted
     try {
-      [deleted] = await db
+      ;[deleted] = await db
         .delete(passkeys)
-        .where(and(eq(passkeys.id, data.passkeyId), eq(passkeys.userId, currentUser.id)))
+        .where(
+          and(
+            eq(passkeys.id, data.passkeyId),
+            eq(passkeys.userId, currentUser.id),
+          ),
+        )
         .returning()
     } catch {
       setResponseStatus(500)
-      throw { message: 'Failed to delete passkey. Please try again.', status: 500 }
+      throw {
+        message: 'Failed to delete passkey. Please try again.',
+        status: 500,
+      }
     }
 
     if (!deleted) {
@@ -2045,14 +2217,22 @@ export const renamePasskeyFn = createServerFn({ method: 'POST' })
 
     let updated
     try {
-      [updated] = await db
+      ;[updated] = await db
         .update(passkeys)
         .set({ name: data.name })
-        .where(and(eq(passkeys.id, data.passkeyId), eq(passkeys.userId, currentUser.id)))
+        .where(
+          and(
+            eq(passkeys.id, data.passkeyId),
+            eq(passkeys.userId, currentUser.id),
+          ),
+        )
         .returning()
     } catch {
       setResponseStatus(500)
-      throw { message: 'Failed to rename passkey. Please try again.', status: 500 }
+      throw {
+        message: 'Failed to rename passkey. Please try again.',
+        status: 500,
+      }
     }
 
     if (!updated) {
@@ -2071,7 +2251,9 @@ const getPasskeyAuthOptionsSchema = z.object({
 export const getPasskeyAuthOptionsFn = createServerFn({ method: 'POST' })
   .inputValidator(getPasskeyAuthOptionsSchema)
   .handler(async ({ data }) => {
-    const rpID = process.env.APP_URL ? new URL(process.env.APP_URL).hostname : 'localhost'
+    const rpID = process.env.APP_URL
+      ? new URL(process.env.APP_URL).hostname
+      : 'localhost'
     const challenge = crypto.randomUUID() + crypto.randomUUID()
 
     let allowCredentials: { id: string; type: 'public-key' }[] = []
@@ -2104,13 +2286,17 @@ export const getPasskeyAuthOptionsFn = createServerFn({ method: 'POST' })
         challenge,
         timeout: 60000,
         rpId: rpID,
-        allowCredentials: allowCredentials.length > 0 ? allowCredentials : undefined,
+        allowCredentials:
+          allowCredentials.length > 0 ? allowCredentials : undefined,
         userVerification: 'preferred',
       },
     }
   })
 
-const passkeyAuthChallenges = new Map<string, { challenge: string; email?: string; expiresAt: Date }>()
+const passkeyAuthChallenges = new Map<
+  string,
+  { challenge: string; email?: string; expiresAt: Date }
+>()
 
 // Verify passkey authentication (login)
 const verifyPasskeyAuthSchema = z.object({
@@ -2161,10 +2347,14 @@ export const verifyPasskeyAuthFn = createServerFn({ method: 'POST' })
 
     // Verify client data
     const clientDataJSON = JSON.parse(
-      Buffer.from(data.credential.response.clientDataJSON, 'base64').toString('utf-8')
+      Buffer.from(data.credential.response.clientDataJSON, 'base64').toString(
+        'utf-8',
+      ),
     )
 
-    const expectedChallenge = Buffer.from(storedChallenge.challenge).toString('base64url')
+    const expectedChallenge = Buffer.from(storedChallenge.challenge).toString(
+      'base64url',
+    )
     if (clientDataJSON.challenge !== expectedChallenge) {
       setResponseStatus(400)
       throw { message: 'Invalid challenge', status: 400 }
@@ -2176,7 +2366,7 @@ export const verifyPasskeyAuthFn = createServerFn({ method: 'POST' })
     // Update passkey last used
     await db
       .update(passkeys)
-      .set({ 
+      .set({
         lastUsedAt: new Date(),
         counter: passkey.counter + 1,
       })
@@ -2208,6 +2398,14 @@ export const verifyPasskeyAuthFn = createServerFn({ method: 'POST' })
       throw { message: 'Failed to create session.', status: 500 }
     }
     await recordSuccessfulLogin(user.id, ip)
+
+    void recordLogin({
+      userId: user.id,
+      ipAddress: rawIP,
+      userAgent: userAgentRaw || undefined,
+      loginMethod: 'passkey',
+      success: true,
+    })
 
     // Set session cookie
     setCookie('session-token', session.token, COOKIE_OPTIONS)

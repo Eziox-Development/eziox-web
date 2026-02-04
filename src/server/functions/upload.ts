@@ -257,7 +257,7 @@ export const uploadMediaFn = createServerFn({ method: 'POST' })
       const { uploadImage } = await import('../lib/cloudinary')
       const folder = data.folder || 'media'
       const publicId = `media_${user.id}_${Date.now()}`
-      
+
       const result = await uploadImage(data.image, folder, publicId)
 
       return {

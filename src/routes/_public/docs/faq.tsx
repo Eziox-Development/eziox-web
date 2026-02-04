@@ -140,11 +140,15 @@ export function FaqDoc() {
         </DocSubSection>
 
         <DocSubSection title={t(`${s}.customization.customColors`)}>
-          <DocParagraph>{t(`${s}.customization.customColorsAnswer`)}</DocParagraph>
+          <DocParagraph>
+            {t(`${s}.customization.customColorsAnswer`)}
+          </DocParagraph>
         </DocSubSection>
 
         <DocSubSection title={t(`${s}.customization.customDomain`)}>
-          <DocParagraph>{t(`${s}.customization.customDomainAnswer`)}</DocParagraph>
+          <DocParagraph>
+            {t(`${s}.customization.customDomainAnswer`)}
+          </DocParagraph>
         </DocSubSection>
       </DocSection>
 
@@ -162,7 +166,9 @@ export function FaqDoc() {
         </DocSubSection>
 
         <DocSubSection title={t(`${s}.premium.cancelSubscription`)}>
-          <DocParagraph>{t(`${s}.premium.cancelSubscriptionAnswer`)}</DocParagraph>
+          <DocParagraph>
+            {t(`${s}.premium.cancelSubscriptionAnswer`)}
+          </DocParagraph>
         </DocSubSection>
 
         <DocSubSection title={t(`${s}.premium.refunds`)}>
@@ -240,7 +246,7 @@ export function FaqDoc() {
 
       <DocSection title={t(`${s}.stillQuestions.title`)}>
         <DocParagraph>
-          <DocLink href="/contact">{t(`${s}.stillQuestions.text`)}</DocLink>
+          <DocLink href="/support">{t(`${s}.stillQuestions.text`)}</DocLink>
         </DocParagraph>
       </DocSection>
     </DocsLayout>

@@ -1,6 +1,16 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'motion/react'
-import { CloudSun, MapPin, Cloud, Sun, CloudRain, CloudSnow, CloudLightning, Wind, Loader2 } from 'lucide-react'
+import {
+  CloudSun,
+  MapPin,
+  Cloud,
+  Sun,
+  CloudRain,
+  CloudSnow,
+  CloudLightning,
+  Wind,
+  Loader2,
+} from 'lucide-react'
 
 interface WeatherData {
   temperature: number
@@ -63,14 +73,15 @@ export function WeatherWidget({ config, title }: WeatherWidgetProps) {
       try {
         setLoading(true)
         setError(null)
-        
-        const tempUnit = config.units === 'fahrenheit' ? 'fahrenheit' : 'celsius'
+
+        const tempUnit =
+          config.units === 'fahrenheit' ? 'fahrenheit' : 'celsius'
         const response = await fetch(
-          `https://api.open-meteo.com/v1/forecast?latitude=${config.lat}&longitude=${config.lon}&current=temperature_2m,weather_code,wind_speed_10m&temperature_unit=${tempUnit}`
+          `https://api.open-meteo.com/v1/forecast?latitude=${config.lat}&longitude=${config.lon}&current=temperature_2m,weather_code,wind_speed_10m&temperature_unit=${tempUnit}`,
         )
-        
+
         if (!response.ok) throw new Error('Failed to fetch weather')
-        
+
         const data = await response.json()
         setWeather({
           temperature: Math.round(data.current.temperature_2m),
@@ -107,13 +118,15 @@ export function WeatherWidget({ config, title }: WeatherWidgetProps) {
       className="p-4 rounded-2xl backdrop-blur-xl bg-linear-to-br from-white/10 to-white/5 border border-white/10 min-w-[140px]"
     >
       {title && (
-        <h3 className="text-sm font-bold text-white text-center mb-2">{title}</h3>
+        <h3 className="text-sm font-bold text-white text-center mb-2">
+          {title}
+        </h3>
       )}
       <div className="flex items-center gap-1 text-white/60 mb-2">
         <MapPin size={12} />
         <span className="text-xs truncate">{config.location}</span>
       </div>
-      
+
       {loading ? (
         <div className="flex items-center justify-center py-2">
           <Loader2 size={24} className="animate-spin text-white/40" />

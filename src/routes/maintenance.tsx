@@ -8,22 +8,40 @@ import { getMaintenanceStatusFn } from '@/server/functions/maintenance'
 function parseMarkdown(text: string) {
   const processed = text
     // Headers
-    .replace(/^### (.*$)/gim, '<h3 class="text-lg font-semibold text-purple-400 mb-3 mt-4">$1</h3>')
-    .replace(/^## (.*$)/gim, '<h2 class="text-xl font-bold text-purple-300 mb-3 mt-5">$1</h2>')
-    .replace(/^# (.*$)/gim, '<h1 class="text-2xl font-bold text-purple-200 mb-4 mt-6">$1</h1>')
+    .replace(
+      /^### (.*$)/gim,
+      '<h3 class="text-lg font-semibold text-purple-400 mb-3 mt-4">$1</h3>',
+    )
+    .replace(
+      /^## (.*$)/gim,
+      '<h2 class="text-xl font-bold text-purple-300 mb-3 mt-5">$1</h2>',
+    )
+    .replace(
+      /^# (.*$)/gim,
+      '<h1 class="text-2xl font-bold text-purple-200 mb-4 mt-6">$1</h1>',
+    )
     // Bold
-    .replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-white">$1</strong>')
+    .replace(
+      /\*\*(.*?)\*\*/g,
+      '<strong class="font-semibold text-white">$1</strong>',
+    )
     // Italic
     .replace(/\*(.*?)\*/g, '<em class="italic text-gray-300">$1</em>')
     // Bullet points - handle lists properly
-    .replace(/^- (.*$)/gim, '<li class="flex items-center gap-2 mb-0.5 text-gray-300"><span class="text-purple-400 shrink-0">•</span><span>$1</span></li>')
+    .replace(
+      /^- (.*$)/gim,
+      '<li class="flex items-center gap-2 mb-0.5 text-gray-300"><span class="text-purple-400 shrink-0">•</span><span>$1</span></li>',
+    )
     // Wrap lists in ul
     .replace(/(<li.*<\/li>)/gs, '<ul class="space-y-0.5 mb-2 ml-4">$1</ul>')
     // Line breaks
     .replace(/\n\n/g, '</p><p class="mb-4 text-gray-300 leading-relaxed">')
     .replace(/\n/g, '<br />')
     // Wrap paragraphs
-    .replace(/^(?!<[hul]).*$/gm, '<p class="mb-4 text-gray-300 leading-relaxed">$&</p>')
+    .replace(
+      /^(?!<[hul]).*$/gm,
+      '<p class="mb-4 text-gray-300 leading-relaxed">$&</p>',
+    )
     // Clean up empty paragraphs
     .replace(/<p class="mb-4 text-gray-300 leading-relaxed"><\/p>/g, '')
     // Fix nested tags
@@ -33,7 +51,7 @@ function parseMarkdown(text: string) {
     .replace(/<\/ul><\/p>/g, '</ul>')
     .replace(/<p class="mb-4 text-gray-300 leading-relaxed"><li/g, '<li')
     .replace(/<\/li><\/p>/g, '</li>')
-  
+
   return processed
 }
 
@@ -53,9 +71,10 @@ export const Route = createFileRoute('/maintenance')({
 
 function MaintenancePage() {
   const { maintenanceStatus } = Route.useLoaderData()
-  const message = maintenanceStatus?.message || 
+  const message =
+    maintenanceStatus?.message ||
     'We are currently performing maintenance to improve your experience. Please check back soon.'
-  
+
   const renderedMessage = parseMarkdown(message)
 
   return (
@@ -114,7 +133,7 @@ function MaintenancePage() {
 
           {/* Message Content */}
           <div className="bg-slate-800/30 rounded-2xl p-6 mb-6 border border-slate-700/50">
-            <div 
+            <div
               className="space-y-2 text-gray-300 leading-relaxed"
               dangerouslySetInnerHTML={{ __html: renderedMessage }}
             />
@@ -134,7 +153,9 @@ function MaintenancePage() {
                   <div>
                     <p className="text-purple-300 font-medium">Expected Back</p>
                     <p className="text-purple-200 text-sm">
-                      {new Date(maintenanceStatus.estimatedEndTime).toLocaleString()}
+                      {new Date(
+                        maintenanceStatus.estimatedEndTime,
+                      ).toLocaleString()}
                     </p>
                   </div>
                 </div>
@@ -166,7 +187,9 @@ function MaintenancePage() {
                 <RefreshCw className="w-5 h-5 text-green-400" />
                 <div>
                   <p className="text-green-300 font-medium">Manual Refresh</p>
-                  <p className="text-green-200 text-sm">Click button to check status</p>
+                  <p className="text-green-200 text-sm">
+                    Click button to check status
+                  </p>
                 </div>
               </div>
             </motion.div>
@@ -181,7 +204,7 @@ function MaintenancePage() {
               <RefreshCw className="w-4 h-4" />
               Refresh Page
             </button>
-            
+
             <a
               href="mailto:support@eziox.link"
               className="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-medium py-3 px-6 rounded-xl transition-all hover:scale-105 flex items-center justify-center gap-2"
@@ -195,7 +218,8 @@ function MaintenancePage() {
         {/* Footer */}
         <div className="text-center mt-6">
           <p className="text-slate-600 text-sm">
-            © {new Date().getFullYear()} {siteConfig.metadata.title}. All rights reserved.
+            © {new Date().getFullYear()} {siteConfig.metadata.title}. All rights
+            reserved.
           </p>
         </div>
       </motion.div>

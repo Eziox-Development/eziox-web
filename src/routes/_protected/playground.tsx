@@ -7,6 +7,13 @@ import { useAuth } from '@/hooks/use-auth'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import {
   ImageIcon,
   LayoutGrid,
   Type,
@@ -1351,18 +1358,20 @@ function PlaygroundPage() {
                             placeholder="Font name"
                             className="px-4 py-3 rounded-xl bg-background-secondary border border-border text-foreground"
                           />
-                          <select
+                          <Select
                             value={newFontType}
-                            onChange={(e) =>
-                              setNewFontType(
-                                e.target.value as 'display' | 'body',
-                              )
+                            onValueChange={(value) =>
+                              setNewFontType(value as 'display' | 'body')
                             }
-                            className="px-4 py-3 rounded-xl bg-background-secondary border border-border text-foreground"
                           >
-                            <option value="display">Display</option>
-                            <option value="body">Body</option>
-                          </select>
+                            <SelectTrigger className="h-12">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="display">Display</SelectItem>
+                              <SelectItem value="body">Body</SelectItem>
+                            </SelectContent>
+                          </Select>
                         </div>
                         <input
                           type="url"

@@ -4,6 +4,13 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
 import { useTranslation } from 'react-i18next'
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import {
   getMyLinksFn,
   createLinkFn,
   updateLinkFn,
@@ -61,8 +68,17 @@ export function LinksTab() {
   const [isAddingGroup, setIsAddingGroup] = useState(false)
   const [editingLink, setEditingLink] = useState<LinkItem | null>(null)
   const [editingGroup, setEditingGroup] = useState<LinkGroup | null>(null)
-  const [newLink, setNewLink] = useState({ title: '', url: '', description: '', groupId: '' })
-  const [newGroup, setNewGroup] = useState({ name: '', color: '#8b5cf6', isCollapsible: true })
+  const [newLink, setNewLink] = useState({
+    title: '',
+    url: '',
+    description: '',
+    groupId: '',
+  })
+  const [newGroup, setNewGroup] = useState({
+    name: '',
+    color: '#8b5cf6',
+    isCollapsible: true,
+  })
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set())
   const [activeView, setActiveView] = useState<'all' | 'groups'>('all')
 
@@ -100,8 +116,11 @@ export function LinksTab() {
   })
 
   const createGroupMutation = useMutation({
-    mutationFn: (data: { name: string; color?: string; isCollapsible?: boolean }) =>
-      createGroup({ data }),
+    mutationFn: (data: {
+      name: string
+      color?: string
+      isCollapsible?: boolean
+    }) => createGroup({ data }),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['my-link-groups'] })
       setIsAddingGroup(false)
@@ -110,8 +129,12 @@ export function LinksTab() {
   })
 
   const updateGroupMutation = useMutation({
-    mutationFn: (data: { id: string; name?: string; color?: string; isCollapsible?: boolean }) =>
-      updateGroup({ data }),
+    mutationFn: (data: {
+      id: string
+      name?: string
+      color?: string
+      isCollapsible?: boolean
+    }) => updateGroup({ data }),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['my-link-groups'] })
       setEditingGroup(null)
@@ -119,7 +142,8 @@ export function LinksTab() {
   })
 
   const deleteGroupMutation = useMutation({
-    mutationFn: (id: string) => deleteGroup({ data: { id, moveLinksToUngrouped: true } }),
+    mutationFn: (id: string) =>
+      deleteGroup({ data: { id, moveLinksToUngrouped: true } }),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['my-link-groups'] })
       void queryClient.invalidateQueries({ queryKey: ['my-links'] })
@@ -143,8 +167,12 @@ export function LinksTab() {
   })
 
   const updateMutation = useMutation({
-    mutationFn: (data: { id: string; title?: string; url?: string; description?: string }) =>
-      updateLink({ data }),
+    mutationFn: (data: {
+      id: string
+      title?: string
+      url?: string
+      description?: string
+    }) => updateLink({ data }),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['my-links'] })
       setEditingLink(null)
@@ -174,7 +202,9 @@ export function LinksTab() {
     if (!newLink.title || !newLink.url) return
     createMutation.mutate({
       title: newLink.title,
-      url: newLink.url.startsWith('http') ? newLink.url : `https://${newLink.url}`,
+      url: newLink.url.startsWith('http')
+        ? newLink.url
+        : `https://${newLink.url}`,
       description: newLink.description || undefined,
     })
   }
@@ -221,12 +251,15 @@ export function LinksTab() {
   }
 
   const handleGroupReorder = (newOrder: typeof groups) => {
-    reorderGroupsMutation.mutate(newOrder.map((g, i) => ({ id: g.id, order: i })))
+    reorderGroupsMutation.mutate(
+      newOrder.map((g, i) => ({ id: g.id, order: i })),
+    )
   }
 
   // Organize links by group
   const ungroupedLinks = links.filter((l) => !l.groupId)
-  const getLinksForGroup = (groupId: string) => links.filter((l) => l.groupId === groupId)
+  const getLinksForGroup = (groupId: string) =>
+    links.filter((l) => l.groupId === groupId)
 
   return (
     <motion.div
@@ -238,8 +271,12 @@ export function LinksTab() {
     >
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
-          <h2 className="text-xl font-bold text-foreground">{t('dashboard.links.title')}</h2>
-          <p className="text-sm text-foreground-muted">{t('dashboard.links.dragToReorder')}</p>
+          <h2 className="text-xl font-bold text-foreground">
+            {t('dashboard.links.title')}
+          </h2>
+          <p className="text-sm text-foreground-muted">
+            {t('dashboard.links.dragToReorder')}
+          </p>
         </div>
         <div className="flex items-center gap-2">
           {/* View Toggle */}
@@ -288,48 +325,71 @@ export function LinksTab() {
             className="overflow-hidden rounded-lg bg-card/10 border border-border/20"
           >
             <div className="p-5 flex items-center justify-between border-b border-border/20">
-              <h3 className="font-bold text-foreground">{t('dashboard.links.addLink')}</h3>
-              <button onClick={() => setIsAddingLink(false)} className="p-2 rounded-lg hover:bg-background-secondary transition-colors duration-(--animation-speed)">
+              <h3 className="font-bold text-foreground">
+                {t('dashboard.links.addLink')}
+              </h3>
+              <button
+                onClick={() => setIsAddingLink(false)}
+                className="p-2 rounded-lg hover:bg-background-secondary transition-colors duration-(--animation-speed)"
+              >
                 <X size={18} className="text-foreground-muted" />
               </button>
             </div>
             <div className="p-5 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-foreground-muted mb-2">{t('dashboard.links.linkTitle')}</label>
+                <label className="block text-sm font-medium text-foreground-muted mb-2">
+                  {t('dashboard.links.linkTitle')}
+                </label>
                 <input
                   type="text"
                   value={newLink.title}
-                  onChange={(e) => setNewLink({ ...newLink, title: e.target.value })}
+                  onChange={(e) =>
+                    setNewLink({ ...newLink, title: e.target.value })
+                  }
                   placeholder="My Website"
                   className="w-full px-4 py-3 rounded-xl bg-background-secondary border border-border text-foreground placeholder-foreground-muted/50 focus:outline-none focus:border-primary/50 transition-colors duration-(--animation-speed)"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-foreground-muted mb-2">{t('dashboard.links.linkUrl')}</label>
+                <label className="block text-sm font-medium text-foreground-muted mb-2">
+                  {t('dashboard.links.linkUrl')}
+                </label>
                 <input
                   type="url"
                   value={newLink.url}
-                  onChange={(e) => setNewLink({ ...newLink, url: e.target.value })}
+                  onChange={(e) =>
+                    setNewLink({ ...newLink, url: e.target.value })
+                  }
                   placeholder="https://example.com"
                   className="w-full px-4 py-3 rounded-xl bg-background-secondary border border-border text-foreground placeholder-foreground-muted/50 focus:outline-none focus:border-primary/50 transition-colors duration-(--animation-speed)"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-foreground-muted mb-2">{t('dashboard.links.linkDescription')}</label>
+                <label className="block text-sm font-medium text-foreground-muted mb-2">
+                  {t('dashboard.links.linkDescription')}
+                </label>
                 <input
                   type="text"
                   value={newLink.description}
-                  onChange={(e) => setNewLink({ ...newLink, description: e.target.value })}
+                  onChange={(e) =>
+                    setNewLink({ ...newLink, description: e.target.value })
+                  }
                   placeholder="Optional description"
                   className="w-full px-4 py-3 rounded-xl bg-background-secondary border border-border text-foreground placeholder-foreground-muted/50 focus:outline-none focus:border-primary/50 transition-colors duration-(--animation-speed)"
                 />
               </div>
               <button
                 onClick={handleAddLink}
-                disabled={!newLink.title || !newLink.url || createMutation.isPending}
+                disabled={
+                  !newLink.title || !newLink.url || createMutation.isPending
+                }
                 className="w-full py-3 rounded-xl font-medium text-primary-foreground bg-linear-to-r from-primary to-accent disabled:opacity-50 flex items-center justify-center gap-2"
               >
-                {createMutation.isPending ? <Loader2 size={18} className="animate-spin" /> : <Plus size={18} />}
+                {createMutation.isPending ? (
+                  <Loader2 size={18} className="animate-spin" />
+                ) : (
+                  <Plus size={18} />
+                )}
                 {t('dashboard.links.addLink')}
               </button>
             </div>
@@ -347,33 +407,53 @@ export function LinksTab() {
             className="overflow-hidden rounded-lg bg-card/10 border border-border/20"
           >
             <div className="p-5 flex items-center justify-between border-b border-border/20">
-              <h3 className="font-bold text-foreground">{t('dashboard.links.groups.addGroup', 'Add Group')}</h3>
-              <button onClick={() => setIsAddingGroup(false)} className="p-2 rounded-lg hover:bg-background-secondary transition-colors">
+              <h3 className="font-bold text-foreground">
+                {t('dashboard.links.groups.addGroup', 'Add Group')}
+              </h3>
+              <button
+                onClick={() => setIsAddingGroup(false)}
+                className="p-2 rounded-lg hover:bg-background-secondary transition-colors"
+              >
                 <X size={18} className="text-foreground-muted" />
               </button>
             </div>
             <div className="p-5 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-foreground-muted mb-2">{t('dashboard.links.groups.groupName', 'Group Name')}</label>
+                <label className="block text-sm font-medium text-foreground-muted mb-2">
+                  {t('dashboard.links.groups.groupName', 'Group Name')}
+                </label>
                 <input
                   type="text"
                   value={newGroup.name}
-                  onChange={(e) => setNewGroup({ ...newGroup, name: e.target.value })}
+                  onChange={(e) =>
+                    setNewGroup({ ...newGroup, name: e.target.value })
+                  }
                   placeholder="Social Links"
                   className="w-full px-4 py-3 rounded-xl bg-background-secondary border border-border text-foreground placeholder-foreground-muted/50 focus:outline-none focus:border-primary/50 transition-colors"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-foreground-muted mb-2">{t('dashboard.links.groups.groupColor', 'Color')}</label>
+                <label className="block text-sm font-medium text-foreground-muted mb-2">
+                  {t('dashboard.links.groups.groupColor', 'Color')}
+                </label>
                 <div className="flex items-center gap-3">
                   <input
                     type="color"
                     value={newGroup.color}
-                    onChange={(e) => setNewGroup({ ...newGroup, color: e.target.value })}
+                    onChange={(e) =>
+                      setNewGroup({ ...newGroup, color: e.target.value })
+                    }
                     className="w-12 h-12 rounded-lg cursor-pointer border-0"
                   />
                   <div className="flex gap-2">
-                    {['#8b5cf6', '#06b6d4', '#22c55e', '#f59e0b', '#ef4444', '#ec4899'].map((color) => (
+                    {[
+                      '#8b5cf6',
+                      '#06b6d4',
+                      '#22c55e',
+                      '#f59e0b',
+                      '#ef4444',
+                      '#ec4899',
+                    ].map((color) => (
                       <button
                         key={color}
                         onClick={() => setNewGroup({ ...newGroup, color })}
@@ -389,11 +469,22 @@ export function LinksTab() {
                   type="checkbox"
                   id="isCollapsible"
                   checked={newGroup.isCollapsible}
-                  onChange={(e) => setNewGroup({ ...newGroup, isCollapsible: e.target.checked })}
+                  onChange={(e) =>
+                    setNewGroup({
+                      ...newGroup,
+                      isCollapsible: e.target.checked,
+                    })
+                  }
                   className="w-5 h-5 rounded border-border accent-primary"
                 />
-                <label htmlFor="isCollapsible" className="text-sm text-foreground-muted">
-                  {t('dashboard.links.groups.collapsible', 'Allow visitors to collapse this group')}
+                <label
+                  htmlFor="isCollapsible"
+                  className="text-sm text-foreground-muted"
+                >
+                  {t(
+                    'dashboard.links.groups.collapsible',
+                    'Allow visitors to collapse this group',
+                  )}
                 </label>
               </div>
               <button
@@ -401,7 +492,11 @@ export function LinksTab() {
                 disabled={!newGroup.name || createGroupMutation.isPending}
                 className="w-full py-3 rounded-xl font-medium text-primary-foreground bg-linear-to-r from-primary to-accent disabled:opacity-50 flex items-center justify-center gap-2"
               >
-                {createGroupMutation.isPending ? <Loader2 size={18} className="animate-spin" /> : <FolderPlus size={18} />}
+                {createGroupMutation.isPending ? (
+                  <Loader2 size={18} className="animate-spin" />
+                ) : (
+                  <FolderPlus size={18} />
+                )}
                 {t('dashboard.links.groups.addGroup', 'Add Group')}
               </button>
             </div>
@@ -415,16 +510,28 @@ export function LinksTab() {
         </div>
       ) : links.length === 0 && groups.length === 0 ? (
         <div className="rounded-lg overflow-hidden bg-card/50 border border-border p-12 text-center">
-          <LinkIcon size={48} className="mx-auto mb-4 text-foreground-muted/30" />
-          <p className="text-foreground-muted mb-2">{t('dashboard.links.noLinks')}</p>
-          <p className="text-sm text-foreground-muted/50">{t('dashboard.links.addFirst')}</p>
+          <LinkIcon
+            size={48}
+            className="mx-auto mb-4 text-foreground-muted/30"
+          />
+          <p className="text-foreground-muted mb-2">
+            {t('dashboard.links.noLinks')}
+          </p>
+          <p className="text-sm text-foreground-muted/50">
+            {t('dashboard.links.addFirst')}
+          </p>
         </div>
       ) : activeView === 'groups' ? (
         /* Groups View */
         <div className="space-y-4">
           {/* Groups List */}
           {groups.length > 0 && (
-            <Reorder.Group axis="y" values={groups} onReorder={handleGroupReorder} className="space-y-3">
+            <Reorder.Group
+              axis="y"
+              values={groups}
+              onReorder={handleGroupReorder}
+              className="space-y-3"
+            >
               {groups.map((group) => {
                 const groupLinks = getLinksForGroup(group.id)
                 const isExpanded = expandedGroups.has(group.id)
@@ -433,32 +540,67 @@ export function LinksTab() {
                     key={group.id}
                     value={group}
                     className="rounded-lg overflow-hidden border border-border"
-                    style={{ borderLeftColor: group.color || undefined, borderLeftWidth: group.color ? 4 : 1 }}
+                    style={{
+                      borderLeftColor: group.color || undefined,
+                      borderLeftWidth: group.color ? 4 : 1,
+                    }}
                   >
                     <div
                       className="p-4 flex items-center gap-4 cursor-grab active:cursor-grabbing bg-card/50"
                       onClick={() => toggleGroupExpanded(group.id)}
                     >
-                      <GripVertical size={20} className="text-foreground-muted/50 shrink-0" />
+                      <GripVertical
+                        size={20}
+                        className="text-foreground-muted/50 shrink-0"
+                      />
                       <button className="p-1">
-                        {isExpanded ? <ChevronDown size={18} className="text-foreground-muted" /> : <ChevronRight size={18} className="text-foreground-muted" />}
+                        {isExpanded ? (
+                          <ChevronDown
+                            size={18}
+                            className="text-foreground-muted"
+                          />
+                        ) : (
+                          <ChevronRight
+                            size={18}
+                            className="text-foreground-muted"
+                          />
+                        )}
                       </button>
-                      <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${group.color}20` }}>
-                        <FolderOpen size={16} style={{ color: group.color || undefined }} />
+                      <div
+                        className="w-8 h-8 rounded-lg flex items-center justify-center"
+                        style={{ backgroundColor: `${group.color}20` }}
+                      >
+                        <FolderOpen
+                          size={16}
+                          style={{ color: group.color || undefined }}
+                        />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-foreground truncate">{group.name}</p>
-                        <p className="text-xs text-foreground-muted">{groupLinks.length} {t('dashboard.links.groups.linksInGroup', { count: groupLinks.length })}</p>
+                        <p className="font-medium text-foreground truncate">
+                          {group.name}
+                        </p>
+                        <p className="text-xs text-foreground-muted">
+                          {groupLinks.length}{' '}
+                          {t('dashboard.links.groups.linksInGroup', {
+                            count: groupLinks.length,
+                          })}
+                        </p>
                       </div>
                       <div className="flex items-center gap-1">
                         <button
-                          onClick={(e) => { e.stopPropagation(); setEditingGroup(group) }}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            setEditingGroup(group)
+                          }}
                           className="p-2 rounded-lg hover:bg-background-secondary transition-colors"
                         >
                           <Edit3 size={16} className="text-foreground-muted" />
                         </button>
                         <button
-                          onClick={(e) => { e.stopPropagation(); deleteGroupMutation.mutate(group.id) }}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            deleteGroupMutation.mutate(group.id)
+                          }}
                           className="p-2 rounded-lg hover:bg-red-500/20 transition-colors"
                         >
                           <Trash2 size={16} className="text-red-400" />
@@ -474,16 +616,33 @@ export function LinksTab() {
                           className="border-t border-border/50 bg-background-secondary/20"
                         >
                           {groupLinks.map((link) => (
-                            <div key={link.id} className="p-3 pl-16 flex items-center gap-3 border-b border-border/20 last:border-0">
+                            <div
+                              key={link.id}
+                              className="p-3 pl-16 flex items-center gap-3 border-b border-border/20 last:border-0"
+                            >
                               <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium text-foreground truncate">{link.title}</p>
-                                <p className="text-xs text-foreground-muted truncate">{link.url}</p>
+                                <p className="text-sm font-medium text-foreground truncate">
+                                  {link.title}
+                                </p>
+                                <p className="text-xs text-foreground-muted truncate">
+                                  {link.url}
+                                </p>
                               </div>
-                              <span className="text-xs text-foreground-muted">{link.clicks || 0} clicks</span>
+                              <span className="text-xs text-foreground-muted">
+                                {link.clicks || 0} clicks
+                              </span>
                               <button
-                                onClick={() => assignToGroupMutation.mutate({ linkId: link.id, groupId: null })}
+                                onClick={() =>
+                                  assignToGroupMutation.mutate({
+                                    linkId: link.id,
+                                    groupId: null,
+                                  })
+                                }
                                 className="p-1.5 rounded hover:bg-background-secondary text-foreground-muted text-xs"
-                                title={t('dashboard.links.groups.removeFromGroup', 'Remove from group')}
+                                title={t(
+                                  'dashboard.links.groups.removeFromGroup',
+                                  'Remove from group',
+                                )}
                               >
                                 <X size={14} />
                               </button>
@@ -503,29 +662,43 @@ export function LinksTab() {
             <div className="mt-6">
               <h4 className="text-sm font-medium text-foreground-muted mb-3 flex items-center gap-2">
                 <LinkIcon size={14} />
-                {t('dashboard.links.groups.ungrouped', 'Ungrouped Links')} ({ungroupedLinks.length})
+                {t('dashboard.links.groups.ungrouped', 'Ungrouped Links')} (
+                {ungroupedLinks.length})
               </h4>
               <div className="space-y-2">
                 {ungroupedLinks.map((link) => (
-                  <div key={link.id} className="p-3 rounded-lg bg-card/30 border border-border/50 flex items-center gap-3">
+                  <div
+                    key={link.id}
+                    className="p-3 rounded-lg bg-card/30 border border-border/50 flex items-center gap-3"
+                  >
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-foreground truncate">{link.title}</p>
+                      <p className="text-sm font-medium text-foreground truncate">
+                        {link.title}
+                      </p>
                     </div>
                     {groups.length > 0 && (
-                      <select
-                        className="px-2 py-1 text-xs rounded bg-background-secondary border border-border text-foreground"
-                        value=""
-                        onChange={(e) => {
-                          if (e.target.value) {
-                            assignToGroupMutation.mutate({ linkId: link.id, groupId: e.target.value })
+                      <Select
+                        value={undefined}
+                        onValueChange={(value) => {
+                          if (value) {
+                            assignToGroupMutation.mutate({
+                              linkId: link.id,
+                              groupId: value,
+                            })
                           }
                         }}
                       >
-                        <option value="">{t('dashboard.links.groups.assignToGroup', 'Add to group...')}</option>
-                        {groups.map((g) => (
-                          <option key={g.id} value={g.id}>{g.name}</option>
-                        ))}
-                      </select>
+                        <SelectTrigger className="w-[140px] h-8 text-xs">
+                          <SelectValue placeholder={t('dashboard.links.groups.assignToGroup', 'Add to group...')} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {groups.map((g) => (
+                            <SelectItem key={g.id} value={g.id}>
+                              {g.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     )}
                   </div>
                 ))}
@@ -535,7 +708,12 @@ export function LinksTab() {
         </div>
       ) : (
         /* All Links View */
-        <Reorder.Group axis="y" values={links} onReorder={handleReorder} className="space-y-3">
+        <Reorder.Group
+          axis="y"
+          values={links}
+          onReorder={handleReorder}
+          className="space-y-3"
+        >
           {links.map((link) => {
             const linkGroup = groups.find((g) => g.id === link.groupId)
             return (
@@ -545,17 +723,30 @@ export function LinksTab() {
                 className="rounded-lg overflow-hidden bg-card/50 border border-border cursor-grab active:cursor-grabbing"
               >
                 <div className="p-4 flex items-center gap-4">
-                  <GripVertical size={20} className="text-foreground-muted/50 shrink-0" />
+                  <GripVertical
+                    size={20}
+                    className="text-foreground-muted/50 shrink-0"
+                  />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <p className="font-medium text-foreground truncate">{link.title}</p>
+                      <p className="font-medium text-foreground truncate">
+                        {link.title}
+                      </p>
                       {linkGroup && (
-                        <span className="px-2 py-0.5 text-xs rounded-full" style={{ backgroundColor: `${linkGroup.color}20`, color: linkGroup.color || undefined }}>
+                        <span
+                          className="px-2 py-0.5 text-xs rounded-full"
+                          style={{
+                            backgroundColor: `${linkGroup.color}20`,
+                            color: linkGroup.color || undefined,
+                          }}
+                        >
                           {linkGroup.name}
                         </span>
                       )}
                     </div>
-                    <p className="text-sm text-foreground-muted truncate">{link.url}</p>
+                    <p className="text-sm text-foreground-muted truncate">
+                      {link.url}
+                    </p>
                   </div>
                   <div className="flex items-center gap-2 text-foreground-muted">
                     <MousePointerClick size={14} />
@@ -569,7 +760,10 @@ export function LinksTab() {
                       className="p-2 rounded-lg hover:bg-background-secondary transition-colors duration-(--animation-speed)"
                       onClick={(e) => e.stopPropagation()}
                     >
-                      <ExternalLink size={16} className="text-foreground-muted" />
+                      <ExternalLink
+                        size={16}
+                        className="text-foreground-muted"
+                      />
                     </a>
                     <button
                       onClick={() => setEditingLink(link)}
@@ -608,36 +802,56 @@ export function LinksTab() {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-foreground">{t('dashboard.links.editLink')}</h3>
-                <button onClick={() => setEditingLink(null)} className="p-2 rounded-lg hover:bg-background-secondary transition-colors duration-(--animation-speed)">
+                <h3 className="text-lg font-bold text-foreground">
+                  {t('dashboard.links.editLink')}
+                </h3>
+                <button
+                  onClick={() => setEditingLink(null)}
+                  className="p-2 rounded-lg hover:bg-background-secondary transition-colors duration-(--animation-speed)"
+                >
                   <X size={18} className="text-foreground-muted" />
                 </button>
               </div>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-foreground-muted mb-2">{t('dashboard.links.linkTitle')}</label>
+                  <label className="block text-sm font-medium text-foreground-muted mb-2">
+                    {t('dashboard.links.linkTitle')}
+                  </label>
                   <input
                     type="text"
                     value={editingLink.title}
-                    onChange={(e) => setEditingLink({ ...editingLink, title: e.target.value })}
+                    onChange={(e) =>
+                      setEditingLink({ ...editingLink, title: e.target.value })
+                    }
                     className="w-full px-4 py-3 rounded-xl bg-background-secondary border border-border text-foreground focus:outline-none focus:border-primary/50 transition-colors duration-(--animation-speed)"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-foreground-muted mb-2">{t('dashboard.links.linkUrl')}</label>
+                  <label className="block text-sm font-medium text-foreground-muted mb-2">
+                    {t('dashboard.links.linkUrl')}
+                  </label>
                   <input
                     type="url"
                     value={editingLink.url}
-                    onChange={(e) => setEditingLink({ ...editingLink, url: e.target.value })}
+                    onChange={(e) =>
+                      setEditingLink({ ...editingLink, url: e.target.value })
+                    }
                     className="w-full px-4 py-3 rounded-xl bg-background-secondary border border-border text-foreground focus:outline-none focus:border-primary/50 transition-colors duration-(--animation-speed)"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-foreground-muted mb-2">{t('dashboard.links.linkDescription')}</label>
+                  <label className="block text-sm font-medium text-foreground-muted mb-2">
+                    {t('dashboard.links.linkDescription')}
+                  </label>
                   <input
                     type="text"
                     value={editingLink.description || ''}
-                    onChange={(e) => setEditingLink({ ...editingLink, description: e.target.value })}
+                    onChange={(e) =>
+                      setEditingLink({
+                        ...editingLink,
+                        description: e.target.value,
+                      })
+                    }
                     className="w-full px-4 py-3 rounded-xl bg-background-secondary border border-border text-foreground focus:outline-none focus:border-primary/50 transition-colors duration-(--animation-speed)"
                   />
                 </div>
@@ -646,7 +860,9 @@ export function LinksTab() {
                   disabled={updateMutation.isPending}
                   className="w-full py-3 rounded-xl font-medium text-primary-foreground bg-linear-to-r from-primary to-accent disabled:opacity-50 flex items-center justify-center gap-2"
                 >
-                  {updateMutation.isPending ? <Loader2 size={18} className="animate-spin" /> : null}
+                  {updateMutation.isPending ? (
+                    <Loader2 size={18} className="animate-spin" />
+                  ) : null}
                   {t('dashboard.save')}
                 </button>
               </div>
@@ -673,35 +889,60 @@ export function LinksTab() {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-foreground">{t('dashboard.links.editGroup', 'Edit Group')}</h3>
-                <button onClick={() => setEditingGroup(null)} className="p-2 rounded-lg hover:bg-background-secondary transition-colors">
+                <h3 className="text-lg font-bold text-foreground">
+                  {t('dashboard.links.editGroup', 'Edit Group')}
+                </h3>
+                <button
+                  onClick={() => setEditingGroup(null)}
+                  className="p-2 rounded-lg hover:bg-background-secondary transition-colors"
+                >
                   <X size={18} className="text-foreground-muted" />
                 </button>
               </div>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-foreground-muted mb-2">{t('dashboard.links.groups.groupName', 'Group Name')}</label>
+                  <label className="block text-sm font-medium text-foreground-muted mb-2">
+                    {t('dashboard.links.groups.groupName', 'Group Name')}
+                  </label>
                   <input
                     type="text"
                     value={editingGroup.name}
-                    onChange={(e) => setEditingGroup({ ...editingGroup, name: e.target.value })}
+                    onChange={(e) =>
+                      setEditingGroup({ ...editingGroup, name: e.target.value })
+                    }
                     className="w-full px-4 py-3 rounded-xl bg-background-secondary border border-border text-foreground focus:outline-none focus:border-primary/50 transition-colors"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-foreground-muted mb-2">{t('dashboard.links.groups.groupColor', 'Color')}</label>
+                  <label className="block text-sm font-medium text-foreground-muted mb-2">
+                    {t('dashboard.links.groups.groupColor', 'Color')}
+                  </label>
                   <div className="flex items-center gap-3">
                     <input
                       type="color"
                       value={editingGroup.color || '#8b5cf6'}
-                      onChange={(e) => setEditingGroup({ ...editingGroup, color: e.target.value })}
+                      onChange={(e) =>
+                        setEditingGroup({
+                          ...editingGroup,
+                          color: e.target.value,
+                        })
+                      }
                       className="w-12 h-12 rounded-lg cursor-pointer border-0"
                     />
                     <div className="flex gap-2">
-                      {['#8b5cf6', '#06b6d4', '#22c55e', '#f59e0b', '#ef4444', '#ec4899'].map((color) => (
+                      {[
+                        '#8b5cf6',
+                        '#06b6d4',
+                        '#22c55e',
+                        '#f59e0b',
+                        '#ef4444',
+                        '#ec4899',
+                      ].map((color) => (
                         <button
                           key={color}
-                          onClick={() => setEditingGroup({ ...editingGroup, color })}
+                          onClick={() =>
+                            setEditingGroup({ ...editingGroup, color })
+                          }
                           className={`w-8 h-8 rounded-lg transition-transform ${editingGroup.color === color ? 'ring-2 ring-white scale-110' : ''}`}
                           style={{ backgroundColor: color }}
                         />
@@ -714,11 +955,22 @@ export function LinksTab() {
                     type="checkbox"
                     id="editIsCollapsible"
                     checked={editingGroup.isCollapsible ?? true}
-                    onChange={(e) => setEditingGroup({ ...editingGroup, isCollapsible: e.target.checked })}
+                    onChange={(e) =>
+                      setEditingGroup({
+                        ...editingGroup,
+                        isCollapsible: e.target.checked,
+                      })
+                    }
                     className="w-5 h-5 rounded border-border accent-primary"
                   />
-                  <label htmlFor="editIsCollapsible" className="text-sm text-foreground-muted">
-                    {t('dashboard.links.groups.collapsible', 'Allow visitors to collapse this group')}
+                  <label
+                    htmlFor="editIsCollapsible"
+                    className="text-sm text-foreground-muted"
+                  >
+                    {t(
+                      'dashboard.links.groups.collapsible',
+                      'Allow visitors to collapse this group',
+                    )}
                   </label>
                 </div>
                 <button
@@ -726,7 +978,9 @@ export function LinksTab() {
                   disabled={updateGroupMutation.isPending}
                   className="w-full py-3 rounded-xl font-medium text-primary-foreground bg-linear-to-r from-primary to-accent disabled:opacity-50 flex items-center justify-center gap-2"
                 >
-                  {updateGroupMutation.isPending ? <Loader2 size={18} className="animate-spin" /> : null}
+                  {updateGroupMutation.isPending ? (
+                    <Loader2 size={18} className="animate-spin" />
+                  ) : null}
                   {t('dashboard.save')}
                 </button>
               </div>

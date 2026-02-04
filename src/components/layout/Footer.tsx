@@ -77,7 +77,7 @@ export function Footer() {
       icon: BookOpen,
       links: [
         { label: t('footer.resources.docs'), href: '/docs' },
-        { label: t('footer.resources.helpCenter'), href: '/contact' },
+        { label: t('footer.resources.helpCenter'), href: '/support' },
         { label: t('footer.resources.status'), href: '/status' },
       ],
     },
@@ -90,6 +90,8 @@ export function Footer() {
         { label: t('footer.legal.terms'), href: '/terms' },
         { label: t('footer.legal.cancellation'), href: '/widerruf' },
         { label: t('footer.legal.imprint'), href: '/imprint' },
+        { label: t('footer.legal.takedown'), href: '/takedown' },
+        { label: t('footer.legal.licensing'), href: '/licensing' },
       ],
     },
   ]
@@ -134,10 +136,7 @@ export function Footer() {
       </div>
 
       {/* Main Footer */}
-      <div
-        className="relative"
-        style={{ background: theme.colors.background }}
-      >
+      <div className="relative" style={{ background: theme.colors.background }}>
         {/* Background Glow */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div
@@ -152,7 +151,10 @@ export function Footer() {
 
         <div className="relative max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
           {/* Top Section - Stats Banner */}
-          <div className="py-10 border-b" style={{ borderColor: theme.colors.border }}>
+          <div
+            className="py-10 border-b"
+            style={{ borderColor: theme.colors.border }}
+          >
             <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-12 lg:gap-16">
               {liveStats.map((stat, index) => (
                 <motion.div
@@ -221,7 +223,10 @@ export function Footer() {
                     className="text-sm flex items-center gap-1.5"
                     style={{ color: theme.colors.foregroundMuted }}
                   >
-                    <Sparkles size={12} style={{ color: theme.colors.primary }} />
+                    <Sparkles
+                      size={12}
+                      style={{ color: theme.colors.primary }}
+                    />
                     {t('footer.themesAvailable', { count: themes.length })}
                   </p>
                 </div>
@@ -299,7 +304,10 @@ export function Footer() {
                       discord.gg/KD84DmNA89
                     </p>
                   </div>
-                  <ExternalLink size={14} style={{ color: theme.colors.foregroundMuted }} />
+                  <ExternalLink
+                    size={14}
+                    style={{ color: theme.colors.foregroundMuted }}
+                  />
                 </motion.a>
               </div>
 
@@ -329,7 +337,10 @@ export function Footer() {
                   }}
                   whileHover={{ scale: 1.1, y: -2 }}
                 >
-                  <SiGithub size={18} style={{ color: theme.colors.foreground }} />
+                  <SiGithub
+                    size={18}
+                    style={{ color: theme.colors.foreground }}
+                  />
                 </motion.a>
               </div>
             </div>

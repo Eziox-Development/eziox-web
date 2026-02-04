@@ -75,7 +75,7 @@ export const siteConfig: SiteConfig = {
     title: 'Eziox',
     description:
       'The modern bio link platform for creators, streamers, and professionals. Showcase your brand with stunning themes, analytics, and seamless integrations.',
-    url: typeof window !== 'undefined' ? (window.location.hostname === 'localhost' ? 'https://localhost:5173' : window.location.origin) : 'https://eziox.link',
+    url: 'https://www.eziox.link',
     language: 'en',
     icon: '/icon.png',
   },

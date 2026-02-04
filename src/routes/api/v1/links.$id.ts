@@ -20,8 +20,11 @@ export const Route = createFileRoute('/api/v1/links/$id')({
 
         if (!authHeader?.startsWith('Bearer ')) {
           return new Response(
-            JSON.stringify({ error: 'Missing or invalid Authorization header', code: 'UNAUTHORIZED' }),
-            { status: 401, headers: { 'Content-Type': 'application/json' } }
+            JSON.stringify({
+              error: 'Missing or invalid Authorization header',
+              code: 'UNAUTHORIZED',
+            }),
+            { status: 401, headers: { 'Content-Type': 'application/json' } },
           )
         }
 
@@ -30,17 +33,29 @@ export const Route = createFileRoute('/api/v1/links/$id')({
 
         if (!validation.valid || !validation.apiKey) {
           return new Response(
-            JSON.stringify({ error: validation.error || 'Invalid API key', code: 'INVALID_API_KEY' }),
-            { status: 401, headers: { 'Content-Type': 'application/json' } }
+            JSON.stringify({
+              error: validation.error || 'Invalid API key',
+              code: 'INVALID_API_KEY',
+            }),
+            { status: 401, headers: { 'Content-Type': 'application/json' } },
           )
         }
 
         const permissions = validation.apiKey.permissions as ApiKeyPermissions
         if (!permissions.links?.read) {
-          await logApiRequest(validation.apiKey.id, `/api/v1/links/${params.id}`, 'GET', 403, Date.now() - startTime)
+          await logApiRequest(
+            validation.apiKey.id,
+            `/api/v1/links/${params.id}`,
+            'GET',
+            403,
+            Date.now() - startTime,
+          )
           return new Response(
-            JSON.stringify({ error: 'API key lacks links:read permission', code: 'FORBIDDEN' }),
-            { status: 403, headers: { 'Content-Type': 'application/json' } }
+            JSON.stringify({
+              error: 'API key lacks links:read permission',
+              code: 'FORBIDDEN',
+            }),
+            { status: 403, headers: { 'Content-Type': 'application/json' } },
           )
         }
 
@@ -48,18 +63,35 @@ export const Route = createFileRoute('/api/v1/links/$id')({
           const [link] = await db
             .select()
             .from(userLinks)
-            .where(and(eq(userLinks.id, params.id as string), eq(userLinks.userId, validation.apiKey.userId)))
+            .where(
+              and(
+                eq(userLinks.id, params.id as string),
+                eq(userLinks.userId, validation.apiKey.userId),
+              ),
+            )
             .limit(1)
 
           if (!link) {
-            await logApiRequest(validation.apiKey.id, `/api/v1/links/${params.id}`, 'GET', 404, Date.now() - startTime)
+            await logApiRequest(
+              validation.apiKey.id,
+              `/api/v1/links/${params.id}`,
+              'GET',
+              404,
+              Date.now() - startTime,
+            )
             return new Response(
               JSON.stringify({ error: 'Link not found', code: 'NOT_FOUND' }),
-              { status: 404, headers: { 'Content-Type': 'application/json' } }
+              { status: 404, headers: { 'Content-Type': 'application/json' } },
             )
           }
 
-          await logApiRequest(validation.apiKey.id, `/api/v1/links/${params.id}`, 'GET', 200, Date.now() - startTime)
+          await logApiRequest(
+            validation.apiKey.id,
+            `/api/v1/links/${params.id}`,
+            'GET',
+            200,
+            Date.now() - startTime,
+          )
 
           return new Response(
             JSON.stringify({
@@ -77,14 +109,26 @@ export const Route = createFileRoute('/api/v1/links/$id')({
               createdAt: link.createdAt,
               updatedAt: link.updatedAt,
             }),
-            { status: 200, headers: { 'Content-Type': 'application/json' } }
+            { status: 200, headers: { 'Content-Type': 'application/json' } },
           )
         } catch (error) {
           console.error('API Error [GET /api/v1/links/:id]:', error)
-          await logApiRequest(validation.apiKey.id, `/api/v1/links/${params.id}`, 'GET', 500, Date.now() - startTime, undefined, undefined, String(error))
+          await logApiRequest(
+            validation.apiKey.id,
+            `/api/v1/links/${params.id}`,
+            'GET',
+            500,
+            Date.now() - startTime,
+            undefined,
+            undefined,
+            String(error),
+          )
           return new Response(
-            JSON.stringify({ error: 'Internal server error', code: 'INTERNAL_ERROR' }),
-            { status: 500, headers: { 'Content-Type': 'application/json' } }
+            JSON.stringify({
+              error: 'Internal server error',
+              code: 'INTERNAL_ERROR',
+            }),
+            { status: 500, headers: { 'Content-Type': 'application/json' } },
           )
         }
       },
@@ -95,8 +139,11 @@ export const Route = createFileRoute('/api/v1/links/$id')({
 
         if (!authHeader?.startsWith('Bearer ')) {
           return new Response(
-            JSON.stringify({ error: 'Missing or invalid Authorization header', code: 'UNAUTHORIZED' }),
-            { status: 401, headers: { 'Content-Type': 'application/json' } }
+            JSON.stringify({
+              error: 'Missing or invalid Authorization header',
+              code: 'UNAUTHORIZED',
+            }),
+            { status: 401, headers: { 'Content-Type': 'application/json' } },
           )
         }
 
@@ -105,17 +152,29 @@ export const Route = createFileRoute('/api/v1/links/$id')({
 
         if (!validation.valid || !validation.apiKey) {
           return new Response(
-            JSON.stringify({ error: validation.error || 'Invalid API key', code: 'INVALID_API_KEY' }),
-            { status: 401, headers: { 'Content-Type': 'application/json' } }
+            JSON.stringify({
+              error: validation.error || 'Invalid API key',
+              code: 'INVALID_API_KEY',
+            }),
+            { status: 401, headers: { 'Content-Type': 'application/json' } },
           )
         }
 
         const permissions = validation.apiKey.permissions as ApiKeyPermissions
         if (!permissions.links?.write) {
-          await logApiRequest(validation.apiKey.id, `/api/v1/links/${params.id}`, 'PATCH', 403, Date.now() - startTime)
+          await logApiRequest(
+            validation.apiKey.id,
+            `/api/v1/links/${params.id}`,
+            'PATCH',
+            403,
+            Date.now() - startTime,
+          )
           return new Response(
-            JSON.stringify({ error: 'API key lacks links:write permission', code: 'FORBIDDEN' }),
-            { status: 403, headers: { 'Content-Type': 'application/json' } }
+            JSON.stringify({
+              error: 'API key lacks links:write permission',
+              code: 'FORBIDDEN',
+            }),
+            { status: 403, headers: { 'Content-Type': 'application/json' } },
           )
         }
 
@@ -124,42 +183,75 @@ export const Route = createFileRoute('/api/v1/links/$id')({
           const [existingLink] = await db
             .select({ id: userLinks.id })
             .from(userLinks)
-            .where(and(eq(userLinks.id, params.id as string), eq(userLinks.userId, validation.apiKey.userId)))
+            .where(
+              and(
+                eq(userLinks.id, params.id as string),
+                eq(userLinks.userId, validation.apiKey.userId),
+              ),
+            )
             .limit(1)
 
           if (!existingLink) {
-            await logApiRequest(validation.apiKey.id, `/api/v1/links/${params.id}`, 'PATCH', 404, Date.now() - startTime)
+            await logApiRequest(
+              validation.apiKey.id,
+              `/api/v1/links/${params.id}`,
+              'PATCH',
+              404,
+              Date.now() - startTime,
+            )
             return new Response(
               JSON.stringify({ error: 'Link not found', code: 'NOT_FOUND' }),
-              { status: 404, headers: { 'Content-Type': 'application/json' } }
+              { status: 404, headers: { 'Content-Type': 'application/json' } },
             )
           }
 
-          const body = await request.json() as Record<string, unknown>
+          const body = (await request.json()) as Record<string, unknown>
           const updates: Record<string, unknown> = { updatedAt: new Date() }
 
-          if (typeof body.title === 'string') updates.title = body.title.slice(0, 100)
+          if (typeof body.title === 'string')
+            updates.title = body.title.slice(0, 100)
           if (typeof body.url === 'string') {
             try {
               new URL(body.url)
               updates.url = body.url.slice(0, 2048)
             } catch {
-              await logApiRequest(validation.apiKey.id, `/api/v1/links/${params.id}`, 'PATCH', 400, Date.now() - startTime)
+              await logApiRequest(
+                validation.apiKey.id,
+                `/api/v1/links/${params.id}`,
+                'PATCH',
+                400,
+                Date.now() - startTime,
+              )
               return new Response(
-                JSON.stringify({ error: 'Invalid URL format', code: 'BAD_REQUEST' }),
-                { status: 400, headers: { 'Content-Type': 'application/json' } }
+                JSON.stringify({
+                  error: 'Invalid URL format',
+                  code: 'BAD_REQUEST',
+                }),
+                {
+                  status: 400,
+                  headers: { 'Content-Type': 'application/json' },
+                },
               )
             }
           }
-          if (typeof body.icon === 'string') updates.icon = body.icon.slice(0, 50)
-          if (typeof body.description === 'string') updates.description = body.description.slice(0, 255)
-          if (typeof body.backgroundColor === 'string' && /^#[0-9A-Fa-f]{6}$/.test(body.backgroundColor)) {
+          if (typeof body.icon === 'string')
+            updates.icon = body.icon.slice(0, 50)
+          if (typeof body.description === 'string')
+            updates.description = body.description.slice(0, 255)
+          if (
+            typeof body.backgroundColor === 'string' &&
+            /^#[0-9A-Fa-f]{6}$/.test(body.backgroundColor)
+          ) {
             updates.backgroundColor = body.backgroundColor
           }
-          if (typeof body.textColor === 'string' && /^#[0-9A-Fa-f]{6}$/.test(body.textColor)) {
+          if (
+            typeof body.textColor === 'string' &&
+            /^#[0-9A-Fa-f]{6}$/.test(body.textColor)
+          ) {
             updates.textColor = body.textColor
           }
-          if (typeof body.isActive === 'boolean') updates.isActive = body.isActive
+          if (typeof body.isActive === 'boolean')
+            updates.isActive = body.isActive
 
           const [updatedLink] = await db
             .update(userLinks)
@@ -167,7 +259,13 @@ export const Route = createFileRoute('/api/v1/links/$id')({
             .where(eq(userLinks.id, params.id as string))
             .returning()
 
-          await logApiRequest(validation.apiKey.id, `/api/v1/links/${params.id}`, 'PATCH', 200, Date.now() - startTime)
+          await logApiRequest(
+            validation.apiKey.id,
+            `/api/v1/links/${params.id}`,
+            'PATCH',
+            200,
+            Date.now() - startTime,
+          )
 
           return new Response(
             JSON.stringify({
@@ -186,14 +284,26 @@ export const Route = createFileRoute('/api/v1/links/$id')({
                 updatedAt: updatedLink?.updatedAt,
               },
             }),
-            { status: 200, headers: { 'Content-Type': 'application/json' } }
+            { status: 200, headers: { 'Content-Type': 'application/json' } },
           )
         } catch (error) {
           console.error('API Error [PATCH /api/v1/links/:id]:', error)
-          await logApiRequest(validation.apiKey.id, `/api/v1/links/${params.id}`, 'PATCH', 500, Date.now() - startTime, undefined, undefined, String(error))
+          await logApiRequest(
+            validation.apiKey.id,
+            `/api/v1/links/${params.id}`,
+            'PATCH',
+            500,
+            Date.now() - startTime,
+            undefined,
+            undefined,
+            String(error),
+          )
           return new Response(
-            JSON.stringify({ error: 'Internal server error', code: 'INTERNAL_ERROR' }),
-            { status: 500, headers: { 'Content-Type': 'application/json' } }
+            JSON.stringify({
+              error: 'Internal server error',
+              code: 'INTERNAL_ERROR',
+            }),
+            { status: 500, headers: { 'Content-Type': 'application/json' } },
           )
         }
       },
@@ -204,8 +314,11 @@ export const Route = createFileRoute('/api/v1/links/$id')({
 
         if (!authHeader?.startsWith('Bearer ')) {
           return new Response(
-            JSON.stringify({ error: 'Missing or invalid Authorization header', code: 'UNAUTHORIZED' }),
-            { status: 401, headers: { 'Content-Type': 'application/json' } }
+            JSON.stringify({
+              error: 'Missing or invalid Authorization header',
+              code: 'UNAUTHORIZED',
+            }),
+            { status: 401, headers: { 'Content-Type': 'application/json' } },
           )
         }
 
@@ -214,46 +327,87 @@ export const Route = createFileRoute('/api/v1/links/$id')({
 
         if (!validation.valid || !validation.apiKey) {
           return new Response(
-            JSON.stringify({ error: validation.error || 'Invalid API key', code: 'INVALID_API_KEY' }),
-            { status: 401, headers: { 'Content-Type': 'application/json' } }
+            JSON.stringify({
+              error: validation.error || 'Invalid API key',
+              code: 'INVALID_API_KEY',
+            }),
+            { status: 401, headers: { 'Content-Type': 'application/json' } },
           )
         }
 
         const permissions = validation.apiKey.permissions as ApiKeyPermissions
         if (!permissions.links?.delete) {
-          await logApiRequest(validation.apiKey.id, `/api/v1/links/${params.id}`, 'DELETE', 403, Date.now() - startTime)
+          await logApiRequest(
+            validation.apiKey.id,
+            `/api/v1/links/${params.id}`,
+            'DELETE',
+            403,
+            Date.now() - startTime,
+          )
           return new Response(
-            JSON.stringify({ error: 'API key lacks links:delete permission', code: 'FORBIDDEN' }),
-            { status: 403, headers: { 'Content-Type': 'application/json' } }
+            JSON.stringify({
+              error: 'API key lacks links:delete permission',
+              code: 'FORBIDDEN',
+            }),
+            { status: 403, headers: { 'Content-Type': 'application/json' } },
           )
         }
 
         try {
           const result = await db
             .delete(userLinks)
-            .where(and(eq(userLinks.id, params.id as string), eq(userLinks.userId, validation.apiKey.userId)))
+            .where(
+              and(
+                eq(userLinks.id, params.id as string),
+                eq(userLinks.userId, validation.apiKey.userId),
+              ),
+            )
             .returning({ id: userLinks.id })
 
           if (result.length === 0) {
-            await logApiRequest(validation.apiKey.id, `/api/v1/links/${params.id}`, 'DELETE', 404, Date.now() - startTime)
+            await logApiRequest(
+              validation.apiKey.id,
+              `/api/v1/links/${params.id}`,
+              'DELETE',
+              404,
+              Date.now() - startTime,
+            )
             return new Response(
               JSON.stringify({ error: 'Link not found', code: 'NOT_FOUND' }),
-              { status: 404, headers: { 'Content-Type': 'application/json' } }
+              { status: 404, headers: { 'Content-Type': 'application/json' } },
             )
           }
 
-          await logApiRequest(validation.apiKey.id, `/api/v1/links/${params.id}`, 'DELETE', 200, Date.now() - startTime)
-
-          return new Response(
-            JSON.stringify({ success: true }),
-            { status: 200, headers: { 'Content-Type': 'application/json' } }
+          await logApiRequest(
+            validation.apiKey.id,
+            `/api/v1/links/${params.id}`,
+            'DELETE',
+            200,
+            Date.now() - startTime,
           )
+
+          return new Response(JSON.stringify({ success: true }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          })
         } catch (error) {
           console.error('API Error [DELETE /api/v1/links/:id]:', error)
-          await logApiRequest(validation.apiKey.id, `/api/v1/links/${params.id}`, 'DELETE', 500, Date.now() - startTime, undefined, undefined, String(error))
+          await logApiRequest(
+            validation.apiKey.id,
+            `/api/v1/links/${params.id}`,
+            'DELETE',
+            500,
+            Date.now() - startTime,
+            undefined,
+            undefined,
+            String(error),
+          )
           return new Response(
-            JSON.stringify({ error: 'Internal server error', code: 'INTERNAL_ERROR' }),
-            { status: 500, headers: { 'Content-Type': 'application/json' } }
+            JSON.stringify({
+              error: 'Internal server error',
+              code: 'INTERNAL_ERROR',
+            }),
+            { status: 500, headers: { 'Content-Type': 'application/json' } },
           )
         }
       },

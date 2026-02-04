@@ -7,6 +7,56 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.9.0] - 2026-02-04
+
+### Added - Complete Support Ticket System
+
+**New Ticket Management:**
+
+- Comprehensive support ticket system with 12 categories
+  - Categories: General, Technical, Billing, Account, Security, Abuse, Legal, Partnership, Feature, Withdrawal, DMCA, GDPR
+  - Priority levels: Low, Normal, High, Urgent
+  - Status tracking: Open, In Progress, Waiting User, Waiting Admin, Resolved, Closed
+  - Unique ticket numbers: TKT-YYYY-XXXXXX format
+- Database schema: `support_tickets` and `ticket_messages` tables
+- Guest and user ticket support (non-registered users can submit tickets)
+
+**User-Facing Support:**
+
+- New `/support` page for ticket creation with modern design
+- New `/support/tickets` page for users to view and manage their tickets
+- Live ticket updates without email spam (only confirmation on creation)
+- Ticket filtering by status with modern Select components
+- Real-time message threads with admin/user distinction
+- Internal notes for admin team (not visible to users)
+
+**Admin Ticket Management:**
+
+- New Tickets tab in admin panel (`/admin?tab=tickets`)
+- Complete ticket management: view, reply, update status, change priority
+- Ticket statistics dashboard (open, in progress, waiting admin, urgent, today)
+- Advanced filtering by status, category, priority, and search
+- Bulk ticket operations and internal note system
+- Integration with withdrawal requests and other systems
+
+**Technical Implementation:**
+
+- Server functions: `createTicketFn`, `getMyTicketsFn`, `getTicketsFn`, `replyToTicketFn`, etc.
+- Email notifications only on ticket creation (no spam on replies)
+- Full i18n support (English & German) for all ticket UI
+- Modern UI components with shadcn/ui Select dropdowns
+- TypeScript type safety with explicit type assertions
+- Responsive design with mobile optimization
+
+**Navigation & Accessibility:**
+
+- "View My Tickets" link on support page for logged-in users
+- Support section in profile dashboard sidebar
+- "My Tickets" and "Help Center" quick links
+- Seamless integration with existing auth and admin systems
+
+---
+
 ## [2.8.0] - 2026-02-03
 
 ### Added - Authentication Overhaul

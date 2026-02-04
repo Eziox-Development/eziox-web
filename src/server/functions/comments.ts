@@ -2,18 +2,26 @@ import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
 import { getCookie } from '@tanstack/react-start/server'
 import { db } from '../db'
-import { profileComments, commentLikes, commentReports, users, profiles } from '../db/schema'
+import {
+  profileComments,
+  commentLikes,
+  commentReports,
+  users,
+  profiles,
+} from '../db/schema'
 import { eq, and, desc, sql, isNull, inArray } from 'drizzle-orm'
 import { validateSession } from '../lib/auth'
 import { isContentClean, getAutoHideThreshold } from '../../lib/content-filter'
 
 // Get comments for a profile
 export const getProfileCommentsFn = createServerFn({ method: 'GET' })
-  .inputValidator(z.object({
-    profileUserId: z.string().uuid(),
-    limit: z.number().min(1).max(50).default(20),
-    offset: z.number().min(0).default(0),
-  }))
+  .inputValidator(
+    z.object({
+      profileUserId: z.string().uuid(),
+      limit: z.number().min(1).max(50).default(20),
+      offset: z.number().min(0).default(0),
+    }),
+  )
   .handler(async ({ data }) => {
     const comments = await db
       .select({
@@ -38,8 +46,8 @@ export const getProfileCommentsFn = createServerFn({ method: 'GET' })
           eq(profileComments.isDeleted, false),
           eq(profileComments.isHidden, false),
           eq(profileComments.moderationStatus, 'approved'),
-          isNull(profileComments.parentId)
-        )
+          isNull(profileComments.parentId),
+        ),
       )
       .orderBy(desc(profileComments.isPinned), desc(profileComments.createdAt))
       .limit(data.limit)
@@ -54,11 +62,11 @@ export const getProfileCommentsFn = createServerFn({ method: 'GET' })
           eq(profileComments.isDeleted, false),
           eq(profileComments.isHidden, false),
           eq(profileComments.moderationStatus, 'approved'),
-          isNull(profileComments.parentId)
-        )
+          isNull(profileComments.parentId),
+        ),
       )
 
-    const formattedComments = comments.map(c => ({
+    const formattedComments = comments.map((c) => ({
       id: c.id,
       content: c.content,
       likes: c.likes ?? 0,
@@ -83,11 +91,13 @@ export const getProfileCommentsFn = createServerFn({ method: 'GET' })
 
 // Create a comment
 export const createCommentFn = createServerFn({ method: 'POST' })
-  .inputValidator(z.object({
-    profileUserId: z.string().uuid(),
-    content: z.string().min(1).max(500),
-    parentId: z.string().uuid().optional(),
-  }))
+  .inputValidator(
+    z.object({
+      profileUserId: z.string().uuid(),
+      content: z.string().min(1).max(500),
+      parentId: z.string().uuid().optional(),
+    }),
+  )
   .handler(async ({ data }) => {
     const token = getCookie('session-token')
     if (!token) throw new Error('You must be logged in to comment')
@@ -188,26 +198,47 @@ export const toggleCommentLikeFn = createServerFn({ method: 'POST' })
     const [existingLike] = await db
       .select()
       .from(commentLikes)
-      .where(and(eq(commentLikes.commentId, data.commentId), eq(commentLikes.userId, user.id)))
+      .where(
+        and(
+          eq(commentLikes.commentId, data.commentId),
+          eq(commentLikes.userId, user.id),
+        ),
+      )
 
     if (existingLike) {
       await db.delete(commentLikes).where(eq(commentLikes.id, existingLike.id))
-      await db.update(profileComments).set({ likes: sql`${profileComments.likes} - 1` }).where(eq(profileComments.id, data.commentId))
+      await db
+        .update(profileComments)
+        .set({ likes: sql`${profileComments.likes} - 1` })
+        .where(eq(profileComments.id, data.commentId))
       return { liked: false }
     } else {
-      await db.insert(commentLikes).values({ commentId: data.commentId, userId: user.id })
-      await db.update(profileComments).set({ likes: sql`${profileComments.likes} + 1` }).where(eq(profileComments.id, data.commentId))
+      await db
+        .insert(commentLikes)
+        .values({ commentId: data.commentId, userId: user.id })
+      await db
+        .update(profileComments)
+        .set({ likes: sql`${profileComments.likes} + 1` })
+        .where(eq(profileComments.id, data.commentId))
       return { liked: true }
     }
   })
 
 // Report a comment
 export const reportCommentFn = createServerFn({ method: 'POST' })
-  .inputValidator(z.object({
-    commentId: z.string().uuid(),
-    reason: z.enum(['spam', 'harassment', 'hate_speech', 'inappropriate', 'other']),
-    description: z.string().max(500).optional(),
-  }))
+  .inputValidator(
+    z.object({
+      commentId: z.string().uuid(),
+      reason: z.enum([
+        'spam',
+        'harassment',
+        'hate_speech',
+        'inappropriate',
+        'other',
+      ]),
+      description: z.string().max(500).optional(),
+    }),
+  )
   .handler(async ({ data }) => {
     const token = getCookie('session-token')
     if (!token) throw new Error('You must be logged in')
@@ -218,9 +249,15 @@ export const reportCommentFn = createServerFn({ method: 'POST' })
     const [existingReport] = await db
       .select()
       .from(commentReports)
-      .where(and(eq(commentReports.commentId, data.commentId), eq(commentReports.reporterId, user.id)))
+      .where(
+        and(
+          eq(commentReports.commentId, data.commentId),
+          eq(commentReports.reporterId, user.id),
+        ),
+      )
 
-    if (existingReport) throw new Error('You have already reported this comment')
+    if (existingReport)
+      throw new Error('You have already reported this comment')
 
     await db.insert(commentReports).values({
       commentId: data.commentId,
@@ -229,12 +266,25 @@ export const reportCommentFn = createServerFn({ method: 'POST' })
       description: data.description,
     })
 
-    await db.update(profileComments).set({ reportCount: sql`${profileComments.reportCount} + 1` }).where(eq(profileComments.id, data.commentId))
+    await db
+      .update(profileComments)
+      .set({ reportCount: sql`${profileComments.reportCount} + 1` })
+      .where(eq(profileComments.id, data.commentId))
 
-    const [comment] = await db.select({ reportCount: profileComments.reportCount }).from(profileComments).where(eq(profileComments.id, data.commentId))
+    const [comment] = await db
+      .select({ reportCount: profileComments.reportCount })
+      .from(profileComments)
+      .where(eq(profileComments.id, data.commentId))
 
     if (comment && (comment.reportCount ?? 0) >= getAutoHideThreshold()) {
-      await db.update(profileComments).set({ isHidden: true, moderationStatus: 'pending_review', updatedAt: new Date() }).where(eq(profileComments.id, data.commentId))
+      await db
+        .update(profileComments)
+        .set({
+          isHidden: true,
+          moderationStatus: 'pending_review',
+          updatedAt: new Date(),
+        })
+        .where(eq(profileComments.id, data.commentId))
     }
 
     return { success: true }
@@ -255,9 +305,14 @@ export const checkCommentLikesFn = createServerFn({ method: 'GET' })
     const likes = await db
       .select({ commentId: commentLikes.commentId })
       .from(commentLikes)
-      .where(and(eq(commentLikes.userId, user.id), inArray(commentLikes.commentId, data.commentIds)))
+      .where(
+        and(
+          eq(commentLikes.userId, user.id),
+          inArray(commentLikes.commentId, data.commentIds),
+        ),
+      )
 
-    return { likedCommentIds: likes.map(l => l.commentId) }
+    return { likedCommentIds: likes.map((l) => l.commentId) }
   })
 
 // Pin/Unpin a comment
@@ -270,7 +325,10 @@ export const togglePinCommentFn = createServerFn({ method: 'POST' })
     const user = await validateSession(token)
     if (!user) throw new Error('You must be logged in')
 
-    const comments = await db.select().from(profileComments).where(eq(profileComments.id, data.commentId))
+    const comments = await db
+      .select()
+      .from(profileComments)
+      .where(eq(profileComments.id, data.commentId))
     const comment = comments[0]
 
     if (!comment) throw new Error('Comment not found')
@@ -280,7 +338,10 @@ export const togglePinCommentFn = createServerFn({ method: 'POST' })
     }
 
     const newPinned = !comment.isPinned
-    await db.update(profileComments).set({ isPinned: newPinned, updatedAt: new Date() }).where(eq(profileComments.id, data.commentId))
+    await db
+      .update(profileComments)
+      .set({ isPinned: newPinned, updatedAt: new Date() })
+      .where(eq(profileComments.id, data.commentId))
 
     return { pinned: newPinned }
   })

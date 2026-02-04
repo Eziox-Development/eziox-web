@@ -41,8 +41,12 @@ export type AlertType =
   | 'suspicious_activity'
   | 'rapid_creation'
   | 'limit_approaching'
+  | 'malicious_link'
+  | 'inappropriate_content'
+  | 'manual_review_required'
+  | 'profile_violation'
 
-export type AlertSeverity = 'info' | 'warning' | 'critical'
+export type AlertSeverity = 'info' | 'warning' | 'high' | 'critical'
 
 interface CreateAlertParams {
   userId: string

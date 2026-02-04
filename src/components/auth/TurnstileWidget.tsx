@@ -99,10 +99,13 @@ export function TurnstileWidget({
     }
 
     // Store reset function globally for access from auth components
-    ;(window as unknown as { resetTurnstileWidget?: () => void }).resetTurnstileWidget = handleReset
+    ;(
+      window as unknown as { resetTurnstileWidget?: () => void }
+    ).resetTurnstileWidget = handleReset
 
     return () => {
-      delete (window as unknown as { resetTurnstileWidget?: () => void }).resetTurnstileWidget
+      delete (window as unknown as { resetTurnstileWidget?: () => void })
+        .resetTurnstileWidget
     }
   }, [])
 

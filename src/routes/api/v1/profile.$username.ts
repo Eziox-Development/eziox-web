@@ -39,16 +39,22 @@ export const Route = createFileRoute('/api/v1/profile/$username')({
 
           if (!result) {
             return new Response(
-              JSON.stringify({ error: 'User not found', code: 'USER_NOT_FOUND' }),
-              { status: 404, headers: { 'Content-Type': 'application/json' } }
+              JSON.stringify({
+                error: 'User not found',
+                code: 'USER_NOT_FOUND',
+              }),
+              { status: 404, headers: { 'Content-Type': 'application/json' } },
             )
           }
 
           // Check if profile is public
           if (result.profile && !result.profile.isPublic) {
             return new Response(
-              JSON.stringify({ error: 'Profile is private', code: 'PROFILE_PRIVATE' }),
-              { status: 403, headers: { 'Content-Type': 'application/json' } }
+              JSON.stringify({
+                error: 'Profile is private',
+                code: 'PROFILE_PRIVATE',
+              }),
+              { status: 403, headers: { 'Content-Type': 'application/json' } },
             )
           }
 
@@ -101,13 +107,16 @@ export const Route = createFileRoute('/api/v1/profile/$username')({
                 'Content-Type': 'application/json',
                 'Cache-Control': 'public, max-age=60',
               },
-            }
+            },
           )
         } catch (error) {
           console.error('API Error [GET /api/v1/profile/:username]:', error)
           return new Response(
-            JSON.stringify({ error: 'Internal server error', code: 'INTERNAL_ERROR' }),
-            { status: 500, headers: { 'Content-Type': 'application/json' } }
+            JSON.stringify({
+              error: 'Internal server error',
+              code: 'INTERNAL_ERROR',
+            }),
+            { status: 500, headers: { 'Content-Type': 'application/json' } },
           )
         }
       },

@@ -530,30 +530,35 @@ export const profileComments = pgTable('profile_comments', {
   isPinned: boolean('is_pinned').default(false),
   likes: integer('likes').default(0),
   reportCount: integer('report_count').default(0),
-  moderationStatus: varchar('moderation_status', { length: 20 }).default('approved'),
+  moderationStatus: varchar('moderation_status', { length: 20 }).default(
+    'approved',
+  ),
   moderationReason: text('moderation_reason'),
   parentId: uuid('parent_id'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 })
 
-export const profileCommentsRelations = relations(profileComments, ({ one }) => ({
-  profileUser: one(users, {
-    fields: [profileComments.profileUserId],
-    references: [users.id],
-    relationName: 'profileComments',
+export const profileCommentsRelations = relations(
+  profileComments,
+  ({ one }) => ({
+    profileUser: one(users, {
+      fields: [profileComments.profileUserId],
+      references: [users.id],
+      relationName: 'profileComments',
+    }),
+    author: one(users, {
+      fields: [profileComments.authorId],
+      references: [users.id],
+      relationName: 'authoredComments',
+    }),
+    parent: one(profileComments, {
+      fields: [profileComments.parentId],
+      references: [profileComments.id],
+      relationName: 'replies',
+    }),
   }),
-  author: one(users, {
-    fields: [profileComments.authorId],
-    references: [users.id],
-    relationName: 'authoredComments',
-  }),
-  parent: one(profileComments, {
-    fields: [profileComments.parentId],
-    references: [profileComments.id],
-    relationName: 'replies',
-  }),
-}))
+)
 
 // COMMENT LIKES TABLE
 export const commentLikes = pgTable('comment_likes', {
@@ -590,7 +595,9 @@ export const commentReports = pgTable('comment_reports', {
   reason: varchar('reason', { length: 50 }).notNull(),
   description: text('description'),
   status: varchar('status', { length: 20 }).default('pending'),
-  reviewedBy: uuid('reviewed_by').references(() => users.id, { onDelete: 'set null' }),
+  reviewedBy: uuid('reviewed_by').references(() => users.id, {
+    onDelete: 'set null',
+  }),
   reviewedAt: timestamp('reviewed_at'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 })
@@ -943,7 +950,7 @@ export const subscriptions = pgTable('subscriptions', {
   stripePriceId: varchar('stripe_price_id', { length: 255 }).notNull(),
   stripeCustomerId: varchar('stripe_customer_id', { length: 255 }).notNull(),
   tier: varchar('tier', { length: 20 }).notNull(), // pro, creator
-  status: varchar('status', { length: 50 }).notNull(), // active, canceled, past_due, trialing, etc.
+  status: varchar('status', { length: 50 }).notNull(), // active, canceled, past_due, trialing, suspended
   currentPeriodStart: timestamp('current_period_start').notNull(),
   currentPeriodEnd: timestamp('current_period_end').notNull(),
   cancelAtPeriodEnd: boolean('cancel_at_period_end').default(false),
@@ -951,6 +958,11 @@ export const subscriptions = pgTable('subscriptions', {
   endedAt: timestamp('ended_at'),
   trialStart: timestamp('trial_start'),
   trialEnd: timestamp('trial_end'),
+  // Payment delinquency tracking
+  failedPaymentCount: integer('failed_payment_count').default(0),
+  lastFailedPaymentAt: timestamp('last_failed_payment_at'),
+  suspendedAt: timestamp('suspended_at'),
+  suspensionReason: text('suspension_reason'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 })
@@ -1199,6 +1211,470 @@ export const passkeysRelations = relations(passkeys, ({ one }) => ({
   }),
 }))
 
+// USER BANS TABLE (Account Suspension System)
+export const userBans = pgTable('user_bans', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  bannedBy: uuid('banned_by').references(() => users.id, {
+    onDelete: 'set null',
+  }),
+  banType: varchar('ban_type', { length: 30 }).notNull(), // 'temporary', 'permanent', 'shadow'
+  reason: text('reason').notNull(),
+  internalNotes: text('internal_notes'), // Admin-only notes
+  expiresAt: timestamp('expires_at'), // null = permanent
+  appealStatus: varchar('appeal_status', { length: 20 }).default('none'), // 'none', 'pending', 'approved', 'rejected'
+  appealMessage: text('appeal_message'),
+  appealedAt: timestamp('appealed_at'),
+  appealReviewedBy: uuid('appeal_reviewed_by').references(() => users.id, {
+    onDelete: 'set null',
+  }),
+  appealReviewedAt: timestamp('appeal_reviewed_at'),
+  appealResponse: text('appeal_response'),
+  isActive: boolean('is_active').default(true),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+})
+
+export const userBansRelations = relations(userBans, ({ one }) => ({
+  user: one(users, {
+    fields: [userBans.userId],
+    references: [users.id],
+  }),
+  admin: one(users, {
+    fields: [userBans.bannedBy],
+    references: [users.id],
+  }),
+}))
+
+// DEVICE FINGERPRINTS TABLE (Multi-Account Detection)
+export const deviceFingerprints = pgTable('device_fingerprints', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  fingerprintHash: varchar('fingerprint_hash', { length: 64 }).notNull(), // SHA256 hash
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  userAgent: text('user_agent'),
+  screenResolution: varchar('screen_resolution', { length: 20 }),
+  timezone: varchar('timezone', { length: 50 }),
+  language: varchar('language', { length: 10 }),
+  platform: varchar('platform', { length: 50 }),
+  lastSeenAt: timestamp('last_seen_at').defaultNow().notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+})
+
+export const deviceFingerprintsRelations = relations(
+  deviceFingerprints,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [deviceFingerprints.userId],
+      references: [users.id],
+    }),
+  }),
+)
+
+// LOGIN HISTORY TABLE (IP-based Multi-Account Detection)
+export const loginHistory = pgTable('login_history', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  ipAddress: varchar('ip_address', { length: 45 }).notNull(), // IPv4 or IPv6
+  ipHash: varchar('ip_hash', { length: 64 }), // Anonymized hash for GDPR
+  userAgent: text('user_agent'),
+  fingerprintId: uuid('fingerprint_id').references(
+    () => deviceFingerprints.id,
+    { onDelete: 'set null' },
+  ),
+  loginMethod: varchar('login_method', { length: 30 }).notNull(), // 'password', 'otp', 'passkey', 'discord'
+  success: boolean('success').notNull(),
+  failureReason: varchar('failure_reason', { length: 100 }),
+  country: varchar('country', { length: 2 }), // ISO country code
+  city: varchar('city', { length: 100 }),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+})
+
+export const loginHistoryRelations = relations(loginHistory, ({ one }) => ({
+  user: one(users, {
+    fields: [loginHistory.userId],
+    references: [users.id],
+  }),
+  fingerprint: one(deviceFingerprints, {
+    fields: [loginHistory.fingerprintId],
+    references: [deviceFingerprints.id],
+  }),
+}))
+
+// MULTI-ACCOUNT LINKS TABLE (Detected Account Relationships)
+export const multiAccountLinks = pgTable('multi_account_links', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  primaryUserId: uuid('primary_user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  linkedUserId: uuid('linked_user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  linkType: varchar('link_type', { length: 30 }).notNull(), // 'ip_match', 'fingerprint_match', 'email_pattern'
+  confidence: integer('confidence').notNull().default(50), // 0-100
+  evidence: jsonb('evidence'), // Details about the match
+  status: varchar('status', { length: 20 }).default('detected'), // 'detected', 'confirmed', 'allowed', 'false_positive'
+  reviewedBy: uuid('reviewed_by').references(() => users.id, {
+    onDelete: 'set null',
+  }),
+  reviewedAt: timestamp('reviewed_at'),
+  reviewNotes: text('review_notes'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+})
+
+export const multiAccountLinksRelations = relations(
+  multiAccountLinks,
+  ({ one }) => ({
+    primaryUser: one(users, {
+      fields: [multiAccountLinks.primaryUserId],
+      references: [users.id],
+    }),
+    linkedUser: one(users, {
+      fields: [multiAccountLinks.linkedUserId],
+      references: [users.id],
+    }),
+  }),
+)
+
+// CONTENT MODERATION LOG TABLE
+export const contentModerationLog = pgTable('content_moderation_log', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id').references(() => users.id, { onDelete: 'set null' }),
+  contentType: varchar('content_type', { length: 30 }).notNull(), // 'username', 'bio', 'link', 'comment'
+  contentValue: text('content_value').notNull(),
+  action: varchar('action', { length: 30 }).notNull(), // 'blocked', 'flagged', 'auto_removed', 'manual_review'
+  reason: varchar('reason', { length: 100 }).notNull(), // 'offensive_word', 'leet_speak', 'reserved', 'spam'
+  matchedPattern: text('matched_pattern'), // The pattern that triggered
+  severity: varchar('severity', { length: 20 }).default('medium'), // 'low', 'medium', 'high', 'critical'
+  reviewedBy: uuid('reviewed_by').references(() => users.id, {
+    onDelete: 'set null',
+  }),
+  reviewedAt: timestamp('reviewed_at'),
+  reviewDecision: varchar('review_decision', { length: 20 }), // 'approved', 'rejected', 'modified'
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+})
+
+export const contentModerationLogRelations = relations(
+  contentModerationLog,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [contentModerationLog.userId],
+      references: [users.id],
+    }),
+  }),
+)
+
+// DMCA/TAKEDOWN REQUESTS TABLE
+export const takedownRequests = pgTable('takedown_requests', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  // Requester info
+  requesterName: varchar('requester_name', { length: 255 }).notNull(),
+  requesterEmail: varchar('requester_email', { length: 255 }).notNull(),
+  requesterCompany: varchar('requester_company', { length: 255 }),
+  requesterAddress: text('requester_address'),
+  requesterPhone: varchar('requester_phone', { length: 50 }),
+  // Content info
+  contentType: varchar('content_type', { length: 50 }).notNull(), // 'profile', 'link', 'image', 'bio', 'username'
+  contentUrl: text('content_url').notNull(),
+  reportedUserId: uuid('reported_user_id').references(() => users.id, { onDelete: 'set null' }),
+  reportedUsername: varchar('reported_username', { length: 100 }),
+  // Claim details
+  claimType: varchar('claim_type', { length: 50 }).notNull(), // 'copyright', 'trademark', 'defamation', 'privacy', 'other'
+  originalWorkUrl: text('original_work_url'),
+  description: text('description').notNull(),
+  goodFaithStatement: boolean('good_faith_statement').default(false),
+  accuracyStatement: boolean('accuracy_statement').default(false),
+  // Status
+  status: varchar('status', { length: 30 }).default('pending').notNull(), // 'pending', 'reviewing', 'approved', 'rejected', 'counter_notice'
+  priority: varchar('priority', { length: 20 }).default('normal'), // 'low', 'normal', 'high', 'urgent'
+  // Admin handling
+  assignedTo: uuid('assigned_to').references(() => users.id, { onDelete: 'set null' }),
+  reviewedBy: uuid('reviewed_by').references(() => users.id, { onDelete: 'set null' }),
+  reviewedAt: timestamp('reviewed_at'),
+  reviewNotes: text('review_notes'),
+  actionTaken: varchar('action_taken', { length: 50 }), // 'content_removed', 'user_warned', 'user_banned', 'no_action', 'counter_notice_sent'
+  // Timestamps
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+})
+
+export const takedownRequestsRelations = relations(takedownRequests, ({ one }) => ({
+  reportedUser: one(users, {
+    fields: [takedownRequests.reportedUserId],
+    references: [users.id],
+  }),
+  assignedAdmin: one(users, {
+    fields: [takedownRequests.assignedTo],
+    references: [users.id],
+  }),
+  reviewer: one(users, {
+    fields: [takedownRequests.reviewedBy],
+    references: [users.id],
+  }),
+}))
+
+// COMMERCIAL LICENSES TABLE (Issued by Eziox)
+export const commercialLicenses = pgTable('commercial_licenses', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  // License key (unique, cryptographically secure)
+  licenseKey: varchar('license_key', { length: 64 }).notNull().unique(),
+  // Licensee info
+  licenseeName: varchar('licensee_name', { length: 255 }).notNull(),
+  licenseeEmail: varchar('licensee_email', { length: 255 }).notNull(),
+  licenseeCompany: varchar('licensee_company', { length: 255 }),
+  // License details
+  licenseType: varchar('license_type', { length: 50 }).notNull(), // 'commercial', 'enterprise', 'saas', 'reseller'
+  maxDomains: integer('max_domains').default(1),
+  maxUsers: integer('max_users'), // null = unlimited
+  // Allowed domains (JSON array)
+  allowedDomains: text('allowed_domains').notNull(), // JSON array of domains
+  // Validity
+  issuedAt: timestamp('issued_at').defaultNow().notNull(),
+  expiresAt: timestamp('expires_at'), // null = perpetual
+  status: varchar('status', { length: 30 }).default('active').notNull(), // 'active', 'suspended', 'expired', 'revoked'
+  // Linked inquiry (if created from inquiry)
+  inquiryId: uuid('inquiry_id').references(() => licenseInquiries.id, { onDelete: 'set null' }),
+  // Admin who issued
+  issuedBy: uuid('issued_by').references(() => users.id, { onDelete: 'set null' }),
+  // Notes
+  internalNotes: text('internal_notes'),
+  // Timestamps
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+})
+
+// LICENSE COMPLIANCE VIOLATIONS TABLE
+export const complianceViolations = pgTable('compliance_violations', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  // Detection info
+  detectedDomain: varchar('detected_domain', { length: 255 }).notNull(),
+  detectedIp: varchar('detected_ip', { length: 45 }),
+  violationType: varchar('violation_type', { length: 50 }).notNull(), // 'unlicensed_domain', 'expired_license', 'domain_mismatch', 'user_limit_exceeded', 'commercial_use', 'saas_offering'
+  severity: varchar('severity', { length: 20 }).default('medium').notNull(), // 'low', 'medium', 'high', 'critical'
+  // Evidence
+  evidenceUrl: text('evidence_url'),
+  evidenceDescription: text('evidence_description'),
+  evidenceScreenshot: text('evidence_screenshot'), // URL to screenshot
+  // Detection method
+  detectionMethod: varchar('detection_method', { length: 50 }).notNull(), // 'api_monitoring', 'domain_scan', 'user_report', 'automated_check', 'manual'
+  // Linked license (if any)
+  licenseId: uuid('license_id').references(() => commercialLicenses.id, { onDelete: 'set null' }),
+  // Status
+  status: varchar('status', { length: 30 }).default('detected').notNull(), // 'detected', 'investigating', 'confirmed', 'resolved', 'false_positive', 'escalated'
+  // Enforcement
+  enforcementAction: varchar('enforcement_action', { length: 50 }), // 'warning_sent', 'license_suspended', 'legal_notice', 'dmca_filed', 'resolved_licensed'
+  enforcementDate: timestamp('enforcement_date'),
+  enforcementNotes: text('enforcement_notes'),
+  // Admin handling
+  assignedTo: uuid('assigned_to').references(() => users.id, { onDelete: 'set null' }),
+  reviewedBy: uuid('reviewed_by').references(() => users.id, { onDelete: 'set null' }),
+  reviewedAt: timestamp('reviewed_at'),
+  // Contact attempts
+  contactAttempts: integer('contact_attempts').default(0),
+  lastContactAt: timestamp('last_contact_at'),
+  contactEmail: varchar('contact_email', { length: 255 }),
+  // Timestamps
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+})
+
+// LICENSE USAGE LOGS TABLE (for tracking API/domain usage)
+export const licenseUsageLogs = pgTable('license_usage_logs', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  licenseId: uuid('license_id').references(() => commercialLicenses.id, { onDelete: 'cascade' }),
+  // Usage info
+  domain: varchar('domain', { length: 255 }).notNull(),
+  ipAddress: varchar('ip_address', { length: 45 }),
+  userAgent: text('user_agent'),
+  // Request info
+  endpoint: varchar('endpoint', { length: 255 }),
+  requestCount: integer('request_count').default(1),
+  // Validation result
+  isValid: boolean('is_valid').default(true),
+  validationError: varchar('validation_error', { length: 100 }),
+  // Timestamp
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+})
+
+// SECURITY EVENTS TABLE
+export const securityEvents = pgTable('security_events', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  eventType: varchar('event_type', { length: 100 }).notNull(),
+  severity: varchar('severity', { length: 20 }).notNull(), // 'low', 'medium', 'high', 'critical'
+  userId: uuid('user_id').references(() => users.id, { onDelete: 'set null' }),
+  ipAddress: varchar('ip_address', { length: 45 }),
+  userAgent: text('user_agent'),
+  details: jsonb('details'),
+  resolved: boolean('resolved').default(false),
+  resolvedAt: timestamp('resolved_at'),
+  resolvedBy: uuid('resolved_by').references(() => users.id, { onDelete: 'set null' }),
+  notificationSent: boolean('notification_sent').default(false),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+})
+
+export const securityEventsRelations = relations(securityEvents, ({ one }) => ({
+  user: one(users, {
+    fields: [securityEvents.userId],
+    references: [users.id],
+  }),
+  resolver: one(users, {
+    fields: [securityEvents.resolvedBy],
+    references: [users.id],
+  }),
+}))
+
+// WITHDRAWAL REQUESTS TABLE
+export const withdrawalRequests = pgTable('withdrawal_requests', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  // Request details
+  requestType: varchar('request_type', { length: 50 }).notNull(), // 'subscription_cancellation', 'refund', 'data_deletion'
+  reason: text('reason'),
+  subscriptionId: varchar('subscription_id', { length: 255 }),
+  paymentIntentId: varchar('payment_intent_id', { length: 255 }),
+  requestedAmount: integer('requested_amount'), // In cents
+  // Status tracking
+  status: varchar('status', { length: 30 }).default('pending').notNull(), // 'pending', 'processing', 'approved', 'rejected', 'completed'
+  // Processing info
+  processedBy: uuid('processed_by').references(() => users.id, { onDelete: 'set null' }),
+  processedAt: timestamp('processed_at'),
+  processingNotes: text('processing_notes'),
+  // Refund info (if applicable)
+  refundAmount: integer('refund_amount'), // In cents
+  refundId: varchar('refund_id', { length: 255 }),
+  // Communication
+  confirmationSentAt: timestamp('confirmation_sent_at'),
+  // Timestamps
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+})
+
+export const withdrawalRequestsRelations = relations(withdrawalRequests, ({ one }) => ({
+  user: one(users, {
+    fields: [withdrawalRequests.userId],
+    references: [users.id],
+  }),
+  processor: one(users, {
+    fields: [withdrawalRequests.processedBy],
+    references: [users.id],
+  }),
+}))
+
+// SUPPORT TICKETS TABLE
+export const supportTickets = pgTable('support_tickets', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  ticketNumber: varchar('ticket_number', { length: 20 }).notNull().unique(), // e.g., "TKT-2024-001234"
+  // User info (nullable for guest tickets)
+  userId: uuid('user_id').references(() => users.id, { onDelete: 'set null' }),
+  guestEmail: varchar('guest_email', { length: 255 }),
+  guestName: varchar('guest_name', { length: 255 }),
+  // Ticket details
+  category: varchar('category', { length: 50 }).notNull(), // 'general', 'technical', 'billing', 'account', 'security', 'abuse', 'legal', 'partnership', 'feature', 'withdrawal'
+  priority: varchar('priority', { length: 20 }).default('normal').notNull(), // 'low', 'normal', 'high', 'urgent'
+  subject: varchar('subject', { length: 255 }).notNull(),
+  description: text('description').notNull(),
+  // Status tracking
+  status: varchar('status', { length: 30 }).default('open').notNull(), // 'open', 'in_progress', 'waiting_user', 'waiting_admin', 'resolved', 'closed'
+  // Assignment
+  assignedTo: uuid('assigned_to').references(() => users.id, { onDelete: 'set null' }),
+  // Related entities (for withdrawal, abuse reports, etc.)
+  relatedType: varchar('related_type', { length: 50 }), // 'withdrawal_request', 'abuse_report', 'subscription', etc.
+  relatedId: uuid('related_id'),
+  // Metadata
+  metadata: jsonb('metadata').$type<Record<string, unknown>>(), // Additional data like browser info, subscription tier, etc.
+  tags: jsonb('tags').$type<string[]>().default([]),
+  // Resolution
+  resolvedAt: timestamp('resolved_at'),
+  resolvedBy: uuid('resolved_by').references(() => users.id, { onDelete: 'set null' }),
+  resolution: text('resolution'),
+  // Satisfaction
+  satisfactionRating: integer('satisfaction_rating'), // 1-5
+  satisfactionFeedback: text('satisfaction_feedback'),
+  // Timestamps
+  lastActivityAt: timestamp('last_activity_at').defaultNow().notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+})
+
+// TICKET MESSAGES TABLE
+export const ticketMessages = pgTable('ticket_messages', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  ticketId: uuid('ticket_id')
+    .notNull()
+    .references(() => supportTickets.id, { onDelete: 'cascade' }),
+  // Sender
+  senderId: uuid('sender_id').references(() => users.id, { onDelete: 'set null' }),
+  senderType: varchar('sender_type', { length: 20 }).notNull(), // 'user', 'admin', 'system'
+  senderName: varchar('sender_name', { length: 255 }), // For display (especially for guests)
+  // Message content
+  message: text('message').notNull(),
+  isInternal: boolean('is_internal').default(false), // Internal notes not visible to user
+  // Attachments
+  attachments: jsonb('attachments').$type<{ name: string; url: string; type: string; size: number }[]>().default([]),
+  // Timestamps
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+})
+
+export const supportTicketsRelations = relations(supportTickets, ({ one, many }) => ({
+  user: one(users, {
+    fields: [supportTickets.userId],
+    references: [users.id],
+  }),
+  assignee: one(users, {
+    fields: [supportTickets.assignedTo],
+    references: [users.id],
+    relationName: 'assignedTickets',
+  }),
+  resolver: one(users, {
+    fields: [supportTickets.resolvedBy],
+    references: [users.id],
+    relationName: 'resolvedTickets',
+  }),
+  messages: many(ticketMessages),
+}))
+
+export const ticketMessagesRelations = relations(ticketMessages, ({ one }) => ({
+  ticket: one(supportTickets, {
+    fields: [ticketMessages.ticketId],
+    references: [supportTickets.id],
+  }),
+  sender: one(users, {
+    fields: [ticketMessages.senderId],
+    references: [users.id],
+  }),
+}))
+
+// COMMERCIAL LICENSE INQUIRIES TABLE
+export const licenseInquiries = pgTable('license_inquiries', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  // Contact info
+  name: varchar('name', { length: 255 }).notNull(),
+  email: varchar('email', { length: 255 }).notNull(),
+  company: varchar('company', { length: 255 }),
+  website: varchar('website', { length: 255 }),
+  phone: varchar('phone', { length: 50 }),
+  // Inquiry details
+  licenseType: varchar('license_type', { length: 50 }).notNull(), // 'commercial', 'enterprise', 'saas', 'reseller', 'other'
+  useCase: text('use_case').notNull(),
+  expectedUsers: varchar('expected_users', { length: 50 }), // '1-10', '11-50', '51-200', '201-1000', '1000+'
+  budget: varchar('budget', { length: 50 }), // 'under_1k', '1k_5k', '5k_10k', '10k_plus', 'enterprise'
+  timeline: varchar('timeline', { length: 50 }), // 'immediate', '1_month', '3_months', '6_months', 'exploring'
+  additionalNotes: text('additional_notes'),
+  // Status
+  status: varchar('status', { length: 30 }).default('new').notNull(), // 'new', 'contacted', 'negotiating', 'closed_won', 'closed_lost'
+  assignedTo: uuid('assigned_to').references(() => users.id, { onDelete: 'set null' }),
+  // Timestamps
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+})
+
 // TYPE EXPORTS
 export type User = typeof users.$inferSelect
 export type NewUser = typeof users.$inferInsert
@@ -1261,3 +1737,21 @@ export type ProfileComment = typeof profileComments.$inferSelect
 export type NewProfileComment = typeof profileComments.$inferInsert
 export type Passkey = typeof passkeys.$inferSelect
 export type NewPasskey = typeof passkeys.$inferInsert
+export type UserBan = typeof userBans.$inferSelect
+export type NewUserBan = typeof userBans.$inferInsert
+export type DeviceFingerprint = typeof deviceFingerprints.$inferSelect
+export type NewDeviceFingerprint = typeof deviceFingerprints.$inferInsert
+export type LoginHistory = typeof loginHistory.$inferSelect
+export type NewLoginHistory = typeof loginHistory.$inferInsert
+export type MultiAccountLink = typeof multiAccountLinks.$inferSelect
+export type NewMultiAccountLink = typeof multiAccountLinks.$inferInsert
+export type ContentModerationLog = typeof contentModerationLog.$inferSelect
+export type NewContentModerationLog = typeof contentModerationLog.$inferInsert
+export type SecurityEvent = typeof securityEvents.$inferSelect
+export type NewSecurityEvent = typeof securityEvents.$inferInsert
+export type WithdrawalRequest = typeof withdrawalRequests.$inferSelect
+export type NewWithdrawalRequest = typeof withdrawalRequests.$inferInsert
+export type SupportTicket = typeof supportTickets.$inferSelect
+export type NewSupportTicket = typeof supportTickets.$inferInsert
+export type TicketMessage = typeof ticketMessages.$inferSelect
+export type NewTicketMessage = typeof ticketMessages.$inferInsert

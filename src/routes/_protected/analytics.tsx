@@ -42,7 +42,10 @@ export const Route = createFileRoute('/_protected/analytics')({
   head: () => ({
     meta: [
       { title: 'Analytics | Eziox' },
-      { name: 'description', content: 'Track your profile performance and engagement metrics.' },
+      {
+        name: 'description',
+        content: 'Track your profile performance and engagement metrics.',
+      },
       { name: 'robots', content: 'noindex, nofollow' },
     ],
   }),
@@ -146,11 +149,17 @@ function AnalyticsPage() {
   const handleExport = async (format: 'json' | 'csv') => {
     setIsExporting(true)
     try {
-      const result = await exportAnalytics({ data: { days: timeRange, format } })
+      const result = await exportAnalytics({
+        data: { days: timeRange, format },
+      })
       const exportData = result as { data: string | unknown[]; format: string }
       const blob = new Blob(
-        [typeof exportData.data === 'string' ? exportData.data : JSON.stringify(exportData.data, null, 2)],
-        { type: format === 'csv' ? 'text/csv' : 'application/json' }
+        [
+          typeof exportData.data === 'string'
+            ? exportData.data
+            : JSON.stringify(exportData.data, null, 2),
+        ],
+        { type: format === 'csv' ? 'text/csv' : 'application/json' },
       )
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
@@ -182,15 +191,26 @@ function AnalyticsPage() {
   }, [dailyStats])
 
   const totalPeriodViews = dailyStats?.reduce((sum, d) => sum + d.views, 0) || 0
-  const totalPeriodClicks = dailyStats?.reduce((sum, d) => sum + d.clicks, 0) || 0
-  const avgDailyViews = dailyStats?.length ? Math.round(totalPeriodViews / dailyStats.length) : 0
+  const totalPeriodClicks =
+    dailyStats?.reduce((sum, d) => sum + d.clicks, 0) || 0
+  const avgDailyViews = dailyStats?.length
+    ? Math.round(totalPeriodViews / dailyStats.length)
+    : 0
 
-  const ctr = overview && overview.totalViews > 0
-    ? ((overview.totalClicks / overview.totalViews) * 100).toFixed(1)
-    : '0'
+  const ctr =
+    overview && overview.totalViews > 0
+      ? ((overview.totalClicks / overview.totalViews) * 100).toFixed(1)
+      : '0'
 
   const engagementScore = overview
-    ? Math.min(100, Math.round(((overview.totalClicks + overview.totalFollowers * 5) / Math.max(overview.totalViews, 1)) * 100))
+    ? Math.min(
+        100,
+        Math.round(
+          ((overview.totalClicks + overview.totalFollowers * 5) /
+            Math.max(overview.totalViews, 1)) *
+            100,
+        ),
+      )
     : 0
 
   return (
@@ -222,7 +242,9 @@ function AnalyticsPage() {
             <div className="flex items-center gap-4">
               <motion.div
                 className="w-16 h-16 rounded-2xl flex items-center justify-center relative overflow-hidden"
-                style={{ background: 'linear-gradient(135deg, #8b5cf6, #06b6d4)' }}
+                style={{
+                  background: 'linear-gradient(135deg, #8b5cf6, #06b6d4)',
+                }}
                 whileHover={{ scale: 1.05, rotate: 5 }}
               >
                 <BarChart3 size={32} className="text-white relative z-10" />
@@ -245,7 +267,9 @@ function AnalyticsPage() {
                   )}
                 </div>
                 <p className="text-white/50 mt-1">
-                  {t('analytics.trackingFor', { username: currentUser?.username })}
+                  {t('analytics.trackingFor', {
+                    username: currentUser?.username,
+                  })}
                 </p>
               </div>
             </div>
@@ -260,8 +284,12 @@ function AnalyticsPage() {
                     onClick={() => setTimeRange(days)}
                     className="px-4 py-2 text-sm font-medium rounded-xl transition-all"
                     style={{
-                      background: timeRange === days ? 'linear-gradient(135deg, #8b5cf6, #06b6d4)' : 'transparent',
-                      color: timeRange === days ? '#fff' : 'rgba(255,255,255,0.5)',
+                      background:
+                        timeRange === days
+                          ? 'linear-gradient(135deg, #8b5cf6, #06b6d4)'
+                          : 'transparent',
+                      color:
+                        timeRange === days ? '#fff' : 'rgba(255,255,255,0.5)',
                     }}
                     whileHover={{ scale: timeRange === days ? 1 : 1.05 }}
                     whileTap={{ scale: 0.95 }}
@@ -290,7 +318,11 @@ function AnalyticsPage() {
                   whileTap={{ scale: 0.98 }}
                   disabled={isExporting}
                 >
-                  {isExporting ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />}
+                  {isExporting ? (
+                    <Loader2 size={16} className="animate-spin" />
+                  ) : (
+                    <Download size={16} />
+                  )}
                   {t('analytics.export')}
                 </motion.button>
                 <div className="absolute right-0 top-full mt-2 w-48 rounded-xl overflow-hidden opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 bg-[#1a1a24] border border-white/10 shadow-2xl">
@@ -330,7 +362,9 @@ function AnalyticsPage() {
                   </div>
                   <div>
                     <p className="font-semibold text-white">
-                      {t('analytics.delayBanner.title', { hours: overview.analyticsDelay })}
+                      {t('analytics.delayBanner.title', {
+                        hours: overview.analyticsDelay,
+                      })}
                     </p>
                     <p className="text-sm text-white/50">
                       {t('analytics.delayBanner.description')}
@@ -406,9 +440,14 @@ function AnalyticsPage() {
                     <Activity size={24} className="text-purple-400" />
                   </div>
                   <div>
-                    <h2 className="font-bold text-lg text-white">{t('analytics.chart.title')}</h2>
+                    <h2 className="font-bold text-lg text-white">
+                      {t('analytics.chart.title')}
+                    </h2>
                     <p className="text-sm text-white/50">
-                      {totalPeriodViews.toLocaleString()} {t('analytics.chart.views').toLowerCase()}, {totalPeriodClicks.toLocaleString()} {t('analytics.chart.clicks').toLowerCase()}
+                      {totalPeriodViews.toLocaleString()}{' '}
+                      {t('analytics.chart.views').toLowerCase()},{' '}
+                      {totalPeriodClicks.toLocaleString()}{' '}
+                      {t('analytics.chart.clicks').toLowerCase()}
                     </p>
                   </div>
                 </div>
@@ -416,7 +455,9 @@ function AnalyticsPage() {
                   <button
                     onClick={() => setActiveChart('views')}
                     className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                      activeChart === 'views' ? 'bg-purple-500/20 text-purple-400' : 'text-white/50 hover:text-white'
+                      activeChart === 'views'
+                        ? 'bg-purple-500/20 text-purple-400'
+                        : 'text-white/50 hover:text-white'
                     }`}
                   >
                     <div className="w-2 h-2 rounded-full bg-purple-500" />
@@ -425,7 +466,9 @@ function AnalyticsPage() {
                   <button
                     onClick={() => setActiveChart('clicks')}
                     className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                      activeChart === 'clicks' ? 'bg-green-500/20 text-green-400' : 'text-white/50 hover:text-white'
+                      activeChart === 'clicks'
+                        ? 'bg-green-500/20 text-green-400'
+                        : 'text-white/50 hover:text-white'
                     }`}
                   >
                     <div className="w-2 h-2 rounded-full bg-green-500" />
@@ -443,24 +486,46 @@ function AnalyticsPage() {
               ) : chartData.length > 0 ? (
                 <div className="h-64 flex items-end gap-[2px]">
                   {chartData.map((day, i) => {
-                    const height = activeChart === 'views' ? day.viewsPercent : day.clicksPercent
-                    const value = activeChart === 'views' ? day.views : day.clicks
-                    const color = activeChart === 'views' ? '#8b5cf6' : '#22c55e'
+                    const height =
+                      activeChart === 'views'
+                        ? day.viewsPercent
+                        : day.clicksPercent
+                    const value =
+                      activeChart === 'views' ? day.views : day.clicks
+                    const color =
+                      activeChart === 'views' ? '#8b5cf6' : '#22c55e'
 
                     return (
-                      <div key={day.date} className="flex-1 flex flex-col justify-end group relative min-w-[3px]">
+                      <div
+                        key={day.date}
+                        className="flex-1 flex flex-col justify-end group relative min-w-[3px]"
+                      >
                         <motion.div
                           className="rounded-t cursor-pointer transition-opacity hover:opacity-80"
-                          style={{ background: `linear-gradient(to top, ${color}40, ${color})` }}
+                          style={{
+                            background: `linear-gradient(to top, ${color}40, ${color})`,
+                          }}
                           initial={{ height: 0 }}
                           animate={{ height: `${Math.max(height, 2)}%` }}
-                          transition={{ delay: i * 0.008, duration: 0.4, ease: 'easeOut' }}
+                          transition={{
+                            delay: i * 0.008,
+                            duration: 0.4,
+                            ease: 'easeOut',
+                          }}
                         />
                         <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 rounded-xl text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all pointer-events-none z-20 bg-[#1a1a24] border border-white/10 shadow-xl">
                           <p className="font-semibold text-white mb-1">
-                            {new Date(day.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                            {new Date(day.date).toLocaleDateString(undefined, {
+                              month: 'short',
+                              day: 'numeric',
+                            })}
                           </p>
-                          <p style={{ color }}>{value} {activeChart === 'views' ? t('analytics.chart.views').toLowerCase() : t('analytics.chart.clicks').toLowerCase()}</p>
+                          <p style={{ color }}>
+                            {value}{' '}
+                            {activeChart === 'views'
+                              ? t('analytics.chart.views').toLowerCase()
+                              : t('analytics.chart.clicks').toLowerCase()}
+                          </p>
                         </div>
                       </div>
                     )
@@ -487,8 +552,12 @@ function AnalyticsPage() {
                   <Link2 size={20} className="text-green-400" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-white">{t('analytics.topLinks.title')}</h3>
-                  <p className="text-xs text-white/50">{t('analytics.topLinks.subtitle')}</p>
+                  <h3 className="font-bold text-white">
+                    {t('analytics.topLinks.title')}
+                  </h3>
+                  <p className="text-xs text-white/50">
+                    {t('analytics.topLinks.subtitle')}
+                  </p>
                 </div>
               </div>
             </div>
@@ -514,29 +583,43 @@ function AnalyticsPage() {
                       <div
                         className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold shrink-0"
                         style={{
-                          background: i === 0 ? 'linear-gradient(135deg, #f59e0b, #ef4444)' :
-                                     i === 1 ? 'linear-gradient(135deg, #94a3b8, #64748b)' :
-                                     i === 2 ? 'linear-gradient(135deg, #d97706, #92400e)' : 'rgba(255,255,255,0.1)',
+                          background:
+                            i === 0
+                              ? 'linear-gradient(135deg, #f59e0b, #ef4444)'
+                              : i === 1
+                                ? 'linear-gradient(135deg, #94a3b8, #64748b)'
+                                : i === 2
+                                  ? 'linear-gradient(135deg, #d97706, #92400e)'
+                                  : 'rgba(255,255,255,0.1)',
                           color: i < 3 ? '#fff' : 'rgba(255,255,255,0.5)',
                         }}
                       >
                         {i + 1}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-white truncate">{link.title}</p>
+                        <p className="text-sm font-medium text-white truncate">
+                          {link.title}
+                        </p>
                         <div className="flex items-center gap-2 mt-1">
                           <div className="flex-1 h-1.5 rounded-full overflow-hidden bg-white/10">
                             <motion.div
                               className="h-full rounded-full bg-gradient-to-r from-green-500 to-emerald-500"
                               initial={{ width: 0 }}
                               animate={{ width: `${link.percentage}%` }}
-                              transition={{ delay: 0.4 + i * 0.05, duration: 0.5 }}
+                              transition={{
+                                delay: 0.4 + i * 0.05,
+                                duration: 0.5,
+                              }}
                             />
                           </div>
-                          <span className="text-xs text-white/50 w-10 text-right">{link.percentage}%</span>
+                          <span className="text-xs text-white/50 w-10 text-right">
+                            {link.percentage}%
+                          </span>
                         </div>
                       </div>
-                      <span className="text-sm font-bold text-green-400">{link.clicks}</span>
+                      <span className="text-sm font-bold text-green-400">
+                        {link.clicks}
+                      </span>
                     </motion.div>
                   ))}
                 </div>
@@ -544,7 +627,10 @@ function AnalyticsPage() {
                 <EmptyState
                   icon={Link2}
                   title={t('analytics.topLinks.noData')}
-                  action={{ label: t('analytics.topLinks.addFirst'), to: '/profile' }}
+                  action={{
+                    label: t('analytics.topLinks.addFirst'),
+                    to: '/profile',
+                  }}
                 />
               )}
             </div>
@@ -566,8 +652,12 @@ function AnalyticsPage() {
                   <Globe size={20} className="text-purple-400" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-white">{t('analytics.referrers.title')}</h3>
-                  <p className="text-xs text-white/50">{t('analytics.referrers.subtitle')}</p>
+                  <h3 className="font-bold text-white">
+                    {t('analytics.referrers.title')}
+                  </h3>
+                  <p className="text-xs text-white/50">
+                    {t('analytics.referrers.subtitle')}
+                  </p>
                 </div>
               </div>
             </div>
@@ -604,7 +694,10 @@ function AnalyticsPage() {
                             className="h-full rounded-full bg-gradient-to-r from-purple-500 to-pink-500"
                             initial={{ width: 0 }}
                             animate={{ width: `${ref.percentage}%` }}
-                            transition={{ delay: 0.4 + i * 0.05, duration: 0.5 }}
+                            transition={{
+                              delay: 0.4 + i * 0.05,
+                              duration: 0.5,
+                            }}
                           />
                         </div>
                         <span className="text-xs text-white/50 w-16 text-right">
@@ -637,8 +730,12 @@ function AnalyticsPage() {
                   <Sparkles size={28} className="text-white" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-xl text-white">{t('analytics.insights.title')}</h3>
-                  <p className="text-sm text-white/50">{t('analytics.insights.subtitle')}</p>
+                  <h3 className="font-bold text-xl text-white">
+                    {t('analytics.insights.title')}
+                  </h3>
+                  <p className="text-sm text-white/50">
+                    {t('analytics.insights.subtitle')}
+                  </p>
                 </div>
               </div>
 
@@ -652,7 +749,11 @@ function AnalyticsPage() {
                   icon={TrendingUp}
                   label={t('analytics.insights.viewsTrend')}
                   value={`${overview?.viewsChange !== undefined ? (overview.viewsChange >= 0 ? '+' : '') + overview.viewsChange : 0}%`}
-                  positive={overview?.viewsChange !== undefined ? overview.viewsChange >= 0 : true}
+                  positive={
+                    overview?.viewsChange !== undefined
+                      ? overview.viewsChange >= 0
+                      : true
+                  }
                 />
                 <InsightRow
                   icon={Zap}
@@ -693,7 +794,16 @@ interface StatCardProps {
   subtitle?: string
 }
 
-function StatCard({ title, value, change, icon: Icon, gradient, loading, delay = 0, subtitle }: StatCardProps) {
+function StatCard({
+  title,
+  value,
+  change,
+  icon: Icon,
+  gradient,
+  loading,
+  delay = 0,
+  subtitle,
+}: StatCardProps) {
   const isPositive = change !== undefined ? change >= 0 : true
 
   return (
@@ -703,7 +813,9 @@ function StatCard({ title, value, change, icon: Icon, gradient, loading, delay =
       transition={{ delay }}
       className="rounded-2xl p-5 relative overflow-hidden group bg-white/[0.03] border border-white/10 backdrop-blur-xl"
     >
-      <div className={`absolute top-0 right-0 w-32 h-32 rounded-full blur-3xl opacity-10 group-hover:opacity-20 transition-opacity bg-gradient-to-br ${gradient}`} />
+      <div
+        className={`absolute top-0 right-0 w-32 h-32 rounded-full blur-3xl opacity-10 group-hover:opacity-20 transition-opacity bg-gradient-to-br ${gradient}`}
+      />
       <div className="relative">
         <div className="flex items-start justify-between mb-4">
           <motion.div
@@ -718,10 +830,16 @@ function StatCard({ title, value, change, icon: Icon, gradient, loading, delay =
               animate={{ scale: 1 }}
               transition={{ delay: delay + 0.2 }}
               className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold ${
-                isPositive ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
+                isPositive
+                  ? 'bg-green-500/20 text-green-400'
+                  : 'bg-red-500/20 text-red-400'
               }`}
             >
-              {isPositive ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
+              {isPositive ? (
+                <TrendingUp size={12} />
+              ) : (
+                <TrendingDown size={12} />
+              )}
               {Math.abs(change)}%
             </motion.div>
           )}
@@ -762,7 +880,11 @@ function InsightRow({ icon: Icon, label, value, positive }: InsightRowProps) {
       </div>
       <span
         className={`text-sm font-bold ${
-          positive !== undefined ? (positive ? 'text-green-400' : 'text-red-400') : 'text-white'
+          positive !== undefined
+            ? positive
+              ? 'text-green-400'
+              : 'text-red-400'
+            : 'text-white'
         }`}
       >
         {value}
@@ -780,7 +902,13 @@ interface UpgradePromptProps {
   gradient: string
 }
 
-function UpgradePrompt({ icon: Icon, title, description, buttonText, gradient }: UpgradePromptProps) {
+function UpgradePrompt({
+  icon: Icon,
+  title,
+  description,
+  buttonText,
+  gradient,
+}: UpgradePromptProps) {
   return (
     <div className="py-8 text-center">
       <Icon size={36} className="mx-auto mb-3 text-purple-400 opacity-50" />

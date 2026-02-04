@@ -269,6 +269,8 @@ export type SubscriptionEvent =
   | 'trial_ending'
   | 'tier_granted'
   | 'tier_expired'
+  | 'suspended'
+  | 'refunded'
 
 const TIER_NAMES: Record<string, string> = {
   free: 'Eziox Core',
@@ -285,6 +287,10 @@ export async function createSubscriptionNotification(
     previousTier?: string
     expiresAt?: Date | null
     adminGranted?: boolean
+    reason?: string
+    failedCount?: number
+    maxAttempts?: number
+    refundAmount?: string
   } = {},
 ) {
   const tierName = data.tier ? TIER_NAMES[data.tier] || data.tier : ''
@@ -315,8 +321,9 @@ export async function createSubscriptionNotification(
       break
     case 'payment_failed':
       title = 'Payment Failed'
-      message =
-        "We couldn't process your payment. Please update your payment method to keep your subscription active."
+      message = data.failedCount && data.maxAttempts
+        ? `Payment attempt ${data.failedCount} of ${data.maxAttempts} failed. Please update your payment method.`
+        : "We couldn't process your payment. Please update your payment method to keep your subscription active."
       break
     case 'trial_ending':
       title = 'Trial Ending Soon'
@@ -331,6 +338,18 @@ export async function createSubscriptionNotification(
     case 'tier_expired':
       title = 'Subscription Expired'
       message = `Your ${previousTierName} subscription has expired. You've been moved to ${tierName}.`
+      break
+    case 'suspended':
+      title = 'Subscription Suspended'
+      message = data.reason === 'payment_failed'
+        ? `Your subscription has been suspended after ${data.failedCount || 3} failed payment attempts. Please update your payment method and resubscribe.`
+        : 'Your subscription has been suspended. Please contact support for assistance.'
+      break
+    case 'refunded':
+      title = 'Refund Processed'
+      message = data.refundAmount
+        ? `A refund of ${data.refundAmount} has been processed. It should appear in your account within 5-10 business days.`
+        : 'Your refund has been processed. It should appear in your account within 5-10 business days.'
       break
     default:
       title = 'Subscription Update'

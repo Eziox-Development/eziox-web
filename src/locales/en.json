@@ -61,7 +61,9 @@
     "learnMore": "Learn more",
     "viewAll": "View all",
     "seeMore": "See more",
-    "showLess": "Show less"
+    "showLess": "Show less",
+    "refresh": "Refresh",
+    "clear": "Clear"
   },
   "nav": {
     "home": "Home",
@@ -1586,7 +1588,7 @@
       },
       "contact": {
         "title": "Contact Options",
-        "content": "**Email Address:** [contact@eziox.link](mailto:contact@eziox.link)\n\n**Contact Form:** [https://eziox.link/contact](https://eziox.link/contact)"
+        "content": "**Email Address:** [contact@eziox.link](mailto:contact@eziox.link)\n\n**Contact Form:** [https://eziox.link/support](https://eziox.link/support)"
       },
       "disputeResolution": {
         "title": "Consumer Dispute Resolution",
@@ -1701,7 +1703,7 @@
       },
       "contact": {
         "title": "Contact",
-        "content": "For questions about cookie usage:\n\n**Email:** privacy@eziox.link\n**Website:** https://eziox.link/contact\n\nFor general privacy inquiries, see our Privacy Policy."
+        "content": "For questions about cookie usage:\n\n**Email:** privacy@eziox.link\n**Website:** https://eziox.link/support\n\nFor general privacy inquiries, see our Privacy Policy."
       }
     },
     "relatedLinks": {
@@ -1739,7 +1741,9 @@
       "terms": "Terms of Service",
       "cookies": "Cookie Policy",
       "cancellation": "Cancellation Policy",
-      "imprint": "Imprint"
+      "imprint": "Imprint",
+      "takedown": "DMCA / Takedown",
+      "licensing": "Commercial Licensing"
     },
     "stats": {
       "creators": "Creators",
@@ -1973,7 +1977,7 @@
       },
       "widerrufsrecht": {
         "title": "Right of Cancellation",
-        "content": "You have the right to cancel this contract within 14 days without giving any reason.\n\nThe cancellation period will expire after 14 days from the day of the conclusion of the contract.\n\nTo exercise the right of cancellation, you must inform us (Nattapat Pongsuwan, Rohstorf 59, 21397 Vastorf, Germany, email address: [contact@eziox.link](mailto:contact@eziox.link)) of your decision to cancel this contract by a clear statement (e.g. a letter sent by post or email).\n\nYou may use the model cancellation form or any other clear statement to cancel the contract electronically on our website [https://eziox.link/contact](https://eziox.link/contact). If you use this option, we will immediately send you a confirmation of receipt of such cancellation on a durable medium (e.g. by email).\n\nTo meet the cancellation deadline, it is sufficient for you to send your communication concerning your exercise of the right of cancellation before the cancellation period has expired."
+        "content": "You have the right to cancel this contract within 14 days without giving any reason.\n\nThe cancellation period will expire after 14 days from the day of the conclusion of the contract.\n\nTo exercise the right of cancellation, you must inform us (Nattapat Pongsuwan, Rohstorf 59, 21397 Vastorf, Germany, email address: [contact@eziox.link](mailto:contact@eziox.link)) of your decision to cancel this contract by a clear statement (e.g. a letter sent by post or email).\n\nYou may use the model cancellation form or any other clear statement to cancel the contract electronically on our website [https://eziox.link/support](https://eziox.link/support). If you use this option, we will immediately send you a confirmation of receipt of such cancellation on a durable medium (e.g. by email).\n\nTo meet the cancellation deadline, it is sufficient for you to send your communication concerning your exercise of the right of cancellation before the cancellation period has expired."
       },
       "folgen": {
         "title": "Consequences of Cancellation",
@@ -2436,6 +2440,7 @@
       "premium": "Premium",
       "account": "Account",
       "quickLinks": "Quick Links",
+      "support": "Support",
       "admin": "Admin",
       "adminPanel": "Admin Panel",
       "partnerApps": "Partner Apps",
@@ -2446,6 +2451,8 @@
       "profileDesc": "Edit your profile info",
       "links": "Links",
       "linksDesc": "Manage your links",
+      "shortener": "URL Shortener",
+      "shortenerDesc": "Create & manage short links",
       "widgets": "Widgets",
       "widgetsDesc": "Add interactive widgets",
       "integrations": "Integrations",
@@ -2473,7 +2480,9 @@
       "analytics": "Analytics",
       "leaderboard": "Leaderboard",
       "playground": "Playground",
-      "themeBuilder": "Theme Builder"
+      "themeBuilder": "Theme Builder",
+      "myTickets": "My Tickets",
+      "helpCenter": "Help Center"
     },
     "stats": {
       "profileViews": "Profile Views",
@@ -3687,7 +3696,12 @@
                 "Enter the 6-digit code to confirm"
               ],
               "appsTitle": "Supported Apps:",
-              "apps": ["Google Authenticator", "Authy", "1Password", "Bitwarden"]
+              "apps": [
+                "Google Authenticator",
+                "Authy",
+                "1Password",
+                "Bitwarden"
+              ]
             },
             "recoveryCodes": {
               "title": "Recovery Codes",
@@ -4001,7 +4015,7 @@
             "contactSupport": "How do I contact support?",
             "contactSupportOptions": [
               "Email: support@eziox.link",
-              "Contact Form: eziox.link/contact",
+              "Contact Form: eziox.link/support",
               "Discord: Coming soon"
             ],
             "foundBug": "I found a bug!",
@@ -4075,6 +4089,594 @@
       "passkey": "Use passkeys for the most secure and convenient login experience",
       "unique": "Never reuse passwords across different services",
       "phishing": "Always verify you're on eziox.link before entering credentials"
+    }
+  },
+  "admin": {
+    "title": "Admin Panel",
+    "accessRestricted": "Access Restricted",
+    "accessRestrictedDesc": "This area requires elevated privileges.",
+    "currentRole": "Current role",
+    "ownerAccess": "Owner Access",
+    "adminAccess": "Admin Access",
+    "adminModeActive": "Admin Mode Active",
+    "actionsLogged": "All actions are logged for security purposes.",
+    "tabs": {
+      "overview": "Overview",
+      "overviewDesc": "Dashboard & Stats",
+      "userManager": "User Manager",
+      "userManagerDesc": "Badges & Tiers",
+      "moderation": "Moderation",
+      "moderationDesc": "Bans & Appeals",
+      "abuse": "Abuse Alerts",
+      "abuseDesc": "Fair Use Policy",
+      "security": "Security",
+      "securityDesc": "Security Monitoring",
+      "tickets": "Tickets",
+      "ticketsDesc": "Support Requests",
+      "partners": "Partners",
+      "partnersDesc": "Applications",
+      "legal": "Legal",
+      "legalDesc": "Takedowns & Licensing",
+      "compliance": "Compliance",
+      "complianceDesc": "License Monitoring",
+      "settings": "Settings",
+      "settingsDesc": "Site Config"
+    },
+    "security": {
+      "title": "Security Monitoring",
+      "description": "Monitor security events, anomalies, and threats",
+      "stats": {
+        "totalEvents": "Total Events",
+        "unresolvedEvents": "Unresolved",
+        "criticalEvents": "Critical",
+        "trend": "24h Trend"
+      },
+      "filters": {
+        "all": "All Events",
+        "unresolved": "Unresolved",
+        "critical": "Critical Only"
+      },
+      "severity": {
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High",
+        "critical": "Critical"
+      },
+      "eventTypes": {
+        "auth": "Authentication",
+        "rateLimit": "Rate Limiting",
+        "account": "Account",
+        "content": "Content",
+        "api": "API",
+        "system": "System"
+      },
+      "table": {
+        "event": "Event",
+        "severity": "Severity",
+        "user": "User",
+        "ip": "IP Address",
+        "time": "Time",
+        "actions": "Actions"
+      },
+      "actions": {
+        "resolve": "Resolve",
+        "viewDetails": "View Details",
+        "blockIp": "Block IP"
+      },
+      "noEvents": "No security events found",
+      "resolved": "Resolved",
+      "resolvedBy": "Resolved by",
+      "trend": {
+        "increasing": "Increasing",
+        "decreasing": "Decreasing",
+        "stable": "Stable"
+      }
+    },
+    "tickets": {
+      "title": "Support Tickets",
+      "description": "Manage and respond to support requests",
+      "list": "Tickets",
+      "noTickets": "No tickets found",
+      "selectTicket": "Select a ticket to view details",
+      "search": "Search tickets...",
+      "refresh": "Refresh",
+      "replySent": "Reply sent",
+      "replyError": "Failed to send reply",
+      "statusUpdated": "Status updated",
+      "priorityUpdated": "Priority updated",
+      "noteAdded": "Internal note added",
+      "replyPlaceholder": "Type your reply...",
+      "internalNotePlaceholder": "Internal note (not visible to user)...",
+      "addNote": "Add Note",
+      "cancel": "Cancel",
+      "filters": {
+        "allStatus": "All Status",
+        "allCategories": "All Categories",
+        "allPriorities": "All Priorities"
+      },
+      "status": {
+        "open": "Open",
+        "in_progress": "In Progress",
+        "waiting_user": "Waiting for User",
+        "waiting_admin": "Waiting for Admin",
+        "resolved": "Resolved",
+        "closed": "Closed"
+      },
+      "priority": {
+        "low": "Low",
+        "normal": "Normal",
+        "high": "High",
+        "urgent": "Urgent"
+      },
+      "category": {
+        "general": "General",
+        "technical": "Technical",
+        "billing": "Billing",
+        "account": "Account",
+        "security": "Security",
+        "abuse": "Abuse",
+        "legal": "Legal",
+        "partnership": "Partnership",
+        "feature": "Feature",
+        "withdrawal": "Withdrawal",
+        "dmca": "DMCA",
+        "gdpr": "GDPR"
+      },
+      "stats": {
+        "open": "Open",
+        "inProgress": "In Progress",
+        "waitingAdmin": "Waiting Admin",
+        "urgent": "Urgent",
+        "today": "Today"
+      }
+    },
+    "withdrawal": {
+      "title": "Withdrawal Requests",
+      "description": "Manage withdrawal and refund requests",
+      "stats": {
+        "pending": "Pending",
+        "processing": "Processing",
+        "completed": "Completed",
+        "rejected": "Rejected"
+      },
+      "requestTypes": {
+        "subscription_cancellation": "Subscription Cancellation",
+        "refund": "Refund Request",
+        "data_deletion": "Data Deletion"
+      },
+      "status": {
+        "pending": "Pending",
+        "processing": "Processing",
+        "approved": "Approved",
+        "rejected": "Rejected",
+        "completed": "Completed"
+      },
+      "actions": {
+        "approve": "Approve",
+        "reject": "Reject",
+        "process": "Process"
+      },
+      "noRequests": "No withdrawal requests found"
+    },
+    "compliance": {
+      "title": "License Compliance",
+      "description": "Manage commercial licenses and monitor compliance violations",
+      "overview": "Overview",
+      "licenses": "Licenses",
+      "violations": "Violations",
+      "createLicense": "Create License",
+      "createLicenseTitle": "Issue New Commercial License",
+      "noLicenses": "No commercial licenses found",
+      "noViolations": "No compliance violations found",
+      "stats": {
+        "activeLicenses": "Active Licenses",
+        "pendingViolations": "Pending Violations",
+        "criticalViolations": "Critical Violations",
+        "recentViolations": "Recent (7 days)",
+        "pendingInquiries": "Pending Inquiries"
+      },
+      "licenseStatus": {
+        "all": "All",
+        "active": "Active",
+        "suspended": "Suspended",
+        "expired": "Expired",
+        "revoked": "Revoked"
+      }
+    },
+    "legal": {
+      "title": "Legal Management",
+      "description": "Handle DMCA takedown requests and commercial license inquiries",
+      "takedowns": "Takedown Requests",
+      "licensing": "License Inquiries",
+      "noRequests": "No takedown requests found",
+      "noInquiries": "No license inquiries found",
+      "status": {
+        "all": "All",
+        "pending": "Pending",
+        "reviewing": "Reviewing",
+        "approved": "Approved",
+        "rejected": "Rejected"
+      },
+      "licenseStatus": {
+        "all": "All",
+        "new": "New",
+        "contacted": "Contacted",
+        "negotiating": "Negotiating",
+        "closed_won": "Closed Won",
+        "closed_lost": "Closed Lost"
+      }
+    },
+    "overview": {
+      "welcome": "Welcome back, Admin",
+      "welcomeDesc": "Here's what's happening with your platform today.",
+      "quickActions": "Quick Actions",
+      "recentActivity": "Recent Activity",
+      "activityComingSoon": "Activity feed coming soon",
+      "manageUsers": "Manage Users",
+      "reviewBans": "Review Bans",
+      "checkAlerts": "Check Alerts",
+      "partnerApps": "Partner Apps"
+    },
+    "stats": {
+      "totalUsers": "Total Users",
+      "activeBans": "Active Bans",
+      "pendingAppeals": "Pending Appeals",
+      "partnerApps": "Partner Apps",
+      "admins": "Admins",
+      "withBadges": "With Badges",
+      "totalBadges": "Total Badges"
+    },
+    "userManager": {
+      "title": "User Manager",
+      "selectUser": "Select a user",
+      "managing": "Managing {{name}}",
+      "searchPlaceholder": "Search users...",
+      "allRoles": "All Roles",
+      "noUsers": "No users match your criteria",
+      "loadingUsers": "Loading users...",
+      "badges": "Badges",
+      "tier": "Tier",
+      "selectTier": "Select tier to assign",
+      "currentTier": "Current",
+      "tierWarning": "Manual tier changes bypass Stripe. Use for gifts, testing, or support cases only.",
+      "badgeCount": "{{count}} badges",
+      "basicAccess": "Basic access",
+      "proFeatures": "€4.99/mo features",
+      "creatorFeatures": "€9.99/mo features",
+      "lifetimeAccess": "Permanent access"
+    },
+    "moderation": {
+      "title": "Moderation",
+      "description": "Manage bans, appeals & multi-accounts",
+      "tabs": {
+        "users": "Users",
+        "appeals": "Appeals",
+        "multiAccount": "Multi-Account",
+        "logs": "Logs"
+      },
+      "stats": {
+        "activeBans": "Active Bans",
+        "pendingAppeals": "Pending Appeals",
+        "detectedMultiAccounts": "Multi-Accounts",
+        "blockedContent": "Blocked Content"
+      },
+      "searchPlaceholder": "Search users by username, email, or name...",
+      "searchHint": "Enter at least 2 characters to search",
+      "noResults": "No users found",
+      "perPage": "Per page",
+      "page": "Page",
+      "of": "of",
+      "totalUsers": "users total",
+      "noAppeals": "No pending appeals",
+      "noMultiAccounts": "No detected multi-accounts",
+      "noLogs": "No moderation logs",
+      "banned": "Banned",
+      "ban": "Ban",
+      "unban": "Unban",
+      "banUser": "Ban User",
+      "banType": "Ban Type",
+      "temporary": "Temporary",
+      "permanent": "Permanent",
+      "shadowBan": "Shadow Ban",
+      "hours": "Hours",
+      "days": "Days",
+      "weeks": "Weeks",
+      "months": "Months",
+      "years": "Years",
+      "reason": "Reason",
+      "reasonPlaceholder": "Enter ban reason (visible to user)...",
+      "internalNotes": "Internal Notes",
+      "internalNotesPlaceholder": "Admin-only notes...",
+      "confirmBan": "Confirm Ban",
+      "banReason": "Ban Reason",
+      "tier": "Tier",
+      "role": "Role",
+      "name": "Name",
+      "pendingReview": "Pending Review",
+      "originalReason": "Original Reason",
+      "appealMessage": "Appeal Message",
+      "responsePlaceholder": "Enter your response...",
+      "approve": "Approve",
+      "reject": "Reject",
+      "ipMatch": "IP Match",
+      "fingerprintMatch": "Fingerprint Match",
+      "confidence": "Confidence",
+      "confirm": "Confirm",
+      "allow": "Allow",
+      "falsePositive": "False Positive",
+      "shadow": "Shadow Ban"
+    },
+    "abuse": {
+      "title": "Abuse Alerts",
+      "description": "Fair Use Policy monitoring and enforcement",
+      "newAlerts": "New Alerts",
+      "awaitingReview": "Awaiting review",
+      "critical": "Critical",
+      "immediateAction": "Require immediate action",
+      "warnings": "Warnings",
+      "shouldReview": "Should be reviewed",
+      "last24h": "Last 24h",
+      "totalToday": "Total alerts today",
+      "status": "Status",
+      "selectStatus": "Select Status",
+      "allStatus": "All Status",
+      "new": "New",
+      "reviewed": "Reviewed",
+      "resolved": "Resolved",
+      "falsePositive": "False Positive",
+      "severity": "Severity",
+      "selectSeverity": "Select Severity",
+      "allSeverity": "All Severity",
+      "warning": "Warning",
+      "info": "Info",
+      "alerts": "Alerts",
+      "allClear": "All Clear!",
+      "noAlerts": "No abuse alerts match your current filters.",
+      "review": "Review",
+      "reviewAndAction": "Review and take action",
+      "user": "User",
+      "email": "Email",
+      "alertType": "Alert Type",
+      "created": "Created",
+      "descriptionLabel": "Description",
+      "metadata": "Metadata",
+      "previousNotes": "Previous Notes",
+      "reviewNotes": "Review Notes",
+      "addNotes": "Add notes about this alert...",
+      "markReviewed": "Mark Reviewed",
+      "markResolved": "Mark Resolved",
+      "statusUpdated": "Alert status updated successfully",
+      "statusUpdateFailed": "Failed to update alert status",
+      "sent": "Sent",
+      "dangerZone": "Danger Zone",
+      "deleteLink": "Delete Link",
+      "banUser": "Ban User",
+      "banUserConfirm": "Ban this user?",
+      "banReasonPlaceholder": "Enter ban reason...",
+      "confirmBan": "Confirm Ban",
+      "userBanned": "User has been banned",
+      "banFailed": "Failed to ban user",
+      "linkDeleted": "Link has been deleted",
+      "deleteFailed": "Failed to delete link"
+    },
+    "partners": {
+      "title": "Partner Applications",
+      "description": "Review and manage partnership requests",
+      "pendingReview": "{{count}} pending review",
+      "total": "Total",
+      "pending": "Pending",
+      "reviewing": "Reviewing",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "searchPlaceholder": "Search by name, username, email, or company...",
+      "all": "All",
+      "category": "Category",
+      "loading": "Loading applications...",
+      "loadFailed": "Failed to Load",
+      "tryAgain": "Unable to fetch applications. Please try again.",
+      "noApplications": "No Applications Found",
+      "adjustFilters": "Try adjusting your filters",
+      "noSubmissions": "No partner applications have been submitted yet",
+      "applied": "Applied",
+      "email": "Email",
+      "website": "Website",
+      "company": "Company",
+      "audienceSize": "Audience Size",
+      "categoryDetails": "Category Details",
+      "descriptionLabel": "Description",
+      "adminNotes": "Admin Notes",
+      "adminNotesPlaceholder": "Add internal notes about this application...",
+      "markReviewing": "Mark Reviewing",
+      "approve": "Approve",
+      "reject": "Reject"
+    },
+    "settings": {
+      "title": "Site Settings",
+      "ownerOnly": "Owner-only configuration",
+      "ownerRequired": "Owner Access Required",
+      "ownerRequiredDesc": "This area requires owner privileges.",
+      "maintenanceMode": "Maintenance Mode",
+      "siteInMaintenance": "Site is in maintenance mode",
+      "siteAccessible": "Site is publicly accessible",
+      "disableMaintenance": "Disable Maintenance",
+      "enableMaintenance": "Enable Maintenance",
+      "maintenanceActive": "Maintenance mode is active.",
+      "maintenanceActiveDesc": "Only you and allowed emails can access the site.",
+      "maintenanceMessage": "Maintenance Message",
+      "messagePlaceholder": "Message shown to visitors during maintenance...",
+      "defaultMaintenanceMessage": "We are currently performing maintenance. Please check back soon.",
+      "estimatedEndTime": "Estimated End Time (optional)",
+      "estimatedEndTimeDesc": "Set when you expect maintenance to be complete.",
+      "date": "Date",
+      "hour": "Hour",
+      "minute": "Minute",
+      "estimatedReturn": "Estimated return",
+      "allowedUsers": "Allowed Users (can bypass maintenance)",
+      "allowedUsersDesc": "Your owner account always has access. Search for existing users to grant access during maintenance.",
+      "searchUsersPlaceholder": "Search users by name, username, or email...",
+      "noUsersFound": "No users found. Press Enter to add as email.",
+      "saveSettings": "Save Settings",
+      "updateFailed": "Failed to update settings",
+      "toggleFailed": "Failed to toggle maintenance mode"
+    }
+  },
+  "takedown": {
+    "title": "DMCA & Takedown Request",
+    "description": "Report content that infringes your rights or violates our policies",
+    "submit": "Submit Request",
+    "error": "Failed to submit request. Please try again.",
+    "step1": {
+      "title": "What type of claim?",
+      "description": "Select the category that best describes your complaint"
+    },
+    "step2": {
+      "title": "Content Information",
+      "contentType": "Content Type",
+      "contentUrl": "Content URL",
+      "reportedUsername": "Reported Username (optional)",
+      "originalWorkUrl": "Original Work URL"
+    },
+    "step3": {
+      "title": "Your Information",
+      "name": "Full Name",
+      "email": "Email Address",
+      "company": "Company (optional)",
+      "phone": "Phone (optional)",
+      "description": "Description of Infringement",
+      "descriptionPlaceholder": "Please describe in detail how this content infringes your rights...",
+      "minChars": "minimum characters"
+    },
+    "step4": {
+      "title": "Legal Statements",
+      "warning": "Filing a false DMCA claim can result in legal consequences. Please ensure all information is accurate.",
+      "goodFaith": "I have a good faith belief that the use of the material in the manner complained of is not authorized by the copyright owner, its agent, or the law.",
+      "accuracy": "I swear, under penalty of perjury, that the information in this notification is accurate and that I am the copyright owner, or am authorized to act on behalf of the owner."
+    },
+    "claimTypes": {
+      "copyright": "Copyright",
+      "copyrightDesc": "Unauthorized use of your work",
+      "trademark": "Trademark",
+      "trademarkDesc": "Misuse of your brand/logo",
+      "defamation": "Defamation",
+      "defamationDesc": "False statements about you",
+      "privacy": "Privacy",
+      "privacyDesc": "Personal info without consent",
+      "other": "Other",
+      "otherDesc": "Other policy violations"
+    },
+    "contentTypes": {
+      "profile": "Profile",
+      "link": "Link",
+      "image": "Image",
+      "bio": "Bio Text",
+      "username": "Username",
+      "other": "Other"
+    },
+    "submitted": {
+      "title": "Request Submitted",
+      "description": "We have received your takedown request and will review it within 48-72 hours.",
+      "requestId": "Request ID",
+      "timeline": "You will receive an email notification once a decision has been made."
+    },
+    "info": {
+      "title": "Important Information",
+      "description": "False claims may result in legal liability. Counter-notices may be filed by the content owner. We comply with DMCA and EU DSA requirements."
+    }
+  },
+  "licensing": {
+    "title": "Commercial Licensing",
+    "description": "Get a commercial license for Eziox to use in your business",
+    "error": "Failed to submit inquiry. Please try again.",
+    "info": {
+      "sourceAvailable": "Source Available",
+      "sourceAvailableDesc": "View and study the code for learning and evaluation",
+      "nonCommercial": "Non-Commercial Free",
+      "nonCommercialDesc": "Free for personal projects, education, and non-profits",
+      "commercial": "Commercial License",
+      "commercialDesc": "Required for business use, SaaS, or monetization"
+    },
+    "types": {
+      "commercial": "Commercial",
+      "enterprise": "Enterprise",
+      "saas": "SaaS",
+      "reseller": "Reseller",
+      "other": "Other"
+    },
+    "budgets": {
+      "under_1k": "< €1,000",
+      "1k_5k": "€1,000 - €5,000",
+      "5k_10k": "€5,000 - €10,000",
+      "10k_plus": "€10,000+",
+      "enterprise": "Enterprise"
+    },
+    "timelines": {
+      "immediate": "Immediate",
+      "1_month": "1 Month",
+      "3_months": "3 Months",
+      "6_months": "6 Months",
+      "exploring": "Just Exploring"
+    },
+    "form": {
+      "title": "License Inquiry",
+      "licenseType": "License Type",
+      "name": "Full Name",
+      "email": "Email Address",
+      "company": "Company Name",
+      "website": "Company Website",
+      "useCase": "Describe Your Use Case",
+      "useCasePlaceholder": "Tell us how you plan to use Eziox commercially...",
+      "minChars": "minimum characters",
+      "expectedUsers": "Expected Users",
+      "budget": "Budget Range",
+      "timeline": "Timeline",
+      "additionalNotes": "Additional Notes",
+      "directContact": "Or email us directly",
+      "submit": "Submit Inquiry"
+    },
+    "submitted": {
+      "title": "Inquiry Submitted",
+      "description": "Thank you for your interest in Eziox commercial licensing.",
+      "referenceId": "Reference ID",
+      "timeline": "Our business team will contact you within 1-2 business days."
+    }
+  },
+  "support": {
+    "viewMyTickets": "View My Tickets",
+    "tickets": {
+      "title": "My Tickets",
+      "description": "View and manage your support requests",
+      "yourTickets": "Your Tickets",
+      "newTicket": "New Ticket",
+      "refresh": "Refresh",
+      "filterByStatus": "Filter by status:",
+      "allStatus": "All Status",
+      "noTickets": "No tickets found",
+      "createFirst": "Create your first ticket",
+      "selectTicket": "Select a ticket to view details",
+      "loading": "Loading...",
+      "replySent": "Reply sent",
+      "replyError": "Failed to send reply",
+      "replyPlaceholder": "Type your reply...",
+      "closeTicket": "Close Ticket",
+      "ticketClosed": "Ticket closed",
+      "closeError": "Failed to close ticket",
+      "originalRequest": "Original Request",
+      "supportTeam": "Support Team",
+      "you": "You",
+      "status": {
+        "open": "Open",
+        "in_progress": "In Progress",
+        "waiting_user": "Waiting for You",
+        "waiting_admin": "Waiting for Support",
+        "resolved": "Resolved",
+        "closed": "Closed"
+      },
+      "priority": {
+        "low": "Low",
+        "normal": "Normal",
+        "high": "High",
+        "urgent": "Urgent"
+      }
     }
   }
 }

@@ -507,7 +507,8 @@ export function generateSecureToken(length = 32): string {
 
 const ALLOWED_ORIGINS = [
   process.env.APP_URL || 'https://eziox.link',
-  process.env.APP_URL?.replace('https://', 'https://www.') || 'https://www.eziox.link',
+  process.env.APP_URL?.replace('https://', 'https://www.') ||
+    'https://www.eziox.link',
   'http://localhost:3000',
   'http://localhost:5173',
   'http://127.0.0.1:3000',
