@@ -1,6 +1,6 @@
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
-import { setResponseStatus, getCookie } from '@tanstack/react-start/server'
+import { setResponseStatus } from '@tanstack/react-start/server'
 import { db } from '../db'
 import {
   users,
@@ -11,7 +11,7 @@ import {
   profiles,
 } from '../db/schema'
 import { eq, desc, or, like, sql } from 'drizzle-orm'
-import { validateSession } from '../lib/auth'
+import { requireAdmin } from './auth-helpers'
 import {
   banUser,
   unbanUser,
@@ -27,26 +27,6 @@ import {
   updateMultiAccountStatus,
   getAllMultiAccountLinks,
 } from '../lib/multi-account-detection'
-
-// Helper to check admin/owner role
-async function requireAdmin() {
-  const token = getCookie('session-token')
-  if (!token) {
-    setResponseStatus(401)
-    throw { message: 'Not authenticated', status: 401 }
-  }
-
-  const currentUser = await validateSession(token)
-  if (!currentUser) {
-    setResponseStatus(401)
-    throw { message: 'Not authenticated', status: 401 }
-  }
-  if (currentUser.role !== 'admin' && currentUser.role !== 'owner') {
-    setResponseStatus(403)
-    throw { message: 'Admin access required', status: 403 }
-  }
-  return currentUser
-}
 
 // ============================================================================
 // USER SEARCH & MANAGEMENT

@@ -105,15 +105,6 @@ export function HomePage() {
       : theme.effects.borderRadius === 'sharp'
         ? '8px'
         : '16px'
-  const glowOpacity =
-    theme.effects.glowIntensity === 'strong'
-      ? 0.5
-      : theme.effects.glowIntensity === 'medium'
-        ? 0.35
-        : theme.effects.glowIntensity === 'subtle'
-          ? 0.2
-          : 0
-
   // Username validation regex
   const usernameRegex = /^[a-zA-Z0-9_-]{3,30}$/
 
@@ -347,575 +338,596 @@ export function HomePage() {
         fontFamily: theme.typography.bodyFont,
       }}
     >
-      {/* Modern Gradient Background */}
+      {/* Aurora Animated Background */}
       <div className="fixed inset-0 pointer-events-none -z-10">
-        {/* Mesh gradient overlay */}
-        <div 
-          className="absolute inset-0"
+        {/* Base background */}
+        <div className="absolute inset-0" style={{ background: theme.colors.background }} />
+
+        {/* Animated aurora orbs */}
+        <motion.div
+          className="absolute w-[800px] h-[800px] rounded-full opacity-20 blur-[120px]"
           style={{
-            background: `
-              radial-gradient(at 20% 0%, ${theme.colors.primary}20 0%, transparent 50%),
-              radial-gradient(at 80% 100%, ${theme.colors.accent}15 0%, transparent 50%),
-              radial-gradient(at 0% 50%, ${theme.colors.primary}10 0%, transparent 40%),
-              ${theme.colors.background}
-            `,
+            background: `radial-gradient(circle, ${theme.colors.primary}, transparent 70%)`,
+            top: '-20%',
+            left: '-10%',
+          }}
+          animate={{
+            x: [0, 100, 50, 0],
+            y: [0, 50, -30, 0],
+            scale: [1, 1.2, 0.9, 1],
+          }}
+          transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
+        />
+        <motion.div
+          className="absolute w-[600px] h-[600px] rounded-full opacity-15 blur-[100px]"
+          style={{
+            background: `radial-gradient(circle, ${theme.colors.accent}, transparent 70%)`,
+            top: '10%',
+            right: '-5%',
+          }}
+          animate={{
+            x: [0, -80, -20, 0],
+            y: [0, 80, -40, 0],
+            scale: [1, 0.8, 1.1, 1],
+          }}
+          transition={{ duration: 25, repeat: Infinity, ease: 'easeInOut' }}
+        />
+        <motion.div
+          className="absolute w-[500px] h-[500px] rounded-full opacity-10 blur-[80px]"
+          style={{
+            background: `radial-gradient(circle, #ec4899, transparent 70%)`,
+            bottom: '10%',
+            left: '30%',
+          }}
+          animate={{
+            x: [0, 60, -40, 0],
+            y: [0, -60, 30, 0],
+            scale: [1, 1.15, 0.85, 1],
+          }}
+          transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
+        />
+
+        {/* Subtle dot grid */}
+        <div
+          className="absolute inset-0 opacity-[0.03]"
+          style={{
+            backgroundImage: `radial-gradient(${theme.colors.foreground} 1px, transparent 1px)`,
+            backgroundSize: '32px 32px',
           }}
         />
-        {/* Subtle grid pattern */}
-        <div 
-          className="absolute inset-0 opacity-[0.02]"
+
+        {/* Top-down vignette */}
+        <div
+          className="absolute inset-0"
           style={{
-            backgroundImage: `
-              linear-gradient(${theme.colors.foreground} 1px, transparent 1px),
-              linear-gradient(90deg, ${theme.colors.foreground} 1px, transparent 1px)
-            `,
-            backgroundSize: '64px 64px',
+            background: `linear-gradient(to bottom, transparent 0%, ${theme.colors.background}40 50%, ${theme.colors.background} 100%)`,
           }}
         />
       </div>
 
       {/* ==================== HERO SECTION ==================== */}
-      <section className="relative pt-28 pb-20 px-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            {/* Left: Hero Content */}
+      <section className="relative pt-32 pb-24 px-4">
+        <div className="max-w-5xl mx-auto text-center">
+          {/* Animated Aurora Ring behind content */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden">
             <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7 }}
-            >
-              {/* Badge */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.2 }}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-8"
-                style={{
-                  background: `linear-gradient(135deg, ${theme.colors.primary}20, ${theme.colors.accent}15)`,
-                  border: `1px solid ${theme.colors.primary}30`,
-                }}
-              >
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
-                >
-                  <Sparkles size={16} style={{ color: theme.colors.primary }} />
-                </motion.div>
-                <span
-                  className="text-sm font-medium"
-                  style={{ color: theme.colors.foreground }}
-                >
-                  {t('home.badge', {
-                    themes: themes.length,
-                    creators: stats?.totalUsers || 0,
-                  })}
-                </span>
-              </motion.div>
+              className="w-[600px] h-[600px] rounded-full"
+              style={{
+                background: `conic-gradient(from 0deg, ${theme.colors.primary}, ${theme.colors.accent}, #ec4899, ${theme.colors.primary})`,
+                filter: 'blur(80px)',
+                opacity: 0.15,
+              }}
+              animate={{ rotate: 360 }}
+              transition={{ duration: 30, repeat: Infinity, ease: 'linear' }}
+            />
+          </div>
 
-              {/* Headline */}
-              <h1
-                className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-[1.05]"
+          {/* Badge */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="relative inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full mb-10"
+            style={{
+              background: `linear-gradient(135deg, ${theme.colors.primary}15, ${theme.colors.accent}10)`,
+              border: `1px solid ${theme.colors.primary}25`,
+              backdropFilter: 'blur(10px)',
+            }}
+          >
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
+            >
+              <Sparkles size={16} style={{ color: theme.colors.accent }} />
+            </motion.div>
+            <span
+              className="text-sm font-medium tracking-wide"
+              style={{ color: theme.colors.foreground }}
+            >
+              {t('home.badge', {
+                themes: themes.length,
+                creators: stats?.totalUsers || 0,
+              })}
+            </span>
+            <div
+              className="w-1.5 h-1.5 rounded-full animate-pulse"
+              style={{ background: theme.colors.accent }}
+            />
+          </motion.div>
+
+          {/* Headline */}
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.7 }}
+            className="relative text-5xl md:text-7xl lg:text-8xl font-extrabold mb-8 leading-[1.02] tracking-tight"
+            style={{
+              fontFamily: theme.typography.displayFont,
+            }}
+          >
+            <span style={{ color: theme.colors.foreground }}>
+              {t('home.hero.line1')}{' '}
+            </span>
+            <span
+              className="bg-clip-text text-transparent"
+              style={{
+                backgroundImage: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent}, #ec4899)`,
+                backgroundSize: '200% 200%',
+              }}
+            >
+              {t('home.hero.line2')}
+            </span>
+            <br />
+            <span style={{ color: theme.colors.foreground }}>
+              {t('home.hero.line3')}
+            </span>
+          </motion.h1>
+
+          {/* Subtitle */}
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.35 }}
+            className="relative text-lg md:text-xl mb-12 max-w-2xl mx-auto leading-relaxed"
+            style={{ color: theme.colors.foregroundMuted }}
+          >
+            {t('home.hero.subtitle')}
+          </motion.p>
+
+          {/* Claim Username Input - Only show for non-logged-in users */}
+          {!currentUser && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.45 }}
+              className="relative max-w-xl mx-auto mb-10"
+            >
+              <div
+                className="flex items-center gap-2 p-2 rounded-2xl"
                 style={{
-                  color: theme.colors.foreground,
-                  fontFamily: theme.typography.displayFont,
+                  background: `${theme.colors.card}cc`,
+                  border: `2px solid ${usernameStatus === 'available' ? '#22c55e' : usernameStatus === 'taken' || usernameStatus === 'invalid' ? '#ef4444' : theme.colors.border}`,
+                  boxShadow:
+                    usernameStatus === 'available'
+                      ? '0 0 40px rgba(34, 197, 94, 0.25), 0 0 80px rgba(34, 197, 94, 0.1)'
+                      : `0 0 60px ${theme.colors.primary}15, 0 20px 60px rgba(0,0,0,0.3)`,
+                  backdropFilter: 'blur(20px)',
                 }}
               >
-                {t('home.hero.line1')}{' '}
-                <span
-                  className="bg-clip-text text-transparent"
+                <div
+                  className="flex items-center gap-2 px-4 py-3 rounded-xl"
+                  style={{ background: `${theme.colors.backgroundSecondary}cc` }}
+                >
+                  <span
+                    className="text-sm font-medium"
+                    style={{ color: theme.colors.foregroundMuted }}
+                  >
+                    {getAppHostname()}/
+                  </span>
+                </div>
+                <input
+                  type="text"
+                  value={claimUsername}
+                  onChange={(e) =>
+                    setClaimUsername(
+                      e.target.value
+                        .toLowerCase()
+                        .replace(/[^a-z0-9_-]/g, ''),
+                    )
+                  }
+                  placeholder={t('home.claim.placeholder')}
+                  className="flex-1 px-4 py-3 bg-transparent outline-none text-lg font-medium"
+                  style={{ color: theme.colors.foreground }}
+                  maxLength={30}
+                />
+                <div className="flex items-center gap-2 pr-2">
+                  {usernameStatus === 'checking' && (
+                    <Loader2
+                      size={20}
+                      className="animate-spin"
+                      style={{ color: theme.colors.foregroundMuted }}
+                    />
+                  )}
+                  {usernameStatus === 'available' && (
+                    <Check size={20} style={{ color: '#22c55e' }} />
+                  )}
+                  {(usernameStatus === 'taken' ||
+                    usernameStatus === 'invalid') && (
+                    <X size={20} style={{ color: '#ef4444' }} />
+                  )}
+                </div>
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={handleClaim}
+                  disabled={usernameStatus !== 'available'}
+                  className="px-6 py-3 rounded-xl font-semibold text-white disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                   style={{
-                    backgroundImage: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
+                    background:
+                      usernameStatus === 'available'
+                        ? `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`
+                        : theme.colors.backgroundSecondary,
+                    color:
+                      usernameStatus === 'available'
+                        ? '#fff'
+                        : theme.colors.foregroundMuted,
+                    boxShadow:
+                      usernameStatus === 'available'
+                        ? `0 8px 30px ${theme.colors.primary}40`
+                        : undefined,
                   }}
                 >
-                  {t('home.hero.line2')}
-                </span>
-                <br />
-                {t('home.hero.line3')}
-              </h1>
+                  {t('home.claim.button')}
+                </motion.button>
+              </div>
 
-              {/* Subtitle */}
-              <p
-                className="text-lg md:text-xl mb-10 max-w-xl leading-relaxed"
-                style={{ color: theme.colors.foregroundMuted }}
-              >
-                {t('home.hero.subtitle')}
-              </p>
-
-              {/* Claim Username Input - Only show for non-logged-in users */}
-              {!currentUser && (
-                <div className="mb-8">
-                  <div
-                    className="flex items-center gap-2 p-2 rounded-2xl"
-                    style={{
-                      background: theme.colors.card,
-                      border: `2px solid ${usernameStatus === 'available' ? '#22c55e' : usernameStatus === 'taken' || usernameStatus === 'invalid' ? '#ef4444' : theme.colors.border}`,
-                      boxShadow:
-                        usernameStatus === 'available'
-                          ? '0 0 30px rgba(34, 197, 94, 0.2)'
-                          : undefined,
-                    }}
-                  >
-                    <div
-                      className="flex items-center gap-2 px-4 py-3 rounded-xl"
-                      style={{ background: theme.colors.backgroundSecondary }}
-                    >
-                      <span
-                        className="text-sm font-medium"
-                        style={{ color: theme.colors.foregroundMuted }}
-                      >
-                        {getAppHostname()}/
-                      </span>
-                    </div>
-                    <input
-                      type="text"
-                      value={claimUsername}
-                      onChange={(e) =>
-                        setClaimUsername(
-                          e.target.value
-                            .toLowerCase()
-                            .replace(/[^a-z0-9_-]/g, ''),
-                        )
-                      }
-                      placeholder={t('home.claim.placeholder')}
-                      className="flex-1 px-4 py-3 bg-transparent outline-none text-lg font-medium"
-                      style={{ color: theme.colors.foreground }}
-                      maxLength={30}
-                    />
-                    <div className="flex items-center gap-2 pr-2">
-                      {usernameStatus === 'checking' && (
-                        <Loader2
-                          size={20}
-                          className="animate-spin"
-                          style={{ color: theme.colors.foregroundMuted }}
-                        />
-                      )}
-                      {usernameStatus === 'available' && (
-                        <Check size={20} style={{ color: '#22c55e' }} />
-                      )}
-                      {(usernameStatus === 'taken' ||
-                        usernameStatus === 'invalid') && (
-                        <X size={20} style={{ color: '#ef4444' }} />
-                      )}
-                    </div>
-                    <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={handleClaim}
-                      disabled={usernameStatus !== 'available'}
-                      className="px-6 py-3 rounded-xl font-semibold text-white disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              {/* Status Message */}
+              <AnimatePresence mode="wait">
+                {usernameStatus !== 'idle' &&
+                  usernameStatus !== 'checking' && (
+                    <motion.p
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="mt-3 text-sm font-medium flex items-center justify-center gap-2"
                       style={{
-                        background:
-                          usernameStatus === 'available'
-                            ? `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`
-                            : theme.colors.backgroundSecondary,
                         color:
                           usernameStatus === 'available'
-                            ? '#fff'
-                            : theme.colors.foregroundMuted,
+                            ? '#22c55e'
+                            : '#ef4444',
                       }}
                     >
-                      {t('home.claim.button')}
-                    </motion.button>
-                  </div>
-
-                  {/* Status Message */}
-                  <AnimatePresence mode="wait">
-                    {usernameStatus !== 'idle' &&
-                      usernameStatus !== 'checking' && (
-                        <motion.p
-                          initial={{ opacity: 0, y: -10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -10 }}
-                          className="mt-3 text-sm font-medium flex items-center gap-2"
-                          style={{
-                            color:
-                              usernameStatus === 'available'
-                                ? '#22c55e'
-                                : '#ef4444',
-                          }}
-                        >
-                          {usernameStatus === 'available' && (
-                            <>
-                              <Check size={14} /> {t('home.claim.available')}
-                            </>
-                          )}
-                          {usernameStatus === 'taken' && (
-                            <>
-                              <X size={14} /> {t('home.claim.taken')}
-                            </>
-                          )}
-                          {usernameStatus === 'invalid' && (
-                            <>
-                              <X size={14} /> {t('home.claim.invalid')}
-                            </>
-                          )}
-                        </motion.p>
+                      {usernameStatus === 'available' && (
+                        <>
+                          <Check size={14} /> {t('home.claim.available')}
+                        </>
                       )}
-                  </AnimatePresence>
+                      {usernameStatus === 'taken' && (
+                        <>
+                          <X size={14} /> {t('home.claim.taken')}
+                        </>
+                      )}
+                      {usernameStatus === 'invalid' && (
+                        <>
+                          <X size={14} /> {t('home.claim.invalid')}
+                        </>
+                      )}
+                    </motion.p>
+                  )}
+              </AnimatePresence>
 
-                  {/* Trust Badges */}
-                  <div className="flex flex-wrap items-center gap-6">
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 rounded-full bg-green-500" />
-                      <span
-                        className="text-sm"
-                        style={{ color: theme.colors.foregroundMuted }}
-                      >
-                        {t('home.claim.free')}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <CheckCircle2
-                        size={14}
-                        style={{ color: theme.colors.primary }}
-                      />
-                      <span
-                        className="text-sm"
-                        style={{ color: theme.colors.foregroundMuted }}
-                      >
-                        {t('home.claim.noCard')}
-                      </span>
-                    </div>
-                  </div>
+              {/* Trust Badges */}
+              <div className="flex flex-wrap items-center justify-center gap-6 mt-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                  <span
+                    className="text-sm"
+                    style={{ color: theme.colors.foregroundMuted }}
+                  >
+                    {t('home.claim.free')}
+                  </span>
                 </div>
-              )}
-
-              {/* CTA Buttons for logged-in users */}
-              {currentUser && (
-                <div className="flex flex-wrap gap-4">
-                  <Link to="/profile">
-                    <motion.button
-                      whileHover={{ scale: 1.03, y: -2 }}
-                      whileTap={{ scale: 0.98 }}
-                      className="flex items-center gap-2 px-8 py-4 rounded-2xl font-semibold text-white"
-                      style={{
-                        background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
-                        boxShadow:
-                          glowOpacity > 0
-                            ? `0 15px 40px ${theme.colors.primary}40`
-                            : '0 10px 30px rgba(0,0,0,0.2)',
-                      }}
-                    >
-                      <Rocket size={20} />
-                      {t('home.hero.dashboard')}
-                      <ArrowRight size={20} />
-                    </motion.button>
-                  </Link>
-                  <Link to="/creators">
-                    <motion.button
-                      whileHover={{ scale: 1.03, y: -2 }}
-                      whileTap={{ scale: 0.98 }}
-                      className="flex items-center gap-2 px-8 py-4 rounded-2xl font-semibold"
-                      style={{
-                        background: theme.colors.card,
-                        border: `1px solid ${theme.colors.border}`,
-                        color: theme.colors.foreground,
-                      }}
-                    >
-                      <Users size={20} />
-                      {t('home.hero.exploreCreators')}
-                    </motion.button>
-                  </Link>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2
+                    size={14}
+                    style={{ color: theme.colors.primary }}
+                  />
+                  <span
+                    className="text-sm"
+                    style={{ color: theme.colors.foregroundMuted }}
+                  >
+                    {t('home.claim.noCard')}
+                  </span>
                 </div>
-              )}
+              </div>
             </motion.div>
+          )}
 
-            {/* Right: Preview Card */}
+          {/* CTA Buttons for logged-in users */}
+          {currentUser && (
             <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.7, delay: 0.2 }}
-              className="relative hidden lg:block"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.45 }}
+              className="relative flex flex-wrap justify-center gap-4 mb-10"
             >
-              {/* Main Preview Card */}
-              <motion.div
-                whileHover={{ y: -5, rotate: 1 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                className="relative p-8 overflow-hidden"
-                style={{
-                  background:
-                    theme.effects.cardStyle === 'glass'
-                      ? `${theme.colors.card}95`
-                      : theme.colors.card,
-                  border: `2px solid ${theme.colors.border}`,
-                  borderRadius: '32px',
-                  backdropFilter:
-                    theme.effects.cardStyle === 'glass'
-                      ? 'blur(20px)'
-                      : undefined,
-                  boxShadow: `0 25px 80px rgba(0,0,0,0.4), 0 0 60px ${theme.colors.primary}20`,
-                }}
-              >
-                {/* Gradient Overlay */}
-                <div
-                  className="absolute inset-0 opacity-30"
+              <Link to="/profile">
+                <motion.button
+                  whileHover={{ scale: 1.03, y: -2 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="flex items-center gap-2 px-8 py-4 rounded-2xl font-semibold text-white"
                   style={{
-                    background: `radial-gradient(circle at 50% 0%, ${theme.colors.primary}40, transparent 70%)`,
+                    background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
+                    boxShadow: `0 15px 50px ${theme.colors.primary}40, 0 5px 20px rgba(0,0,0,0.3)`,
                   }}
-                />
+                >
+                  <Rocket size={20} />
+                  {t('home.hero.dashboard')}
+                  <ArrowRight size={20} />
+                </motion.button>
+              </Link>
+              <Link to="/creators">
+                <motion.button
+                  whileHover={{ scale: 1.03, y: -2 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="flex items-center gap-2 px-8 py-4 rounded-2xl font-semibold"
+                  style={{
+                    background: `${theme.colors.card}cc`,
+                    border: `1px solid ${theme.colors.border}`,
+                    color: theme.colors.foreground,
+                    backdropFilter: 'blur(10px)',
+                  }}
+                >
+                  <Users size={20} />
+                  {t('home.hero.exploreCreators')}
+                </motion.button>
+              </Link>
+            </motion.div>
+          )}
 
-                {/* Profile Content */}
-                <div className="relative text-center">
-                  {/* Avatar */}
+          {/* Preview Card - Centered below hero */}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6, duration: 0.8 }}
+            className="relative max-w-sm mx-auto mt-4"
+          >
+            {/* Glow behind card */}
+            <div
+              className="absolute -inset-4 rounded-[40px] opacity-30 blur-2xl"
+              style={{
+                background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
+              }}
+            />
+
+            <motion.div
+              whileHover={{ y: -8 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+              className="relative p-7 overflow-hidden"
+              style={{
+                background: `${theme.colors.card}e6`,
+                border: `1px solid ${theme.colors.border}`,
+                borderRadius: '28px',
+                backdropFilter: 'blur(24px)',
+                boxShadow: `0 30px 80px rgba(0,0,0,0.5)`,
+              }}
+            >
+              {/* Gradient shimmer at top */}
+              <div
+                className="absolute top-0 left-0 right-0 h-px"
+                style={{
+                  background: `linear-gradient(90deg, transparent, ${theme.colors.primary}80, ${theme.colors.accent}80, transparent)`,
+                }}
+              />
+
+              {/* Profile Content */}
+              <div className="relative text-center">
+                {/* Avatar with ring */}
+                <div className="relative w-24 h-24 mx-auto mb-4">
                   <motion.div
-                    className="w-28 h-28 mx-auto mb-5 rounded-full overflow-hidden relative"
+                    className="absolute -inset-1 rounded-full"
                     style={{
-                      boxShadow: `0 15px 40px ${theme.colors.primary}50`,
+                      background: `conic-gradient(from 0deg, ${theme.colors.primary}, ${theme.colors.accent}, ${theme.colors.primary})`,
                     }}
-                    whileHover={{ scale: 1.05 }}
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
+                  />
+                  <div
+                    className="absolute inset-0.5 rounded-full overflow-hidden"
+                    style={{ background: theme.colors.background }}
                   >
                     <img
                       src="/icon.png"
                       alt="Eziox"
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover rounded-full"
                     />
-                    <div className="absolute bottom-2 right-2 w-5 h-5 rounded-full bg-green-500 border-4 border-white" />
-                  </motion.div>
-
-                  {/* Name & Bio */}
-                  <h3
-                    className="text-2xl font-bold mb-1"
-                    style={{
-                      color: theme.colors.foreground,
-                      fontFamily: theme.typography.displayFont,
-                    }}
-                  >
-                    Eziox
-                  </h3>
-                  <p
-                    className="text-sm mb-1"
-                    style={{ color: theme.colors.foregroundMuted }}
-                  >
-                    @eziox
-                  </p>
-                  <p
-                    className="text-sm mb-5 max-w-xs mx-auto"
-                    style={{ color: theme.colors.foregroundMuted }}
-                  >
-                    {t('home.defaultBio')}
-                  </p>
-
-                  {/* Badges */}
-                  <div className="flex items-center justify-center gap-2 mb-5">
-                    {[
-                      { icon: Crown, color: '#ffd700', label: 'Verified' },
-                      {
-                        icon: Star,
-                        color: theme.colors.primary,
-                        label: 'Platform',
-                      },
-                      { icon: Shield, color: '#22c55e', label: 'Secure' },
-                    ].map((badge, i) => (
-                      <div
-                        key={i}
-                        className="w-8 h-8 rounded-full flex items-center justify-center"
-                        style={{
-                          background: `${badge.color}20`,
-                          border: `1px solid ${badge.color}40`,
-                        }}
-                        title={badge.label}
-                      >
-                        <badge.icon size={14} style={{ color: badge.color }} />
-                      </div>
-                    ))}
                   </div>
-
-                  {/* Social Icons */}
-                  <div className="flex items-center justify-center gap-3 mb-5">
-                    {[SiDiscord, SiGithub, SiX, SiInstagram].map((Icon, i) => (
-                      <div
-                        key={i}
-                        className="w-10 h-10 rounded-full flex items-center justify-center transition-transform hover:scale-110"
-                        style={{
-                          background: theme.colors.backgroundSecondary,
-                          border: `1px solid ${theme.colors.border}`,
-                        }}
-                      >
-                        <Icon
-                          size={18}
-                          style={{ color: theme.colors.foregroundMuted }}
-                        />
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Links */}
-                  <div className="space-y-2.5">
-                    {[
-                      {
-                        icon: Link2,
-                        text: 'My Website',
-                        color: theme.colors.primary,
-                      },
-                      {
-                        icon: SiYoutube,
-                        text: 'YouTube Channel',
-                        color: '#ff0000',
-                      },
-                      {
-                        icon: SiSpotify,
-                        text: 'Listen on Spotify',
-                        color: '#1db954',
-                      },
-                    ].map((link, i) => (
-                      <div
-                        key={i}
-                        className="flex items-center gap-3 p-3.5 rounded-xl transition-all hover:scale-[1.02]"
-                        style={{
-                          background:
-                            i === 0
-                              ? `${link.color}15`
-                              : theme.colors.backgroundSecondary,
-                          border: `1px solid ${i === 0 ? `${link.color}30` : theme.colors.border}`,
-                        }}
-                      >
-                        <div
-                          className="w-9 h-9 rounded-lg flex items-center justify-center"
-                          style={{ background: `${link.color}20` }}
-                        >
-                          <link.icon size={18} style={{ color: link.color }} />
-                        </div>
-                        <span
-                          className="font-medium flex-1 text-left"
-                          style={{ color: theme.colors.foreground }}
-                        >
-                          {link.text}
-                        </span>
-                        <ArrowRight
-                          size={16}
-                          style={{ color: theme.colors.foregroundMuted }}
-                        />
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Stats Footer */}
                   <div
-                    className="flex items-center justify-center gap-6 mt-6 pt-5 border-t"
-                    style={{ borderColor: theme.colors.border }}
-                  >
-                    <div className="text-center">
-                      <p
-                        className="text-lg font-bold"
+                    className="absolute bottom-0 right-0 w-5 h-5 rounded-full bg-green-500 border-2"
+                    style={{ borderColor: theme.colors.card }}
+                  />
+                </div>
+
+                {/* Name & Bio */}
+                <h3
+                  className="text-xl font-bold mb-0.5"
+                  style={{
+                    color: theme.colors.foreground,
+                    fontFamily: theme.typography.displayFont,
+                  }}
+                >
+                  Eziox
+                </h3>
+                <p
+                  className="text-xs mb-1"
+                  style={{ color: theme.colors.foregroundMuted }}
+                >
+                  @eziox
+                </p>
+                <p
+                  className="text-xs mb-4 max-w-[200px] mx-auto"
+                  style={{ color: theme.colors.foregroundMuted }}
+                >
+                  {t('home.defaultBio')}
+                </p>
+
+                {/* Badges */}
+                <div className="flex items-center justify-center gap-1.5 mb-4">
+                  {[
+                    { icon: Crown, color: '#ffd700', label: 'Verified' },
+                    { icon: Star, color: theme.colors.primary, label: 'Platform' },
+                    { icon: Shield, color: '#22c55e', label: 'Secure' },
+                  ].map((badge, i) => (
+                    <div
+                      key={i}
+                      className="w-7 h-7 rounded-full flex items-center justify-center"
+                      style={{
+                        background: `${badge.color}15`,
+                        border: `1px solid ${badge.color}30`,
+                      }}
+                      title={badge.label}
+                    >
+                      <badge.icon size={12} style={{ color: badge.color }} />
+                    </div>
+                  ))}
+                </div>
+
+                {/* Social Icons */}
+                <div className="flex items-center justify-center gap-2 mb-4">
+                  {[SiDiscord, SiGithub, SiX, SiInstagram].map((Icon, i) => (
+                    <div
+                      key={i}
+                      className="w-8 h-8 rounded-full flex items-center justify-center"
+                      style={{
+                        background: theme.colors.backgroundSecondary,
+                        border: `1px solid ${theme.colors.border}`,
+                      }}
+                    >
+                      <Icon
+                        size={14}
+                        style={{ color: theme.colors.foregroundMuted }}
+                      />
+                    </div>
+                  ))}
+                </div>
+
+                {/* Links */}
+                <div className="space-y-2">
+                  {[
+                    { icon: Link2, text: 'My Website', color: theme.colors.primary },
+                    { icon: SiYoutube, text: 'YouTube Channel', color: '#ff0000' },
+                    { icon: SiSpotify, text: 'Listen on Spotify', color: '#1db954' },
+                  ].map((link, i) => (
+                    <div
+                      key={i}
+                      className="flex items-center gap-2.5 p-3 rounded-xl transition-all"
+                      style={{
+                        background:
+                          i === 0
+                            ? `${link.color}12`
+                            : `${theme.colors.backgroundSecondary}cc`,
+                        border: `1px solid ${i === 0 ? `${link.color}25` : theme.colors.border}`,
+                      }}
+                    >
+                      <div
+                        className="w-8 h-8 rounded-lg flex items-center justify-center"
+                        style={{ background: `${link.color}18` }}
+                      >
+                        <link.icon size={15} style={{ color: link.color }} />
+                      </div>
+                      <span
+                        className="font-medium flex-1 text-left text-sm"
                         style={{ color: theme.colors.foreground }}
                       >
-                        {(stats?.totalClicks || 0).toLocaleString()}
-                      </p>
-                      <p
-                        className="text-xs"
+                        {link.text}
+                      </span>
+                      <ArrowRight
+                        size={14}
                         style={{ color: theme.colors.foregroundMuted }}
-                      >
-                        Clicks
-                      </p>
+                      />
                     </div>
-                    <div className="text-center">
-                      <p
-                        className="text-lg font-bold"
-                        style={{ color: theme.colors.foreground }}
-                      >
-                        {(stats?.totalUsers || 0).toLocaleString()}
-                      </p>
-                      <p
-                        className="text-xs"
-                        style={{ color: theme.colors.foregroundMuted }}
-                      >
-                        Creators
-                      </p>
-                    </div>
-                    <div className="text-center">
-                      <p
-                        className="text-lg font-bold"
-                        style={{ color: theme.colors.foreground }}
-                      >
-                        {(stats?.totalLinks || 0).toLocaleString()}
-                      </p>
-                      <p
-                        className="text-xs"
-                        style={{ color: theme.colors.foregroundMuted }}
-                      >
-                        Links
-                      </p>
-                    </div>
-                  </div>
+                  ))}
                 </div>
-              </motion.div>
-
-              {/* Floating Stats Card */}
-              <motion.div
-                className="absolute -left-8 top-24 p-4 rounded-xl"
-                style={{
-                  background: theme.colors.card,
-                  border: `1px solid ${theme.colors.border}`,
-                  boxShadow: '0 10px 40px rgba(0,0,0,0.3)',
-                }}
-                animate={{ y: [0, -10, 0] }}
-                transition={{ duration: 3, repeat: Infinity }}
-              >
-                <div className="flex items-center gap-3">
-                  <div
-                    className="w-10 h-10 rounded-lg flex items-center justify-center"
-                    style={{ background: `${theme.colors.primary}20` }}
-                  >
-                    <Eye size={20} style={{ color: theme.colors.primary }} />
-                  </div>
-                  <div>
-                    <p
-                      className="text-lg font-bold"
-                      style={{ color: theme.colors.foreground }}
-                    >
-                      {(stats?.totalViews || 0).toLocaleString()}
-                    </p>
-                    <p
-                      className="text-xs"
-                      style={{ color: theme.colors.foregroundMuted }}
-                    >
-                      Profile Views
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-
-              <motion.div
-                className="absolute -right-4 bottom-32 p-4 rounded-xl"
-                style={{
-                  background: theme.colors.card,
-                  border: `1px solid ${theme.colors.border}`,
-                  boxShadow: '0 10px 40px rgba(0,0,0,0.3)',
-                }}
-                animate={{ y: [0, 10, 0] }}
-                transition={{ duration: 4, repeat: Infinity }}
-              >
-                <div className="flex items-center gap-3">
-                  <div
-                    className="w-10 h-10 rounded-lg flex items-center justify-center"
-                    style={{ background: '#22c55e20' }}
-                  >
-                    <TrendingUp size={20} style={{ color: '#22c55e' }} />
-                  </div>
-                  <div>
-                    <p
-                      className="text-lg font-bold"
-                      style={{ color: theme.colors.foreground }}
-                    >
-                      +{stats?.newUsersThisWeek || 0}
-                    </p>
-                    <p
-                      className="text-xs"
-                      style={{ color: theme.colors.foregroundMuted }}
-                    >
-                      This Week
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
+              </div>
             </motion.div>
-          </div>
+
+            {/* Floating accent cards */}
+            <motion.div
+              className="absolute -left-16 top-8 p-3 rounded-xl hidden lg:block"
+              style={{
+                background: `${theme.colors.card}e6`,
+                border: `1px solid ${theme.colors.border}`,
+                backdropFilter: 'blur(16px)',
+                boxShadow: '0 10px 40px rgba(0,0,0,0.3)',
+              }}
+              animate={{ y: [0, -8, 0] }}
+              transition={{ duration: 3, repeat: Infinity }}
+            >
+              <div className="flex items-center gap-2.5">
+                <div
+                  className="w-9 h-9 rounded-lg flex items-center justify-center"
+                  style={{ background: `${theme.colors.primary}20` }}
+                >
+                  <Eye size={18} style={{ color: theme.colors.primary }} />
+                </div>
+                <div>
+                  <p
+                    className="text-base font-bold"
+                    style={{ color: theme.colors.foreground }}
+                  >
+                    {(stats?.totalViews || 0).toLocaleString()}
+                  </p>
+                  <p
+                    className="text-[10px]"
+                    style={{ color: theme.colors.foregroundMuted }}
+                  >
+                    Profile Views
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.div
+              className="absolute -right-16 bottom-16 p-3 rounded-xl hidden lg:block"
+              style={{
+                background: `${theme.colors.card}e6`,
+                border: `1px solid ${theme.colors.border}`,
+                backdropFilter: 'blur(16px)',
+                boxShadow: '0 10px 40px rgba(0,0,0,0.3)',
+              }}
+              animate={{ y: [0, 8, 0] }}
+              transition={{ duration: 4, repeat: Infinity }}
+            >
+              <div className="flex items-center gap-2.5">
+                <div
+                  className="w-9 h-9 rounded-lg flex items-center justify-center"
+                  style={{ background: '#22c55e20' }}
+                >
+                  <TrendingUp size={18} style={{ color: '#22c55e' }} />
+                </div>
+                <div>
+                  <p
+                    className="text-base font-bold"
+                    style={{ color: theme.colors.foreground }}
+                  >
+                    +{stats?.newUsersThisWeek || 0}
+                  </p>
+                  <p
+                    className="text-[10px]"
+                    style={{ color: theme.colors.foregroundMuted }}
+                  >
+                    This Week
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
         </div>
       </section>
 
       {/* ==================== LIVE STATS SECTION ==================== */}
-      <section className="py-16 px-4">
-        <div className="max-w-7xl mx-auto">
+      <section className="py-20 px-4">
+        <div className="max-w-5xl mx-auto">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {liveStats.map((stat, i) => (
               <motion.div
@@ -924,38 +936,47 @@ export function HomePage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
-                whileHover={{ y: -4, scale: 1.02 }}
+                whileHover={{ y: -6, scale: 1.03 }}
                 className="relative p-6 overflow-hidden group"
                 style={{
-                  background:
-                    theme.effects.cardStyle === 'glass'
-                      ? `${theme.colors.card}80`
-                      : theme.colors.card,
+                  background: `${theme.colors.card}b3`,
                   border: `1px solid ${theme.colors.border}`,
                   borderRadius: cardRadius,
-                  backdropFilter:
-                    theme.effects.cardStyle === 'glass'
-                      ? 'blur(10px)'
-                      : undefined,
+                  backdropFilter: 'blur(16px)',
+                  boxShadow: `0 8px 32px rgba(0,0,0,0.2)`,
                 }}
               >
+                {/* Gradient top border */}
                 <div
-                  className="absolute top-0 left-0 right-0 h-px"
+                  className="absolute top-0 left-0 right-0 h-[2px]"
                   style={{
-                    background: `linear-gradient(90deg, transparent, ${stat.color}40, transparent)`,
+                    background: `linear-gradient(90deg, transparent, ${stat.color}, transparent)`,
+                  }}
+                />
+                {/* Hover glow */}
+                <div
+                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                  style={{
+                    background: `radial-gradient(circle at 50% 0%, ${stat.color}15, transparent 70%)`,
                   }}
                 />
                 <div className="relative flex items-center gap-4">
                   <div
                     className="w-12 h-12 rounded-xl flex items-center justify-center"
-                    style={{ background: `${stat.color}20` }}
+                    style={{
+                      background: `${stat.color}15`,
+                      boxShadow: `0 0 20px ${stat.color}20`,
+                    }}
                   >
                     <stat.icon size={22} style={{ color: stat.color }} />
                   </div>
                   <div>
                     <motion.p
                       className="text-2xl lg:text-3xl font-bold"
-                      style={{ color: theme.colors.foreground }}
+                      style={{
+                        color: theme.colors.foreground,
+                        fontFamily: theme.typography.displayFont,
+                      }}
                       key={stat.value}
                       initial={{ scale: 1.1 }}
                       animate={{ scale: 1 }}
@@ -978,7 +999,7 @@ export function HomePage() {
 
       {/* ==================== FEATURES SECTION ==================== */}
       <section className="py-24 px-4">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -988,20 +1009,21 @@ export function HomePage() {
             <div
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6"
               style={{
-                background: `linear-gradient(135deg, ${theme.colors.primary}20, ${theme.colors.accent}15)`,
-                border: `1px solid ${theme.colors.primary}30`,
+                background: `linear-gradient(135deg, ${theme.colors.primary}12, ${theme.colors.accent}08)`,
+                border: `1px solid ${theme.colors.primary}20`,
+                backdropFilter: 'blur(10px)',
               }}
             >
-              <Layers size={16} style={{ color: theme.colors.primary }} />
+              <Layers size={16} style={{ color: theme.colors.accent }} />
               <span
-                className="text-sm font-medium"
+                className="text-sm font-medium tracking-wide"
                 style={{ color: theme.colors.foreground }}
               >
                 {t('home.features.badge')}
               </span>
             </div>
             <h2
-              className="text-4xl lg:text-5xl font-bold mb-4"
+              className="text-4xl lg:text-5xl font-bold mb-5"
               style={{
                 color: theme.colors.foreground,
                 fontFamily: theme.typography.displayFont,
@@ -1036,33 +1058,52 @@ export function HomePage() {
                 whileHover={{ y: -6, scale: 1.02 }}
                 className="relative p-6 overflow-hidden group"
                 style={{
-                  background:
-                    theme.effects.cardStyle === 'glass'
-                      ? `${theme.colors.card}80`
-                      : theme.colors.card,
+                  background: `${theme.colors.card}b3`,
                   border: `1px solid ${theme.colors.border}`,
                   borderRadius: cardRadius,
-                  backdropFilter:
-                    theme.effects.cardStyle === 'glass'
-                      ? 'blur(10px)'
-                      : undefined,
+                  backdropFilter: 'blur(16px)',
+                  boxShadow: '0 4px 24px rgba(0,0,0,0.15)',
                 }}
               >
+                {/* Hover glow */}
+                <div
+                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                  style={{
+                    background: `radial-gradient(circle at 30% 20%, ${feature.color}10, transparent 60%)`,
+                  }}
+                />
+                {/* Top shimmer line */}
+                <div
+                  className="absolute top-0 left-0 right-0 h-px opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                  style={{
+                    background: `linear-gradient(90deg, transparent, ${feature.color}60, transparent)`,
+                  }}
+                />
                 <div className="relative">
                   <motion.div
-                    className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4"
-                    style={{ background: `${feature.color}20` }}
+                    className="w-14 h-14 rounded-2xl flex items-center justify-center mb-5"
+                    style={{
+                      background: `linear-gradient(135deg, ${feature.color}18, ${feature.color}08)`,
+                      border: `1px solid ${feature.color}20`,
+                      boxShadow: `0 0 24px ${feature.color}15`,
+                    }}
                     whileHover={{ rotate: 5, scale: 1.1 }}
                   >
                     <feature.icon size={26} style={{ color: feature.color }} />
                   </motion.div>
                   <h3
                     className="text-xl font-bold mb-2"
-                    style={{ color: theme.colors.foreground }}
+                    style={{
+                      color: theme.colors.foreground,
+                      fontFamily: theme.typography.displayFont,
+                    }}
                   >
                     {feature.title}
                   </h3>
-                  <p style={{ color: theme.colors.foregroundMuted }}>
+                  <p
+                    className="leading-relaxed"
+                    style={{ color: theme.colors.foregroundMuted }}
+                  >
                     {feature.desc}
                   </p>
                 </div>
@@ -1073,11 +1114,22 @@ export function HomePage() {
       </section>
 
       {/* ==================== THEMES SECTION ==================== */}
-      <section
-        className="py-24 px-4"
-        style={{ background: theme.colors.backgroundSecondary }}
-      >
-        <div className="max-w-7xl mx-auto">
+      <section className="py-24 px-4 relative overflow-hidden">
+        {/* Section background glow */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background: `linear-gradient(180deg, ${theme.colors.background} 0%, ${theme.colors.backgroundSecondary} 30%, ${theme.colors.backgroundSecondary} 70%, ${theme.colors.background} 100%)`,
+          }}
+        />
+        <div
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] rounded-full opacity-10 blur-[100px]"
+          style={{
+            background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
+          }}
+        />
+
+        <div className="relative max-w-6xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <motion.div
               initial={{ opacity: 0, x: -30 }}
@@ -1087,13 +1139,14 @@ export function HomePage() {
               <div
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6"
                 style={{
-                  background: `linear-gradient(135deg, ${theme.colors.primary}20, ${theme.colors.accent}15)`,
-                  border: `1px solid ${theme.colors.primary}30`,
+                  background: `linear-gradient(135deg, ${theme.colors.primary}12, ${theme.colors.accent}08)`,
+                  border: `1px solid ${theme.colors.primary}20`,
+                  backdropFilter: 'blur(10px)',
                 }}
               >
-                <Palette size={16} style={{ color: theme.colors.primary }} />
+                <Palette size={16} style={{ color: theme.colors.accent }} />
                 <span
-                  className="text-sm font-medium"
+                  className="text-sm font-medium tracking-wide"
                   style={{ color: theme.colors.foreground }}
                 >
                   {t('home.themes.badge')}
@@ -1117,7 +1170,7 @@ export function HomePage() {
                 </span>
               </h2>
               <p
-                className="text-lg mb-8"
+                className="text-lg mb-8 leading-relaxed"
                 style={{ color: theme.colors.foregroundMuted }}
               >
                 {t('home.themes.subtitle')}
@@ -1131,15 +1184,19 @@ export function HomePage() {
                     viewport={{ once: true }}
                     transition={{ delay: i * 0.05 }}
                     whileHover={{ scale: 1.03, x: 4 }}
-                    className="flex items-center gap-3 p-3 rounded-xl cursor-pointer"
+                    className="flex items-center gap-3 p-3 rounded-xl cursor-pointer group"
                     style={{
-                      background: theme.colors.card,
+                      background: `${theme.colors.card}b3`,
                       border: `1px solid ${theme.colors.border}`,
+                      backdropFilter: 'blur(10px)',
                     }}
                   >
                     <div
-                      className="w-8 h-8 rounded-lg flex items-center justify-center"
-                      style={{ background: `${cat.color}20` }}
+                      className="w-8 h-8 rounded-lg flex items-center justify-center transition-shadow duration-300"
+                      style={{
+                        background: `${cat.color}15`,
+                        boxShadow: `0 0 0px ${cat.color}00`,
+                      }}
                     >
                       <cat.icon size={16} style={{ color: cat.color }} />
                     </div>
@@ -1168,18 +1225,32 @@ export function HomePage() {
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.03 }}
                   whileHover={{ scale: 1.15, rotate: 5 }}
-                  className="aspect-square rounded-xl cursor-pointer"
+                  className="aspect-square rounded-xl cursor-pointer relative overflow-hidden"
                   style={{
                     background: themeItem.colors.background,
-                    border: `2px solid ${themeItem.colors.primary}`,
-                    boxShadow: `0 0 25px ${themeItem.colors.primary}40`,
+                    border: `1px solid ${themeItem.colors.primary}50`,
+                    boxShadow: `0 0 20px ${themeItem.colors.primary}25`,
                   }}
                   title={themeItem.name}
                 >
-                  <div className="w-full h-full flex items-center justify-center">
+                  {/* Mini gradient preview */}
+                  <div
+                    className="absolute inset-0 opacity-30"
+                    style={{
+                      background: `radial-gradient(circle at 50% 30%, ${themeItem.colors.primary}60, transparent 70%)`,
+                    }}
+                  />
+                  <div className="w-full h-full flex flex-col items-center justify-center gap-1">
                     <div
                       className="w-4 h-4 rounded-full"
-                      style={{ background: themeItem.colors.primary }}
+                      style={{
+                        background: themeItem.colors.primary,
+                        boxShadow: `0 0 10px ${themeItem.colors.primary}80`,
+                      }}
+                    />
+                    <div
+                      className="w-2 h-2 rounded-full opacity-60"
+                      style={{ background: themeItem.colors.accent }}
                     />
                   </div>
                 </motion.div>
@@ -1191,7 +1262,7 @@ export function HomePage() {
 
       {/* ==================== INTEGRATIONS SECTION ==================== */}
       <section className="py-24 px-4">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -1201,20 +1272,21 @@ export function HomePage() {
             <div
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6"
               style={{
-                background: `linear-gradient(135deg, ${theme.colors.primary}20, ${theme.colors.accent}15)`,
-                border: `1px solid ${theme.colors.primary}30`,
+                background: `linear-gradient(135deg, ${theme.colors.primary}12, ${theme.colors.accent}08)`,
+                border: `1px solid ${theme.colors.primary}20`,
+                backdropFilter: 'blur(10px)',
               }}
             >
-              <Music size={16} style={{ color: theme.colors.primary }} />
+              <Music size={16} style={{ color: theme.colors.accent }} />
               <span
-                className="text-sm font-medium"
+                className="text-sm font-medium tracking-wide"
                 style={{ color: theme.colors.foreground }}
               >
                 {t('home.integrations.badge')}
               </span>
             </div>
             <h2
-              className="text-4xl lg:text-5xl font-bold mb-4"
+              className="text-4xl lg:text-5xl font-bold mb-5"
               style={{
                 color: theme.colors.foreground,
                 fontFamily: theme.typography.displayFont,
@@ -1247,23 +1319,35 @@ export function HomePage() {
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.05 }}
                 whileHover={{ y: -6, scale: 1.03 }}
-                className="p-6 text-center"
+                className="relative p-6 text-center overflow-hidden group"
                 style={{
-                  background:
-                    theme.effects.cardStyle === 'glass'
-                      ? `${theme.colors.card}80`
-                      : theme.colors.card,
+                  background: `${theme.colors.card}b3`,
                   border: `1px solid ${theme.colors.border}`,
                   borderRadius: cardRadius,
-                  backdropFilter:
-                    theme.effects.cardStyle === 'glass'
-                      ? 'blur(10px)'
-                      : undefined,
+                  backdropFilter: 'blur(16px)',
+                  boxShadow: '0 4px 24px rgba(0,0,0,0.15)',
                 }}
               >
+                {/* Hover glow */}
+                <div
+                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                  style={{
+                    background: `radial-gradient(circle at 50% 30%, ${integration.color}12, transparent 70%)`,
+                  }}
+                />
+                <div
+                  className="absolute top-0 left-0 right-0 h-px opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                  style={{
+                    background: `linear-gradient(90deg, transparent, ${integration.color}60, transparent)`,
+                  }}
+                />
                 <motion.div
-                  className="w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center"
-                  style={{ background: `${integration.color}20` }}
+                  className="relative w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center"
+                  style={{
+                    background: `linear-gradient(135deg, ${integration.color}15, ${integration.color}05)`,
+                    border: `1px solid ${integration.color}20`,
+                    boxShadow: `0 0 20px ${integration.color}10`,
+                  }}
                   whileHover={{ rotate: 10, scale: 1.1 }}
                 >
                   <integration.icon
@@ -1272,13 +1356,16 @@ export function HomePage() {
                   />
                 </motion.div>
                 <h3
-                  className="font-bold mb-1"
-                  style={{ color: theme.colors.foreground }}
+                  className="relative font-bold mb-1"
+                  style={{
+                    color: theme.colors.foreground,
+                    fontFamily: theme.typography.displayFont,
+                  }}
                 >
                   {integration.name}
                 </h3>
                 <p
-                  className="text-sm"
+                  className="relative text-sm"
                   style={{ color: theme.colors.foregroundMuted }}
                 >
                   {integration.desc}
@@ -1291,11 +1378,16 @@ export function HomePage() {
 
       {/* ==================== TOP CREATORS SECTION ==================== */}
       {topUsers && topUsers.length > 0 && (
-        <section
-          className="py-24 px-4"
-          style={{ background: theme.colors.backgroundSecondary }}
-        >
-          <div className="max-w-7xl mx-auto">
+        <section className="py-24 px-4 relative overflow-hidden">
+          {/* Section background */}
+          <div
+            className="absolute inset-0"
+            style={{
+              background: `linear-gradient(180deg, ${theme.colors.background} 0%, ${theme.colors.backgroundSecondary} 30%, ${theme.colors.backgroundSecondary} 70%, ${theme.colors.background} 100%)`,
+            }}
+          />
+
+          <div className="relative max-w-6xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -1305,20 +1397,21 @@ export function HomePage() {
               <div
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6"
                 style={{
-                  background: `linear-gradient(135deg, ${theme.colors.primary}20, ${theme.colors.accent}15)`,
-                  border: `1px solid ${theme.colors.primary}30`,
+                  background: `linear-gradient(135deg, ${theme.colors.primary}12, ${theme.colors.accent}08)`,
+                  border: `1px solid ${theme.colors.primary}20`,
+                  backdropFilter: 'blur(10px)',
                 }}
               >
-                <Trophy size={16} style={{ color: theme.colors.primary }} />
+                <Trophy size={16} style={{ color: theme.colors.accent }} />
                 <span
-                  className="text-sm font-medium"
+                  className="text-sm font-medium tracking-wide"
                   style={{ color: theme.colors.foreground }}
                 >
                   {t('home.creators.badge')}
                 </span>
               </div>
               <h2
-                className="text-4xl lg:text-5xl font-bold mb-4"
+                className="text-4xl lg:text-5xl font-bold mb-5"
                 style={{
                   color: theme.colors.foreground,
                   fontFamily: theme.typography.displayFont,
@@ -1362,27 +1455,30 @@ export function HomePage() {
                       >
                         <motion.div
                           whileHover={{ y: -8, scale: 1.02 }}
-                          className="relative p-6 h-full overflow-hidden"
+                          className="relative p-6 h-full overflow-hidden group"
                           style={{
-                            background:
-                              theme.effects.cardStyle === 'glass'
-                                ? `${theme.colors.card}80`
-                                : theme.colors.card,
-                            border: `2px solid ${medalColor}40`,
+                            background: `${theme.colors.card}b3`,
+                            border: `1px solid ${medalColor}30`,
                             borderRadius: cardRadius,
-                            backdropFilter:
-                              theme.effects.cardStyle === 'glass'
-                                ? 'blur(10px)'
-                                : undefined,
+                            backdropFilter: 'blur(16px)',
+                            boxShadow: `0 4px 24px rgba(0,0,0,0.15)`,
                           }}
                         >
+                          {/* Top gradient line */}
                           <div
-                            className="absolute top-0 left-0 right-0 h-1"
+                            className="absolute top-0 left-0 right-0 h-[2px]"
                             style={{
                               background: `linear-gradient(90deg, transparent, ${medalColor}, transparent)`,
                             }}
                           />
-                          <div className="flex items-center gap-4">
+                          {/* Hover glow */}
+                          <div
+                            className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                            style={{
+                              background: `radial-gradient(circle at 50% 0%, ${medalColor}10, transparent 70%)`,
+                            }}
+                          />
+                          <div className="relative flex items-center gap-4">
                             <div className="relative">
                               <Avatar
                                 className="w-16 h-16 border-2"
@@ -1418,7 +1514,10 @@ export function HomePage() {
                             <div className="flex-1 min-w-0">
                               <p
                                 className="font-bold text-lg truncate"
-                                style={{ color: theme.colors.foreground }}
+                                style={{
+                                  color: theme.colors.foreground,
+                                  fontFamily: theme.typography.displayFont,
+                                }}
                               >
                                 {item.user.name || item.user.username}
                               </p>
@@ -1472,10 +1571,7 @@ export function HomePage() {
                   className="flex items-center gap-2 px-8 py-4 rounded-2xl font-semibold text-white"
                   style={{
                     background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
-                    boxShadow:
-                      glowOpacity > 0
-                        ? `0 15px 40px ${theme.colors.primary}40`
-                        : '0 10px 30px rgba(0,0,0,0.2)',
+                    boxShadow: `0 15px 50px ${theme.colors.primary}40, 0 5px 20px rgba(0,0,0,0.3)`,
                   }}
                 >
                   <Trophy size={20} />
@@ -1488,9 +1584,10 @@ export function HomePage() {
                   whileTap={{ scale: 0.98 }}
                   className="flex items-center gap-2 px-8 py-4 rounded-2xl font-semibold"
                   style={{
-                    background: theme.colors.card,
+                    background: `${theme.colors.card}cc`,
                     border: `1px solid ${theme.colors.border}`,
                     color: theme.colors.foreground,
+                    backdropFilter: 'blur(10px)',
                   }}
                 >
                   <Users size={20} />
@@ -1505,7 +1602,7 @@ export function HomePage() {
 
       {/* ==================== HOW IT WORKS SECTION ==================== */}
       <section className="py-24 px-4">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-5xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -1515,20 +1612,21 @@ export function HomePage() {
             <div
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6"
               style={{
-                background: `linear-gradient(135deg, ${theme.colors.primary}20, ${theme.colors.accent}15)`,
-                border: `1px solid ${theme.colors.primary}30`,
+                background: `linear-gradient(135deg, ${theme.colors.primary}12, ${theme.colors.accent}08)`,
+                border: `1px solid ${theme.colors.primary}20`,
+                backdropFilter: 'blur(10px)',
               }}
             >
-              <Star size={16} style={{ color: theme.colors.primary }} />
+              <Star size={16} style={{ color: theme.colors.accent }} />
               <span
-                className="text-sm font-medium"
+                className="text-sm font-medium tracking-wide"
                 style={{ color: theme.colors.foreground }}
               >
                 {t('home.howItWorks.badge')}
               </span>
             </div>
             <h2
-              className="text-4xl lg:text-5xl font-bold mb-4"
+              className="text-4xl lg:text-5xl font-bold mb-5"
               style={{
                 color: theme.colors.foreground,
                 fontFamily: theme.typography.displayFont,
@@ -1560,33 +1658,53 @@ export function HomePage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.15 }}
-                className="relative text-center"
+                className="relative text-center group"
               >
+                {/* Step number watermark */}
+                <div
+                  className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-2 text-7xl font-black opacity-[0.06]"
+                  style={{
+                    color: step.color,
+                    fontFamily: theme.typography.displayFont,
+                  }}
+                >
+                  {step.num}
+                </div>
                 <motion.div
                   className="w-20 h-20 mx-auto mb-6 rounded-2xl flex items-center justify-center"
                   style={{
-                    background: `linear-gradient(135deg, ${step.color}20, ${step.color}10)`,
-                    border: `2px solid ${step.color}40`,
+                    background: `linear-gradient(135deg, ${step.color}15, ${step.color}05)`,
+                    border: `1px solid ${step.color}25`,
+                    boxShadow: `0 0 30px ${step.color}15`,
                   }}
                   whileHover={{ scale: 1.1, rotate: 5 }}
                 >
                   <step.icon size={36} style={{ color: step.color }} />
                 </motion.div>
-                <div
-                  className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-2 text-6xl font-black opacity-10"
-                  style={{ color: step.color }}
-                >
-                  {step.num}
-                </div>
                 <h3
                   className="text-2xl font-bold mb-3"
-                  style={{ color: theme.colors.foreground }}
+                  style={{
+                    color: theme.colors.foreground,
+                    fontFamily: theme.typography.displayFont,
+                  }}
                 >
                   {step.title}
                 </h3>
-                <p style={{ color: theme.colors.foregroundMuted }}>
+                <p
+                  className="leading-relaxed"
+                  style={{ color: theme.colors.foregroundMuted }}
+                >
                   {step.desc}
                 </p>
+                {/* Connector line between steps */}
+                {i < howItWorksSteps.length - 1 && (
+                  <div
+                    className="hidden md:block absolute top-10 -right-4 w-8 h-px"
+                    style={{
+                      background: `linear-gradient(90deg, ${step.color}40, ${howItWorksSteps[i + 1]?.color}40)`,
+                    }}
+                  />
+                )}
               </motion.div>
             ))}
           </div>

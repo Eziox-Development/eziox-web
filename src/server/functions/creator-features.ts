@@ -16,9 +16,9 @@
 
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
-import { getCookie, setResponseStatus } from '@tanstack/react-start/server'
+import { setResponseStatus } from '@tanstack/react-start/server'
 import { db } from '../db'
-import { users, profiles, userLinks } from '../db/schema'
+import { profiles, userLinks } from '../db/schema'
 import type {
   CustomFont,
   AnimatedProfileSettings,
@@ -26,38 +26,9 @@ import type {
   LinkSchedule,
 } from '../db/schema'
 import { eq } from 'drizzle-orm'
-import { validateSession } from '../lib/auth'
+import { getAuthenticatedUser, getUserTier } from './auth-helpers'
 import { type TierType, canAccessFeature } from '../lib/stripe'
 import { checkRateLimit, RATE_LIMITS } from '@/lib/security'
-
-// ============================================================================
-// AUTHENTICATION HELPERS
-// ============================================================================
-
-async function getAuthenticatedUser() {
-  const token = getCookie('session-token')
-  if (!token) {
-    setResponseStatus(401)
-    throw { message: 'Not authenticated', status: 401 }
-  }
-  const user = await validateSession(token)
-  if (!user) {
-    setResponseStatus(401)
-    throw { message: 'Not authenticated', status: 401 }
-  }
-  return user
-}
-
-async function getUserTier(userId: string): Promise<TierType> {
-  const [userData] = await db
-    .select({ tier: users.tier })
-    .from(users)
-    .where(eq(users.id, userId))
-    .limit(1)
-
-  const tier = userData?.tier || 'free'
-  return (tier === 'standard' || !tier ? 'free' : tier) as TierType
-}
 
 function isCreatorTier(tier: TierType): boolean {
   return ['creator', 'lifetime'].includes(tier)

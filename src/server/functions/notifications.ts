@@ -1,10 +1,11 @@
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
-import { getCookie, setResponseStatus } from '@tanstack/react-start/server'
+import { getCookie } from '@tanstack/react-start/server'
 import { db } from '../db'
 import { notifications, users, profiles } from '../db/schema'
 import { eq, desc, and, count } from 'drizzle-orm'
 import { validateSession } from '../lib/auth'
+import { getAuthenticatedUser } from './auth-helpers'
 
 export type NotificationType =
   | 'new_follower'
@@ -23,20 +24,6 @@ export interface NotificationData {
   isRead: boolean
   actionUrl: string | null
   createdAt: Date
-}
-
-async function getAuthenticatedUser() {
-  const token = getCookie('session-token')
-  if (!token) {
-    setResponseStatus(401)
-    throw { message: 'Not authenticated', status: 401 }
-  }
-  const user = await validateSession(token)
-  if (!user) {
-    setResponseStatus(401)
-    throw { message: 'Not authenticated', status: 401 }
-  }
-  return user
 }
 
 export const getNotificationsFn = createServerFn({ method: 'GET' })

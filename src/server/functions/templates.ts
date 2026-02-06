@@ -11,7 +11,7 @@
 
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
-import { getCookie, setResponseStatus } from '@tanstack/react-start/server'
+import { setResponseStatus } from '@tanstack/react-start/server'
 import { db } from '../db'
 import {
   users,
@@ -25,43 +25,7 @@ import {
   type CustomFont,
 } from '../db/schema'
 import { eq, desc, and, sql, ilike, or } from 'drizzle-orm'
-import { validateSession } from '../lib/auth'
-import type { TierType } from '../lib/stripe'
-
-// ============================================================================
-// AUTHENTICATION HELPERS
-// ============================================================================
-
-async function getAuthenticatedUser() {
-  const token = getCookie('session-token')
-  if (!token) {
-    setResponseStatus(401)
-    throw { message: 'Not authenticated', status: 401 }
-  }
-  const user = await validateSession(token)
-  if (!user) {
-    setResponseStatus(401)
-    throw { message: 'Not authenticated', status: 401 }
-  }
-  return user
-}
-
-async function getOptionalUser() {
-  const token = getCookie('session-token')
-  if (!token) return null
-  return validateSession(token)
-}
-
-async function getUserTier(userId: string): Promise<TierType> {
-  const [userData] = await db
-    .select({ tier: users.tier })
-    .from(users)
-    .where(eq(users.id, userId))
-    .limit(1)
-
-  const tier = userData?.tier || 'free'
-  return (tier === 'standard' || !tier ? 'free' : tier) as TierType
-}
+import { getAuthenticatedUser, getUserTier, getOptionalUser } from './auth-helpers'
 
 // ============================================================================
 // CONSTANTS

@@ -31,6 +31,16 @@ export function getAppUrl(): string {
 }
 
 /**
+ * Convert a hex color string to an RGB string (e.g. '#ff0000' -> '255, 0, 0')
+ * Used for rgba() CSS values throughout the app.
+ */
+export function hexToRgb(hex: string): string {
+  if (!hex.startsWith('#')) return '99, 102, 241'
+  const h = hex.slice(1)
+  return `${parseInt(h.slice(0, 2), 16)}, ${parseInt(h.slice(2, 4), 16)}, ${parseInt(h.slice(4, 6), 16)}`
+}
+
+/**
  * Get the application hostname
  * In browser: detects localhost for development, otherwise uses production hostname
  * On server: always uses production hostname

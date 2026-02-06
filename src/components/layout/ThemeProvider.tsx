@@ -14,6 +14,7 @@ import {
   type Theme,
   type ThemeCategory,
 } from '@/lib/site-config'
+import { hexToRgb } from '@/lib/utils'
 
 interface ThemeContextType {
   theme: Theme
@@ -29,12 +30,6 @@ const STORAGE_KEY = 'eziox-theme'
 const TRANSITION_MS = 250
 const GOOGLE_FONTS_PRECONNECT = 'https://fonts.googleapis.com'
 const GOOGLE_FONTS_STATIC = 'https://fonts.gstatic.com'
-
-function hexToRgb(hex: string): string {
-  if (!hex.startsWith('#')) return '99, 102, 241'
-  const h = hex.slice(1)
-  return `${parseInt(h.slice(0, 2), 16)}, ${parseInt(h.slice(2, 4), 16)}, ${parseInt(h.slice(4, 6), 16)}`
-}
 
 // Group themes by category for easier access
 const themesByCategory = siteConfig.themes.reduce(

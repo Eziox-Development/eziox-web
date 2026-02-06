@@ -27,16 +27,11 @@ import {
   Clock,
 } from 'lucide-react'
 import { useTheme } from '@/components/layout/ThemeProvider'
+import { hexToRgb } from '@/lib/utils'
 import type { ProfileUser } from '../types'
 
 interface SecurityTabProps {
   currentUser: ProfileUser
-}
-
-function hexToRgb(hex: string): string {
-  if (!hex.startsWith('#')) return '99, 102, 241'
-  const h = hex.slice(1)
-  return `${parseInt(h.slice(0, 2), 16)}, ${parseInt(h.slice(2, 4), 16)}, ${parseInt(h.slice(4, 6), 16)}`
 }
 
 export function SecurityTab({ currentUser }: SecurityTabProps) {

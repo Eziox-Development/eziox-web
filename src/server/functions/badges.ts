@@ -1,39 +1,12 @@
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
-import {
-  getCookie,
-  setResponseStatus,
-  getRequestIP,
-} from '@tanstack/react-start/server'
+import { setResponseStatus, getRequestIP } from '@tanstack/react-start/server'
 import { db } from '@/server/db'
 import { profiles, users, userStats } from '@/server/db/schema'
 import { eq, sql } from 'drizzle-orm'
-import { validateSession } from '@/server/lib/auth'
+import { getAuthenticatedUser, requireAdmin } from './auth-helpers'
 import { BADGES, BADGE_IDS, type BadgeId } from '@/lib/badges'
 import { logAdminAction } from '@/server/lib/audit'
-
-async function requireAuth() {
-  const token = getCookie('session-token')
-  if (!token) {
-    setResponseStatus(401)
-    throw { message: 'Not authenticated', status: 401 }
-  }
-  const user = await validateSession(token)
-  if (!user) {
-    setResponseStatus(401)
-    throw { message: 'Not authenticated', status: 401 }
-  }
-  return user
-}
-
-async function requireAdmin() {
-  const user = await requireAuth()
-  if (user.role !== 'admin' && user.role !== 'owner') {
-    setResponseStatus(403)
-    throw { message: 'Admin access required', status: 403 }
-  }
-  return user
-}
 
 export const assignBadgeFn = createServerFn({ method: 'POST' })
   .inputValidator(
@@ -160,7 +133,7 @@ export const getUserBadgesFn = createServerFn({ method: 'GET' })
 export const checkAndAwardBadgesFn = createServerFn({ method: 'POST' })
   .inputValidator(z.object({ userId: z.uuid() }).optional())
   .handler(async ({ data }) => {
-    const currentUser = await requireAuth()
+    const currentUser = await getAuthenticatedUser()
     const targetUserId = data?.userId || currentUser.id
 
     if (data?.userId && data.userId !== currentUser.id) {

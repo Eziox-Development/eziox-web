@@ -190,30 +190,30 @@ export function Nav() {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50">
-      {/* Background */}
+      {/* Background with aurora-tinted glass */}
       <motion.div
-        className="absolute inset-0 transition-all duration-300"
+        className="absolute inset-0 transition-all duration-500"
         style={{
           background: isScrolled
-            ? `${theme.colors.background}f0`
+            ? `linear-gradient(180deg, ${theme.colors.background}f5, ${theme.colors.background}e8)`
             : 'transparent',
-          backdropFilter: isScrolled ? 'blur(20px) saturate(180%)' : 'none',
+          backdropFilter: isScrolled ? 'blur(24px) saturate(200%)' : 'none',
           borderBottom: isScrolled
-            ? `1px solid ${theme.colors.border}30`
+            ? `1px solid ${theme.colors.border}20`
             : 'none',
         }}
       />
 
-      {/* Gradient line when scrolled */}
+      {/* Aurora gradient line */}
       <AnimatePresence>
         {isScrolled && (
           <motion.div
             initial={{ scaleX: 0, opacity: 0 }}
             animate={{ scaleX: 1, opacity: 1 }}
             exit={{ scaleX: 0, opacity: 0 }}
-            className="absolute bottom-0 left-0 right-0 h-px"
+            className="absolute bottom-0 left-0 right-0 h-1px"
             style={{
-              background: `linear-gradient(90deg, transparent, ${theme.colors.primary}50, ${theme.colors.accent}50, transparent)`,
+              background: `linear-gradient(90deg, transparent 5%, ${theme.colors.primary}60, ${theme.colors.accent}60, #ec489940, transparent 95%)`,
               transformOrigin: 'center',
             }}
           />
@@ -229,10 +229,10 @@ export function Nav() {
           <Link to="/" className="group flex items-center gap-3">
             <motion.div
               className="relative w-10 h-10 rounded-xl overflow-hidden"
-              whileHover={{ scale: 1.05 }}
+              whileHover={{ scale: 1.08, rotate: 2 }}
               whileTap={{ scale: 0.95 }}
               style={{
-                boxShadow: `0 4px 20px ${theme.colors.primary}30`,
+                boxShadow: `0 4px 24px ${theme.colors.primary}35, 0 0 48px ${theme.colors.primary}15`,
               }}
             >
               <img
@@ -241,16 +241,25 @@ export function Nav() {
                 className="w-full h-full object-cover"
                 loading="eager"
               />
+              {/* Subtle glow ring */}
+              <div
+                className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                style={{
+                  boxShadow: `inset 0 0 12px ${theme.colors.primary}40`,
+                }}
+              />
             </motion.div>
             <div className="hidden sm:block">
               <span
-                className="text-lg font-bold block"
-                style={{ color: theme.colors.foreground }}
+                className="text-lg font-extrabold block bg-clip-text text-transparent"
+                style={{
+                  backgroundImage: `linear-gradient(135deg, ${theme.colors.foreground}, ${theme.colors.primary})`,
+                }}
               >
                 {siteConfig.metadata.title}
               </span>
               <span
-                className="text-[10px] font-medium"
+                className="text-[10px] font-medium tracking-wider uppercase"
                 style={{ color: theme.colors.foregroundMuted }}
               >
                 {t('nav.bioLinks')}
@@ -780,17 +789,19 @@ export function Nav() {
                   >
                     {t('nav.signIn')}
                   </Link>
-                  <Link
-                    to="/sign-up"
-                    className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold text-white"
-                    style={{
-                      background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
-                      boxShadow: `0 4px 20px ${theme.colors.primary}40`,
-                    }}
-                  >
-                    <Sparkles size={14} />
-                    {t('nav.getStarted')}
-                  </Link>
+                  <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+                    <Link
+                      to="/sign-up"
+                      className="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold text-white"
+                      style={{
+                        background: `linear-gradient(135deg, ${theme.colors.primary}, ${theme.colors.accent})`,
+                        boxShadow: `0 4px 24px ${theme.colors.primary}40, 0 0 48px ${theme.colors.primary}15`,
+                      }}
+                    >
+                      <Sparkles size={14} />
+                      {t('nav.getStarted')}
+                    </Link>
+                  </motion.div>
                 </div>
               )}
             </div>

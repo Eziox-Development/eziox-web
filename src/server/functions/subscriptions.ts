@@ -1,10 +1,11 @@
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
-import { getCookie, setResponseStatus } from '@tanstack/react-start/server'
+import { setResponseStatus } from '@tanstack/react-start/server'
 import { db } from '../db'
 import { users, subscriptions, profiles } from '../db/schema'
 import { eq } from 'drizzle-orm'
-import { validateSession, requireEmailVerification } from '../lib/auth'
+import { requireEmailVerification } from '../lib/auth'
+import { getAuthenticatedUser, requireAdmin } from './auth-helpers'
 import {
   stripe,
   TIER_CONFIG,
@@ -66,20 +67,6 @@ async function updateUserBadgesForTier(
       await createBadgeNotification(userId, badge.name, badge.icon)
     }
   }
-}
-
-async function getAuthenticatedUser() {
-  const token = getCookie('session-token')
-  if (!token) {
-    setResponseStatus(401)
-    throw { message: 'Not authenticated', status: 401 }
-  }
-  const user = await validateSession(token)
-  if (!user) {
-    setResponseStatus(401)
-    throw { message: 'Not authenticated', status: 401 }
-  }
-  return user
 }
 
 export const getTierConfigFn = createServerFn({ method: 'GET' }).handler(
@@ -812,15 +799,6 @@ async function handleSubscriptionDeleted(
   }
 }
 
-async function requireAdmin() {
-  const user = await getAuthenticatedUser()
-  if (user.role !== 'admin' && user.role !== 'owner') {
-    setResponseStatus(403)
-    throw { message: 'Admin access required', status: 403 }
-  }
-  return user
-}
-
 export const adminSetUserTierFn = createServerFn({ method: 'POST' })
   .inputValidator(
     z.object({
@@ -1080,17 +1058,7 @@ export const adminProcessRefundFn = createServerFn({ method: 'POST' })
     }),
   )
   .handler(async ({ data }) => {
-    // Require admin
-    const token = getCookie('session-token')
-    if (!token) {
-      setResponseStatus(401)
-      throw { message: 'Not authenticated', status: 401 }
-    }
-    const admin = await validateSession(token)
-    if (!admin || (admin.role !== 'admin' && admin.role !== 'owner')) {
-      setResponseStatus(403)
-      throw { message: 'Admin access required', status: 403 }
-    }
+    const admin = await requireAdmin()
 
     if (!stripe) {
       throw { message: 'Stripe is not configured', status: 500 }

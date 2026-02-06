@@ -390,6 +390,7 @@ const ApiAuthCallbackPlatformRoute = ApiAuthCallbackPlatformRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/$username': typeof UsernameRoute
+  '/': typeof PublicIndexRoute
   '/maintenance': typeof MaintenanceRoute
   '/hello': typeof ApiHelloRoute
   '/rss': typeof ApiRssRoute
@@ -424,7 +425,6 @@ export interface FileRoutesByFullPath {
   '/api/check-username': typeof ApiCheckUsernameRoute
   '/api/health': typeof ApiHealthRoute
   '/api/spotify-callback': typeof ApiSpotifyCallbackRoute
-  '/': typeof PublicIndexRoute
   '/support/tickets': typeof ProtectedSupportTicketsRoute
   '/docs/analytics': typeof PublicDocsAnalyticsRoute
   '/docs/api': typeof PublicDocsApiRoute
@@ -442,8 +442,8 @@ export interface FileRoutesByFullPath {
   '/api/v1/me': typeof ApiV1MeRoute
   '/api/v1/widgets': typeof ApiV1WidgetsRouteWithChildren
   '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
-  '/admin': typeof ProtectedAdminIndexRoute
-  '/docs': typeof PublicDocsIndexRoute
+  '/admin/': typeof ProtectedAdminIndexRoute
+  '/docs/': typeof PublicDocsIndexRoute
   '/api/auth/callback/$platform': typeof ApiAuthCallbackPlatformRoute
   '/api/v1/groups/$id': typeof ApiV1GroupsIdRoute
   '/api/v1/links/$id': typeof ApiV1LinksIdRoute
@@ -452,6 +452,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/$username': typeof UsernameRoute
+  '/': typeof PublicIndexRoute
   '/maintenance': typeof MaintenanceRoute
   '/hello': typeof ApiHelloRoute
   '/rss': typeof ApiRssRoute
@@ -486,7 +487,6 @@ export interface FileRoutesByTo {
   '/api/check-username': typeof ApiCheckUsernameRoute
   '/api/health': typeof ApiHealthRoute
   '/api/spotify-callback': typeof ApiSpotifyCallbackRoute
-  '/': typeof PublicIndexRoute
   '/support/tickets': typeof ProtectedSupportTicketsRoute
   '/docs/analytics': typeof PublicDocsAnalyticsRoute
   '/docs/api': typeof PublicDocsApiRoute
@@ -582,6 +582,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/$username'
+    | '/'
     | '/maintenance'
     | '/hello'
     | '/rss'
@@ -616,7 +617,6 @@ export interface FileRouteTypes {
     | '/api/check-username'
     | '/api/health'
     | '/api/spotify-callback'
-    | '/'
     | '/support/tickets'
     | '/docs/analytics'
     | '/docs/api'
@@ -634,8 +634,8 @@ export interface FileRouteTypes {
     | '/api/v1/me'
     | '/api/v1/widgets'
     | '/api/webhooks/stripe'
-    | '/admin'
-    | '/docs'
+    | '/admin/'
+    | '/docs/'
     | '/api/auth/callback/$platform'
     | '/api/v1/groups/$id'
     | '/api/v1/links/$id'
@@ -644,6 +644,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/$username'
+    | '/'
     | '/maintenance'
     | '/hello'
     | '/rss'
@@ -678,7 +679,6 @@ export interface FileRouteTypes {
     | '/api/check-username'
     | '/api/health'
     | '/api/spotify-callback'
-    | '/'
     | '/support/tickets'
     | '/docs/analytics'
     | '/docs/api'
@@ -804,21 +804,21 @@ declare module '@tanstack/react-router' {
     '/_public': {
       id: '/_public'
       path: ''
-      fullPath: ''
+      fullPath: '/'
       preLoaderRoute: typeof PublicRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_protected': {
       id: '/_protected'
       path: ''
-      fullPath: ''
+      fullPath: '/'
       preLoaderRoute: typeof ProtectedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_auth': {
       id: '/_auth'
       path: ''
-      fullPath: ''
+      fullPath: '/'
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
@@ -1070,14 +1070,14 @@ declare module '@tanstack/react-router' {
     '/_public/docs/': {
       id: '/_public/docs/'
       path: '/docs'
-      fullPath: '/docs'
+      fullPath: '/docs/'
       preLoaderRoute: typeof PublicDocsIndexRouteImport
       parentRoute: typeof PublicRoute
     }
     '/_protected/admin/': {
       id: '/_protected/admin/'
       path: '/admin'
-      fullPath: '/admin'
+      fullPath: '/admin/'
       preLoaderRoute: typeof ProtectedAdminIndexRouteImport
       parentRoute: typeof ProtectedRoute
     }

@@ -1,6 +1,7 @@
 import { getCurrentUser } from '@/server/functions/auth'
 import { createFileRoute, Outlet, redirect, Link } from '@tanstack/react-router'
 import { useTheme } from '@/components/layout/ThemeProvider'
+import { hexToRgb } from '@/lib/utils'
 import { motion } from 'motion/react'
 
 export const Route = createFileRoute('/_auth')({
@@ -17,12 +18,6 @@ export const Route = createFileRoute('/_auth')({
   },
   component: AuthLayout,
 })
-
-function hexToRgb(hex: string): string {
-  if (!hex.startsWith('#')) return '99, 102, 241'
-  const h = hex.slice(1)
-  return `${parseInt(h.slice(0, 2), 16)}, ${parseInt(h.slice(2, 4), 16)}, ${parseInt(h.slice(4, 6), 16)}`
-}
 
 function AuthLayout() {
   const { theme } = useTheme()

@@ -1,11 +1,5 @@
-/**
- * License Compliance Server Functions
- * Manages commercial licenses, compliance monitoring, and enforcement
- */
-
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
-import { getCookie, setResponseStatus } from '@tanstack/react-start/server'
 import { db } from '../db'
 import {
   commercialLicenses,
@@ -14,55 +8,9 @@ import {
   licenseInquiries,
 } from '../db/schema'
 import { eq, desc, and, sql, gte } from 'drizzle-orm'
-import { validateSession } from '../lib/auth'
+import { requireAdmin, requireOwner } from './auth-helpers'
 import { sendEmail } from '../lib/email'
 import crypto from 'crypto'
-
-// =============================================================================
-// Helper: Require Admin/Owner
-// =============================================================================
-
-async function requireAdmin() {
-  const token = getCookie('session-token')
-  if (!token) {
-    setResponseStatus(401)
-    throw { message: 'Not authenticated', status: 401 }
-  }
-
-  const user = await validateSession(token)
-  if (!user) {
-    setResponseStatus(401)
-    throw { message: 'Not authenticated', status: 401 }
-  }
-
-  if (user.role !== 'admin' && user.role !== 'owner') {
-    setResponseStatus(403)
-    throw { message: 'Admin access required', status: 403 }
-  }
-
-  return user
-}
-
-async function requireOwner() {
-  const token = getCookie('session-token')
-  if (!token) {
-    setResponseStatus(401)
-    throw { message: 'Not authenticated', status: 401 }
-  }
-
-  const user = await validateSession(token)
-  if (!user) {
-    setResponseStatus(401)
-    throw { message: 'Not authenticated', status: 401 }
-  }
-
-  if (user.role !== 'owner') {
-    setResponseStatus(403)
-    throw { message: 'Owner access required', status: 403 }
-  }
-
-  return user
-}
 
 // =============================================================================
 // Helper: Generate Secure License Key

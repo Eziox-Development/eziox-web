@@ -109,6 +109,7 @@ export async function createSession(
   rememberMe = false,
 ) {
   const token = generateToken()
+  const tokenHash = hashToken(token)
   const expiresAt = new Date()
   expiresAt.setDate(
     expiresAt.getDate() +
@@ -119,7 +120,7 @@ export async function createSession(
     .insert(sessions)
     .values({
       userId,
-      token,
+      token: tokenHash,
       expiresAt,
       userAgent,
       ipAddress,
@@ -127,14 +128,18 @@ export async function createSession(
     })
     .returning()
 
-  return session
+  if (!session) return null
+
+  // Return session with plain token for cookie (DB stores hash)
+  return { ...session, token }
 }
 
 export async function validateSession(token: string) {
+  const tokenHash = hashToken(token)
   const [session] = await db
     .select()
     .from(sessions)
-    .where(and(eq(sessions.token, token), gt(sessions.expiresAt, new Date())))
+    .where(and(eq(sessions.token, tokenHash), gt(sessions.expiresAt, new Date())))
     .limit(1)
 
   if (!session) {
@@ -146,7 +151,8 @@ export async function validateSession(token: string) {
 }
 
 export async function deleteSession(token: string) {
-  await db.delete(sessions).where(eq(sessions.token, token))
+  const tokenHash = hashToken(token)
+  await db.delete(sessions).where(eq(sessions.token, tokenHash))
 }
 
 export async function deleteAllUserSessions(userId: string) {
@@ -154,15 +160,17 @@ export async function deleteAllUserSessions(userId: string) {
 }
 
 export async function refreshSession(token: string) {
+  const tokenHash = hashToken(token)
   const [session] = await db
     .select()
     .from(sessions)
-    .where(eq(sessions.token, token))
+    .where(eq(sessions.token, tokenHash))
     .limit(1)
 
   if (!session) return null
 
   const newToken = generateToken()
+  const newTokenHash = hashToken(newToken)
   const expiresAt = new Date()
   expiresAt.setDate(
     expiresAt.getDate() +
@@ -175,7 +183,7 @@ export async function refreshSession(token: string) {
     .insert(sessions)
     .values({
       userId: session.userId,
-      token: newToken,
+      token: newTokenHash,
       expiresAt,
       userAgent: session.userAgent,
       ipAddress: session.ipAddress,
@@ -183,14 +191,18 @@ export async function refreshSession(token: string) {
     })
     .returning()
 
-  return newSession
+  if (!newSession) return null
+
+  // Return session with plain token for cookie (DB stores hash)
+  return { ...newSession, token: newToken }
 }
 
 export async function updateSessionActivity(token: string) {
+  const tokenHash = hashToken(token)
   await db
     .update(sessions)
     .set({ lastActivityAt: new Date() })
-    .where(eq(sessions.token, token))
+    .where(eq(sessions.token, tokenHash))
 }
 
 export async function isAccountLocked(userId: string): Promise<boolean> {

@@ -6,12 +6,7 @@ import { CheckCircle2, Shield, Home, ArrowRight, Loader2 } from 'lucide-react'
 import { useServerFn } from '@tanstack/react-start'
 import { signOutFn } from '@/server/functions/auth'
 import { useTheme } from '@/components/layout/ThemeProvider'
-
-function hexToRgb(hex: string): string {
-  if (!hex.startsWith('#')) return '99, 102, 241'
-  const h = hex.slice(1)
-  return `${parseInt(h.slice(0, 2), 16)}, ${parseInt(h.slice(2, 4), 16)}, ${parseInt(h.slice(4, 6), 16)}`
-}
+import { hexToRgb } from '@/lib/utils'
 
 export const Route = createFileRoute('/_auth/sign-out')({
   component: SignOutPage,

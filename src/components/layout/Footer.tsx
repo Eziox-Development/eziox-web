@@ -1,4 +1,5 @@
 import { Link } from '@tanstack/react-router'
+import { hexToRgb } from '@/lib/utils'
 import { siteConfig } from '@/lib/site-config'
 import { motion } from 'motion/react'
 import { useTranslation } from 'react-i18next'
@@ -23,12 +24,6 @@ import {
   Eye,
   Sparkles,
 } from 'lucide-react'
-
-function hexToRgb(hex: string): string {
-  if (!hex.startsWith('#')) return '99, 102, 241'
-  const h = hex.slice(1)
-  return `${parseInt(h.slice(0, 2), 16)}, ${parseInt(h.slice(2, 4), 16)}, ${parseInt(h.slice(4, 6), 16)}`
-}
 
 export function Footer() {
   const { t } = useTranslation()
@@ -125,27 +120,31 @@ export function Footer() {
 
   return (
     <footer className="relative mt-auto">
-      {/* Gradient Divider */}
-      <div className="h-px w-full">
+      {/* Aurora Gradient Divider */}
+      <div className="h-1px w-full">
         <div
           className="h-full w-full"
           style={{
-            background: `linear-gradient(90deg, transparent, ${theme.colors.primary}50, ${theme.colors.accent}50, transparent)`,
+            background: `linear-gradient(90deg, transparent 5%, ${theme.colors.primary}60, ${theme.colors.accent}60, #ec489940, transparent 95%)`,
           }}
         />
       </div>
 
       {/* Main Footer */}
       <div className="relative" style={{ background: theme.colors.background }}>
-        {/* Background Glow */}
+        {/* Aurora Background Glow */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div
-            className="absolute -top-32 left-1/4 w-96 h-96 rounded-full blur-[150px] opacity-10"
+          <motion.div
+            className="absolute -top-40 left-1/4 w-[500px] h-[500px] rounded-full blur-[160px] opacity-[0.08]"
             style={{ background: theme.colors.primary }}
+            animate={{ x: [0, 30, 0], y: [0, -20, 0] }}
+            transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
           />
-          <div
-            className="absolute -bottom-32 right-1/4 w-96 h-96 rounded-full blur-[150px] opacity-10"
+          <motion.div
+            className="absolute -bottom-40 right-1/4 w-[400px] h-[400px] rounded-full blur-[140px] opacity-[0.06]"
             style={{ background: theme.colors.accent }}
+            animate={{ x: [0, -20, 0], y: [0, 30, 0] }}
+            transition={{ duration: 25, repeat: Infinity, ease: 'easeInOut' }}
           />
         </div>
 
@@ -153,9 +152,9 @@ export function Footer() {
           {/* Top Section - Stats Banner */}
           <div
             className="py-10 border-b"
-            style={{ borderColor: theme.colors.border }}
+            style={{ borderColor: `${theme.colors.border}60` }}
           >
-            <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-12 lg:gap-16">
+            <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-8 lg:gap-10">
               {liveStats.map((stat, index) => (
                 <motion.div
                   key={stat.label}
@@ -163,26 +162,31 @@ export function Footer() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.1 }}
-                  className="flex items-center gap-4"
+                  className="flex items-center gap-4 px-5 py-3 rounded-2xl"
+                  style={{
+                    background: `${theme.colors.card}80`,
+                    border: `1px solid ${theme.colors.border}40`,
+                    backdropFilter: 'blur(8px)',
+                  }}
                 >
                   <div
-                    className="w-12 h-12 rounded-2xl flex items-center justify-center"
+                    className="w-11 h-11 rounded-xl flex items-center justify-center"
                     style={{
                       background: `rgba(${hexToRgb(stat.color)}, 0.15)`,
-                      border: `1px solid rgba(${hexToRgb(stat.color)}, 0.25)`,
+                      boxShadow: `0 0 20px rgba(${hexToRgb(stat.color)}, 0.1)`,
                     }}
                   >
-                    <stat.icon size={20} style={{ color: stat.color }} />
+                    <stat.icon size={18} style={{ color: stat.color }} />
                   </div>
                   <div>
                     <p
-                      className="text-2xl font-bold"
+                      className="text-2xl font-extrabold tracking-tight"
                       style={{ color: theme.colors.foreground }}
                     >
                       {formatNumber(stat.value)}
                     </p>
                     <p
-                      className="text-sm"
+                      className="text-xs font-medium uppercase tracking-wider"
                       style={{ color: theme.colors.foregroundMuted }}
                     >
                       {stat.label}
@@ -201,9 +205,9 @@ export function Footer() {
               <Link to="/" className="inline-flex items-center gap-4 group">
                 <motion.div
                   className="relative w-14 h-14 rounded-2xl overflow-hidden"
-                  whileHover={{ scale: 1.05, rotate: 3 }}
+                  whileHover={{ scale: 1.08, rotate: 3 }}
                   style={{
-                    boxShadow: `0 0 30px rgba(${hexToRgb(theme.colors.primary)}, 0.25)`,
+                    boxShadow: `0 4px 30px rgba(${hexToRgb(theme.colors.primary)}, 0.3), 0 0 60px rgba(${hexToRgb(theme.colors.primary)}, 0.1)`,
                   }}
                 >
                   <img
@@ -214,8 +218,10 @@ export function Footer() {
                 </motion.div>
                 <div>
                   <h3
-                    className="text-2xl font-bold"
-                    style={{ color: theme.colors.foreground }}
+                    className="text-2xl font-extrabold bg-clip-text text-transparent"
+                    style={{
+                      backgroundImage: `linear-gradient(135deg, ${theme.colors.foreground}, ${theme.colors.primary})`,
+                    }}
                   >
                     {siteConfig.metadata.title}
                   </h3>
@@ -225,7 +231,7 @@ export function Footer() {
                   >
                     <Sparkles
                       size={12}
-                      style={{ color: theme.colors.primary }}
+                      style={{ color: theme.colors.accent }}
                     />
                     {t('footer.themesAvailable', { count: themes.length })}
                   </p>
@@ -317,12 +323,13 @@ export function Footer() {
                   href="https://discord.com/invite/KD84DmNA89"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-xl flex items-center justify-center transition-colors"
+                  className="w-10 h-10 rounded-xl flex items-center justify-center transition-all"
                   style={{
-                    background: theme.colors.card,
-                    border: `1px solid ${theme.colors.border}`,
+                    background: `${theme.colors.card}cc`,
+                    border: `1px solid ${theme.colors.border}60`,
+                    backdropFilter: 'blur(8px)',
                   }}
-                  whileHover={{ scale: 1.1, y: -2 }}
+                  whileHover={{ scale: 1.1, y: -3, boxShadow: '0 8px 24px rgba(88, 101, 242, 0.25)' }}
                 >
                   <SiDiscord size={18} style={{ color: '#5865f2' }} />
                 </motion.a>
@@ -330,12 +337,13 @@ export function Footer() {
                   href="https://github.com/Eziox-Development/eziox-web"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-xl flex items-center justify-center transition-colors"
+                  className="w-10 h-10 rounded-xl flex items-center justify-center transition-all"
                   style={{
-                    background: theme.colors.card,
-                    border: `1px solid ${theme.colors.border}`,
+                    background: `${theme.colors.card}cc`,
+                    border: `1px solid ${theme.colors.border}60`,
+                    backdropFilter: 'blur(8px)',
                   }}
-                  whileHover={{ scale: 1.1, y: -2 }}
+                  whileHover={{ scale: 1.1, y: -3, boxShadow: `0 8px 24px ${theme.colors.primary}25` }}
                 >
                   <SiGithub
                     size={18}
@@ -387,7 +395,7 @@ export function Footer() {
           {/* Bottom Bar */}
           <div
             className="py-8 border-t"
-            style={{ borderColor: theme.colors.border }}
+            style={{ borderColor: `${theme.colors.border}60` }}
           >
             <div className="flex flex-col md:flex-row items-center justify-between gap-6">
               {/* Left - Copyright & Location */}

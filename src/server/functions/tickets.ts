@@ -6,8 +6,6 @@
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
 import {
-  getCookie,
-  setResponseStatus,
   getRequestIP,
 } from '@tanstack/react-start/server'
 import { db } from '../db'
@@ -18,7 +16,7 @@ import {
   withdrawalRequests,
 } from '../db/schema'
 import { eq, desc, and, or, count, sql, ilike } from 'drizzle-orm'
-import { validateSession } from '../lib/auth'
+import { getAuthenticatedUser, requireAdmin, getOptionalUser } from './auth-helpers'
 import { sendEmail, generateEmailTemplate } from '../lib/email'
 import { logAdminAction } from '../lib/audit'
 
@@ -75,35 +73,6 @@ const CATEGORY_PRIORITY_MAP: Record<TicketCategory, TicketPriority> = {
 // ============================================================================
 // HELPERS
 // ============================================================================
-
-async function getOptionalUser() {
-  const token = getCookie('session-token')
-  if (!token) return null
-  return validateSession(token)
-}
-
-async function requireAuth() {
-  const token = getCookie('session-token')
-  if (!token) {
-    setResponseStatus(401)
-    throw { message: 'Not authenticated', status: 401 }
-  }
-  const user = await validateSession(token)
-  if (!user) {
-    setResponseStatus(401)
-    throw { message: 'Not authenticated', status: 401 }
-  }
-  return user
-}
-
-async function requireAdmin() {
-  const user = await requireAuth()
-  if (user.role !== 'admin' && user.role !== 'owner') {
-    setResponseStatus(403)
-    throw { message: 'Admin access required', status: 403 }
-  }
-  return user
-}
 
 function generateTicketNumber(): string {
   const year = new Date().getFullYear()
@@ -304,7 +273,7 @@ export const getMyTicketsFn = createServerFn({ method: 'GET' })
   )
   // @ts-expect-error - TanStack Server Functions type inference issue with complex return types
   .handler(async ({ data }) => {
-    const user = await requireAuth()
+    const user = await getAuthenticatedUser()
 
     const conditions = [eq(supportTickets.userId, user.id)]
     if (data.status && data.status !== 'all') {
@@ -450,7 +419,7 @@ export const replyToTicketFn = createServerFn({ method: 'POST' })
     })
   )
   .handler(async ({ data }) => {
-    const user = await requireAuth()
+    const user = await getAuthenticatedUser()
 
     // Get ticket
     const [ticket] = await db
@@ -511,7 +480,7 @@ export const closeTicketFn = createServerFn({ method: 'POST' })
     })
   )
   .handler(async ({ data }) => {
-    const user = await requireAuth()
+    const user = await getAuthenticatedUser()
 
     const [ticket] = await db
       .select()

@@ -7,6 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.9.1] - 2026-02-06
+
+### Changed - UI Modernization & Code Cleanup
+
+**Eziox Aurora Theme Enhancement:**
+
+- Modernized Nav component with gradient brand text matching homepage hero
+- Enhanced scrolled state with aurora-tinted glass effect and multi-color gradient line
+- Added subtle logo glow ring on hover and improved CTA button styling
+- Updated Footer with animated aurora background orbs and glass-style stat cards
+- Implemented consistent aurora gradient dividers across navigation components
+- Enhanced social link hover effects with colored shadows and backdrop blur
+
+**Code Quality Improvements:**
+
+- **Eliminated 9 duplicate utility functions:**
+  - Centralized `hexToRgb` (7 duplicates removed) → single source in `@/lib/utils`
+  - Centralized `getOptionalUser` (2 duplicates removed) → moved to `auth-helpers.ts`
+- Cleaned up unused imports in `templates.ts` and `tickets.ts`
+- Fixed TanStack Start virtual module resolution issue by separating server-only helpers
+- All TypeScript compilation passes clean, no breaking changes
+
+**Technical Fixes:**
+
+- Resolved TanStack Start dev server virtual module error (#5709)
+- Updated all TanStack packages to synchronized v1.158.x versions
+- Maintained backward compatibility while improving maintainability
+
+---
+
 ## [2.9.0] - 2026-02-04
 
 ### Added - Complete Support Ticket System

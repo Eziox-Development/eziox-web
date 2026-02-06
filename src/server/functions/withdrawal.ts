@@ -1,19 +1,10 @@
-/**
- * Withdrawal Rights System
- * Handles withdrawal requests, refunds, and compliance with EU consumer rights
- */
-
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
-import {
-  getCookie,
-  setResponseStatus,
-  getRequestIP,
-} from '@tanstack/react-start/server'
+import { getRequestIP } from '@tanstack/react-start/server'
 import { db } from '../db'
 import { withdrawalRequests, users, subscriptions } from '../db/schema'
 import { eq, desc, and, count } from 'drizzle-orm'
-import { validateSession } from '../lib/auth'
+import { getAuthenticatedUser, requireAdmin } from './auth-helpers'
 import { stripe } from '../lib/stripe'
 import {
   sendEmail,
@@ -21,33 +12,6 @@ import {
   sendSubscriptionEmail,
 } from '../lib/email'
 import { logAdminAction } from '../lib/audit'
-
-// ============================================================================
-// AUTH HELPERS
-// ============================================================================
-
-async function requireAuth() {
-  const token = getCookie('session-token')
-  if (!token) {
-    setResponseStatus(401)
-    throw { message: 'Not authenticated', status: 401 }
-  }
-  const user = await validateSession(token)
-  if (!user) {
-    setResponseStatus(401)
-    throw { message: 'Not authenticated', status: 401 }
-  }
-  return user
-}
-
-async function requireAdmin() {
-  const user = await requireAuth()
-  if (user.role !== 'admin' && user.role !== 'owner') {
-    setResponseStatus(403)
-    throw { message: 'Admin access required', status: 403 }
-  }
-  return user
-}
 
 // ============================================================================
 // USER FUNCTIONS
@@ -64,7 +28,7 @@ export const submitWithdrawalRequestFn = createServerFn({ method: 'POST' })
     })
   )
   .handler(async ({ data }) => {
-    const user = await requireAuth()
+    const user = await getAuthenticatedUser()
 
     // Get user's subscription info
     const [userData] = await db
@@ -137,7 +101,7 @@ export const submitWithdrawalRequestFn = createServerFn({ method: 'POST' })
  */
 export const getMyWithdrawalRequestsFn = createServerFn({ method: 'GET' }).handler(
   async () => {
-    const user = await requireAuth()
+    const user = await getAuthenticatedUser()
 
     const requests = await db
       .select()
@@ -160,7 +124,7 @@ export const cancelWithdrawalRequestFn = createServerFn({ method: 'POST' })
     })
   )
   .handler(async ({ data }) => {
-    const user = await requireAuth()
+    const user = await getAuthenticatedUser()
 
     // Verify ownership and status
     const [request] = await db

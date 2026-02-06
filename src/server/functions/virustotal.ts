@@ -5,38 +5,12 @@
 
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
-import { getCookie, setResponseStatus } from '@tanstack/react-start/server'
-import { validateSession } from '../lib/auth'
+import { requireAdmin } from './auth-helpers'
 import {
   getUrlReport,
   isVirusTotalConfigured,
   type VirusTotalUrlReport,
 } from '../lib/virustotal'
-
-// =============================================================================
-// Helper: Require Admin
-// =============================================================================
-
-async function requireAdmin() {
-  const token = getCookie('session-token')
-  if (!token) {
-    setResponseStatus(401)
-    throw { message: 'Not authenticated', status: 401 }
-  }
-
-  const user = await validateSession(token)
-  if (!user) {
-    setResponseStatus(401)
-    throw { message: 'Not authenticated', status: 401 }
-  }
-
-  if (user.role !== 'admin' && user.role !== 'owner') {
-    setResponseStatus(403)
-    throw { message: 'Admin access required', status: 403 }
-  }
-
-  return user
-}
 
 // =============================================================================
 // Check if VirusTotal is configured

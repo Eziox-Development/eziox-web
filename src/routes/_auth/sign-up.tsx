@@ -34,12 +34,7 @@ import {
 import { SiDiscord } from 'react-icons/si'
 import { TurnstileWidget } from '@/components/auth/TurnstileWidget'
 import { useTheme } from '@/components/layout/ThemeProvider'
-
-function hexToRgb(hex: string): string {
-  if (!hex.startsWith('#')) return '99, 102, 241'
-  const h = hex.slice(1)
-  return `${parseInt(h.slice(0, 2), 16)}, ${parseInt(h.slice(2, 4), 16)}, ${parseInt(h.slice(4, 6), 16)}`
-}
+import { hexToRgb } from '@/lib/utils'
 
 const searchSchema = z.object({
   redirect: z.string().optional(),

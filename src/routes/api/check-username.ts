@@ -2,12 +2,33 @@ import { createFileRoute } from '@tanstack/react-router'
 import { db } from '@/server/db'
 import { users } from '@/server/db/schema'
 import { eq } from 'drizzle-orm'
+import { checkRateLimit } from '@/lib/security'
 
 export const Route = createFileRoute('/api/check-username')({
   server: {
     handlers: {
       GET: async ({ request }) => {
         try {
+          // Rate limit: 30 requests per minute per IP
+          const ip =
+            request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+            request.headers.get('x-real-ip') ||
+            'unknown'
+          const rateLimit = checkRateLimit(
+            `check-username:${ip}`,
+            30,
+            60 * 1000,
+          )
+          if (!rateLimit.allowed) {
+            return new Response(
+              JSON.stringify({
+                available: false,
+                error: 'Too many requests. Please try again later.',
+              }),
+              { status: 429, headers: { 'Content-Type': 'application/json' } },
+            )
+          }
+
           const url = new URL(request.url)
           const username = url.searchParams.get('username')
 

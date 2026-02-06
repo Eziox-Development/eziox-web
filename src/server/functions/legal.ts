@@ -1,41 +1,10 @@
-/**
- * Legal Server Functions
- * DMCA/Takedown requests and Commercial Licensing inquiries
- */
-
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
-import { getCookie, setResponseStatus } from '@tanstack/react-start/server'
 import { db } from '../db'
 import { takedownRequests, licenseInquiries, users, userLinks } from '../db/schema'
 import { eq, desc, and, like, sql } from 'drizzle-orm'
-import { validateSession } from '../lib/auth'
+import { requireAdmin } from './auth-helpers'
 import { sendEmail, generateEmailTemplate } from '../lib/email'
-
-// =============================================================================
-// Helper: Require Admin
-// =============================================================================
-
-async function requireAdmin() {
-  const token = getCookie('session-token')
-  if (!token) {
-    setResponseStatus(401)
-    throw { message: 'Not authenticated', status: 401 }
-  }
-
-  const user = await validateSession(token)
-  if (!user) {
-    setResponseStatus(401)
-    throw { message: 'Not authenticated', status: 401 }
-  }
-
-  if (user.role !== 'admin' && user.role !== 'owner') {
-    setResponseStatus(403)
-    throw { message: 'Admin access required', status: 403 }
-  }
-
-  return user
-}
 
 // =============================================================================
 // PUBLIC: Submit Takedown Request

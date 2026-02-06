@@ -1,24 +1,10 @@
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
-import { getCookie, setResponseStatus } from '@tanstack/react-start/server'
+import { setResponseStatus } from '@tanstack/react-start/server'
 import { db } from '../db'
 import { mediaLibrary } from '../db/schema'
 import { eq, desc, and, like, sql } from 'drizzle-orm'
-import { validateSession } from '../lib/auth'
-
-async function getAuthenticatedUser() {
-  const token = getCookie('session-token')
-  if (!token) {
-    setResponseStatus(401)
-    throw { message: 'Not authenticated', status: 401 }
-  }
-  const user = await validateSession(token)
-  if (!user) {
-    setResponseStatus(401)
-    throw { message: 'Invalid session', status: 401 }
-  }
-  return user
-}
+import { getAuthenticatedUser } from './auth-helpers'
 
 // Get all media items for the authenticated user
 export const getMediaLibraryFn = createServerFn({ method: 'GET' })

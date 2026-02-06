@@ -6,14 +6,13 @@
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
 import {
-  getCookie,
   setResponseStatus,
   getRequestIP,
 } from '@tanstack/react-start/server'
 import { db } from '../db'
 import { profiles } from '../db/schema'
 import { eq } from 'drizzle-orm'
-import { validateSession } from '../lib/auth'
+import { getAuthenticatedUser } from './auth-helpers'
 import { uploadAvatar, uploadBanner } from '../lib/cloudinary'
 import { checkRateLimit, RATE_LIMITS } from '@/lib/security'
 
@@ -30,17 +29,7 @@ const uploadBannerSchema = z.object({
 export const uploadAvatarFn = createServerFn({ method: 'POST' })
   .inputValidator(uploadAvatarSchema)
   .handler(async ({ data }) => {
-    const token = getCookie('session-token')
-    if (!token) {
-      setResponseStatus(401)
-      throw { message: 'Not authenticated', status: 401 }
-    }
-
-    const user = await validateSession(token)
-    if (!user) {
-      setResponseStatus(401)
-      throw { message: 'Not authenticated', status: 401 }
-    }
+    const user = await getAuthenticatedUser()
 
     const ip = getRequestIP() || 'unknown'
     const rateLimit = checkRateLimit(
@@ -88,17 +77,7 @@ export const uploadAvatarFn = createServerFn({ method: 'POST' })
 export const uploadBannerFn = createServerFn({ method: 'POST' })
   .inputValidator(uploadBannerSchema)
   .handler(async ({ data }) => {
-    const token = getCookie('session-token')
-    if (!token) {
-      setResponseStatus(401)
-      throw { message: 'Not authenticated', status: 401 }
-    }
-
-    const user = await validateSession(token)
-    if (!user) {
-      setResponseStatus(401)
-      throw { message: 'Not authenticated', status: 401 }
-    }
+    const user = await getAuthenticatedUser()
 
     const ip = getRequestIP() || 'unknown'
     const rateLimit = checkRateLimit(
@@ -145,17 +124,7 @@ export const uploadBannerFn = createServerFn({ method: 'POST' })
 // Remove Avatar
 export const removeAvatarFn = createServerFn({ method: 'POST' }).handler(
   async () => {
-    const token = getCookie('session-token')
-    if (!token) {
-      setResponseStatus(401)
-      throw { message: 'Not authenticated', status: 401 }
-    }
-
-    const user = await validateSession(token)
-    if (!user) {
-      setResponseStatus(401)
-      throw { message: 'Not authenticated', status: 401 }
-    }
+    const user = await getAuthenticatedUser()
 
     try {
       // Update profile in database
@@ -183,17 +152,7 @@ export const removeAvatarFn = createServerFn({ method: 'POST' }).handler(
 // Remove Banner
 export const removeBannerFn = createServerFn({ method: 'POST' }).handler(
   async () => {
-    const token = getCookie('session-token')
-    if (!token) {
-      setResponseStatus(401)
-      throw { message: 'Not authenticated', status: 401 }
-    }
-
-    const user = await validateSession(token)
-    if (!user) {
-      setResponseStatus(401)
-      throw { message: 'Not authenticated', status: 401 }
-    }
+    const user = await getAuthenticatedUser()
 
     try {
       // Update profile in database
@@ -227,17 +186,7 @@ const uploadMediaSchema = z.object({
 export const uploadMediaFn = createServerFn({ method: 'POST' })
   .inputValidator(uploadMediaSchema)
   .handler(async ({ data }) => {
-    const token = getCookie('session-token')
-    if (!token) {
-      setResponseStatus(401)
-      throw { message: 'Not authenticated', status: 401 }
-    }
-
-    const user = await validateSession(token)
-    if (!user) {
-      setResponseStatus(401)
-      throw { message: 'Not authenticated', status: 401 }
-    }
+    const user = await getAuthenticatedUser()
 
     const ip = getRequestIP() || 'unknown'
     const rateLimit = checkRateLimit(

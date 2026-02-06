@@ -1,12 +1,8 @@
-/**
- * Abuse Alerts API
- * Admin functions for Fair Use Policy monitoring
- */
-
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
 import { getCookie, setResponseStatus } from '@tanstack/react-start/server'
 import { validateSession } from '../lib/auth'
+import { requireAdmin } from './auth-helpers'
 import {
   getAbuseAlerts,
   getAbuseStats,
@@ -16,31 +12,6 @@ import { banUser, type BanDuration, type BanType } from '../lib/account-suspensi
 import { db } from '../db'
 import { userLinks, abuseAlerts } from '../db/schema'
 import { eq, and } from 'drizzle-orm'
-
-// =============================================================================
-// Helper: Require Admin
-// =============================================================================
-
-async function requireAdmin() {
-  const token = getCookie('session-token')
-  if (!token) {
-    setResponseStatus(401)
-    throw { message: 'Not authenticated', status: 401 }
-  }
-
-  const user = await validateSession(token)
-  if (!user) {
-    setResponseStatus(401)
-    throw { message: 'Not authenticated', status: 401 }
-  }
-
-  if (user.role !== 'admin' && user.role !== 'owner') {
-    setResponseStatus(403)
-    throw { message: 'Admin access required', status: 403 }
-  }
-
-  return user
-}
 
 // =============================================================================
 // Get Abuse Alerts (Admin)

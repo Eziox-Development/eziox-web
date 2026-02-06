@@ -1,5 +1,6 @@
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
+import crypto from 'crypto'
 import {
   getCookie,
   setCookie,
@@ -1530,6 +1531,9 @@ export const getUserSessionsFn = createServerFn({ method: 'GET' }).handler(
     }
 
     const currentToken = getCookie('session-token')
+    const currentTokenHash = currentToken
+      ? crypto.createHash('sha256').update(currentToken).digest('hex')
+      : null
 
     const userSessions = await db
       .select({
@@ -1551,7 +1555,7 @@ export const getUserSessionsFn = createServerFn({ method: 'GET' }).handler(
         ipAddress: s.ipAddress ? s.ipAddress.replace(/\.\d+$/, '.xxx') : null, // Mask last octet
         lastActivityAt: s.lastActivityAt,
         createdAt: s.createdAt,
-        isCurrent: s.token === currentToken,
+        isCurrent: s.token === currentTokenHash,
       })),
     }
   },
@@ -1605,12 +1609,17 @@ export const deleteAllOtherSessionsFn = createServerFn({
     throw { message: 'No active session', status: 401 }
   }
 
+  const currentTokenHash = crypto
+    .createHash('sha256')
+    .update(currentToken)
+    .digest('hex')
+
   await db
     .delete(sessions)
     .where(
       and(
         eq(sessions.userId, currentUser.id),
-        ne(sessions.token, currentToken),
+        ne(sessions.token, currentTokenHash),
       ),
     )
 

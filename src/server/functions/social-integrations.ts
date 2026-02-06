@@ -3,27 +3,12 @@ import { z } from 'zod'
 import {
   getCookie,
   setCookie,
-  setResponseStatus,
 } from '@tanstack/react-start/server'
 import { db } from '../db'
 import { socialIntegrations } from '../db/schema'
 import { eq, and } from 'drizzle-orm'
-import { validateSession } from '../lib/auth'
+import { getAuthenticatedUser } from './auth-helpers'
 import { encrypt } from '../lib/encryption'
-
-async function getAuthenticatedUser() {
-  const token = getCookie('session-token')
-  if (!token) {
-    setResponseStatus(401)
-    throw { message: 'Not authenticated', status: 401 }
-  }
-  const user = await validateSession(token)
-  if (!user) {
-    setResponseStatus(401)
-    throw { message: 'Invalid session', status: 401 }
-  }
-  return user
-}
 
 // Supported platforms with easy OAuth APIs
 export const SUPPORTED_PLATFORMS = [

@@ -12,6 +12,7 @@ import {
   getRequestHeader,
 } from '@tanstack/react-start/server'
 import { validateSession } from '@/server/lib/auth'
+import { requireAdmin } from './auth-helpers'
 import {
   logSecurityEvent,
   getSecurityAuditLog,
@@ -23,33 +24,6 @@ import {
   type SecurityEventType,
   type SecuritySeverity,
 } from '@/server/lib/security-monitoring'
-
-// ============================================================================
-// AUTH HELPERS
-// ============================================================================
-
-async function requireAuth() {
-  const token = getCookie('session-token')
-  if (!token) {
-    setResponseStatus(401)
-    throw { message: 'Not authenticated', status: 401 }
-  }
-  const user = await validateSession(token)
-  if (!user) {
-    setResponseStatus(401)
-    throw { message: 'Not authenticated', status: 401 }
-  }
-  return user
-}
-
-async function requireAdmin() {
-  const user = await requireAuth()
-  if (user.role !== 'admin' && user.role !== 'owner') {
-    setResponseStatus(403)
-    throw { message: 'Admin access required', status: 403 }
-  }
-  return user
-}
 
 // ============================================================================
 // SECURITY EVENT FUNCTIONS

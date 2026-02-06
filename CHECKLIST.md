@@ -1,6 +1,6 @@
 # Eziox Development Checklist
 
-> **Version 2.9.0** · [eziox.link](https://eziox.link) · Last Updated: 2026-02-04
+> **Version 2.9.1** · [eziox.link](https://eziox.link) · Last Updated: 2026-02-06
 
 ---
 
@@ -17,6 +17,7 @@
 | Legal Compliance | ✅ Complete | 100% |
 | i18n (EN/DE) | ✅ Complete | 100% |
 | Support System | ✅ Complete | 100% |
+| Code Quality | ✅ Complete | 100% |
 | Status Page | 🔄 Partial | 70% |
 | Testing | 🔄 Partial | 60% |
 
@@ -244,7 +245,30 @@
 
 ---
 
-## 🔄 In Progress / Partial
+## � Code Quality & Maintainability
+
+### Duplicate Elimination
+- [x] Centralized `hexToRgb` utility (7 duplicates removed) → `@/lib/utils`
+- [x] Centralized `getOptionalUser` helper (2 duplicates removed) → `auth-helpers.ts`
+- [x] Cleaned up unused imports in `templates.ts` and `tickets.ts`
+- [x] Separated server-only helpers to avoid TanStack Start virtual module issues
+
+### UI Modernization (v2.9.1)
+- [x] Eziox Aurora theme enhancement across Nav & Footer
+- [x] Gradient brand text matching homepage hero design
+- [x] Aurora-tinted glass effects and animated background orbs
+- [x] Consistent multi-color gradient dividers
+- [x] Enhanced hover states with colored shadows and backdrop blur
+
+### Technical Improvements
+- [x] Fixed TanStack Start dev server virtual module error (#5709)
+- [x] Synchronized all TanStack packages to v1.158.x
+- [x] TypeScript compilation passes clean (no breaking changes)
+- [x] Maintained backward compatibility while improving maintainability
+
+---
+
+## �🔄 In Progress / Partial
 
 ### Status Page Enhancements
 - [x] Basic status display

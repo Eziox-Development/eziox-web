@@ -1,38 +1,13 @@
 import { createServerFn } from '@tanstack/react-start'
 import { z } from 'zod'
-import { getCookie, setResponseStatus } from '@tanstack/react-start/server'
+import { setResponseStatus } from '@tanstack/react-start/server'
 import { db } from '../db'
-import { analyticsDaily, userStats, userLinks, users } from '../db/schema'
+import { analyticsDaily, userStats, userLinks } from '../db/schema'
 import { eq, desc, and, gte, lte, sql } from 'drizzle-orm'
-import { validateSession } from '../lib/auth'
+import { getAuthenticatedUser, getUserTier } from './auth-helpers'
 import type { TierType } from '../lib/stripe'
 
 const ANALYTICS_DELAY_HOURS = 24
-
-async function getAuthenticatedUser() {
-  const token = getCookie('session-token')
-  if (!token) {
-    setResponseStatus(401)
-    throw { message: 'Not authenticated', status: 401 }
-  }
-  const user = await validateSession(token)
-  if (!user) {
-    setResponseStatus(401)
-    throw { message: 'Not authenticated', status: 401 }
-  }
-  return user
-}
-
-async function getUserTier(userId: string): Promise<TierType> {
-  const [userData] = await db
-    .select({ tier: users.tier })
-    .from(users)
-    .where(eq(users.id, userId))
-    .limit(1)
-
-  const tier = userData?.tier || 'free'
-  return (tier === 'standard' || !tier ? 'free' : tier) as TierType
-}
 
 function hasRealtimeAnalytics(tier: TierType): boolean {
   return ['pro', 'creator', 'lifetime'].includes(tier)
