@@ -41,11 +41,6 @@ import {
   ChevronRight,
   MessageCircle,
   FolderOpen,
-  Music,
-  Volume2,
-  VolumeX,
-  Play,
-  Pause,
 } from 'lucide-react'
 import { BadgeDisplay } from '@/components/ui/badge-display'
 import {
@@ -240,8 +235,6 @@ function BioPage() {
   const [isCardHovering, setIsCardHovering] = useState(false)
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set())
   const [gateOpen, setGateOpen] = useState(false)
-  const [isPlaying, setIsPlaying] = useState(false)
-  const [isMuted, setIsMuted] = useState(false)
   const audioRef = useRef<HTMLAudioElement | null>(null)
 
   const getProfile = useServerFn(getPublicProfileFn)
@@ -485,37 +478,20 @@ function BioPage() {
     // YouTube
     const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/)
     if (ytMatch) return { type: 'youtube' as const, id: ytMatch[1] }
-    // Spotify track
-    const spotifyTrackMatch = url.match(/spotify\.com\/track\/([a-zA-Z0-9]+)/)
+    // Spotify track (handles /intl-xx/ locale prefix)
+    const spotifyTrackMatch = url.match(/spotify\.com\/(?:intl-[a-z]{2}\/)?track\/([a-zA-Z0-9]+)/)
     if (spotifyTrackMatch) return { type: 'spotify-track' as const, id: spotifyTrackMatch[1] }
     // Spotify playlist
-    const spotifyPlaylistMatch = url.match(/spotify\.com\/playlist\/([a-zA-Z0-9]+)/)
+    const spotifyPlaylistMatch = url.match(/spotify\.com\/(?:intl-[a-z]{2}\/)?playlist\/([a-zA-Z0-9]+)/)
     if (spotifyPlaylistMatch) return { type: 'spotify-playlist' as const, id: spotifyPlaylistMatch[1] }
     // Spotify album
-    const spotifyAlbumMatch = url.match(/spotify\.com\/album\/([a-zA-Z0-9]+)/)
+    const spotifyAlbumMatch = url.match(/spotify\.com\/(?:intl-[a-z]{2}\/)?album\/([a-zA-Z0-9]+)/)
     if (spotifyAlbumMatch) return { type: 'spotify-album' as const, id: spotifyAlbumMatch[1] }
     // Direct audio URL
     return { type: 'direct' as const, id: url }
   }, [])
 
   const musicSource = profileMusic?.url ? parseMusicUrl(profileMusic.url) : null
-
-  // Music player logic (only for direct audio)
-  const togglePlay = useCallback(() => {
-    if (!audioRef.current) return
-    if (isPlaying) {
-      audioRef.current.pause()
-    } else {
-      audioRef.current.play().catch(() => {})
-    }
-    setIsPlaying(!isPlaying)
-  }, [isPlaying])
-
-  const toggleMute = useCallback(() => {
-    if (!audioRef.current) return
-    audioRef.current.muted = !isMuted
-    setIsMuted(!isMuted)
-  }, [isMuted])
 
   // Auto-play direct audio after gate opens
   useEffect(() => {
@@ -526,7 +502,7 @@ function BioPage() {
     audio.volume = profileMusic.volume
     audio.loop = profileMusic.loop
     audioRef.current = audio
-    audio.play().then(() => setIsPlaying(true)).catch(() => {})
+    audio.play().catch(() => {})
     return () => {
       audio.pause()
       audio.src = ''
@@ -901,10 +877,10 @@ function BioPage() {
         </motion.div>
       )}
 
-      {/* Music Player — supports YouTube, Spotify, and direct audio */}
+      {/* Background Music — hidden iframes, no visible UI */}
       {profileMusic?.enabled && profileMusic.url && gateOpen && musicSource && (
         <>
-          {/* Hidden YouTube iframe for audio playback */}
+          {/* Hidden YouTube iframe for background audio */}
           {musicSource.type === 'youtube' && (
             <iframe
               src={`https://www.youtube.com/embed/${musicSource.id}?autoplay=${profileMusic.autoplay ? 1 : 0}&loop=${profileMusic.loop ? 1 : 0}&playlist=${musicSource.id}&controls=0`}
@@ -914,121 +890,14 @@ function BioPage() {
             />
           )}
 
-          {/* Spotify embed */}
-          {(musicSource.type === 'spotify-track' || musicSource.type === 'spotify-playlist' || musicSource.type === 'spotify-album') && profileMusic.showPlayer && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1 }}
-              className={`fixed z-50 ${
-                profileMusic.playerPosition === 'top-left' ? 'top-4 left-4' :
-                profileMusic.playerPosition === 'top-right' ? 'top-4 right-4' :
-                profileMusic.playerPosition === 'bottom-left' ? 'bottom-4 left-4' :
-                'bottom-4 right-4'
-              }`}
-            >
-              <div
-                className="rounded-2xl overflow-hidden backdrop-blur-xl"
-                style={{
-                  background: 'rgba(0,0,0,0.4)',
-                  border: '1px solid rgba(255,255,255,0.1)',
-                }}
-              >
-                <iframe
-                  src={`https://open.spotify.com/embed/${musicSource.type.replace('spotify-', '')}/${musicSource.id}?theme=0`}
-                  width="300"
-                  height="80"
-                  allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                  loading="lazy"
-                  className="border-0"
-                  title="Spotify Player"
-                />
-              </div>
-            </motion.div>
-          )}
-
-          {/* Direct audio — mini floating player */}
-          {musicSource.type === 'direct' && profileMusic.showPlayer && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 1 }}
-              className={`fixed z-50 ${
-                profileMusic.playerPosition === 'top-left' ? 'top-4 left-4' :
-                profileMusic.playerPosition === 'top-right' ? 'top-4 right-4' :
-                profileMusic.playerPosition === 'bottom-left' ? 'bottom-4 left-4' :
-                'bottom-4 right-4'
-              }`}
-            >
-              <div
-                className="flex items-center gap-2 px-3 py-2 rounded-full backdrop-blur-xl"
-                style={{
-                  background: 'rgba(255,255,255,0.08)',
-                  border: '1px solid rgba(255,255,255,0.12)',
-                }}
-              >
-                <button
-                  onClick={togglePlay}
-                  className="w-8 h-8 rounded-full flex items-center justify-center bg-white/10 hover:bg-white/20 transition-colors text-white"
-                >
-                  {isPlaying ? <Pause size={14} /> : <Play size={14} />}
-                </button>
-                {isPlaying && (
-                  <div className="flex items-end gap-[2px] h-4">
-                    {[1, 2, 3, 4].map((i) => (
-                      <motion.div
-                        key={i}
-                        className="w-[3px] rounded-full bg-white/60"
-                        animate={{ height: ['4px', '16px', '8px', '14px', '4px'] }}
-                        transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.15 }}
-                      />
-                    ))}
-                  </div>
-                )}
-                <button
-                  onClick={toggleMute}
-                  className="w-8 h-8 rounded-full flex items-center justify-center bg-white/10 hover:bg-white/20 transition-colors text-white"
-                >
-                  {isMuted ? <VolumeX size={14} /> : <Volume2 size={14} />}
-                </button>
-                <Music size={12} className="text-white/40" />
-              </div>
-            </motion.div>
-          )}
-
-          {/* YouTube mini indicator (no Spotify-style embed, just a small indicator) */}
-          {musicSource.type === 'youtube' && profileMusic.showPlayer && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 1 }}
-              className={`fixed z-50 ${
-                profileMusic.playerPosition === 'top-left' ? 'top-4 left-4' :
-                profileMusic.playerPosition === 'top-right' ? 'top-4 right-4' :
-                profileMusic.playerPosition === 'bottom-left' ? 'bottom-4 left-4' :
-                'bottom-4 right-4'
-              }`}
-            >
-              <div
-                className="flex items-center gap-2 px-3 py-2 rounded-full backdrop-blur-xl"
-                style={{
-                  background: 'rgba(255,255,255,0.08)',
-                  border: '1px solid rgba(255,255,255,0.12)',
-                }}
-              >
-                <div className="flex items-end gap-[2px] h-4">
-                  {[1, 2, 3, 4].map((i) => (
-                    <motion.div
-                      key={i}
-                      className="w-[3px] rounded-full bg-red-400/70"
-                      animate={{ height: ['4px', '16px', '8px', '14px', '4px'] }}
-                      transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.15 }}
-                    />
-                  ))}
-                </div>
-                <Music size={12} className="text-white/40" />
-              </div>
-            </motion.div>
+          {/* Hidden Spotify iframe for background audio */}
+          {(musicSource.type === 'spotify-track' || musicSource.type === 'spotify-playlist' || musicSource.type === 'spotify-album') && (
+            <iframe
+              src={`https://open.spotify.com/embed/${musicSource.type.replace('spotify-', '')}/${musicSource.id}?theme=0`}
+              allow="autoplay; encrypted-media"
+              className="fixed w-0 h-0 opacity-0 pointer-events-none"
+              title="Background Music"
+            />
           )}
         </>
       )}

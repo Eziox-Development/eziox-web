@@ -1731,36 +1731,9 @@ function PlaygroundPage() {
                             </label>
                           </div>
 
-                          <label className="flex items-center gap-3 cursor-pointer">
-                            <input
-                              type="checkbox"
-                              checked={localMusic.showPlayer}
-                              onChange={(e) => setLocalMusic({ ...localMusic, showPlayer: e.target.checked })}
-                              className="w-5 h-5 rounded-md border-border accent-primary"
-                            />
-                            <span className="text-sm text-foreground">Show floating music player</span>
-                          </label>
-
-                          {localMusic.showPlayer && (
-                            <div>
-                              <label className="text-sm font-medium text-foreground mb-2 block">Player Position</label>
-                              <div className="grid grid-cols-4 gap-3">
-                                {(['top-left', 'top-right', 'bottom-left', 'bottom-right'] as const).map((pos) => (
-                                  <button
-                                    key={pos}
-                                    onClick={() => setLocalMusic({ ...localMusic, playerPosition: pos })}
-                                    className={`p-3 rounded-xl border-2 text-xs font-medium capitalize transition-all ${
-                                      localMusic.playerPosition === pos
-                                        ? 'border-primary bg-primary/10 text-primary'
-                                        : 'border-border bg-card text-foreground-muted hover:border-primary/50'
-                                    }`}
-                                  >
-                                    {pos.replace('-', ' ')}
-                                  </button>
-                                ))}
-                              </div>
-                            </div>
-                          )}
+                          <p className="text-xs text-foreground-muted">
+                            Music plays in the background when visitors open your profile. No visible player is shown.
+                          </p>
                         </div>
                       )}
                     </div>

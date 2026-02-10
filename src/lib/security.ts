@@ -477,7 +477,8 @@ export const SECURITY_HEADERS = {
     "font-src 'self' https://fonts.gstatic.com",
     "img-src 'self' data: https: blob:",
     "connect-src 'self' https://api.stripe.com https://*.neon.tech wss://*.neon.tech https://challenges.cloudflare.com",
-    'frame-src https://js.stripe.com https://challenges.cloudflare.com',
+    'frame-src https://js.stripe.com https://challenges.cloudflare.com https://www.youtube.com https://open.spotify.com',
+    "media-src 'self' https: blob:",
   ].join('; '),
 }
 
