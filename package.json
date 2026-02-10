@@ -1,6 +1,6 @@
 {
   "name": "eziox-web",
-  "version": "2.11.0",
+  "version": "2.11.1",
   "description": "Modern anime-inspired portfolio with animated UI, blog engine, and TanStack Router.",
   "private": true,
   "license": "PolyForm-Noncommercial-1.0.0",
