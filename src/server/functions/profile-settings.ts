@@ -637,7 +637,102 @@ export const importCustomThemeFn = createServerFn({ method: 'POST' })
   })
 
 // ============================================================================
+// INTRO GATE SETTINGS
+// ============================================================================
+
+const introGateSchema = z.object({
+  enabled: z.boolean(),
+  text: z.string().max(200).default(''),
+  buttonText: z.string().max(50).default('Enter'),
+  style: z.enum(['minimal', 'blur', 'overlay', 'cinematic']).default('blur'),
+  showAvatar: z.boolean().default(true),
+})
+
+export const updateIntroGateFn = createServerFn({ method: 'POST' })
+  .inputValidator(introGateSchema)
+  .handler(async ({ data }) => {
+    const user = await getAuthenticatedUser()
+
+    const rateLimitResult = checkRateLimit(
+      `settings:${user.id}`,
+      RATE_LIMITS.API_SPOTIFY.maxRequests,
+      RATE_LIMITS.API_SPOTIFY.windowMs,
+    )
+    if (!rateLimitResult.allowed) {
+      setResponseStatus(429)
+      throw { message: 'Rate limited. Please wait.', status: 429, code: 'RATE_LIMITED' }
+    }
+
+    await db
+      .update(profiles)
+      .set({ introGate: data, updatedAt: new Date() })
+      .where(eq(profiles.userId, user.id))
+
+    return { success: true, introGate: data }
+  })
+
+// ============================================================================
+// PROFILE MUSIC SETTINGS
+// ============================================================================
+
+const profileMusicSchema = z.object({
+  enabled: z.boolean(),
+  url: z.string().max(2048).default(''),
+  autoplay: z.boolean().default(false),
+  volume: z.number().min(0).max(1).default(0.5),
+  loop: z.boolean().default(true),
+  showPlayer: z.boolean().default(true),
+  playerPosition: z.enum(['top-right', 'top-left', 'bottom-right', 'bottom-left']).default('bottom-right'),
+})
+
+export const updateProfileMusicFn = createServerFn({ method: 'POST' })
+  .inputValidator(profileMusicSchema)
+  .handler(async ({ data }) => {
+    const user = await getAuthenticatedUser()
+
+    const rateLimitResult = checkRateLimit(
+      `settings:${user.id}`,
+      RATE_LIMITS.API_SPOTIFY.maxRequests,
+      RATE_LIMITS.API_SPOTIFY.windowMs,
+    )
+    if (!rateLimitResult.allowed) {
+      setResponseStatus(429)
+      throw { message: 'Rate limited. Please wait.', status: 429, code: 'RATE_LIMITED' }
+    }
+
+    await db
+      .update(profiles)
+      .set({ profileMusic: data, updatedAt: new Date() })
+      .where(eq(profiles.userId, user.id))
+
+    return { success: true, profileMusic: data }
+  })
+
+// ============================================================================
+// GET INTRO GATE & MUSIC SETTINGS
+// ============================================================================
+
+export const getIntroGateAndMusicFn = createServerFn({ method: 'GET' }).handler(async () => {
+  const user = await getAuthenticatedUser()
+
+  const [profile] = await db
+    .select({
+      introGate: profiles.introGate,
+      profileMusic: profiles.profileMusic,
+    })
+    .from(profiles)
+    .where(eq(profiles.userId, user.id))
+    .limit(1)
+
+  return {
+    introGate: profile?.introGate as import('../db/schema').IntroGateSettings | null,
+    profileMusic: profile?.profileMusic as import('../db/schema').ProfileMusicSettings | null,
+  }
+})
+
+// ============================================================================
 // TYPE EXPORTS
 // ============================================================================
 
 export type { CustomBackground, LayoutSettings, ProfileBackup, CustomTheme }
+export type { IntroGateSettings, ProfileMusicSettings } from '../db/schema'

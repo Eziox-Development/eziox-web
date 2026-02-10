@@ -29,6 +29,8 @@ import { LegalTab } from './tabs/-legal-tab'
 import { ComplianceTab } from './tabs/-compliance-tab'
 import { SecurityTab } from './tabs/-security-tab'
 import { TicketsTab } from './tabs/-tickets-tab'
+import { IncidentsTab } from './tabs/-incidents-tab'
+import { NewsletterTab } from './tabs/-newsletter-tab'
 
 export type AdminTabType =
   | 'overview'
@@ -37,6 +39,8 @@ export type AdminTabType =
   | 'abuse'
   | 'security'
   | 'tickets'
+  | 'incidents'
+  | 'newsletter'
   | 'partners'
   | 'legal'
   | 'compliance'
@@ -52,6 +56,8 @@ export const Route = createFileRoute('/_protected/admin/')({
       'abuse',
       'security',
       'tickets',
+      'incidents',
+      'newsletter',
       'partners',
       'legal',
       'compliance',
@@ -165,6 +171,20 @@ function AdminPage() {
       color: '#6366f1',
     },
     {
+      id: 'incidents',
+      labelKey: 'admin.tabs.incidents',
+      descKey: 'admin.tabs.incidentsDesc',
+      icon: AlertTriangle,
+      color: '#f59e0b',
+    },
+    {
+      id: 'newsletter',
+      labelKey: 'admin.tabs.newsletter',
+      descKey: 'admin.tabs.newsletterDesc',
+      icon: BarChart3,
+      color: '#6366f1',
+    },
+    {
       id: 'partners',
       labelKey: 'admin.tabs.partners',
       descKey: 'admin.tabs.partnersDesc',
@@ -243,6 +263,8 @@ function AdminPage() {
               {activeTab === 'abuse' && <AbuseTab key="abuse" />}
               {activeTab === 'security' && <SecurityTab key="security" />}
               {activeTab === 'tickets' && <TicketsTab key="tickets" />}
+              {activeTab === 'incidents' && <IncidentsTab key="incidents" />}
+              {activeTab === 'newsletter' && <NewsletterTab key="newsletter" />}
               {activeTab === 'partners' && <PartnersTab key="partners" />}
               {activeTab === 'legal' && <LegalTab key="legal" />}
               {activeTab === 'compliance' && <ComplianceTab key="compliance" />}

@@ -145,6 +145,24 @@ export interface AnimatedProfileSettings {
   glowColor?: string
 }
 
+export interface IntroGateSettings {
+  enabled: boolean
+  text: string
+  buttonText: string
+  style: 'minimal' | 'blur' | 'overlay' | 'cinematic'
+  showAvatar: boolean
+}
+
+export interface ProfileMusicSettings {
+  enabled: boolean
+  url: string
+  autoplay: boolean
+  volume: number
+  loop: boolean
+  showPlayer: boolean
+  playerPosition: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left'
+}
+
 export interface OpenGraphSettings {
   title?: string
   description?: string
@@ -210,6 +228,7 @@ export const profiles = pgTable('profiles', {
   emailSecurityAlerts: boolean('email_security_alerts').default(true),
   emailWeeklyDigest: boolean('email_weekly_digest').default(true),
   emailProductUpdates: boolean('email_product_updates').default(true),
+  emailStatusAlerts: boolean('email_status_alerts').default(false),
   lastSeenChangelog: varchar('last_seen_changelog', { length: 20 }),
   customBackground: jsonb('custom_background').$type<CustomBackground>(),
   layoutSettings: jsonb('layout_settings').$type<LayoutSettings>(),
@@ -221,6 +240,8 @@ export const profiles = pgTable('profiles', {
   openGraphSettings: jsonb('open_graph_settings').$type<OpenGraphSettings>(),
   customThemes: jsonb('custom_themes').$type<CustomTheme[]>().default([]),
   activeCustomThemeId: varchar('active_custom_theme_id', { length: 50 }),
+  introGate: jsonb('intro_gate').$type<IntroGateSettings>(),
+  profileMusic: jsonb('profile_music').$type<ProfileMusicSettings>(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 })
@@ -1576,7 +1597,7 @@ export const supportTickets = pgTable('support_tickets', {
   guestEmail: varchar('guest_email', { length: 255 }),
   guestName: varchar('guest_name', { length: 255 }),
   // Ticket details
-  category: varchar('category', { length: 50 }).notNull(), // 'general', 'technical', 'billing', 'account', 'security', 'abuse', 'legal', 'partnership', 'feature', 'withdrawal'
+  category: varchar('category', { length: 50 }).notNull(), // 'general', 'technical', 'billing', 'account', 'abuse'
   priority: varchar('priority', { length: 20 }).default('normal').notNull(), // 'low', 'normal', 'high', 'urgent'
   subject: varchar('subject', { length: 255 }).notNull(),
   description: text('description').notNull(),
@@ -1675,6 +1696,106 @@ export const licenseInquiries = pgTable('license_inquiries', {
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 })
 
+// STATUS INCIDENTS TABLE
+export const statusIncidents = pgTable('status_incidents', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  title: varchar('title', { length: 255 }).notNull(),
+  description: text('description').notNull(),
+  severity: varchar('severity', { length: 20 }).notNull(), // 'minor', 'major', 'critical'
+  status: varchar('status', { length: 30 }).default('investigating').notNull(), // 'investigating', 'identified', 'monitoring', 'resolved'
+  affectedServices: jsonb('affected_services').$type<string[]>().default([]),
+  // Resolution
+  resolvedAt: timestamp('resolved_at'),
+  resolvedBy: uuid('resolved_by').references(() => users.id, { onDelete: 'set null' }),
+  // Notifications
+  notificationSent: boolean('notification_sent').default(false),
+  // Timestamps
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+})
+
+export const statusIncidentUpdates = pgTable('status_incident_updates', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  incidentId: uuid('incident_id')
+    .notNull()
+    .references(() => statusIncidents.id, { onDelete: 'cascade' }),
+  message: text('message').notNull(),
+  status: varchar('status', { length: 30 }).notNull(), // 'investigating', 'identified', 'monitoring', 'resolved'
+  createdBy: uuid('created_by').references(() => users.id, { onDelete: 'set null' }),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+})
+
+export const statusIncidentsRelations = relations(statusIncidents, ({ one, many }) => ({
+  resolver: one(users, {
+    fields: [statusIncidents.resolvedBy],
+    references: [users.id],
+  }),
+  updates: many(statusIncidentUpdates),
+}))
+
+export const statusIncidentUpdatesRelations = relations(statusIncidentUpdates, ({ one }) => ({
+  incident: one(statusIncidents, {
+    fields: [statusIncidentUpdates.incidentId],
+    references: [statusIncidents.id],
+  }),
+  creator: one(users, {
+    fields: [statusIncidentUpdates.createdBy],
+    references: [users.id],
+  }),
+}))
+
+// STATUS SUBSCRIPTIONS TABLE (opt-in email alerts for status changes)
+export const statusSubscriptions = pgTable('status_subscriptions', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }),
+  email: varchar('email', { length: 255 }).notNull(),
+  // Preferences
+  notifyAll: boolean('notify_all').default(true),
+  notifyMajor: boolean('notify_major').default(true),
+  notifyCritical: boolean('notify_critical').default(true),
+  notifyResolved: boolean('notify_resolved').default(true),
+  // Verification
+  verified: boolean('verified').default(false),
+  verificationToken: varchar('verification_token', { length: 64 }),
+  // Unsubscribe
+  unsubscribeToken: varchar('unsubscribe_token', { length: 64 }).notNull(),
+  unsubscribedAt: timestamp('unsubscribed_at'),
+  // Timestamps
+  subscribedAt: timestamp('subscribed_at').defaultNow().notNull(),
+})
+
+export const statusSubscriptionsRelations = relations(statusSubscriptions, ({ one }) => ({
+  user: one(users, {
+    fields: [statusSubscriptions.userId],
+    references: [users.id],
+  }),
+}))
+
+// NEWSLETTERS TABLE
+export const newsletters = pgTable('newsletters', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  subject: varchar('subject', { length: 255 }).notNull(),
+  content: text('content').notNull(),
+  htmlContent: text('html_content'),
+  // Targeting
+  audience: varchar('audience', { length: 30 }).default('all').notNull(), // 'all', 'subscribers', 'pro', 'creator'
+  // Status
+  status: varchar('status', { length: 20 }).default('draft').notNull(), // 'draft', 'sending', 'sent', 'failed'
+  sentAt: timestamp('sent_at'),
+  sentBy: uuid('sent_by').references(() => users.id, { onDelete: 'set null' }),
+  recipientCount: integer('recipient_count').default(0),
+  // Timestamps
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+})
+
+export const newslettersRelations = relations(newsletters, ({ one }) => ({
+  sender: one(users, {
+    fields: [newsletters.sentBy],
+    references: [users.id],
+  }),
+}))
+
 // TYPE EXPORTS
 export type User = typeof users.$inferSelect
 export type NewUser = typeof users.$inferInsert
@@ -1755,3 +1876,11 @@ export type SupportTicket = typeof supportTickets.$inferSelect
 export type NewSupportTicket = typeof supportTickets.$inferInsert
 export type TicketMessage = typeof ticketMessages.$inferSelect
 export type NewTicketMessage = typeof ticketMessages.$inferInsert
+export type StatusIncident = typeof statusIncidents.$inferSelect
+export type NewStatusIncident = typeof statusIncidents.$inferInsert
+export type StatusIncidentUpdate = typeof statusIncidentUpdates.$inferSelect
+export type NewStatusIncidentUpdate = typeof statusIncidentUpdates.$inferInsert
+export type StatusSubscription = typeof statusSubscriptions.$inferSelect
+export type NewStatusSubscription = typeof statusSubscriptions.$inferInsert
+export type Newsletter = typeof newsletters.$inferSelect
+export type NewNewsletter = typeof newsletters.$inferInsert

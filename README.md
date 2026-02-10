@@ -91,7 +91,7 @@
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │  SUPPORT                                                                    │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│  > Ticket System ......... Live support tickets with 12 categories          │
+│  > Ticket System ......... Live support tickets with 5 categories           │
 │  > Admin Panel .......... Complete ticket management for staff              │
 │  > Email Notifications ... Confirmation emails on ticket creation           │
 │  > Guest Support ........ Non-registered users can submit tickets           │

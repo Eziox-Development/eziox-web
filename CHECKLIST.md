@@ -1,6 +1,6 @@
 # Eziox Development Checklist
 
-> **Version 2.9.1** · [eziox.link](https://eziox.link) · Last Updated: 2026-02-06
+> **Version 2.11.0** · [eziox.link](https://eziox.link) · Last Updated: 2026-02-10
 
 ---
 
@@ -18,7 +18,8 @@
 | i18n (EN/DE) | ✅ Complete | 100% |
 | Support System | ✅ Complete | 100% |
 | Code Quality | ✅ Complete | 100% |
-| Status Page | 🔄 Partial | 70% |
+| Status Page | ✅ Complete | 100% |
+| Email System | ✅ Complete | 100% |
 | Testing | 🔄 Partial | 60% |
 
 ---
@@ -125,7 +126,7 @@
 | Ticket Creation | `/support` | ✅ |
 | User Ticket View | `/support/tickets` | ✅ |
 | Admin Management | `/admin?tab=tickets` | ✅ |
-| 12 Categories | general → gdpr | ✅ |
+| 5 Categories | general, technical, billing, account, abuse | ✅ |
 | Priority Levels | low, normal, high, urgent | ✅ |
 | Status Tracking | 6 states | ✅ |
 | Email Notifications | On creation only | ✅ |
@@ -215,8 +216,8 @@
 | Feature | Status |
 |---------|--------|
 | react-i18next integration | ✅ |
-| English (en.json) | ✅ 2100+ keys |
-| German (de.json) | ✅ 2100+ keys |
+| English (en.json) | ✅ 2200+ keys |
+| German (de.json) | ✅ 2200+ keys |
 | Language switcher | ✅ |
 | Browser detection | ✅ |
 | Runtime switching | ✅ |
@@ -245,7 +246,7 @@
 
 ---
 
-## � Code Quality & Maintainability
+## 📊 Code Quality & Maintainability
 
 ### Duplicate Elimination
 - [x] Centralized `hexToRgb` utility (7 duplicates removed) → `@/lib/utils`
@@ -260,6 +261,24 @@
 - [x] Consistent multi-color gradient dividers
 - [x] Enhanced hover states with colored shadows and backdrop blur
 
+### Profile Customization (v2.11.0)
+- [x] Intro Gate: click-anywhere overlay with 4 styles (minimal, blur, overlay, cinematic)
+- [x] Profile Music: YouTube, Spotify, and direct audio URL support
+- [x] Floating music player with play/pause, mute, animated equalizer
+- [x] Playground settings tabs for intro gate and music configuration
+- [x] Mobile-responsive profile page (avatar, hero, stats, nav, links)
+
+### Support System Simplification (v2.11.0)
+- [x] Reduced ticket categories from 12 to 5 (frontend + backend + admin)
+- [x] Updated email confirmation labels, priority map, icon/color mappings
+- [x] Cleaner 2-column category grid on support page
+
+### Status Page Improvements (v2.11.0)
+- [x] Full i18n coverage (EN/DE) — no hardcoded English strings
+- [x] New i18n keys: timeline labels, tooltip texts, section headers
+- [x] Mobile-responsive stats grid and hero section
+- [x] Support link changed from mailto to internal `/support` route
+
 ### Technical Improvements
 - [x] Fixed TanStack Start dev server virtual module error (#5709)
 - [x] Synchronized all TanStack packages to v1.158.x
@@ -268,17 +287,18 @@
 
 ---
 
-## �🔄 In Progress / Partial
+## 🔄 In Progress / Partial
 
 ### Status Page Enhancements
 - [x] Basic status display
 - [x] Service health checks
 - [x] Latency monitoring
 - [x] Auto-refresh (30s)
-- [ ] Real incident history (mock data)
-- [ ] Status notifications system
-- [ ] External service monitoring
-- [ ] Public status API
+- [x] Real incident history (DB-backed)
+- [x] Status email subscriptions (opt-in/opt-out)
+- [x] Incident timeline with updates
+- [ ] External service monitoring (ping external APIs)
+- [ ] Public status API (JSON endpoint)
 
 ### Scheduled Posts
 - [x] Database schema (`scheduledPosts`)
@@ -292,8 +312,10 @@
 
 ### Email Subscribers
 - [x] Database schema (`emailSubscribers`)
-- [ ] Collection form UI
-- [ ] Newsletter system
+- [x] Status subscription form UI (`/status`)
+- [x] User email preference toggles (Settings → Notifications)
+- [x] Opt-in/opt-out for all email categories
+- [ ] Newsletter system (bulk email campaigns)
 
 ---
 

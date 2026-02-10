@@ -7,7 +7,7 @@ import {
   useSearch,
 } from '@tanstack/react-router'
 import { z } from 'zod'
-import React, { useState, useEffect, useMemo, useRef } from 'react'
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react'
 import { motion } from 'motion/react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
@@ -41,6 +41,11 @@ import {
   ChevronRight,
   MessageCircle,
   FolderOpen,
+  Music,
+  Volume2,
+  VolumeX,
+  Play,
+  Pause,
 } from 'lucide-react'
 import { BadgeDisplay } from '@/components/ui/badge-display'
 import {
@@ -70,6 +75,8 @@ import type {
   LayoutSettings,
   AnimatedProfileSettings,
   CustomFont,
+  IntroGateSettings,
+  ProfileMusicSettings,
 } from '@/server/db/schema'
 import {
   AnimatedBackground,
@@ -232,6 +239,10 @@ function BioPage() {
   const [tiltY, setTiltY] = useState(0)
   const [isCardHovering, setIsCardHovering] = useState(false)
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set())
+  const [gateOpen, setGateOpen] = useState(false)
+  const [isPlaying, setIsPlaying] = useState(false)
+  const [isMuted, setIsMuted] = useState(false)
+  const audioRef = useRef<HTMLAudioElement | null>(null)
 
   const getProfile = useServerFn(getPublicProfileFn)
   const trackClick = useServerFn(trackLinkClickFn)
@@ -465,6 +476,67 @@ function BioPage() {
     profileData?.animatedProfile as AnimatedProfileSettings | null
   const customFonts = profileData?.customFonts as CustomFont[] | null
   const borderRadius = layoutSettings?.cardBorderRadius ?? 16
+  const introGate = profileData?.introGate as IntroGateSettings | null
+  const profileMusic = profileData?.profileMusic as ProfileMusicSettings | null
+  const linkStyle = layoutSettings?.linkStyle ?? 'default'
+
+  // Music URL parsing helpers
+  const parseMusicUrl = useCallback((url: string) => {
+    // YouTube
+    const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/)
+    if (ytMatch) return { type: 'youtube' as const, id: ytMatch[1] }
+    // Spotify track
+    const spotifyTrackMatch = url.match(/spotify\.com\/track\/([a-zA-Z0-9]+)/)
+    if (spotifyTrackMatch) return { type: 'spotify-track' as const, id: spotifyTrackMatch[1] }
+    // Spotify playlist
+    const spotifyPlaylistMatch = url.match(/spotify\.com\/playlist\/([a-zA-Z0-9]+)/)
+    if (spotifyPlaylistMatch) return { type: 'spotify-playlist' as const, id: spotifyPlaylistMatch[1] }
+    // Spotify album
+    const spotifyAlbumMatch = url.match(/spotify\.com\/album\/([a-zA-Z0-9]+)/)
+    if (spotifyAlbumMatch) return { type: 'spotify-album' as const, id: spotifyAlbumMatch[1] }
+    // Direct audio URL
+    return { type: 'direct' as const, id: url }
+  }, [])
+
+  const musicSource = profileMusic?.url ? parseMusicUrl(profileMusic.url) : null
+
+  // Music player logic (only for direct audio)
+  const togglePlay = useCallback(() => {
+    if (!audioRef.current) return
+    if (isPlaying) {
+      audioRef.current.pause()
+    } else {
+      audioRef.current.play().catch(() => {})
+    }
+    setIsPlaying(!isPlaying)
+  }, [isPlaying])
+
+  const toggleMute = useCallback(() => {
+    if (!audioRef.current) return
+    audioRef.current.muted = !isMuted
+    setIsMuted(!isMuted)
+  }, [isMuted])
+
+  // Auto-play direct audio after gate opens
+  useEffect(() => {
+    if (!profileMusic?.enabled || !profileMusic.url || !gateOpen) return
+    if (!profileMusic.autoplay) return
+    if (musicSource?.type !== 'direct') return
+    const audio = new Audio(profileMusic.url)
+    audio.volume = profileMusic.volume
+    audio.loop = profileMusic.loop
+    audioRef.current = audio
+    audio.play().then(() => setIsPlaying(true)).catch(() => {})
+    return () => {
+      audio.pause()
+      audio.src = ''
+    }
+  }, [gateOpen, profileMusic?.enabled, profileMusic?.url, profileMusic?.autoplay, profileMusic?.volume, profileMusic?.loop, musicSource?.type])
+
+  // Skip gate if not enabled (only after profile data has loaded)
+  useEffect(() => {
+    if (profile && !introGate?.enabled) setGateOpen(true)
+  }, [profile, introGate?.enabled])
 
   useEffect(() => {
     if (!customFonts?.length) return
@@ -610,6 +682,124 @@ function BioPage() {
     return anims[animatedProfile.avatarAnimation || ''] || {}
   }
 
+  // Helper: get link style classes based on playground linkStyle setting
+  const getLinkStyleProps = (style: string, link: { backgroundColor?: string | null; textColor?: string | null }) => {
+    const base = {
+      background: link.backgroundColor
+        ? `linear-gradient(135deg, ${link.backgroundColor}20, ${link.backgroundColor}10)`
+        : 'linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02))',
+      border: '1px solid rgba(255,255,255,0.1)',
+      borderRadius,
+    }
+    switch (style) {
+      case 'minimal':
+        return { ...base, background: 'transparent', border: '1px solid rgba(255,255,255,0.06)', boxShadow: 'none' }
+      case 'bold':
+        return { ...base, background: link.backgroundColor ? `${link.backgroundColor}40` : 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.15)' }
+      case 'glass':
+        return { ...base, background: 'rgba(255,255,255,0.06)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.12)' }
+      case 'outline':
+        return { ...base, background: 'transparent', border: '2px solid rgba(255,255,255,0.2)' }
+      case 'neon':
+        return { ...base, background: 'rgba(139,92,246,0.08)', border: '1px solid rgba(139,92,246,0.3)', boxShadow: '0 0 20px rgba(139,92,246,0.15)' }
+      default:
+        return base
+    }
+  }
+
+  const renderLinkItem = (link: { id: string; url: string; title: string; description?: string | null; icon?: string | null; thumbnail?: string | null; backgroundColor?: string | null; textColor?: string | null; groupId?: string | null }, index: number, style: string) => {
+    const platform = getPlatformFromUrl(link.url)
+    const isHovered = hoveredLink === link.id
+    const isClicked = clickedLink === link.id
+    const styleProps = getLinkStyleProps(style, link)
+
+    return (
+      <motion.button
+        key={link.id}
+        initial={{ opacity: 0, y: 15 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ delay: index * 0.04 }}
+        onClick={() => handleLinkClick(link.id, link.url)}
+        onMouseEnter={() => setHoveredLink(link.id)}
+        onMouseLeave={() => setHoveredLink(null)}
+        disabled={isClicked}
+        className="w-full group"
+      >
+        <motion.div
+          className="relative overflow-hidden"
+          style={{ borderRadius }}
+          animate={{
+            scale: isHovered ? 1.02 : 1,
+            y: isHovered ? -2 : 0,
+          }}
+          transition={{ duration: 0.2 }}
+        >
+          <div
+            className="flex items-center gap-3 sm:gap-4 p-3.5 sm:p-4 transition-all"
+            style={styleProps}
+          >
+            <div
+              className="w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center shrink-0 overflow-hidden"
+              style={{
+                borderRadius: borderRadius - 4,
+                background: link.backgroundColor
+                  ? `${link.backgroundColor}30`
+                  : 'linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(6, 182, 212, 0.2))',
+              }}
+            >
+              {link.thumbnail ? (
+                <img
+                  src={link.thumbnail}
+                  alt={link.title}
+                  className="w-full h-full object-cover"
+                />
+              ) : link.icon ? (
+                <span className="text-xl sm:text-2xl">{link.icon}</span>
+              ) : platform?.icon ? (
+                <platform.icon
+                  size={20}
+                  style={{ color: platform.color }}
+                />
+              ) : (
+                <ExternalLink size={18} className="text-white/60" />
+              )}
+            </div>
+            <div className="flex-1 min-w-0 text-left">
+              <p
+                className="font-semibold text-sm sm:text-base text-white truncate"
+                style={{ color: link.textColor || '#ffffff' }}
+              >
+                {link.title}
+              </p>
+              {link.description && (
+                <p
+                  className="text-xs sm:text-sm truncate mt-0.5 opacity-60"
+                  style={{ color: link.textColor || '#ffffff' }}
+                >
+                  {link.description}
+                </p>
+              )}
+            </div>
+            <motion.div
+              className="shrink-0"
+              animate={{
+                x: isHovered ? 3 : 0,
+                opacity: isHovered ? 1 : 0.3,
+              }}
+            >
+              {isClicked ? (
+                <Loader2 size={16} className="animate-spin text-white/60" />
+              ) : (
+                <ArrowUpRight size={16} className="text-white/60" />
+              )}
+            </motion.div>
+          </div>
+        </motion.div>
+      </motion.button>
+    )
+  }
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#0a0a0f]">
@@ -671,6 +861,178 @@ function BioPage() {
         />
       )}
 
+      {/* Intro Gate Overlay — click anywhere to enter */}
+      {introGate?.enabled && !gateOpen && (
+        <motion.div
+          className="fixed inset-0 z-100 flex flex-col items-center justify-center p-6 cursor-pointer select-none"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={() => setGateOpen(true)}
+          style={{
+            background: introGate.style === 'cinematic'
+              ? 'rgba(0,0,0,0.92)'
+              : introGate.style === 'overlay'
+                ? 'rgba(0,0,0,0.8)'
+                : introGate.style === 'minimal'
+                  ? 'rgba(0,0,0,0.4)'
+                  : 'rgba(0,0,0,0.6)',
+            backdropFilter: introGate.style === 'blur' ? 'blur(24px)' : introGate.style === 'minimal' ? 'blur(12px)' : undefined,
+          }}
+        >
+          {introGate.showAvatar && profileData?.avatar && (
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
+              className="w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden ring-2 ring-white/15 mb-6"
+            >
+              <img src={profileData.avatar} alt="" className="w-full h-full object-cover" />
+            </motion.div>
+          )}
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4 }}
+            className="text-white/70 text-center text-base sm:text-lg font-medium tracking-wide"
+          >
+            {introGate.text || introGate.buttonText || 'Click Anywhere'}
+          </motion.p>
+        </motion.div>
+      )}
+
+      {/* Music Player — supports YouTube, Spotify, and direct audio */}
+      {profileMusic?.enabled && profileMusic.url && gateOpen && musicSource && (
+        <>
+          {/* Hidden YouTube iframe for audio playback */}
+          {musicSource.type === 'youtube' && (
+            <iframe
+              src={`https://www.youtube.com/embed/${musicSource.id}?autoplay=${profileMusic.autoplay ? 1 : 0}&loop=${profileMusic.loop ? 1 : 0}&playlist=${musicSource.id}&controls=0`}
+              allow="autoplay"
+              className="fixed w-0 h-0 opacity-0 pointer-events-none"
+              title="Background Music"
+            />
+          )}
+
+          {/* Spotify embed */}
+          {(musicSource.type === 'spotify-track' || musicSource.type === 'spotify-playlist' || musicSource.type === 'spotify-album') && profileMusic.showPlayer && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1 }}
+              className={`fixed z-50 ${
+                profileMusic.playerPosition === 'top-left' ? 'top-4 left-4' :
+                profileMusic.playerPosition === 'top-right' ? 'top-4 right-4' :
+                profileMusic.playerPosition === 'bottom-left' ? 'bottom-4 left-4' :
+                'bottom-4 right-4'
+              }`}
+            >
+              <div
+                className="rounded-2xl overflow-hidden backdrop-blur-xl"
+                style={{
+                  background: 'rgba(0,0,0,0.4)',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                }}
+              >
+                <iframe
+                  src={`https://open.spotify.com/embed/${musicSource.type.replace('spotify-', '')}/${musicSource.id}?theme=0`}
+                  width="300"
+                  height="80"
+                  allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                  loading="lazy"
+                  className="border-0"
+                  title="Spotify Player"
+                />
+              </div>
+            </motion.div>
+          )}
+
+          {/* Direct audio — mini floating player */}
+          {musicSource.type === 'direct' && profileMusic.showPlayer && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 1 }}
+              className={`fixed z-50 ${
+                profileMusic.playerPosition === 'top-left' ? 'top-4 left-4' :
+                profileMusic.playerPosition === 'top-right' ? 'top-4 right-4' :
+                profileMusic.playerPosition === 'bottom-left' ? 'bottom-4 left-4' :
+                'bottom-4 right-4'
+              }`}
+            >
+              <div
+                className="flex items-center gap-2 px-3 py-2 rounded-full backdrop-blur-xl"
+                style={{
+                  background: 'rgba(255,255,255,0.08)',
+                  border: '1px solid rgba(255,255,255,0.12)',
+                }}
+              >
+                <button
+                  onClick={togglePlay}
+                  className="w-8 h-8 rounded-full flex items-center justify-center bg-white/10 hover:bg-white/20 transition-colors text-white"
+                >
+                  {isPlaying ? <Pause size={14} /> : <Play size={14} />}
+                </button>
+                {isPlaying && (
+                  <div className="flex items-end gap-[2px] h-4">
+                    {[1, 2, 3, 4].map((i) => (
+                      <motion.div
+                        key={i}
+                        className="w-[3px] rounded-full bg-white/60"
+                        animate={{ height: ['4px', '16px', '8px', '14px', '4px'] }}
+                        transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.15 }}
+                      />
+                    ))}
+                  </div>
+                )}
+                <button
+                  onClick={toggleMute}
+                  className="w-8 h-8 rounded-full flex items-center justify-center bg-white/10 hover:bg-white/20 transition-colors text-white"
+                >
+                  {isMuted ? <VolumeX size={14} /> : <Volume2 size={14} />}
+                </button>
+                <Music size={12} className="text-white/40" />
+              </div>
+            </motion.div>
+          )}
+
+          {/* YouTube mini indicator (no Spotify-style embed, just a small indicator) */}
+          {musicSource.type === 'youtube' && profileMusic.showPlayer && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 1 }}
+              className={`fixed z-50 ${
+                profileMusic.playerPosition === 'top-left' ? 'top-4 left-4' :
+                profileMusic.playerPosition === 'top-right' ? 'top-4 right-4' :
+                profileMusic.playerPosition === 'bottom-left' ? 'bottom-4 left-4' :
+                'bottom-4 right-4'
+              }`}
+            >
+              <div
+                className="flex items-center gap-2 px-3 py-2 rounded-full backdrop-blur-xl"
+                style={{
+                  background: 'rgba(255,255,255,0.08)',
+                  border: '1px solid rgba(255,255,255,0.12)',
+                }}
+              >
+                <div className="flex items-end gap-[2px] h-4">
+                  {[1, 2, 3, 4].map((i) => (
+                    <motion.div
+                      key={i}
+                      className="w-[3px] rounded-full bg-red-400/70"
+                      animate={{ height: ['4px', '16px', '8px', '14px', '4px'] }}
+                      transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.15 }}
+                    />
+                  ))}
+                </div>
+                <Music size={12} className="text-white/40" />
+              </div>
+            </motion.div>
+          )}
+        </>
+      )}
+
       {/* Fixed Position Weather Widgets */}
       {widgets
         .filter(
@@ -703,7 +1065,7 @@ function BioPage() {
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.5 }}
-        className="fixed top-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1 px-2 py-2 rounded-full backdrop-blur-xl"
+        className="fixed top-4 sm:top-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-0.5 sm:gap-1 px-1.5 sm:px-2 py-1.5 sm:py-2 rounded-full backdrop-blur-xl"
         style={{
           background: 'rgba(255,255,255,0.08)',
           border: '1px solid rgba(255,255,255,0.1)',
@@ -713,7 +1075,7 @@ function BioPage() {
           <button
             key={section}
             onClick={() => scrollToSection(section)}
-            className="relative px-5 py-2 rounded-full text-sm font-medium transition-colors"
+            className="relative px-3 sm:px-5 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-colors"
             style={{
               color:
                 activeSection === section ? '#fff' : 'rgba(255,255,255,0.5)',
@@ -729,15 +1091,17 @@ function BioPage() {
                 transition={{ type: 'spring', stiffness: 500, damping: 35 }}
               />
             )}
-            <span className="relative flex items-center gap-2">
+            <span className="relative flex items-center gap-1.5 sm:gap-2">
               {section === 'profile' && <User size={14} />}
               {section === 'links' && <LinkIcon size={14} />}
               {section === 'comments' && <MessageCircle size={14} />}
-              {section === 'profile'
-                ? t('bioPage.nav.profile')
-                : section === 'links'
-                  ? t('bioPage.nav.links')
-                  : t('bioPage.nav.comments')}
+              <span className="hidden sm:inline">
+                {section === 'profile'
+                  ? t('bioPage.nav.profile')
+                  : section === 'links'
+                    ? t('bioPage.nav.links')
+                    : t('bioPage.nav.comments')}
+              </span>
             </span>
           </button>
         ))}
@@ -787,7 +1151,7 @@ function BioPage() {
 
             {/* Banner */}
             {profileData?.banner ? (
-              <div className="relative h-44 overflow-hidden">
+              <div className="relative h-32 sm:h-44 overflow-hidden">
                 <img
                   src={profileData.banner}
                   alt="Banner"
@@ -807,7 +1171,7 @@ function BioPage() {
 
             {/* Profile Content */}
             <div
-              className="relative px-6 pb-8"
+              className="relative px-4 sm:px-6 pb-6 sm:pb-8"
               style={{ transform: 'translateZ(30px)' }}
             >
               {/* Avatar */}
@@ -817,7 +1181,7 @@ function BioPage() {
               >
                 <div className="relative">
                   <motion.div
-                    className="w-32 h-32 overflow-hidden ring-4 ring-black/50"
+                    className="w-24 h-24 sm:w-32 sm:h-32 overflow-hidden ring-4 ring-black/50"
                     style={{
                       borderRadius,
                       background: 'linear-gradient(135deg, #8b5cf6, #06b6d4)',
@@ -851,8 +1215,8 @@ function BioPage() {
 
               {/* Name & Username */}
               <div className="text-center mt-5">
-                <div className="flex items-center justify-center gap-2">
-                  <h1 className="text-4xl font-bold text-white">
+                <div className="flex items-center justify-center gap-2 flex-wrap">
+                  <h1 className="text-2xl sm:text-4xl font-bold text-white">
                     {profile.user.name || profile.user.username}
                   </h1>
                   {profileData?.badges?.length && (
@@ -929,7 +1293,7 @@ function BioPage() {
                 )}
 
               {/* Stats */}
-              <div className="flex items-center justify-center gap-10 mt-8 pt-6 border-t border-white/10">
+              <div className="flex items-center justify-center gap-6 sm:gap-10 mt-6 sm:mt-8 pt-5 sm:pt-6 border-t border-white/10">
                 <button
                   onClick={() => {
                     setModalTab('followers')
@@ -937,14 +1301,14 @@ function BioPage() {
                   }}
                   className="text-center hover:opacity-80 transition-opacity"
                 >
-                  <div className="text-2xl font-bold text-white">
+                  <div className="text-xl sm:text-2xl font-bold text-white">
                     {(
                       followerCount ??
                       profile.stats?.followers ??
                       0
                     ).toLocaleString()}
                   </div>
-                  <div className="text-xs text-white/50">
+                  <div className="text-[10px] sm:text-xs text-white/50">
                     {t('bioPage.stats.followers')}
                   </div>
                 </button>
@@ -955,18 +1319,18 @@ function BioPage() {
                   }}
                   className="text-center hover:opacity-80 transition-opacity"
                 >
-                  <div className="text-2xl font-bold text-white">
+                  <div className="text-xl sm:text-2xl font-bold text-white">
                     {(profile.stats?.following || 0).toLocaleString()}
                   </div>
-                  <div className="text-xs text-white/50">
+                  <div className="text-[10px] sm:text-xs text-white/50">
                     {t('bioPage.stats.following')}
                   </div>
                 </button>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-white">
+                  <div className="text-xl sm:text-2xl font-bold text-white">
                     {(profile.stats?.profileViews || 0).toLocaleString()}
                   </div>
-                  <div className="text-xs text-white/50">
+                  <div className="text-[10px] sm:text-xs text-white/50">
                     {t('bioPage.stats.views')}
                   </div>
                 </div>
@@ -1042,386 +1406,198 @@ function BioPage() {
       </section>
 
       {/* Links Section */}
-      <section ref={linksRef} className="min-h-screen py-24 px-4 relative z-10">
-        <div className="max-w-lg mx-auto">
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
+      <section ref={linksRef} className="min-h-screen py-16 sm:py-24 px-4 relative z-10">
+        <div className="max-w-xl mx-auto">
+          {/* Links Container Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-2xl font-bold text-white text-center mb-8"
+            className="overflow-hidden"
+            style={{
+              borderRadius: borderRadius + 8,
+              background: 'linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02))',
+              border: '1px solid rgba(255,255,255,0.1)',
+              backdropFilter: 'blur(40px)',
+              boxShadow: '0 20px 60px -15px rgba(0,0,0,0.4)',
+            }}
           >
-            {t('bioPage.linksTitle')}
-          </motion.h2>
-
-          {/* Spotify Widget */}
-          {spotifyStatus?.connected &&
-            spotifyStatus.showOnProfile &&
-            profile?.user?.id && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="mb-6"
-              >
-                <SpotifyWidget userId={profile.user.id} theme={theme} />
-              </motion.div>
-            )}
-
-          {/* Profile Widgets (exclude fixed-position weather widgets) */}
-          {widgets.filter(
-            (w) =>
-              !(
-                w.type === 'weather' &&
-                (w.config as { position?: string })?.position
-              ),
-          ).length > 0 && (
-            <div className="space-y-4 mb-8">
-              {widgets
-                .filter(
-                  (w) =>
-                    !(
-                      w.type === 'weather' &&
-                      (w.config as { position?: string })?.position
-                    ),
-                )
-                .map((widget, index) => (
-                  <motion.div
-                    key={widget.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: index * 0.1 }}
-                  >
-                    <WidgetRenderer widget={widget} />
-                  </motion.div>
-                ))}
+            {/* Container Header */}
+            <div className="px-5 sm:px-6 pt-5 sm:pt-6 pb-4 border-b border-white/8">
+              <div className="flex items-center gap-3">
+                <div className="w-3 h-3 rounded-full bg-red-500/80" />
+                <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
+                <div className="w-3 h-3 rounded-full bg-green-500/80" />
+                <span className="ml-2 text-sm font-medium text-white/40">
+                  {t('bioPage.linksTitle')}
+                </span>
+                <span className="ml-auto text-xs text-white/30">
+                  {(profile.links?.length || 0)} {profile.links?.length === 1 ? 'link' : 'links'}
+                </span>
+              </div>
             </div>
-          )}
 
-          {/* Links with Groups */}
-          {profile.links?.length || profile.linkGroups?.length ? (
-            <div className="space-y-4">
-              {/* Render grouped links */}
-              {profile.linkGroups?.map((group, groupIndex) => {
-                const groupLinks =
-                  profile.links?.filter((l) => l.groupId === group.id) || []
-                if (groupLinks.length === 0) return null
-
-                const isCollapsed =
-                  group.isCollapsible && collapsedGroups.has(group.id)
-                const toggleCollapse = () => {
-                  if (!group.isCollapsible) return
-                  setCollapsedGroups((prev) => {
-                    const next = new Set(prev)
-                    if (next.has(group.id)) {
-                      next.delete(group.id)
-                    } else {
-                      next.add(group.id)
-                    }
-                    return next
-                  })
-                }
-
-                return (
+            {/* Container Body */}
+            <div className="p-4 sm:p-6 space-y-3">
+              {/* Spotify Widget */}
+              {spotifyStatus?.connected &&
+                spotifyStatus.showOnProfile &&
+                profile?.user?.id && (
                   <motion.div
-                    key={group.id}
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 10 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    transition={{ delay: groupIndex * 0.1 }}
-                    className="space-y-3"
+                    className="mb-2"
                   >
-                    {/* Group Header */}
-                    <button
-                      onClick={toggleCollapse}
-                      className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl backdrop-blur-xl transition-all ${group.isCollapsible ? 'cursor-pointer hover:bg-white/5' : 'cursor-default'}`}
-                      style={{
-                        background:
-                          'linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02))',
-                        border: '1px solid rgba(255,255,255,0.08)',
-                        borderLeftWidth: 4,
-                        borderLeftColor:
-                          group.color || 'rgba(139, 92, 246, 0.5)',
-                      }}
-                    >
-                      <div
-                        className="w-8 h-8 rounded-lg flex items-center justify-center"
-                        style={{
-                          backgroundColor: `${group.color || '#8b5cf6'}20`,
-                        }}
-                      >
-                        <FolderOpen
-                          size={16}
-                          style={{ color: group.color || '#8b5cf6' }}
-                        />
-                      </div>
-                      <span className="flex-1 text-left font-medium text-white/90">
-                        {group.name}
-                      </span>
-                      {group.isCollapsible && (
-                        <motion.div
-                          animate={{ rotate: isCollapsed ? 0 : 90 }}
-                          transition={{ duration: 0.2 }}
-                        >
-                          <ChevronRight size={18} className="text-white/40" />
-                        </motion.div>
-                      )}
-                    </button>
-
-                    {/* Group Links */}
-                    <motion.div
-                      initial={false}
-                      animate={{
-                        height: isCollapsed ? 0 : 'auto',
-                        opacity: isCollapsed ? 0 : 1,
-                      }}
-                      transition={{ duration: 0.3, ease: 'easeInOut' }}
-                      className="overflow-hidden space-y-3 pl-4"
-                    >
-                      {groupLinks.map((link, index) => {
-                        const platform = getPlatformFromUrl(link.url)
-                        const isHovered = hoveredLink === link.id
-                        const isClicked = clickedLink === link.id
-                        return (
-                          <motion.button
-                            key={link.id}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: index * 0.05 }}
-                            onClick={() => handleLinkClick(link.id, link.url)}
-                            onMouseEnter={() => setHoveredLink(link.id)}
-                            onMouseLeave={() => setHoveredLink(null)}
-                            disabled={isClicked}
-                            className="w-full group"
-                          >
-                            <motion.div
-                              className="relative overflow-hidden"
-                              style={{ borderRadius }}
-                              animate={{
-                                scale: isHovered ? 1.02 : 1,
-                                y: isHovered ? -4 : 0,
-                              }}
-                            >
-                              <div
-                                className="flex items-center gap-4 p-5 backdrop-blur-xl transition-all"
-                                style={{
-                                  background: link.backgroundColor
-                                    ? `linear-gradient(135deg, ${link.backgroundColor}20, ${link.backgroundColor}10)`
-                                    : 'linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02))',
-                                  border: '1px solid rgba(255,255,255,0.1)',
-                                  borderRadius,
-                                }}
-                              >
-                                <div
-                                  className="w-14 h-14 flex items-center justify-center shrink-0 overflow-hidden"
-                                  style={{
-                                    borderRadius: borderRadius - 4,
-                                    background: link.backgroundColor
-                                      ? `${link.backgroundColor}30`
-                                      : 'linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(6, 182, 212, 0.2))',
-                                  }}
-                                >
-                                  {link.thumbnail ? (
-                                    <img
-                                      src={link.thumbnail}
-                                      alt={link.title}
-                                      className="w-full h-full object-cover"
-                                    />
-                                  ) : link.icon ? (
-                                    <span className="text-2xl">
-                                      {link.icon}
-                                    </span>
-                                  ) : platform?.icon ? (
-                                    <platform.icon
-                                      size={24}
-                                      style={{ color: platform.color }}
-                                    />
-                                  ) : (
-                                    <ExternalLink
-                                      size={22}
-                                      className="text-white/60"
-                                    />
-                                  )}
-                                </div>
-                                <div className="flex-1 min-w-0 text-left">
-                                  <p
-                                    className="font-semibold text-lg text-white truncate"
-                                    style={{
-                                      color: link.textColor || '#ffffff',
-                                    }}
-                                  >
-                                    {link.title}
-                                  </p>
-                                  {link.description && (
-                                    <p
-                                      className="text-sm truncate mt-1 opacity-60"
-                                      style={{
-                                        color: link.textColor || '#ffffff',
-                                      }}
-                                    >
-                                      {link.description}
-                                    </p>
-                                  )}
-                                </div>
-                                <motion.div
-                                  className="shrink-0"
-                                  animate={{
-                                    x: isHovered ? 4 : 0,
-                                    opacity: isHovered ? 1 : 0.4,
-                                  }}
-                                >
-                                  {isClicked ? (
-                                    <Loader2
-                                      size={20}
-                                      className="animate-spin text-white/60"
-                                    />
-                                  ) : (
-                                    <ArrowUpRight
-                                      size={20}
-                                      className="text-white/60"
-                                    />
-                                  )}
-                                </motion.div>
-                              </div>
-                            </motion.div>
-                          </motion.button>
-                        )
-                      })}
-                    </motion.div>
+                    <SpotifyWidget userId={profile.user.id} theme={theme} />
                   </motion.div>
-                )
-              })}
+                )}
 
-              {/* Render ungrouped links */}
-              {profile.links
-                ?.filter((l) => !l.groupId)
-                .map((link, index) => {
-                  const platform = getPlatformFromUrl(link.url)
-                  const isHovered = hoveredLink === link.id
-                  const isClicked = clickedLink === link.id
-                  return (
-                    <motion.button
-                      key={link.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: index * 0.05 }}
-                      onClick={() => handleLinkClick(link.id, link.url)}
-                      onMouseEnter={() => setHoveredLink(link.id)}
-                      onMouseLeave={() => setHoveredLink(null)}
-                      disabled={isClicked}
-                      className="w-full group"
-                    >
+              {/* Profile Widgets (exclude fixed-position weather widgets) */}
+              {widgets.filter(
+                (w) =>
+                  !(
+                    w.type === 'weather' &&
+                    (w.config as { position?: string })?.position
+                  ),
+              ).length > 0 && (
+                <div className="space-y-3 mb-2">
+                  {widgets
+                    .filter(
+                      (w) =>
+                        !(
+                          w.type === 'weather' &&
+                          (w.config as { position?: string })?.position
+                        ),
+                    )
+                    .map((widget, index) => (
                       <motion.div
-                        className="relative overflow-hidden"
-                        style={{ borderRadius }}
-                        animate={{
-                          scale: isHovered ? 1.02 : 1,
-                          y: isHovered ? -4 : 0,
+                        key={widget.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: index * 0.1 }}
+                      >
+                        <WidgetRenderer widget={widget} />
+                      </motion.div>
+                    ))}
+                </div>
+              )}
+
+              {/* Links with Groups */}
+              {profile.links?.length || profile.linkGroups?.length ? (
+                <>
+                  {/* Render grouped links */}
+                  {profile.linkGroups?.map((group, groupIndex) => {
+                    const groupLinks =
+                      profile.links?.filter((l) => l.groupId === group.id) || []
+                    if (groupLinks.length === 0) return null
+
+                    const isCollapsed =
+                      group.isCollapsible && collapsedGroups.has(group.id)
+                    const toggleCollapse = () => {
+                      if (!group.isCollapsible) return
+                      setCollapsedGroups((prev) => {
+                        const next = new Set(prev)
+                        if (next.has(group.id)) {
+                          next.delete(group.id)
+                        } else {
+                          next.add(group.id)
+                        }
+                        return next
+                      })
+                    }
+
+                    return (
+                      <motion.div
+                        key={group.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: groupIndex * 0.08 }}
+                        className="overflow-hidden"
+                        style={{
+                          borderRadius: borderRadius,
+                          background: 'rgba(255,255,255,0.03)',
+                          border: '1px solid rgba(255,255,255,0.06)',
                         }}
                       >
-                        <div
-                          className="flex items-center gap-4 p-5 backdrop-blur-xl transition-all"
-                          style={{
-                            background: link.backgroundColor
-                              ? `linear-gradient(135deg, ${link.backgroundColor}20, ${link.backgroundColor}10)`
-                              : 'linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02))',
-                            border: '1px solid rgba(255,255,255,0.1)',
-                            borderRadius,
-                          }}
+                        {/* Group Header */}
+                        <button
+                          onClick={toggleCollapse}
+                          className={`w-full flex items-center gap-3 px-4 py-3.5 transition-all ${group.isCollapsible ? 'cursor-pointer hover:bg-white/5' : 'cursor-default'}`}
                         >
                           <div
-                            className="w-14 h-14 flex items-center justify-center shrink-0 overflow-hidden"
+                            className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
                             style={{
-                              borderRadius: borderRadius - 4,
-                              background: link.backgroundColor
-                                ? `${link.backgroundColor}30`
-                                : 'linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(6, 182, 212, 0.2))',
+                              background: `linear-gradient(135deg, ${group.color || '#8b5cf6'}30, ${group.color || '#8b5cf6'}15)`,
+                              border: `1px solid ${group.color || '#8b5cf6'}25`,
                             }}
                           >
-                            {link.thumbnail ? (
-                              <img
-                                src={link.thumbnail}
-                                alt={link.title}
-                                className="w-full h-full object-cover"
-                              />
-                            ) : link.icon ? (
-                              <span className="text-2xl">{link.icon}</span>
-                            ) : platform?.icon ? (
-                              <platform.icon
-                                size={24}
-                                style={{ color: platform.color }}
-                              />
-                            ) : (
-                              <ExternalLink
-                                size={22}
-                                className="text-white/60"
-                              />
-                            )}
+                            <FolderOpen
+                              size={16}
+                              style={{ color: group.color || '#8b5cf6' }}
+                            />
                           </div>
-                          <div className="flex-1 min-w-0 text-left">
-                            <p
-                              className="font-semibold text-lg text-white truncate"
-                              style={{ color: link.textColor || '#ffffff' }}
+                          <div className="flex-1 text-left">
+                            <span className="font-semibold text-sm text-white/90">
+                              {group.name}
+                            </span>
+                            <span className="text-xs text-white/40 ml-2">
+                              {groupLinks.length}
+                            </span>
+                          </div>
+                          {group.isCollapsible && (
+                            <motion.div
+                              animate={{ rotate: isCollapsed ? 0 : 90 }}
+                              transition={{ duration: 0.2 }}
                             >
-                              {link.title}
-                            </p>
-                            {link.description && (
-                              <p
-                                className="text-sm truncate mt-1 opacity-60"
-                                style={{ color: link.textColor || '#ffffff' }}
-                              >
-                                {link.description}
-                              </p>
+                              <ChevronRight size={16} className="text-white/30" />
+                            </motion.div>
+                          )}
+                        </button>
+
+                        {/* Group Links */}
+                        <motion.div
+                          initial={false}
+                          animate={{
+                            height: isCollapsed ? 0 : 'auto',
+                            opacity: isCollapsed ? 0 : 1,
+                          }}
+                          transition={{ duration: 0.3, ease: 'easeInOut' }}
+                          className="overflow-hidden"
+                        >
+                          <div className="px-3 pb-3 space-y-2">
+                            {groupLinks.map((link, index) =>
+                              renderLinkItem(link, index, linkStyle)
                             )}
                           </div>
-                          <motion.div
-                            className="shrink-0"
-                            animate={{
-                              x: isHovered ? 4 : 0,
-                              opacity: isHovered ? 1 : 0.4,
-                            }}
-                          >
-                            {isClicked ? (
-                              <Loader2
-                                size={20}
-                                className="animate-spin text-white/60"
-                              />
-                            ) : (
-                              <ArrowUpRight
-                                size={20}
-                                className="text-white/60"
-                              />
-                            )}
-                          </motion.div>
-                        </div>
+                        </motion.div>
                       </motion.div>
-                    </motion.button>
-                  )
-                })}
+                    )
+                  })}
+
+                  {/* Render ungrouped links */}
+                  {profile.links
+                    ?.filter((l) => !l.groupId)
+                    .map((link, index) => renderLinkItem(link, index, linkStyle))}
+                </>
+              ) : (
+                <div
+                  className="text-center py-12"
+                  style={{ borderRadius }}
+                >
+                  <LinkIcon className="w-10 h-10 mx-auto mb-3 text-white/15" />
+                  <p className="font-medium text-white/50 text-sm">
+                    {t('bioPage.links.noLinks')}
+                  </p>
+                  <p className="text-xs text-white/30 mt-1">
+                    {t('bioPage.links.noLinksDescription')}
+                  </p>
+                </div>
+              )}
             </div>
-          ) : (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="text-center py-16 rounded-2xl"
-              style={{
-                background:
-                  'linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02))',
-                border: '1px solid rgba(255,255,255,0.08)',
-              }}
-            >
-              <LinkIcon className="w-12 h-12 mx-auto mb-4 text-white/20" />
-              <p className="font-medium text-white/60">
-                {t('bioPage.links.noLinks')}
-              </p>
-              <p className="text-sm text-white/40 mt-1">
-                {t('bioPage.links.noLinksDescription')}
-              </p>
-            </motion.div>
-          )}
+          </motion.div>
 
           {/* Branding */}
           {showBranding && (
@@ -1429,7 +1605,7 @@ function BioPage() {
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
-              className="text-center mt-12"
+              className="text-center mt-10"
             >
               <Link
                 to="/sign-up"

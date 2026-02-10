@@ -44,12 +44,16 @@ import {
   Eye,
   Wand2,
   Monitor,
+  Music,
+  DoorOpen,
 } from 'lucide-react'
 import type {
   CustomBackground,
   LayoutSettings,
   AnimatedProfileSettings,
   CustomFont,
+  IntroGateSettings,
+  ProfileMusicSettings,
 } from '@/server/db/schema'
 import {
   getProfileSettingsFn,
@@ -58,6 +62,9 @@ import {
   createProfileBackupFn,
   restoreProfileBackupFn,
   deleteProfileBackupFn,
+  updateIntroGateFn,
+  updateProfileMusicFn,
+  getIntroGateAndMusicFn,
 } from '@/server/functions/profile-settings'
 import {
   getCreatorSettingsFn,
@@ -208,6 +215,8 @@ type TabType =
   | 'animations'
   | 'fonts'
   | 'css'
+  | 'intro-gate'
+  | 'music'
   | 'backups'
 
 const TABS: {
@@ -249,6 +258,18 @@ const TABS: {
     icon: Code2,
     premium: true,
     description: 'Advanced styling',
+  },
+  {
+    id: 'intro-gate',
+    label: 'Intro Gate',
+    icon: DoorOpen,
+    description: 'Click-to-enter screen',
+  },
+  {
+    id: 'music',
+    label: 'Music',
+    icon: Music,
+    description: 'Background audio',
   },
   {
     id: 'backups',
@@ -361,6 +382,9 @@ function PlaygroundPage() {
   const createBackup = useServerFn(createProfileBackupFn)
   const restoreBackup = useServerFn(restoreProfileBackupFn)
   const deleteBackup = useServerFn(deleteProfileBackupFn)
+  const updateIntroGate = useServerFn(updateIntroGateFn)
+  const updateProfileMusic = useServerFn(updateProfileMusicFn)
+  const getIntroGateAndMusic = useServerFn(getIntroGateAndMusicFn)
 
   const { data: settings } = useQuery({
     queryKey: ['profileSettings'],
@@ -369,6 +393,10 @@ function PlaygroundPage() {
   const { data: creatorSettings } = useQuery({
     queryKey: ['creatorSettings'],
     queryFn: () => getCreatorSettings(),
+  })
+  const { data: gateAndMusic } = useQuery({
+    queryKey: ['introGateAndMusic'],
+    queryFn: () => getIntroGateAndMusic(),
   })
 
   const [localBackground, setLocalBackground] =
@@ -380,6 +408,22 @@ function PlaygroundPage() {
   const [newFontName, setNewFontName] = useState('')
   const [newFontUrl, setNewFontUrl] = useState('')
   const [newFontType, setNewFontType] = useState<'display' | 'body'>('display')
+  const [localIntroGate, setLocalIntroGate] = useState<IntroGateSettings>({
+    enabled: false,
+    text: '',
+    buttonText: 'Enter',
+    style: 'blur',
+    showAvatar: true,
+  })
+  const [localMusic, setLocalMusic] = useState<ProfileMusicSettings>({
+    enabled: false,
+    url: '',
+    autoplay: false,
+    volume: 0.5,
+    loop: true,
+    showPlayer: true,
+    playerPosition: 'bottom-right',
+  })
 
   useEffect(() => {
     if (settings?.customBackground)
@@ -392,6 +436,11 @@ function PlaygroundPage() {
     if (creatorSettings?.animatedProfile)
       setLocalAnimated(creatorSettings.animatedProfile)
   }, [creatorSettings])
+
+  useEffect(() => {
+    if (gateAndMusic?.introGate) setLocalIntroGate(gateAndMusic.introGate)
+    if (gateAndMusic?.profileMusic) setLocalMusic(gateAndMusic.profileMusic)
+  }, [gateAndMusic])
 
   const userTier = (currentUser?.tier || 'free') as string
   const isPremium = ['pro', 'creator', 'lifetime'].includes(userTier)
@@ -481,6 +530,22 @@ function PlaygroundPage() {
     onSuccess: () => {
       toast.success(t('playground.backupDeleted'))
       void queryClient.invalidateQueries({ queryKey: ['profileSettings'] })
+    },
+  })
+
+  const introGateMutation = useMutation({
+    mutationFn: (gate: IntroGateSettings) => updateIntroGate({ data: gate }),
+    onSuccess: () => {
+      toast.success(t('playground.saved'))
+      void queryClient.invalidateQueries({ queryKey: ['introGateAndMusic'] })
+    },
+  })
+
+  const musicMutation = useMutation({
+    mutationFn: (music: ProfileMusicSettings) => updateProfileMusic({ data: music }),
+    onSuccess: () => {
+      toast.success(t('playground.saved'))
+      void queryClient.invalidateQueries({ queryKey: ['introGateAndMusic'] })
     },
   })
 
@@ -1485,6 +1550,237 @@ function PlaygroundPage() {
                       </Link>
                     </div>
                   ))}
+
+                {/* Intro Gate Tab */}
+                {activeTab === 'intro-gate' && (
+                  <div className="space-y-6">
+                    <div className="bg-card border border-border rounded-2xl p-6">
+                      <div className="flex items-center justify-between mb-6">
+                        <div>
+                          <h3 className="font-semibold text-foreground">Click-to-Enter Screen</h3>
+                          <p className="text-sm text-foreground-muted mt-1">
+                            Visitors must click to enter your profile. Great for music autoplay.
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => setLocalIntroGate({ ...localIntroGate, enabled: !localIntroGate.enabled })}
+                          className={`relative w-12 h-7 rounded-full transition-colors ${localIntroGate.enabled ? 'bg-primary' : 'bg-background-secondary border border-border'}`}
+                        >
+                          <motion.div
+                            className="absolute top-0.5 w-6 h-6 rounded-full bg-white shadow-md"
+                            animate={{ left: localIntroGate.enabled ? 22 : 2 }}
+                            transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                          />
+                        </button>
+                      </div>
+
+                      {localIntroGate.enabled && (
+                        <div className="space-y-4 pt-4 border-t border-border">
+                          <div>
+                            <label className="text-sm font-medium text-foreground mb-2 block">Welcome Text</label>
+                            <input
+                              type="text"
+                              value={localIntroGate.text}
+                              onChange={(e) => setLocalIntroGate({ ...localIntroGate, text: e.target.value })}
+                              placeholder="Welcome to my page..."
+                              maxLength={200}
+                              className="w-full px-4 py-3 rounded-xl bg-background-secondary border border-border text-foreground"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="text-sm font-medium text-foreground mb-2 block">Button Text</label>
+                            <input
+                              type="text"
+                              value={localIntroGate.buttonText}
+                              onChange={(e) => setLocalIntroGate({ ...localIntroGate, buttonText: e.target.value })}
+                              placeholder="Enter"
+                              maxLength={50}
+                              className="w-full px-4 py-3 rounded-xl bg-background-secondary border border-border text-foreground"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="text-sm font-medium text-foreground mb-2 block">Style</label>
+                            <div className="grid grid-cols-4 gap-3">
+                              {(['minimal', 'blur', 'overlay', 'cinematic'] as const).map((style) => (
+                                <button
+                                  key={style}
+                                  onClick={() => setLocalIntroGate({ ...localIntroGate, style })}
+                                  className={`p-3 rounded-xl border-2 text-sm font-medium capitalize transition-all ${
+                                    localIntroGate.style === style
+                                      ? 'border-primary bg-primary/10 text-primary'
+                                      : 'border-border bg-card text-foreground-muted hover:border-primary/50'
+                                  }`}
+                                >
+                                  {style}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+
+                          <label className="flex items-center gap-3 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={localIntroGate.showAvatar}
+                              onChange={(e) => setLocalIntroGate({ ...localIntroGate, showAvatar: e.target.checked })}
+                              className="w-5 h-5 rounded-md border-border accent-primary"
+                            />
+                            <span className="text-sm text-foreground">Show avatar on intro screen</span>
+                          </label>
+                        </div>
+                      )}
+                    </div>
+
+                    <motion.button
+                      onClick={() => introGateMutation.mutate(localIntroGate)}
+                      disabled={introGateMutation.isPending}
+                      className="w-full py-4 rounded-2xl bg-gradient-to-r from-primary to-accent text-white font-semibold flex items-center justify-center gap-3 shadow-lg shadow-primary/25"
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.99 }}
+                    >
+                      {introGateMutation.isPending ? (
+                        <Loader2 size={20} className="animate-spin" />
+                      ) : (
+                        <Save size={20} />
+                      )}
+                      {t('common.save')}
+                    </motion.button>
+                  </div>
+                )}
+
+                {/* Music Tab */}
+                {activeTab === 'music' && (
+                  <div className="space-y-6">
+                    <div className="bg-card border border-border rounded-2xl p-6">
+                      <div className="flex items-center justify-between mb-6">
+                        <div>
+                          <h3 className="font-semibold text-foreground">Background Music</h3>
+                          <p className="text-sm text-foreground-muted mt-1">
+                            Play audio in the background when visitors view your profile.
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => setLocalMusic({ ...localMusic, enabled: !localMusic.enabled })}
+                          className={`relative w-12 h-7 rounded-full transition-colors ${localMusic.enabled ? 'bg-primary' : 'bg-background-secondary border border-border'}`}
+                        >
+                          <motion.div
+                            className="absolute top-0.5 w-6 h-6 rounded-full bg-white shadow-md"
+                            animate={{ left: localMusic.enabled ? 22 : 2 }}
+                            transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                          />
+                        </button>
+                      </div>
+
+                      {localMusic.enabled && (
+                        <div className="space-y-4 pt-4 border-t border-border">
+                          <div>
+                            <label className="text-sm font-medium text-foreground mb-2 block">Audio / YouTube / Spotify URL</label>
+                            <input
+                              type="url"
+                              placeholder="https://open.spotify.com/track/... or YouTube/direct audio URL"
+                              value={localMusic.url}
+                              onChange={(e) => setLocalMusic({ ...localMusic, url: e.target.value })}
+                              className="w-full px-4 py-3 rounded-xl bg-background-secondary border border-border text-foreground"
+                            />
+                            <p className="text-xs text-foreground-muted mt-1">
+                              Supports YouTube, Spotify (track/playlist/album), .mp3, .wav, .ogg, .m4a
+                            </p>
+                          </div>
+
+                          <div>
+                            <label className="text-sm font-medium text-foreground mb-2 block">
+                              Volume: {Math.round(localMusic.volume * 100)}%
+                            </label>
+                            <input
+                              type="range"
+                              min={0}
+                              max={1}
+                              step={0.05}
+                              value={localMusic.volume}
+                              onChange={(e) => setLocalMusic({ ...localMusic, volume: parseFloat(e.target.value) })}
+                              className="w-full accent-primary"
+                            />
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-4">
+                            <label className="flex items-center gap-3 cursor-pointer p-3 rounded-xl bg-background-secondary border border-border">
+                              <input
+                                type="checkbox"
+                                checked={localMusic.autoplay}
+                                onChange={(e) => setLocalMusic({ ...localMusic, autoplay: e.target.checked })}
+                                className="w-5 h-5 rounded-md border-border accent-primary"
+                              />
+                              <div>
+                                <span className="text-sm font-medium text-foreground block">Autoplay</span>
+                                <span className="text-xs text-foreground-muted">Requires intro gate</span>
+                              </div>
+                            </label>
+
+                            <label className="flex items-center gap-3 cursor-pointer p-3 rounded-xl bg-background-secondary border border-border">
+                              <input
+                                type="checkbox"
+                                checked={localMusic.loop}
+                                onChange={(e) => setLocalMusic({ ...localMusic, loop: e.target.checked })}
+                                className="w-5 h-5 rounded-md border-border accent-primary"
+                              />
+                              <div>
+                                <span className="text-sm font-medium text-foreground block">Loop</span>
+                                <span className="text-xs text-foreground-muted">Repeat when done</span>
+                              </div>
+                            </label>
+                          </div>
+
+                          <label className="flex items-center gap-3 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={localMusic.showPlayer}
+                              onChange={(e) => setLocalMusic({ ...localMusic, showPlayer: e.target.checked })}
+                              className="w-5 h-5 rounded-md border-border accent-primary"
+                            />
+                            <span className="text-sm text-foreground">Show floating music player</span>
+                          </label>
+
+                          {localMusic.showPlayer && (
+                            <div>
+                              <label className="text-sm font-medium text-foreground mb-2 block">Player Position</label>
+                              <div className="grid grid-cols-4 gap-3">
+                                {(['top-left', 'top-right', 'bottom-left', 'bottom-right'] as const).map((pos) => (
+                                  <button
+                                    key={pos}
+                                    onClick={() => setLocalMusic({ ...localMusic, playerPosition: pos })}
+                                    className={`p-3 rounded-xl border-2 text-xs font-medium capitalize transition-all ${
+                                      localMusic.playerPosition === pos
+                                        ? 'border-primary bg-primary/10 text-primary'
+                                        : 'border-border bg-card text-foreground-muted hover:border-primary/50'
+                                    }`}
+                                  >
+                                    {pos.replace('-', ' ')}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                    <motion.button
+                      onClick={() => musicMutation.mutate(localMusic)}
+                      disabled={musicMutation.isPending}
+                      className="w-full py-4 rounded-2xl bg-gradient-to-r from-primary to-accent text-white font-semibold flex items-center justify-center gap-3 shadow-lg shadow-primary/25"
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.99 }}
+                    >
+                      {musicMutation.isPending ? (
+                        <Loader2 size={20} className="animate-spin" />
+                      ) : (
+                        <Save size={20} />
+                      )}
+                      {t('common.save')}
+                    </motion.button>
+                  </div>
+                )}
 
                 {/* Backups Tab */}
                 {activeTab === 'backups' && (

@@ -408,6 +408,7 @@ export const getNotificationSettingsFn = createServerFn({
       emailSecurityAlerts: profiles.emailSecurityAlerts,
       emailWeeklyDigest: profiles.emailWeeklyDigest,
       emailProductUpdates: profiles.emailProductUpdates,
+      emailStatusAlerts: profiles.emailStatusAlerts,
       lastSeenChangelog: profiles.lastSeenChangelog,
     })
     .from(profiles)
@@ -422,6 +423,7 @@ export const getNotificationSettingsFn = createServerFn({
     emailSecurityAlerts: profile?.emailSecurityAlerts ?? true,
     emailWeeklyDigest: profile?.emailWeeklyDigest ?? true,
     emailProductUpdates: profile?.emailProductUpdates ?? true,
+    emailStatusAlerts: profile?.emailStatusAlerts ?? false,
     lastSeenChangelog: profile?.lastSeenChangelog || null,
   }
 })
@@ -436,6 +438,7 @@ export const updateNotificationSettingsFn = createServerFn({ method: 'POST' })
       emailSecurityAlerts: z.boolean().optional(),
       emailWeeklyDigest: z.boolean().optional(),
       emailProductUpdates: z.boolean().optional(),
+      emailStatusAlerts: z.boolean().optional(),
     }),
   )
   .handler(async ({ data }) => {

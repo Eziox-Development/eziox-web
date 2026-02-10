@@ -29,14 +29,7 @@ export const TICKET_CATEGORIES = [
   'technical',
   'billing',
   'account',
-  'security',
   'abuse',
-  'legal',
-  'partnership',
-  'feature',
-  'withdrawal',
-  'dmca',
-  'gdpr',
 ] as const
 
 export const TICKET_PRIORITIES = ['low', 'normal', 'high', 'urgent'] as const
@@ -59,15 +52,8 @@ const CATEGORY_PRIORITY_MAP: Record<TicketCategory, TicketPriority> = {
   general: 'normal',
   technical: 'normal',
   billing: 'high',
-  account: 'normal',
-  security: 'urgent',
+  account: 'high',
   abuse: 'high',
-  legal: 'high',
-  partnership: 'low',
-  feature: 'low',
-  withdrawal: 'high',
-  dmca: 'high',
-  gdpr: 'urgent',
 }
 
 // ============================================================================
@@ -821,18 +807,11 @@ async function sendTicketConfirmationEmail(
   subject: string
 ): Promise<void> {
   const categoryLabels: Record<string, string> = {
-    general: 'General Inquiry',
+    general: 'General Support',
     technical: 'Technical Support',
     billing: 'Billing & Payments',
-    account: 'Account Issues',
-    security: 'Security Report',
-    abuse: 'Abuse Report',
-    legal: 'Legal Request',
-    partnership: 'Partnership Inquiry',
-    feature: 'Feature Request',
-    withdrawal: 'Withdrawal Request',
-    dmca: 'DMCA Takedown',
-    gdpr: 'GDPR Request',
+    account: 'Account & Security',
+    abuse: 'Report Abuse',
   }
 
   const content = `

@@ -39,13 +39,6 @@ import {
   Shield,
   Bug,
   CreditCard,
-  UserCog,
-  Sparkles,
-  Scale,
-  Handshake,
-  FileText,
-  Undo2,
-  Trash2,
   HelpCircle,
   StickyNote,
 } from 'lucide-react'
@@ -54,30 +47,16 @@ const CATEGORY_ICONS: Record<string, React.ElementType> = {
   general: HelpCircle,
   technical: Bug,
   billing: CreditCard,
-  account: UserCog,
-  security: Shield,
+  account: Shield,
   abuse: AlertTriangle,
-  legal: Scale,
-  partnership: Handshake,
-  feature: Sparkles,
-  withdrawal: Undo2,
-  dmca: FileText,
-  gdpr: Trash2,
 }
 
 const CATEGORY_COLORS: Record<string, string> = {
   general: '#6366f1',
   technical: '#ef4444',
   billing: '#22c55e',
-  account: '#06b6d4',
-  security: '#8b5cf6',
+  account: '#8b5cf6',
   abuse: '#f59e0b',
-  legal: '#64748b',
-  partnership: '#14b8a6',
-  feature: '#f97316',
-  withdrawal: '#dc2626',
-  dmca: '#7c3aed',
-  gdpr: '#0ea5e9',
 }
 
 const PRIORITY_COLORS: Record<string, string> = {

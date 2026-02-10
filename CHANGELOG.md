@@ -7,6 +7,112 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.11.0] - 2026-02-10
+
+### Added - Profile Customization & Intro Gate
+
+**Intro Gate (Click-to-Enter Overlay):**
+
+- New `introGate` JSONB column on `profiles` table
+- 4 overlay styles: minimal, blur, overlay, cinematic
+- Click-anywhere-to-enter behavior (no button needed)
+- Custom text, avatar visibility toggle
+- Playground settings tab for configuration
+
+**Profile Background Music:**
+
+- New `profileMusic` JSONB column on `profiles` table
+- YouTube URL support (hidden iframe, audio extraction)
+- Spotify URL support (embedded player)
+- Direct audio URL support (.mp3, .wav, .ogg, .m4a)
+- Floating mini player with play/pause, mute, animated equalizer
+- Configurable autoplay, volume, loop, player position
+- Playground settings tab for configuration
+
+**Server Functions:**
+
+- `updateIntroGateFn` — update intro gate settings with Zod validation
+- `updateProfileMusicFn` — update music settings with Zod validation
+- `getIntroGateAndMusicFn` — fetch both settings for authenticated user
+
+### Changed - Support System Simplification
+
+**Ticket Categories Reduced (12 → 5):**
+
+- `general` — Questions, feedback, feature requests, partnerships
+- `technical` — Bugs, errors, technical issues
+- `billing` — Subscriptions, invoices, refunds, cancellations
+- `account` — Login, password, security, data privacy (GDPR)
+- `abuse` — Harmful content, copyright (DMCA), legal issues
+
+**Updated across entire stack:**
+
+- Backend: `TICKET_CATEGORIES`, `CATEGORY_PRIORITY_MAP`, email labels (`tickets.ts`)
+- Frontend: Support page categories, 2-column grid layout (`support.tsx`)
+- My Tickets: `CATEGORY_ICONS`, `CATEGORY_COLORS` (`tickets.tsx`)
+- Admin: Category icons, colors, filter dropdown (`-tickets-tab.tsx`)
+- DB schema: Updated category column comment (`schema.ts`)
+- Removed 7 unused Lucide icon imports across 3 files
+
+### Improved - Status Page
+
+**Full i18n Coverage (EN/DE):**
+
+- Replaced all hardcoded English strings with i18n keys
+- New keys: `status.timeline.*`, `status.tooltips.*`, `status.uptimeLabel`, `status.statusLabel`
+- German translations for all new keys
+- Pluralization support for incident counts (`incidents_one`/`incidents_other`)
+
+**Design & UX:**
+
+- Mobile-responsive stats grid (stacks vertically on small screens)
+- Hero stats bar with flex-wrap for mobile
+- Support link changed from `mailto:` to internal `/support` route
+- Removed unused `Progress` import
+- Added `Link` import from TanStack Router
+
+---
+
+## [2.10.0] - 2026-02-06
+
+### Added - Status Page & Email Subscription System
+
+**Real Incident Management:**
+
+- Database tables: `status_incidents`, `status_incident_updates`, `status_subscriptions`
+- Admin CRUD for incidents: create, update status, resolve with timeline
+- Real incident history tab replacing mock data on `/status`
+- Incident severity levels (minor, major, critical) with color-coded UI
+- Incident status tracking (investigating, identified, monitoring, resolved)
+- Timeline view with all updates per incident
+
+**Status Email Subscriptions (Opt-in/Opt-out):**
+
+- Public subscription form on `/status` for non-authenticated users
+- Email verification flow with unique tokens
+- One-click subscribe for logged-in users
+- Unsubscribe via unique token link in every email
+- Automatic notifications when incidents are created, updated, or resolved
+- Subscriber preference filtering (notify all, major only, critical only)
+
+**User Email Preferences:**
+
+- New `emailStatusAlerts` toggle in Profile → Settings → Notifications
+- Added to `profiles` table, `auth.ts`, `notifications.ts` server functions
+- Full opt-in/opt-out for all email categories:
+  - Login alerts, Security alerts, Weekly digest, Product updates, Status alerts
+- i18n support (EN/DE) for all new settings
+
+**Resend Email Documentation:**
+
+- Complete setup guide in `DEPLOYMENT.md`
+- Domain verification (SPF, DKIM, DMARC) instructions
+- Email types matrix with triggers and opt-out fields
+- Code examples for sending automated emails
+- Rate limit reference for Free/Pro/Enterprise plans
+
+---
+
 ## [2.9.1] - 2026-02-06
 
 ### Changed - UI Modernization & Code Cleanup

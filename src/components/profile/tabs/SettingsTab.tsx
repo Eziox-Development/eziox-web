@@ -903,6 +903,10 @@ export function SettingsTab({ currentUser }: SettingsTabProps) {
                     key: 'emailProductUpdates',
                     label: t('dashboard.settings.emailProductUpdates'),
                   },
+                  {
+                    key: 'emailStatusAlerts',
+                    label: t('dashboard.settings.emailStatusAlerts'),
+                  },
                 ].map((item) => {
                   const isEnabled =
                     notificationData?.settings?.[

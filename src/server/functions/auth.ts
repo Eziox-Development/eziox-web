@@ -1637,6 +1637,7 @@ export const updateNotificationSettingsFn = createServerFn({ method: 'POST' })
       emailSecurityAlerts: z.boolean().optional(),
       emailWeeklyDigest: z.boolean().optional(),
       emailProductUpdates: z.boolean().optional(),
+      emailStatusAlerts: z.boolean().optional(),
     }),
   )
   .handler(async ({ data }) => {

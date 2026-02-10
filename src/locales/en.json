@@ -1202,9 +1202,17 @@
       "uptime": "Uptime (90d)",
       "daysTracked": "Days Tracked"
     },
+    "tooltips": {
+      "avgUptime": "Average uptime across all services (90 days)",
+      "avgLatency": "Average response time across all services",
+      "daysTracked": "Days of uptime history tracked"
+    },
     "lastChecked": "Last checked",
-    "response": "Response",
+    "refresh": "Refresh",
+    "response": "Response Time",
     "uptime": "Uptime",
+    "uptimeLabel": "90-Day Uptime",
+    "statusLabel": "Status",
     "activeIncidents": "Active Incidents",
     "tabs": {
       "current": "Current Status",
@@ -1274,6 +1282,12 @@
         "description": "WebSocket connections"
       }
     },
+    "timeline": {
+      "daysAgo": "90 days ago",
+      "today": "Today",
+      "incidents_one": "{{count}} incident",
+      "incidents_other": "{{count}} incidents"
+    },
     "noIncidents": {
       "title": "No Incidents Reported",
       "description": "All systems have been running smoothly for the past 90 days."
@@ -1290,16 +1304,47 @@
     },
     "subscribe": {
       "title": "Status Notifications",
-      "description": "Opt-in to receive email alerts about service status and incidents.",
-      "button": "Enable Notifications"
+      "description": "Get notified when services go down or incidents are reported.",
+      "button": "Subscribe",
+      "buttonSubscribed": "Subscribed",
+      "emailPlaceholder": "your@email.com",
+      "subscribing": "Subscribing...",
+      "success": "You're subscribed to status notifications!",
+      "verificationSent": "Verification email sent! Please check your inbox.",
+      "alreadySubscribed": "You're already subscribed.",
+      "unsubscribed": "You've been unsubscribed from status notifications.",
+      "verified": "Your subscription has been verified!",
+      "error": "Something went wrong. Please try again."
+    },
+    "incident": {
+      "active": "Active Incidents",
+      "noActive": "No active incidents",
+      "noActiveDesc": "All systems are running smoothly.",
+      "resolved": "Resolved Incidents",
+      "noResolved": "No recent incidents",
+      "noResolvedDesc": "No incidents have been reported in the past 90 days.",
+      "affectedServices": "Affected Services",
+      "timeline": "Timeline",
+      "severity": {
+        "minor": "Minor",
+        "major": "Major",
+        "critical": "Critical"
+      },
+      "status": {
+        "investigating": "Investigating",
+        "identified": "Identified",
+        "monitoring": "Monitoring",
+        "resolved": "Resolved"
+      }
     },
     "support": {
-      "title": "Experiencing Issues?",
-      "description": "Our support team is here to help.",
+      "title": "Need Help?",
+      "description": "Submit a support ticket if you're experiencing issues.",
       "button": "Contact Support"
     },
     "footer": {
-      "info": "Status data is collected in real-time and updated every 30 seconds."
+      "info": "Status data is collected in real-time and updated every 30 seconds.",
+      "poweredBy": "Powered by Eziox"
     }
   },
   "templates": {
@@ -2894,6 +2939,7 @@
       "emailSecurityAlerts": "Security alerts",
       "emailWeeklyDigest": "Weekly digest",
       "emailProductUpdates": "Product updates",
+      "emailStatusAlerts": "Service status alerts",
       "privacy": "Privacy",
       "privacyDesc": "Control your profile visibility and data",
       "profileVisibility": "Profile visibility",
@@ -4098,6 +4144,10 @@
       "securityDesc": "Security Monitoring",
       "tickets": "Tickets",
       "ticketsDesc": "Support Requests",
+      "incidents": "Incidents",
+      "incidentsDesc": "Service Status",
+      "newsletter": "Newsletter",
+      "newsletterDesc": "Email Campaigns",
       "partners": "Partners",
       "partnersDesc": "Applications",
       "legal": "Legal",

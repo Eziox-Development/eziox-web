@@ -648,9 +648,17 @@
       "uptime": "Verfügbarkeit (90T)",
       "daysTracked": "Tage erfasst"
     },
+    "tooltips": {
+      "avgUptime": "Durchschnittliche Verfügbarkeit aller Dienste (90 Tage)",
+      "avgLatency": "Durchschnittliche Antwortzeit aller Dienste",
+      "daysTracked": "Tage der erfassten Verfügbarkeitshistorie"
+    },
     "lastChecked": "Zuletzt geprüft",
-    "response": "Antwort",
+    "refresh": "Aktualisieren",
+    "response": "Antwortzeit",
     "uptime": "Verfügbarkeit",
+    "uptimeLabel": "90-Tage Verfügbarkeit",
+    "statusLabel": "Status",
     "activeIncidents": "Aktive Vorfälle",
     "tabs": {
       "current": "Aktueller Status",
@@ -720,6 +728,12 @@
         "description": "WebSocket-Verbindungen"
       }
     },
+    "timeline": {
+      "daysAgo": "Vor 90 Tagen",
+      "today": "Heute",
+      "incidents_one": "{{count}} Vorfall",
+      "incidents_other": "{{count}} Vorfälle"
+    },
     "noIncidents": {
       "title": "Keine Vorfälle gemeldet",
       "description": "Alle Systeme laufen seit 90 Tagen reibungslos."
@@ -736,16 +750,47 @@
     },
     "subscribe": {
       "title": "Status-Benachrichtigungen",
-      "description": "Opt-in für E-Mail-Alarme über Dienststatus und Vorfälle.",
-      "button": "Benachrichtigungen aktivieren"
+      "description": "Werde benachrichtigt, wenn Dienste ausfallen oder Vorfälle gemeldet werden.",
+      "button": "Abonnieren",
+      "buttonSubscribed": "Abonniert",
+      "emailPlaceholder": "deine@email.de",
+      "subscribing": "Wird abonniert...",
+      "success": "Du erhältst jetzt Status-Benachrichtigungen!",
+      "verificationSent": "Bestätigungs-E-Mail gesendet! Bitte prüfe deinen Posteingang.",
+      "alreadySubscribed": "Du bist bereits abonniert.",
+      "unsubscribed": "Du hast die Status-Benachrichtigungen abbestellt.",
+      "verified": "Dein Abonnement wurde bestätigt!",
+      "error": "Etwas ist schiefgelaufen. Bitte versuche es erneut."
+    },
+    "incident": {
+      "active": "Aktive Vorfälle",
+      "noActive": "Keine aktiven Vorfälle",
+      "noActiveDesc": "Alle Systeme laufen reibungslos.",
+      "resolved": "Behobene Vorfälle",
+      "noResolved": "Keine kürzlichen Vorfälle",
+      "noResolvedDesc": "In den letzten 90 Tagen wurden keine Vorfälle gemeldet.",
+      "affectedServices": "Betroffene Dienste",
+      "timeline": "Zeitverlauf",
+      "severity": {
+        "minor": "Gering",
+        "major": "Erheblich",
+        "critical": "Kritisch"
+      },
+      "status": {
+        "investigating": "Wird untersucht",
+        "identified": "Identifiziert",
+        "monitoring": "Wird überwacht",
+        "resolved": "Behoben"
+      }
     },
     "support": {
-      "title": "Probleme?",
-      "description": "Unser Support-Team hilft dir gerne.",
+      "title": "Brauchst du Hilfe?",
+      "description": "Erstelle ein Support-Ticket, wenn du Probleme hast.",
       "button": "Support kontaktieren"
     },
     "footer": {
-      "info": "Statusdaten werden in Echtzeit erfasst und alle 30 Sekunden aktualisiert."
+      "info": "Statusdaten werden in Echtzeit erfasst und alle 30 Sekunden aktualisiert.",
+      "poweredBy": "Betrieben von Eziox"
     }
   },
   "templates": {
@@ -2894,6 +2939,7 @@
       "emailSecurityAlerts": "Sicherheitswarnungen",
       "emailWeeklyDigest": "Wöchentliche Zusammenfassung",
       "emailProductUpdates": "Produkt-Updates",
+      "emailStatusAlerts": "Dienststatus-Benachrichtigungen",
       "privacy": "Datenschutz",
       "privacyDesc": "Kontrolliere deine Profil-Sichtbarkeit und Daten",
       "profileVisibility": "Profil-Sichtbarkeit",
@@ -4098,6 +4144,10 @@
       "securityDesc": "Sicherheitsüberwachung",
       "tickets": "Tickets",
       "ticketsDesc": "Support-Anfragen",
+      "incidents": "Vorfälle",
+      "incidentsDesc": "Dienststatus",
+      "newsletter": "Newsletter",
+      "newsletterDesc": "E-Mail-Kampagnen",
       "partners": "Partner",
       "partnersDesc": "Bewerbungen",
       "legal": "Rechtliches",

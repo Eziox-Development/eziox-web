@@ -5,33 +5,35 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/utils'
 
 const badgeVariants = cva(
-  'inline-flex items-center justify-center rounded-full border px-2.5 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1.5 [&>svg]:pointer-events-none transition-all duration-200 overflow-hidden select-none',
+  'inline-flex items-center justify-center rounded-full border px-2.5 py-0.5 text-xs font-semibold w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1.5 [&>svg]:pointer-events-none transition-all duration-300 ease-out overflow-hidden select-none backdrop-blur-sm',
   {
     variants: {
       variant: {
         default:
-          'border-transparent bg-primary text-primary-foreground shadow-sm [a&]:hover:bg-primary/90 [a&]:hover:shadow-md',
+          'border-transparent bg-primary text-primary-foreground shadow-[0_2px_8px_rgba(var(--primary-rgb),0.3)] [a&]:hover:shadow-[0_4px_16px_rgba(var(--primary-rgb),0.4)] [a&]:hover:brightness-110',
         secondary:
-          'border-transparent bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/80',
+          'border-border/50 bg-secondary/80 text-secondary-foreground [a&]:hover:bg-secondary [a&]:hover:border-border/70',
         destructive:
-          'border-transparent bg-destructive text-white shadow-sm [a&]:hover:bg-destructive/90 dark:bg-destructive/80',
+          'border-transparent bg-destructive/90 text-white shadow-[0_2px_8px_rgba(239,68,68,0.3)] [a&]:hover:shadow-[0_4px_16px_rgba(239,68,68,0.4)] [a&]:hover:brightness-110',
         outline:
-          'border-white/20 bg-transparent text-foreground [a&]:hover:bg-white/5 [a&]:hover:border-white/30',
+          'border-border/60 bg-card/30 text-foreground backdrop-blur-md [a&]:hover:bg-card/50 [a&]:hover:border-border/80',
         success:
-          'border-transparent bg-emerald-500/20 text-emerald-400 [a&]:hover:bg-emerald-500/30',
+          'border-emerald-500/20 bg-emerald-500/15 text-emerald-400 shadow-[0_0_12px_rgba(34,197,94,0.1)] [a&]:hover:bg-emerald-500/25 [a&]:hover:shadow-[0_0_20px_rgba(34,197,94,0.15)]',
         warning:
-          'border-transparent bg-amber-500/20 text-amber-400 [a&]:hover:bg-amber-500/30',
+          'border-amber-500/20 bg-amber-500/15 text-amber-400 shadow-[0_0_12px_rgba(245,158,11,0.1)] [a&]:hover:bg-amber-500/25 [a&]:hover:shadow-[0_0_20px_rgba(245,158,11,0.15)]',
         info:
-          'border-transparent bg-blue-500/20 text-blue-400 [a&]:hover:bg-blue-500/30',
+          'border-blue-500/20 bg-blue-500/15 text-blue-400 shadow-[0_0_12px_rgba(59,130,246,0.1)] [a&]:hover:bg-blue-500/25 [a&]:hover:shadow-[0_0_20px_rgba(59,130,246,0.15)]',
         purple:
-          'border-transparent bg-purple-500/20 text-purple-400 [a&]:hover:bg-purple-500/30',
+          'border-purple-500/20 bg-purple-500/15 text-purple-400 shadow-[0_0_12px_rgba(168,85,247,0.1)] [a&]:hover:bg-purple-500/25 [a&]:hover:shadow-[0_0_20px_rgba(168,85,247,0.15)]',
         ghost:
-          'border-transparent bg-white/5 text-white/70 [a&]:hover:bg-white/10 [a&]:hover:text-white',
+          'border-transparent bg-muted/30 text-foreground-muted [a&]:hover:bg-muted/50 [a&]:hover:text-foreground',
+        gradient:
+          'border-transparent bg-gradient-to-r from-primary to-accent text-white shadow-[0_2px_12px_rgba(var(--primary-rgb),0.3)] [a&]:hover:shadow-[0_4px_20px_rgba(var(--primary-rgb),0.4)] [a&]:hover:brightness-110',
       },
       size: {
         default: 'px-2.5 py-0.5 text-xs',
         sm: 'px-2 py-px text-[10px]',
-        lg: 'px-3 py-1 text-sm',
+        lg: 'px-3.5 py-1 text-sm',
       },
     },
     defaultVariants: {
