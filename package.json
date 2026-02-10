@@ -131,5 +131,12 @@
     "vite-plugin-devtools-json": "^1.0.0",
     "vitest": "^4.0.17",
     "web-vitals": "^5.1.0"
+  },
+  "overrides": {
+    "tar": ">=7.5.7",
+    "@isaacs/brace-expansion": ">=5.0.1",
+    "lodash": ">=4.17.22",
+    "seroval": ">=1.4.1",
+    "esbuild": ">=0.25.0"
   }
 }
