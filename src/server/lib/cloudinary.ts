@@ -189,6 +189,58 @@ export async function uploadAvatar(
 }
 
 /**
+ * Upload video to Cloudinary (for background videos)
+ * Supports: mp4, webm, mov, ogg, m4v
+ * Max size: 50MB
+ */
+export async function uploadVideo(
+  file: string,
+  userId: string,
+): Promise<string> {
+  const ALLOWED_VIDEO_TYPES = ['video/mp4', 'video/webm', 'video/quicktime', 'video/ogg', 'video/x-m4v']
+  const MAX_VIDEO_SIZE = 50 * 1024 * 1024 // 50MB
+
+  if (file.startsWith('data:')) {
+    const matches = file.match(/^data:([^;]+);base64,(.+)$/)
+    if (!matches?.[1] || !matches[2]) {
+      throw new Error('Invalid video data URL')
+    }
+    if (!ALLOWED_VIDEO_TYPES.includes(matches[1])) {
+      throw new Error(`Invalid video type. Allowed: mp4, webm, mov, ogg, m4v`)
+    }
+    const sizeInBytes = (matches[2].length * 3) / 4
+    if (sizeInBytes > MAX_VIDEO_SIZE) {
+      throw new Error(`Video too large. Maximum size: ${MAX_VIDEO_SIZE / 1024 / 1024}MB`)
+    }
+  }
+
+  let lastError: Error | null = null
+  const maxRetries = 2
+
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const result = await cloudinary.uploader.upload(file, {
+        folder: 'eziox/backgrounds',
+        public_id: `bg_video_${userId}_${Date.now()}`,
+        overwrite: false,
+        resource_type: 'video',
+        timeout: 120000, // 2min timeout for large videos
+      })
+
+      return result.secure_url
+    } catch (error) {
+      lastError = error as Error
+      console.error(`Cloudinary video upload attempt ${attempt}/${maxRetries} failed:`, error)
+      if (attempt < maxRetries) {
+        await new Promise((resolve) => setTimeout(resolve, Math.pow(2, attempt) * 1000))
+      }
+    }
+  }
+
+  throw new Error(`Failed to upload video: ${lastError?.message || 'Unknown error'}`)
+}
+
+/**
  * Upload banner with optimizations and retry logic
  */
 export async function uploadBanner(

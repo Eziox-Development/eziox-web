@@ -159,8 +159,6 @@ export interface ProfileMusicSettings {
   autoplay: boolean
   volume: number
   loop: boolean
-  showPlayer: boolean
-  playerPosition: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left'
 }
 
 export interface OpenGraphSettings {

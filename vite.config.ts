@@ -125,12 +125,7 @@ const config = defineConfig({
     chunkSizeWarningLimit: 800,
   },
   optimizeDeps: {
-    exclude: ['react', 'react-dom'],
-    include: [
-      '@tanstack/react-router',
-      '@tanstack/react-query',
-      'lucide-react',
-    ],
+    exclude: ['react', 'react-dom', 'react/jsx-runtime', 'react/jsx-dev-runtime'],
   },
   resolve: {
     alias: {

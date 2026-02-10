@@ -478,15 +478,6 @@ function BioPage() {
     // YouTube
     const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/)
     if (ytMatch) return { type: 'youtube' as const, id: ytMatch[1] }
-    // Spotify track (handles /intl-xx/ locale prefix)
-    const spotifyTrackMatch = url.match(/spotify\.com\/(?:intl-[a-z]{2}\/)?track\/([a-zA-Z0-9]+)/)
-    if (spotifyTrackMatch) return { type: 'spotify-track' as const, id: spotifyTrackMatch[1] }
-    // Spotify playlist
-    const spotifyPlaylistMatch = url.match(/spotify\.com\/(?:intl-[a-z]{2}\/)?playlist\/([a-zA-Z0-9]+)/)
-    if (spotifyPlaylistMatch) return { type: 'spotify-playlist' as const, id: spotifyPlaylistMatch[1] }
-    // Spotify album
-    const spotifyAlbumMatch = url.match(/spotify\.com\/(?:intl-[a-z]{2}\/)?album\/([a-zA-Z0-9]+)/)
-    if (spotifyAlbumMatch) return { type: 'spotify-album' as const, id: spotifyAlbumMatch[1] }
     // Direct audio URL
     return { type: 'direct' as const, id: url }
   }, [])
@@ -877,26 +868,28 @@ function BioPage() {
         </motion.div>
       )}
 
-      {/* Background Music — hidden iframes, no visible UI */}
+      {/* Background Music — hidden, no visible UI, only after gate opens */}
       {profileMusic?.enabled && profileMusic.url && gateOpen && musicSource && (
         <>
-          {/* Hidden YouTube iframe for background audio */}
+          {/* Hidden YouTube iframe with enablejsapi for volume control */}
           {musicSource.type === 'youtube' && (
             <iframe
-              src={`https://www.youtube.com/embed/${musicSource.id}?autoplay=${profileMusic.autoplay ? 1 : 0}&loop=${profileMusic.loop ? 1 : 0}&playlist=${musicSource.id}&controls=0`}
+              id="yt-bg-music"
+              src={`https://www.youtube.com/embed/${musicSource.id}?autoplay=${profileMusic.autoplay ? 1 : 0}&loop=${profileMusic.loop ? 1 : 0}&playlist=${musicSource.id}&controls=0&enablejsapi=1&origin=${typeof window !== 'undefined' ? window.location.origin : ''}`}
               allow="autoplay"
-              className="fixed w-0 h-0 opacity-0 pointer-events-none"
+              style={{ position: 'fixed', top: '-9999px', left: '-9999px', width: '1px', height: '1px', border: 'none' }}
               title="Background Music"
-            />
-          )}
-
-          {/* Hidden Spotify iframe for background audio */}
-          {(musicSource.type === 'spotify-track' || musicSource.type === 'spotify-playlist' || musicSource.type === 'spotify-album') && (
-            <iframe
-              src={`https://open.spotify.com/embed/${musicSource.type.replace('spotify-', '')}/${musicSource.id}?theme=0`}
-              allow="autoplay; encrypted-media"
-              className="fixed w-0 h-0 opacity-0 pointer-events-none"
-              title="Background Music"
+              onLoad={(e) => {
+                const iframe = e.currentTarget
+                const vol = Math.round((profileMusic.volume ?? 0.5) * 100)
+                setTimeout(() => {
+                  iframe.contentWindow?.postMessage(JSON.stringify({
+                    event: 'command',
+                    func: 'setVolume',
+                    args: [vol],
+                  }), 'https://www.youtube.com')
+                }, 1000)
+              }}
             />
           )}
         </>

@@ -223,7 +223,49 @@ export const uploadMediaFn = createServerFn({ method: 'POST' })
     }
   })
 
+// Upload Background Video
+const uploadVideoSchema = z.object({
+  video: z.string().min(1, 'Video data is required'),
+})
+
+export const uploadVideoFn = createServerFn({ method: 'POST' })
+  .inputValidator(uploadVideoSchema)
+  .handler(async ({ data }) => {
+    const user = await getAuthenticatedUser()
+
+    const ip = getRequestIP() || 'unknown'
+    const rateLimit = checkRateLimit(
+      `upload:${user.id}:${ip}`,
+      RATE_LIMITS.API_UPLOAD.maxRequests,
+      RATE_LIMITS.API_UPLOAD.windowMs,
+    )
+    if (!rateLimit.allowed) {
+      setResponseStatus(429)
+      throw {
+        message: 'Too many uploads. Please try again later.',
+        status: 429,
+      }
+    }
+
+    try {
+      const { uploadVideo } = await import('../lib/cloudinary')
+      const videoUrl = await uploadVideo(data.video, user.id)
+
+      return {
+        success: true,
+        videoUrl,
+      }
+    } catch (error) {
+      console.error('Video upload error:', error)
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to upload video'
+      setResponseStatus(500)
+      throw { message: errorMessage, status: 500 }
+    }
+  })
+
 // Type Exports
 export type UploadAvatarInput = z.infer<typeof uploadAvatarSchema>
 export type UploadBannerInput = z.infer<typeof uploadBannerSchema>
 export type UploadMediaInput = z.infer<typeof uploadMediaSchema>
+export type UploadVideoInput = z.infer<typeof uploadVideoSchema>

@@ -932,7 +932,9 @@ export function AnimatedBackground({
 }
 
 const getVideoMimeType = (url: string): string => {
-  const extension = url.split('.').pop()?.toLowerCase() || ''
+  // Strip query params and hash before detecting extension
+  const cleanUrl = (url.split('?')[0] ?? '').split('#')[0] ?? ''
+  const extension = cleanUrl.split('.').pop()?.toLowerCase() ?? ''
   const mimeTypes: Record<string, string> = {
     mp4: 'video/mp4',
     webm: 'video/webm',
@@ -960,17 +962,16 @@ export function VideoBackground({
   opacity?: number
 }) {
   return (
-    <div className="fixed inset-0 -z-10 overflow-hidden">
+    <div className="absolute inset-0 overflow-hidden">
       <video
         autoPlay
         loop={loop}
         muted={muted}
         playsInline
-        className="absolute min-w-full min-h-full object-cover"
+        className="absolute inset-0 w-full h-full object-cover"
         style={{ opacity }}
       >
         <source src={url} type={getVideoMimeType(url)} />
-        Your browser does not support the video tag.
       </video>
     </div>
   )

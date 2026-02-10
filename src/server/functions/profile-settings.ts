@@ -681,8 +681,6 @@ const profileMusicSchema = z.object({
   autoplay: z.boolean().default(false),
   volume: z.number().min(0).max(1).default(0.5),
   loop: z.boolean().default(true),
-  showPlayer: z.boolean().default(true),
-  playerPosition: z.enum(['top-right', 'top-left', 'bottom-right', 'bottom-left']).default('bottom-right'),
 })
 
 export const updateProfileMusicFn = createServerFn({ method: 'POST' })

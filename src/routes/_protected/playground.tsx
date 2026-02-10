@@ -46,6 +46,7 @@ import {
   Monitor,
   Music,
   DoorOpen,
+  Upload,
 } from 'lucide-react'
 import type {
   CustomBackground,
@@ -73,6 +74,7 @@ import {
   removeCustomFontFn,
   updateAnimatedProfileFn,
 } from '@/server/functions/creator-features'
+import { uploadVideoFn } from '@/server/functions/upload'
 import { ANIMATED_PRESETS } from '@/components/backgrounds/AnimatedBackgrounds'
 
 export const Route = createFileRoute('/_protected/playground')({
@@ -421,8 +423,6 @@ function PlaygroundPage() {
     autoplay: false,
     volume: 0.5,
     loop: true,
-    showPlayer: true,
-    playerPosition: 'bottom-right',
   })
 
   useEffect(() => {
@@ -456,6 +456,9 @@ function PlaygroundPage() {
     if (fontCategory === 'all') return PRESET_FONTS
     return PRESET_FONTS.filter((f) => f.category === fontCategory)
   }, [fontCategory])
+
+  const uploadVideo = useServerFn(uploadVideoFn)
+  const [videoUploading, setVideoUploading] = useState(false)
 
   const bgMutation = useMutation({
     mutationFn: (bg: CustomBackground | null) => updateBackground({ data: bg }),
@@ -887,6 +890,80 @@ function PlaygroundPage() {
                             placeholder="https://example.com/video.mp4"
                             className="w-full px-4 py-3 rounded-xl bg-background-secondary border border-border text-foreground"
                           />
+
+                          <div className="flex items-center gap-3">
+                            <div className="h-px flex-1 bg-border" />
+                            <span className="text-xs text-foreground-muted">or</span>
+                            <div className="h-px flex-1 bg-border" />
+                          </div>
+
+                          <label className="flex items-center justify-center gap-3 px-4 py-3 rounded-xl border-2 border-dashed border-border hover:border-primary/50 cursor-pointer transition-colors">
+                            <Upload size={18} className="text-foreground-muted" />
+                            <span className="text-sm text-foreground-muted">
+                              {videoUploading ? 'Uploading...' : 'Upload video file'}
+                            </span>
+                            {videoUploading && <Loader2 size={16} className="animate-spin text-primary" />}
+                            <input
+                              type="file"
+                              accept="video/mp4,video/webm,video/quicktime,video/ogg,video/x-m4v,.mp4,.webm,.mov,.ogg,.m4v"
+                              className="hidden"
+                              disabled={videoUploading}
+                              onChange={async (e) => {
+                                const file = e.target.files?.[0]
+                                if (!file) return
+                                if (file.size > 50 * 1024 * 1024) {
+                                  toast.error('Video too large. Maximum 50MB.')
+                                  return
+                                }
+                                setVideoUploading(true)
+                                try {
+                                  const reader = new FileReader()
+                                  reader.onload = async () => {
+                                    try {
+                                      const result = await uploadVideo({ data: { video: reader.result as string } })
+                                      if (result.videoUrl) {
+                                        setLocalBackground({
+                                          ...localBackground,
+                                          videoUrl: result.videoUrl,
+                                        })
+                                        toast.success('Video uploaded!')
+                                      }
+                                    } catch (err) {
+                                      toast.error(err instanceof Error ? err.message : 'Upload failed')
+                                    } finally {
+                                      setVideoUploading(false)
+                                    }
+                                  }
+                                  reader.onerror = () => {
+                                    toast.error('Failed to read file')
+                                    setVideoUploading(false)
+                                  }
+                                  reader.readAsDataURL(file)
+                                } catch {
+                                  toast.error('Upload failed')
+                                  setVideoUploading(false)
+                                }
+                                e.target.value = ''
+                              }}
+                            />
+                          </label>
+                          <p className="text-xs text-foreground-muted">
+                            Supports MP4, WebM, MOV, OGG, M4V — max 50MB
+                          </p>
+
+                          {localBackground.videoUrl && (
+                            <div className="aspect-video rounded-xl overflow-hidden border border-border bg-black">
+                              <video
+                                src={localBackground.videoUrl}
+                                autoPlay
+                                loop
+                                muted
+                                playsInline
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          )}
+
                           <div className="flex gap-6">
                             <label className="flex items-center gap-3 cursor-pointer">
                               <input
@@ -1425,7 +1502,7 @@ function PlaygroundPage() {
                           />
                           <Select
                             value={newFontType}
-                            onValueChange={(value) =>
+                            onValueChange={(value: string) =>
                               setNewFontType(value as 'display' | 'body')
                             }
                           >
@@ -1675,16 +1752,16 @@ function PlaygroundPage() {
                       {localMusic.enabled && (
                         <div className="space-y-4 pt-4 border-t border-border">
                           <div>
-                            <label className="text-sm font-medium text-foreground mb-2 block">Audio / YouTube / Spotify URL</label>
+                            <label className="text-sm font-medium text-foreground mb-2 block">Audio / YouTube URL</label>
                             <input
                               type="url"
-                              placeholder="https://open.spotify.com/track/... or YouTube/direct audio URL"
+                              placeholder="https://youtube.com/watch?v=... or direct audio URL (.mp3, .wav)"
                               value={localMusic.url}
                               onChange={(e) => setLocalMusic({ ...localMusic, url: e.target.value })}
                               className="w-full px-4 py-3 rounded-xl bg-background-secondary border border-border text-foreground"
                             />
                             <p className="text-xs text-foreground-muted mt-1">
-                              Supports YouTube, Spotify (track/playlist/album), .mp3, .wav, .ogg, .m4a
+                              Supports YouTube links and direct audio files (.mp3, .wav, .ogg, .m4a)
                             </p>
                           </div>
 

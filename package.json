@@ -1,6 +1,6 @@
 {
   "name": "eziox-web",
-  "version": "2.11.1",
+  "version": "2.11.2",
   "description": "Modern anime-inspired portfolio with animated UI, blog engine, and TanStack Router.",
   "private": true,
   "license": "PolyForm-Noncommercial-1.0.0",
@@ -136,7 +136,6 @@
     "tar": ">=7.5.7",
     "@isaacs/brace-expansion": ">=5.0.1",
     "lodash": ">=4.17.22",
-    "seroval": ">=1.4.1",
-    "esbuild": ">=0.25.0"
+    "seroval": ">=1.4.1"
   }
 }
