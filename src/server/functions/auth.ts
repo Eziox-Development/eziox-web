@@ -2430,6 +2430,52 @@ export const verifyPasskeyAuthFn = createServerFn({ method: 'POST' })
     return { success: true }
   })
 
+// ============================================================================
+// DISCORD LOGIN / SIGNUP (no auth required)
+// ============================================================================
+
+export const getDiscordLoginUrlFn = createServerFn({ method: 'GET' })
+  .inputValidator(z.object({ mode: z.enum(['login', 'signup']).default('login') }))
+  .handler(async ({ data }) => {
+    const clientId = process.env.DISCORD_LOGIN_CLIENT_ID || process.env.DISCORD_CLIENT_ID || ''
+    const baseUrl = process.env.APP_URL || 'https://eziox.link'
+    const redirectUri = process.env.DISCORD_LOGIN_REDIRECT_URI || `${baseUrl}/api/auth/callback/discord`
+
+    if (!clientId) {
+      setResponseStatus(503)
+      throw { message: 'Discord login is not configured', status: 503 }
+    }
+
+    const rawIP = getRequestIP() || 'unknown'
+    const rateLimit = checkRateLimit(`discord-login:${rawIP}`, 10, 60_000)
+    if (!rateLimit.allowed) {
+      setResponseStatus(429)
+      throw { message: 'Too many requests. Please try again later.', status: 429 }
+    }
+
+    const state = Buffer.from(
+      JSON.stringify({ mode: data.mode, ts: Date.now(), nonce: crypto.randomBytes(8).toString('hex') }),
+    ).toString('base64url')
+
+    setCookie('discord_login_state', state, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 600,
+      path: '/',
+    })
+
+    const params = new URLSearchParams({
+      client_id: clientId,
+      redirect_uri: redirectUri,
+      response_type: 'code',
+      scope: 'identify email',
+      state,
+    })
+
+    return { url: `https://discord.com/api/oauth2/authorize?${params.toString()}` }
+  })
+
 export type SignUpInput = z.infer<typeof signUpSchema>
 export type SignInInput = z.infer<typeof signInSchema>
 export type CurrentUser = Awaited<ReturnType<typeof getCurrentUser>>

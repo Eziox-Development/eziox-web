@@ -285,9 +285,16 @@ export function sanitizeURL(url: string): string | null {
 }
 
 /**
- * Validate font URLs (only allow trusted font providers)
+ * Validate font URLs (allow trusted font providers and local /assets/fonts/ paths)
  */
 export function sanitizeFontURL(url: string): string | null {
+  if (!url || typeof url !== 'string') return null
+
+  // Allow local self-hosted font paths
+  if (/^\/assets\/fonts\/[a-zA-Z0-9_\-/,. ()]+\.(ttf|woff2?|otf)$/.test(url)) {
+    return url
+  }
+
   const sanitized = sanitizeURL(url)
   if (!sanitized) return null
 

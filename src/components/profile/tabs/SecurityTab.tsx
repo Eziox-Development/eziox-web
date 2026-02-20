@@ -1,596 +1,181 @@
-import { useState } from 'react'
-import { motion, AnimatePresence } from 'motion/react'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { useServerFn } from '@tanstack/react-start'
+import { motion } from 'motion/react'
 import { useTranslation } from 'react-i18next'
 import {
-  getPasskeysFn,
-  getPasskeyRegistrationOptionsFn,
-  verifyPasskeyRegistrationFn,
-  deletePasskeyFn,
-  renamePasskeyFn,
-} from '@/server/functions/auth'
-import {
-  Fingerprint,
-  Plus,
-  Trash2,
-  Loader2,
-  Check,
-  AlertCircle,
-  Shield,
-  Smartphone,
-  Monitor,
-  Key,
-  Edit2,
-  X,
-  Mail,
-  Clock,
+  Shield, Lock, Fingerprint, KeyRound, AlertTriangle, ExternalLink,
 } from 'lucide-react'
-import { useTheme } from '@/components/layout/ThemeProvider'
-import { hexToRgb } from '@/lib/utils'
 import type { ProfileUser } from '../types'
 
-interface SecurityTabProps {
-  currentUser: ProfileUser
-}
+interface SecurityTabProps { currentUser: ProfileUser }
 
-export function SecurityTab({ currentUser }: SecurityTabProps) {
+export function SecurityTab({ currentUser: _currentUser }: SecurityTabProps) {
+  void _currentUser
   const { t } = useTranslation()
-  const queryClient = useQueryClient()
-  const { theme } = useTheme()
-  const { colors } = theme
 
-  const [showAddPasskey, setShowAddPasskey] = useState(false)
-  const [passkeyName, setPasskeyName] = useState('')
-  const [editingPasskey, setEditingPasskey] = useState<string | null>(null)
-  const [editName, setEditName] = useState('')
-  const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState<string | null>(null)
-
-  // Server functions
-  const getPasskeys = useServerFn(getPasskeysFn)
-  const getRegistrationOptions = useServerFn(getPasskeyRegistrationOptionsFn)
-  const verifyRegistration = useServerFn(verifyPasskeyRegistrationFn)
-  const deletePasskey = useServerFn(deletePasskeyFn)
-  const renamePasskey = useServerFn(renamePasskeyFn)
-
-  // Queries
-  const { data: passkeysData, isLoading: passkeysLoading } = useQuery({
-    queryKey: ['passkeys'],
-    queryFn: () => getPasskeys(),
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-  })
-
-  // Mutations
-  const addPasskeyMutation = useMutation({
-    mutationFn: async () => {
-      if (!window.PublicKeyCredential) {
-        throw new Error(t('security.passkeys.errors.notSupported'))
-      }
-
-      // Get registration options
-      const { options } = await getRegistrationOptions({
-        data: { name: passkeyName || 'Passkey' },
-      })
-
-      // Convert challenge to ArrayBuffer
-      const challengeBuffer = Uint8Array.from(options.challenge, (c) =>
-        c.charCodeAt(0),
-      )
-      const userIdBuffer = Uint8Array.from(options.user.id, (c) =>
-        c.charCodeAt(0),
-      )
-
-      // Create credential
-      let credential: PublicKeyCredential | null = null
-      try {
-        credential = (await navigator.credentials.create({
-          publicKey: {
-            challenge: challengeBuffer,
-            rp: options.rp,
-            user: {
-              ...options.user,
-              id: userIdBuffer,
-            },
-            pubKeyCredParams: options.pubKeyCredParams,
-            timeout: options.timeout,
-            attestation: options.attestation as AttestationConveyancePreference,
-            authenticatorSelection: options.authenticatorSelection,
-          },
-        })) as PublicKeyCredential
-      } catch (err) {
-        // Catch WebAuthn errors and provide user-friendly messages
-        if (err instanceof Error) {
-          if (err.name === 'NotAllowedError') {
-            throw new Error(t('security.passkeys.errors.cancelled'))
-          }
-          if (err.name === 'TimeoutError') {
-            throw new Error(t('security.passkeys.errors.timeout'))
-          }
-          if (err.name === 'SecurityError') {
-            throw new Error(t('security.passkeys.errors.security'))
-          }
-          if (err.name === 'NotSupportedError') {
-            throw new Error(t('security.passkeys.errors.notSupported'))
-          }
-        }
-        // Generic error for unknown cases
-        throw new Error(t('security.passkeys.errors.failed'))
-      }
-
-      if (!credential) {
-        throw new Error(t('security.passkeys.errors.cancelled'))
-      }
-
-      const response = credential.response as AuthenticatorAttestationResponse
-
-      // Verify registration
-      await verifyRegistration({
-        data: {
-          credential: {
-            id: credential.id,
-            rawId: btoa(
-              String.fromCharCode(...new Uint8Array(credential.rawId)),
-            ),
-            response: {
-              clientDataJSON: btoa(
-                String.fromCharCode(...new Uint8Array(response.clientDataJSON)),
-              ),
-              attestationObject: btoa(
-                String.fromCharCode(
-                  ...new Uint8Array(response.attestationObject),
-                ),
-              ),
-            },
-            type: 'public-key',
-            authenticatorAttachment: (
-              credential as PublicKeyCredential & {
-                authenticatorAttachment?: string
-              }
-            ).authenticatorAttachment,
-          },
-        },
-      })
-
-      return { success: true }
+  const securityItems = [
+    {
+      icon: Lock,
+      title: t('dashboard.security.password'),
+      desc: t('dashboard.security.passwordDesc'),
+      status: 'ok' as const,
+      action: { label: t('dashboard.security.changePassword'), href: '/forgot-password' },
+      color: 'primary',
     },
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ['passkeys'] })
-      setShowAddPasskey(false)
-      setPasskeyName('')
-      setSuccess(t('security.passkeys.added'))
-      setTimeout(() => setSuccess(null), 3000)
+    {
+      icon: Shield,
+      title: t('dashboard.security.twoFactor'),
+      desc: t('dashboard.security.twoFactorDesc'),
+      status: 'warning' as 'ok' | 'warning',
+      action: { label: t('dashboard.security.manage2FA'), href: '/profile?tab=settings' },
+      color: 'amber',
     },
-    onError: (err: Error) => {
-      setError(err.message)
-      setTimeout(() => setError(null), 5000)
+    {
+      icon: Fingerprint,
+      title: t('dashboard.security.sessions'),
+      desc: t('dashboard.security.sessionsDesc'),
+      status: 'ok' as const,
+      action: { label: t('dashboard.security.manageSessions'), href: '/profile?tab=settings' },
+      color: 'cyan',
     },
-  })
-
-  const deletePasskeyMutation = useMutation({
-    mutationFn: async (passkeyId: string) => {
-      await deletePasskey({ data: { passkeyId } })
+    {
+      icon: KeyRound,
+      title: t('dashboard.security.apiKeys'),
+      desc: t('dashboard.security.apiKeysDesc'),
+      status: 'ok' as const,
+      action: { label: t('dashboard.security.manageKeys'), href: '/profile?tab=api' },
+      color: 'purple',
     },
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ['passkeys'] })
-      setSuccess(t('security.passkeys.deleted'))
-      setTimeout(() => setSuccess(null), 3000)
-    },
-    onError: (err: Error) => {
-      setError(err.message)
-      setTimeout(() => setError(null), 5000)
-    },
-  })
-
-  const renamePasskeyMutation = useMutation({
-    mutationFn: async ({
-      passkeyId,
-      name,
-    }: {
-      passkeyId: string
-      name: string
-    }) => {
-      await renamePasskey({ data: { passkeyId, name } })
-    },
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ['passkeys'] })
-      setEditingPasskey(null)
-      setEditName('')
-    },
-    onError: (err: Error) => {
-      setError(err.message)
-      setTimeout(() => setError(null), 5000)
-    },
-  })
-
-  const passkeys = passkeysData?.passkeys || []
-
-  const formatDate = (date: Date | string | null) => {
-    if (!date) return t('common.never')
-    return new Date(date).toLocaleDateString(undefined, {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    })
-  }
+  ]
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div>
-        <h2
-          className="text-2xl font-bold mb-2"
-          style={{ color: colors.foreground }}
-        >
-          {t('security.title')}
-        </h2>
-        <p className="text-sm" style={{ color: colors.foregroundMuted }}>
-          {t('security.description')}
-        </p>
-      </div>
-
-      {/* Alerts */}
-      <AnimatePresence>
-        {error && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="p-4 rounded-xl flex items-center gap-3"
-            style={{
-              background: 'rgba(239, 68, 68, 0.1)',
-              border: '1px solid rgba(239, 68, 68, 0.2)',
-            }}
-          >
-            <AlertCircle className="w-5 h-5 text-red-400" />
-            <p className="text-sm text-red-400">{error}</p>
-          </motion.div>
-        )}
-        {success && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="p-4 rounded-xl flex items-center gap-3"
-            style={{
-              background: 'rgba(34, 197, 94, 0.1)',
-              border: '1px solid rgba(34, 197, 94, 0.2)',
-            }}
-          >
-            <Check className="w-5 h-5 text-green-400" />
-            <p className="text-sm text-green-400">{success}</p>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Passkeys Section */}
-      <section
-        className="rounded-2xl p-6"
-        style={{
-          background: colors.card,
-          border: `1px solid ${colors.border}`,
-        }}
+    <motion.div key="security" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-6">
+      {/* Hero Header */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="relative overflow-hidden rounded-2xl backdrop-blur-xl bg-card/30 border border-border/20 p-6"
       >
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <div
-              className="w-10 h-10 rounded-xl flex items-center justify-center"
-              style={{ background: `rgba(${hexToRgb(colors.primary)}, 0.1)` }}
-            >
-              <Fingerprint
-                className="w-5 h-5"
-                style={{ color: colors.primary }}
-              />
-            </div>
-            <div>
-              <h3
-                className="font-semibold"
-                style={{ color: colors.foreground }}
-              >
-                {t('security.passkeys.title')}
-              </h3>
-              <p className="text-xs" style={{ color: colors.foregroundMuted }}>
-                {t('security.passkeys.description')}
-              </p>
-            </div>
-          </div>
-          <button
-            onClick={() => setShowAddPasskey(true)}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all hover:scale-105"
-            style={{
-              background: colors.primary,
-              color: 'white',
-            }}
+        <div className="absolute inset-0 bg-linear-to-br from-primary/5 via-transparent to-accent/5 pointer-events-none" />
+        <div className="absolute top-0 right-0 w-48 h-48 rounded-full blur-3xl bg-primary/8 -translate-y-1/2 translate-x-1/4 pointer-events-none" />
+
+        <div className="relative flex items-center gap-4">
+          <motion.div
+            whileHover={{ rotate: 8, scale: 1.1 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+            className="w-14 h-14 rounded-xl flex items-center justify-center bg-linear-to-br from-primary/20 to-accent/10"
           >
-            <Plus className="w-4 h-4" />
-            {t('security.passkeys.add')}
-          </button>
+            <Shield size={28} className="text-primary" />
+          </motion.div>
+          <div>
+            <h2 className="text-xl font-bold text-foreground">{t('dashboard.security.title')}</h2>
+            <p className="text-sm text-foreground-muted">{t('dashboard.security.subtitle')}</p>
+          </div>
         </div>
 
-        {/* Add Passkey Modal */}
-        <AnimatePresence>
-          {showAddPasskey && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="mb-6 p-4 rounded-xl overflow-hidden"
-              style={{
-                background: colors.backgroundSecondary,
-                border: `1px solid ${colors.border}`,
-              }}
-            >
-              <div className="flex items-center gap-3 mb-4">
-                <Shield className="w-5 h-5" style={{ color: colors.primary }} />
-                <h4
-                  className="font-medium"
-                  style={{ color: colors.foreground }}
-                >
-                  {t('security.passkeys.addNew')}
-                </h4>
+        {/* Security Score */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.15 }}
+          className="relative mt-5 p-4 rounded-xl backdrop-blur-sm bg-background-secondary/20 border border-border/15"
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-foreground">{t('dashboard.security.securityScore')}</p>
+              <p className="text-xs text-foreground-muted mt-0.5">{t('dashboard.security.scoreDesc')}</p>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="w-32 h-2 rounded-full bg-background-secondary/40 overflow-hidden">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: '75%' }}
+                  transition={{ delay: 0.3, duration: 0.8, ease: 'easeOut' }}
+                  className="h-full rounded-full bg-primary"
+                />
               </div>
-              <input
-                type="text"
-                value={passkeyName}
-                onChange={(e) => setPasskeyName(e.target.value)}
-                placeholder={t('security.passkeys.namePlaceholder')}
-                className="w-full px-4 py-3 rounded-lg mb-4 outline-none"
-                style={{
-                  background: colors.background,
-                  border: `1px solid ${colors.border}`,
-                  color: colors.foreground,
-                }}
-              />
-              <div className="flex gap-3">
-                <button
-                  onClick={() => addPasskeyMutation.mutate()}
-                  disabled={addPasskeyMutation.isPending}
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all disabled:opacity-50"
-                  style={{ background: colors.primary, color: 'white' }}
-                >
-                  {addPasskeyMutation.isPending ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <Fingerprint className="w-4 h-4" />
-                  )}
-                  {t('security.passkeys.register')}
-                </button>
-                <button
-                  onClick={() => {
-                    setShowAddPasskey(false)
-                    setPasskeyName('')
-                  }}
-                  className="px-4 py-2 rounded-lg text-sm font-medium transition-all"
-                  style={{
-                    background: colors.backgroundSecondary,
-                    border: `1px solid ${colors.border}`,
-                    color: colors.foreground,
-                  }}
-                >
-                  {t('common.cancel')}
-                </button>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+              <span className="text-sm font-bold text-primary">
+                75%
+              </span>
+            </div>
+          </div>
+        </motion.div>
+      </motion.div>
 
-        {/* Passkeys List */}
-        {passkeysLoading ? (
-          <div className="flex items-center justify-center py-8">
-            <Loader2
-              className="w-6 h-6 animate-spin"
-              style={{ color: colors.foregroundMuted }}
-            />
-          </div>
-        ) : passkeys.length === 0 ? (
-          <div className="text-center py-8">
-            <Key
-              className="w-12 h-12 mx-auto mb-3"
-              style={{ color: colors.foregroundMuted }}
-            />
-            <p className="text-sm" style={{ color: colors.foregroundMuted }}>
-              {t('security.passkeys.empty')}
-            </p>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {passkeys.map((passkey) => (
-              <motion.div
-                key={passkey.id}
-                layout
-                className="flex items-center justify-between p-4 rounded-xl"
-                style={{
-                  background: colors.backgroundSecondary,
-                  border: `1px solid ${colors.border}`,
-                }}
-              >
+      {/* Security Items */}
+      <div className="space-y-3">
+        {securityItems.map((item, i) => {
+          const Icon = item.icon
+          return (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.08 }}
+              whileHover={{ scale: 1.005 }}
+              className="rounded-2xl backdrop-blur-xl bg-card/30 border border-border/20 p-5 theme-animation"
+            >
+              <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div
-                    className="w-10 h-10 rounded-lg flex items-center justify-center"
-                    style={{
-                      background: `rgba(${hexToRgb(colors.accent)}, 0.1)`,
-                    }}
-                  >
-                    {passkey.deviceType === 'platform' ? (
-                      <Monitor
-                        className="w-5 h-5"
-                        style={{ color: colors.accent }}
-                      />
-                    ) : (
-                      <Smartphone
-                        className="w-5 h-5"
-                        style={{ color: colors.accent }}
-                      />
-                    )}
+                  <div className={`w-11 h-11 rounded-xl flex items-center justify-center ${
+                    item.color === 'primary' ? 'bg-primary/15' : item.color === 'emerald' ? 'bg-emerald-500/15' : item.color === 'amber' ? 'bg-amber-500/15' : item.color === 'cyan' ? 'bg-cyan-500/15' : 'bg-purple-500/15'
+                  }`}>
+                    <Icon size={22} className={
+                      item.color === 'primary' ? 'text-primary' : item.color === 'emerald' ? 'text-emerald-400' : item.color === 'amber' ? 'text-amber-400' : item.color === 'cyan' ? 'text-cyan-400' : 'text-purple-400'
+                    } />
                   </div>
                   <div>
-                    {editingPasskey === passkey.id ? (
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="text"
-                          value={editName}
-                          onChange={(e) => setEditName(e.target.value)}
-                          className="px-2 py-1 rounded text-sm outline-none"
-                          style={{
-                            background: colors.background,
-                            border: `1px solid ${colors.border}`,
-                            color: colors.foreground,
-                          }}
-                          autoFocus
-                        />
-                        <button
-                          onClick={() =>
-                            renamePasskeyMutation.mutate({
-                              passkeyId: passkey.id,
-                              name: editName,
-                            })
-                          }
-                          className="p-1 rounded hover:bg-white/10"
-                        >
-                          <Check className="w-4 h-4 text-green-400" />
-                        </button>
-                        <button
-                          onClick={() => {
-                            setEditingPasskey(null)
-                            setEditName('')
-                          }}
-                          className="p-1 rounded hover:bg-white/10"
-                        >
-                          <X className="w-4 h-4 text-red-400" />
-                        </button>
-                      </div>
-                    ) : (
-                      <p
-                        className="font-medium"
-                        style={{ color: colors.foreground }}
-                      >
-                        {passkey.name}
-                      </p>
-                    )}
-                    <div
-                      className="flex items-center gap-3 text-xs"
-                      style={{ color: colors.foregroundMuted }}
-                    >
-                      <span className="flex items-center gap-1">
-                        <Clock className="w-3 h-3" />
-                        {t('security.passkeys.created')}:{' '}
-                        {formatDate(passkey.createdAt)}
-                      </span>
-                      {passkey.lastUsedAt && (
-                        <span>
-                          {t('security.passkeys.lastUsed')}:{' '}
-                          {formatDate(passkey.lastUsedAt)}
+                    <div className="flex items-center gap-2">
+                      <p className="font-medium text-foreground">{item.title}</p>
+                      {item.status === 'warning' && (
+                        <span className="flex items-center gap-1 text-xs text-amber-400 bg-amber-500/15 px-2 py-0.5 rounded-full">
+                          <AlertTriangle size={10} />
+                          {t('dashboard.security.recommended')}
                         </span>
                       )}
                     </div>
+                    <p className="text-sm text-foreground-muted">{item.desc}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => {
-                      setEditingPasskey(passkey.id)
-                      setEditName(passkey.name)
-                    }}
-                    className="p-2 rounded-lg transition-all hover:bg-white/10"
-                    style={{ color: colors.foregroundMuted }}
-                  >
-                    <Edit2 className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => deletePasskeyMutation.mutate(passkey.id)}
-                    disabled={deletePasskeyMutation.isPending}
-                    className="p-2 rounded-lg transition-all hover:bg-red-500/10 text-red-400"
-                  >
-                    {deletePasskeyMutation.isPending ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : (
-                      <Trash2 className="w-4 h-4" />
-                    )}
-                  </button>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        )}
-      </section>
-
-      {/* OTP Login Section */}
-      <section
-        className="rounded-2xl p-6"
-        style={{
-          background: colors.card,
-          border: `1px solid ${colors.border}`,
-        }}
-      >
-        <div className="flex items-center gap-3 mb-4">
-          <div
-            className="w-10 h-10 rounded-xl flex items-center justify-center"
-            style={{ background: `rgba(${hexToRgb(colors.accent)}, 0.1)` }}
-          >
-            <Mail className="w-5 h-5" style={{ color: colors.accent }} />
-          </div>
-          <div>
-            <h3 className="font-semibold" style={{ color: colors.foreground }}>
-              {t('security.otp.title')}
-            </h3>
-            <p className="text-xs" style={{ color: colors.foregroundMuted }}>
-              {t('security.otp.description')}
-            </p>
-          </div>
-        </div>
-        <div
-          className="p-4 rounded-xl"
-          style={{
-            background: colors.backgroundSecondary,
-            border: `1px solid ${colors.border}`,
-          }}
-        >
-          <div className="flex items-center gap-3">
-            <Check className="w-5 h-5 text-green-400" />
-            <div>
-              <p className="font-medium" style={{ color: colors.foreground }}>
-                {t('security.otp.enabled')}
-              </p>
-              <p className="text-xs" style={{ color: colors.foregroundMuted }}>
-                {t('security.otp.enabledDescription', {
-                  email: currentUser.email,
-                })}
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+                <a
+                  href={item.action.href}
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-card/40 backdrop-blur-sm border border-border/15 text-foreground-muted hover:bg-card/60 hover:text-foreground theme-animation text-sm font-medium"
+                >
+                  {item.action.label}
+                  <ExternalLink size={12} />
+                </a>
+              </div>
+            </motion.div>
+          )
+        })}
+      </div>
 
       {/* Security Tips */}
-      <section
-        className="rounded-2xl p-6"
-        style={{
-          background: `linear-gradient(135deg, rgba(${hexToRgb(colors.primary)}, 0.1), rgba(${hexToRgb(colors.accent)}, 0.05))`,
-          border: `1px solid ${colors.border}`,
-        }}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+        className="rounded-2xl backdrop-blur-xl bg-card/20 border border-border/15 p-5"
       >
-        <h3 className="font-semibold mb-4" style={{ color: colors.foreground }}>
-          {t('security.tips.title')}
+        <h3 className="font-bold text-foreground mb-3 flex items-center gap-2">
+          <Shield size={16} className="text-primary" />
+          {t('dashboard.security.tips')}
         </h3>
-        <ul className="space-y-3">
-          {['passkey', 'unique', 'phishing'].map((tip) => (
-            <li key={tip} className="flex items-start gap-3">
-              <Shield
-                className="w-4 h-4 mt-0.5 shrink-0"
-                style={{ color: colors.primary }}
-              />
-              <span
-                className="text-sm"
-                style={{ color: colors.foregroundMuted }}
-              >
-                {t(`security.tips.${tip}`)}
-              </span>
-            </li>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {['tip1', 'tip2', 'tip3', 'tip4'].map((tip, i) => (
+            <motion.div
+              key={tip}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 + i * 0.05 }}
+              className="flex items-start gap-2 p-3 rounded-xl bg-background-secondary/10 backdrop-blur-sm border border-border/10"
+            >
+              <div className="w-5 h-5 rounded-full bg-primary/15 flex items-center justify-center shrink-0 mt-0.5">
+                <span className="text-[10px] font-bold text-primary">{i + 1}</span>
+              </div>
+              <p className="text-xs text-foreground-muted">{t(`dashboard.security.${tip}`)}</p>
+            </motion.div>
           ))}
-        </ul>
-      </section>
-    </div>
+        </div>
+      </motion.div>
+    </motion.div>
   )
 }

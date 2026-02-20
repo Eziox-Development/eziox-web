@@ -8,8 +8,7 @@ import {
   useSearch,
 } from '@tanstack/react-router'
 import { z } from 'zod'
-import { signUpFn } from '@/server/functions/auth'
-import { getOAuthUrlFn } from '@/server/functions/social-integrations'
+import { signUpFn, getDiscordLoginUrlFn } from '@/server/functions/auth'
 import { useServerFn } from '@tanstack/react-start'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -40,6 +39,8 @@ const searchSchema = z.object({
   redirect: z.string().optional(),
   referral: z.string().optional(),
   claim: z.string().optional(),
+  discord: z.string().optional(),
+  error: z.string().optional(),
 })
 
 export const Route = createFileRoute('/_auth/sign-up')({
@@ -99,7 +100,11 @@ function SignUpPage() {
   const [showConfirm, setShowConfirm] = useState(false)
   const [turnstileToken, setTurnstileToken] = useState<string>('')
   const [focusedField, setFocusedField] = useState<string | null>(null)
-  const [error, setError] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(
+    search.discord === 'no_account'
+      ? 'No Eziox account found for your Discord. Sign up below or use Discord to create one instantly.'
+      : (search.error === 'discord_create_failed' ? 'Failed to create account via Discord. Please try again.' : null),
+  )
 
   const form = useForm<SignUpFormData>({
     resolver: zodResolver(signUpSchema),
@@ -203,12 +208,12 @@ function SignUpPage() {
     },
   })
 
+  const getDiscordLoginUrl = useServerFn(getDiscordLoginUrlFn)
+
   // Discord OAuth
   const discordMutation = useMutation({
     mutationFn: async () => {
-      const result = await getOAuthUrlFn({ data: { platform: 'discord' } })
-      if ('error' in result) throw new Error(result.error)
-      return result
+      return await getDiscordLoginUrl({ data: { mode: 'signup' } })
     },
     onSuccess: (data) => {
       if (data.url) window.location.href = data.url

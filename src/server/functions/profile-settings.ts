@@ -59,8 +59,8 @@ const layoutSettingsSchema = z.object({
   cardSpacing: z.number().min(0).max(32).optional(),
   cardBorderRadius: z.number().min(0).max(50).optional(),
   cardShadow: z.enum(['none', 'sm', 'md', 'lg', 'xl', 'glow']).optional(),
-  cardPadding: z.number().min(8).max(32).optional(),
-  cardTiltDegree: z.number().min(-10).max(10).optional(),
+  cardPadding: z.number().min(0).max(32).optional(),
+  cardTiltDegree: z.number().min(0).max(15).optional(),
   profileLayout: z.enum(['default', 'compact', 'expanded', 'centered', 'minimal', 'hero']).optional(),
   linkStyle: z.enum(['default', 'minimal', 'bold', 'glass', 'outline', 'gradient', 'neon']).optional(),
   linkBorderRadius: z.number().min(0).max(50).optional(),
@@ -77,7 +77,7 @@ const layoutSettingsSchema = z.object({
   showStats: z.boolean().optional(),
   contentMaxWidth: z.number().min(320).max(1200).optional(),
   sectionSpacing: z.number().min(0).max(64).optional(),
-  maxWidth: z.number().min(320).max(800).optional(),
+  maxWidth: z.number().min(320).max(1200).optional(),
 })
 
 const customThemeColorsSchema = z.object({
@@ -729,8 +729,124 @@ export const getIntroGateAndMusicFn = createServerFn({ method: 'GET' }).handler(
 })
 
 // ============================================================================
+// NAME EFFECT SETTINGS
+// ============================================================================
+
+const nameEffectSchema = z.object({
+  style: z.enum(['none', 'glow', 'gradient', 'rainbow', 'neon', 'glitch', 'typing']).default('none'),
+  animation: z.enum(['none', 'typing', 'bounce-in', 'wave', 'flicker', 'pulse', 'float']).optional(),
+  gradientColors: z.array(z.string().max(20)).max(5).optional(),
+  glowColor: z.string().max(20).optional(),
+  glowIntensity: z.enum(['subtle', 'medium', 'strong']).optional(),
+  neonFlicker: z.boolean().optional(),
+  letterSpacing: z.number().min(0).max(16).optional(),
+  textTransform: z.enum(['none', 'uppercase', 'lowercase']).optional(),
+})
+
+export const updateNameEffectFn = createServerFn({ method: 'POST' })
+  .inputValidator(nameEffectSchema)
+  .handler(async ({ data }) => {
+    const user = await getAuthenticatedUser()
+    const rl = checkRateLimit(`settings:${user.id}`, RATE_LIMITS.API_SPOTIFY.maxRequests, RATE_LIMITS.API_SPOTIFY.windowMs)
+    if (!rl.allowed) { setResponseStatus(429); throw { message: 'Rate limited.', status: 429 } }
+    await db.update(profiles).set({ nameEffect: data, updatedAt: new Date() }).where(eq(profiles.userId, user.id))
+    return { success: true, nameEffect: data }
+  })
+
+// ============================================================================
+// STATUS TEXT SETTINGS
+// ============================================================================
+
+const statusTextSchema = z.object({
+  enabled: z.boolean(),
+  text: z.string().max(200).default(''),
+  emoji: z.string().max(10).optional(),
+  typewriter: z.boolean().default(false),
+  typewriterSpeed: z.number().min(20).max(200).optional(),
+  coloredWords: z.array(z.object({ word: z.string().max(50), color: z.string().max(20) })).max(20).optional(),
+})
+
+export const updateStatusTextFn = createServerFn({ method: 'POST' })
+  .inputValidator(statusTextSchema)
+  .handler(async ({ data }) => {
+    const user = await getAuthenticatedUser()
+    const rl = checkRateLimit(`settings:${user.id}`, RATE_LIMITS.API_SPOTIFY.maxRequests, RATE_LIMITS.API_SPOTIFY.windowMs)
+    if (!rl.allowed) { setResponseStatus(429); throw { message: 'Rate limited.', status: 429 } }
+    await db.update(profiles).set({ statusText: data, updatedAt: new Date() }).where(eq(profiles.userId, user.id))
+    return { success: true, statusText: data }
+  })
+
+// ============================================================================
+// CUSTOM CURSOR SETTINGS
+// ============================================================================
+
+const customCursorSchema = z.object({
+  enabled: z.boolean(),
+  type: z.enum(['pack', 'browser', 'custom']).default('pack'),
+  packId: z.string().max(100).optional(),
+  browserPreset: z.enum(['crosshair', 'pointer', 'cell', 'none', 'default']).optional(),
+  customUrl: z.string().max(2048).optional(),
+})
+
+export const updateCustomCursorFn = createServerFn({ method: 'POST' })
+  .inputValidator(customCursorSchema)
+  .handler(async ({ data }) => {
+    const user = await getAuthenticatedUser()
+    const rl = checkRateLimit(`settings:${user.id}`, RATE_LIMITS.API_SPOTIFY.maxRequests, RATE_LIMITS.API_SPOTIFY.windowMs)
+    if (!rl.allowed) { setResponseStatus(429); throw { message: 'Rate limited.', status: 429 } }
+    await db.update(profiles).set({ customCursor: data, updatedAt: new Date() }).where(eq(profiles.userId, user.id))
+    return { success: true, customCursor: data }
+  })
+
+// ============================================================================
+// PROFILE EFFECTS SETTINGS
+// ============================================================================
+
+const profileEffectsSchema = z.object({
+  enabled: z.boolean(),
+  effect: z.enum(['none', 'sparkles', 'snow', 'rain', 'confetti', 'fireflies', 'bubbles', 'stars', 'matrix']).default('none'),
+  intensity: z.enum(['subtle', 'normal', 'intense']).optional(),
+  color: z.string().max(20).optional(),
+})
+
+export const updateProfileEffectsFn = createServerFn({ method: 'POST' })
+  .inputValidator(profileEffectsSchema)
+  .handler(async ({ data }) => {
+    const user = await getAuthenticatedUser()
+    const rl = checkRateLimit(`settings:${user.id}`, RATE_LIMITS.API_SPOTIFY.maxRequests, RATE_LIMITS.API_SPOTIFY.windowMs)
+    if (!rl.allowed) { setResponseStatus(429); throw { message: 'Rate limited.', status: 429 } }
+    await db.update(profiles).set({ profileEffects: data, updatedAt: new Date() }).where(eq(profiles.userId, user.id))
+    return { success: true, profileEffects: data }
+  })
+
+// ============================================================================
+// GET ALL ADVANCED PROFILE SETTINGS
+// ============================================================================
+
+export const getAdvancedProfileSettingsFn = createServerFn({ method: 'GET' }).handler(async () => {
+  const user = await getAuthenticatedUser()
+  const [profile] = await db
+    .select({
+      nameEffect: profiles.nameEffect,
+      statusText: profiles.statusText,
+      customCursor: profiles.customCursor,
+      profileEffects: profiles.profileEffects,
+    })
+    .from(profiles)
+    .where(eq(profiles.userId, user.id))
+    .limit(1)
+
+  return {
+    nameEffect: profile?.nameEffect as import('../db/schema').NameEffect | null,
+    statusText: profile?.statusText as import('../db/schema').StatusText | null,
+    customCursor: profile?.customCursor as import('../db/schema').CustomCursor | null,
+    profileEffects: profile?.profileEffects as import('../db/schema').ProfileEffects | null,
+  }
+})
+
+// ============================================================================
 // TYPE EXPORTS
 // ============================================================================
 
 export type { CustomBackground, LayoutSettings, ProfileBackup, CustomTheme }
-export type { IntroGateSettings, ProfileMusicSettings } from '../db/schema'
+export type { IntroGateSettings, ProfileMusicSettings, NameEffect, StatusText, CustomCursor, ProfileEffects } from '../db/schema'

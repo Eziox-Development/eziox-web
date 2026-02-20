@@ -15,6 +15,7 @@ import { Route as ProtectedRouteImport } from './routes/_protected'
 import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as UsernameRouteImport } from './routes/$username'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
+import { Route as UsernameIndexRouteImport } from './routes/$username/index'
 import { Route as ApiSpotifyCallbackRouteImport } from './routes/api/spotify-callback'
 import { Route as ApiHealthRouteImport } from './routes/api/health'
 import { Route as ApiCheckUsernameRouteImport } from './routes/api/check-username'
@@ -38,7 +39,6 @@ import { Route as PublicApiDocsRouteImport } from './routes/_public/api-docs'
 import { Route as PublicAboutRouteImport } from './routes/_public/about'
 import { Route as ProtectedThemeBuilderRouteImport } from './routes/_protected/theme-builder'
 import { Route as ProtectedProfileRouteImport } from './routes/_protected/profile'
-import { Route as ProtectedPlaygroundRouteImport } from './routes/_protected/playground'
 import { Route as ProtectedAnalyticsRouteImport } from './routes/_protected/analytics'
 import { Route as AuthSignUpRouteImport } from './routes/_auth/sign-up'
 import { Route as AuthSignOutRouteImport } from './routes/_auth/sign-out'
@@ -49,6 +49,7 @@ import { Route as ApiSitemapRouteImport } from './routes/_api/sitemap'
 import { Route as ApiRssRouteImport } from './routes/_api/rss'
 import { Route as ApiHelloRouteImport } from './routes/_api/hello'
 import { Route as PublicDocsIndexRouteImport } from './routes/_public/docs/index'
+import { Route as ProtectedPlaygroundIndexRouteImport } from './routes/_protected/playground/index'
 import { Route as ProtectedAdminIndexRouteImport } from './routes/_protected/admin/index'
 import { Route as ApiWebhooksStripeRouteImport } from './routes/api/webhooks/stripe'
 import { Route as ApiV1WidgetsRouteImport } from './routes/api/v1/widgets'
@@ -99,6 +100,11 @@ const PublicIndexRoute = PublicIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => PublicRoute,
+} as any)
+const UsernameIndexRoute = UsernameIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => UsernameRoute,
 } as any)
 const ApiSpotifyCallbackRoute = ApiSpotifyCallbackRouteImport.update({
   id: '/api/spotify-callback',
@@ -215,11 +221,6 @@ const ProtectedProfileRoute = ProtectedProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => ProtectedRoute,
 } as any)
-const ProtectedPlaygroundRoute = ProtectedPlaygroundRouteImport.update({
-  id: '/playground',
-  path: '/playground',
-  getParentRoute: () => ProtectedRoute,
-} as any)
 const ProtectedAnalyticsRoute = ProtectedAnalyticsRouteImport.update({
   id: '/analytics',
   path: '/analytics',
@@ -270,6 +271,12 @@ const PublicDocsIndexRoute = PublicDocsIndexRouteImport.update({
   path: '/docs/',
   getParentRoute: () => PublicRoute,
 } as any)
+const ProtectedPlaygroundIndexRoute =
+  ProtectedPlaygroundIndexRouteImport.update({
+    id: '/playground/',
+    path: '/playground/',
+    getParentRoute: () => ProtectedRoute,
+  } as any)
 const ProtectedAdminIndexRoute = ProtectedAdminIndexRouteImport.update({
   id: '/admin/',
   path: '/admin/',
@@ -389,7 +396,7 @@ const ApiAuthCallbackPlatformRoute = ApiAuthCallbackPlatformRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/$username': typeof UsernameRoute
+  '/$username': typeof UsernameRouteWithChildren
   '/': typeof PublicIndexRoute
   '/maintenance': typeof MaintenanceRoute
   '/hello': typeof ApiHelloRoute
@@ -401,7 +408,6 @@ export interface FileRoutesByFullPath {
   '/sign-out': typeof AuthSignOutRoute
   '/sign-up': typeof AuthSignUpRoute
   '/analytics': typeof ProtectedAnalyticsRoute
-  '/playground': typeof ProtectedPlaygroundRoute
   '/profile': typeof ProtectedProfileRoute
   '/theme-builder': typeof ProtectedThemeBuilderRoute
   '/about': typeof PublicAboutRoute
@@ -425,6 +431,7 @@ export interface FileRoutesByFullPath {
   '/api/check-username': typeof ApiCheckUsernameRoute
   '/api/health': typeof ApiHealthRoute
   '/api/spotify-callback': typeof ApiSpotifyCallbackRoute
+  '/$username/': typeof UsernameIndexRoute
   '/support/tickets': typeof ProtectedSupportTicketsRoute
   '/docs/analytics': typeof PublicDocsAnalyticsRoute
   '/docs/api': typeof PublicDocsApiRoute
@@ -443,6 +450,7 @@ export interface FileRoutesByFullPath {
   '/api/v1/widgets': typeof ApiV1WidgetsRouteWithChildren
   '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
   '/admin/': typeof ProtectedAdminIndexRoute
+  '/playground/': typeof ProtectedPlaygroundIndexRoute
   '/docs/': typeof PublicDocsIndexRoute
   '/api/auth/callback/$platform': typeof ApiAuthCallbackPlatformRoute
   '/api/v1/groups/$id': typeof ApiV1GroupsIdRoute
@@ -451,7 +459,6 @@ export interface FileRoutesByFullPath {
   '/api/v1/widgets/$id': typeof ApiV1WidgetsIdRoute
 }
 export interface FileRoutesByTo {
-  '/$username': typeof UsernameRoute
   '/': typeof PublicIndexRoute
   '/maintenance': typeof MaintenanceRoute
   '/hello': typeof ApiHelloRoute
@@ -463,7 +470,6 @@ export interface FileRoutesByTo {
   '/sign-out': typeof AuthSignOutRoute
   '/sign-up': typeof AuthSignUpRoute
   '/analytics': typeof ProtectedAnalyticsRoute
-  '/playground': typeof ProtectedPlaygroundRoute
   '/profile': typeof ProtectedProfileRoute
   '/theme-builder': typeof ProtectedThemeBuilderRoute
   '/about': typeof PublicAboutRoute
@@ -487,6 +493,7 @@ export interface FileRoutesByTo {
   '/api/check-username': typeof ApiCheckUsernameRoute
   '/api/health': typeof ApiHealthRoute
   '/api/spotify-callback': typeof ApiSpotifyCallbackRoute
+  '/$username': typeof UsernameIndexRoute
   '/support/tickets': typeof ProtectedSupportTicketsRoute
   '/docs/analytics': typeof PublicDocsAnalyticsRoute
   '/docs/api': typeof PublicDocsApiRoute
@@ -505,6 +512,7 @@ export interface FileRoutesByTo {
   '/api/v1/widgets': typeof ApiV1WidgetsRouteWithChildren
   '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
   '/admin': typeof ProtectedAdminIndexRoute
+  '/playground': typeof ProtectedPlaygroundIndexRoute
   '/docs': typeof PublicDocsIndexRoute
   '/api/auth/callback/$platform': typeof ApiAuthCallbackPlatformRoute
   '/api/v1/groups/$id': typeof ApiV1GroupsIdRoute
@@ -514,7 +522,7 @@ export interface FileRoutesByTo {
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/$username': typeof UsernameRoute
+  '/$username': typeof UsernameRouteWithChildren
   '/_auth': typeof AuthRouteWithChildren
   '/_protected': typeof ProtectedRouteWithChildren
   '/_public': typeof PublicRouteWithChildren
@@ -528,7 +536,6 @@ export interface FileRoutesById {
   '/_auth/sign-out': typeof AuthSignOutRoute
   '/_auth/sign-up': typeof AuthSignUpRoute
   '/_protected/analytics': typeof ProtectedAnalyticsRoute
-  '/_protected/playground': typeof ProtectedPlaygroundRoute
   '/_protected/profile': typeof ProtectedProfileRoute
   '/_protected/theme-builder': typeof ProtectedThemeBuilderRoute
   '/_public/about': typeof PublicAboutRoute
@@ -552,6 +559,7 @@ export interface FileRoutesById {
   '/api/check-username': typeof ApiCheckUsernameRoute
   '/api/health': typeof ApiHealthRoute
   '/api/spotify-callback': typeof ApiSpotifyCallbackRoute
+  '/$username/': typeof UsernameIndexRoute
   '/_public/': typeof PublicIndexRoute
   '/_protected/support/tickets': typeof ProtectedSupportTicketsRoute
   '/_public/docs/analytics': typeof PublicDocsAnalyticsRoute
@@ -571,6 +579,7 @@ export interface FileRoutesById {
   '/api/v1/widgets': typeof ApiV1WidgetsRouteWithChildren
   '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
   '/_protected/admin/': typeof ProtectedAdminIndexRoute
+  '/_protected/playground/': typeof ProtectedPlaygroundIndexRoute
   '/_public/docs/': typeof PublicDocsIndexRoute
   '/api/auth/callback/$platform': typeof ApiAuthCallbackPlatformRoute
   '/api/v1/groups/$id': typeof ApiV1GroupsIdRoute
@@ -593,7 +602,6 @@ export interface FileRouteTypes {
     | '/sign-out'
     | '/sign-up'
     | '/analytics'
-    | '/playground'
     | '/profile'
     | '/theme-builder'
     | '/about'
@@ -617,6 +625,7 @@ export interface FileRouteTypes {
     | '/api/check-username'
     | '/api/health'
     | '/api/spotify-callback'
+    | '/$username/'
     | '/support/tickets'
     | '/docs/analytics'
     | '/docs/api'
@@ -635,6 +644,7 @@ export interface FileRouteTypes {
     | '/api/v1/widgets'
     | '/api/webhooks/stripe'
     | '/admin/'
+    | '/playground/'
     | '/docs/'
     | '/api/auth/callback/$platform'
     | '/api/v1/groups/$id'
@@ -643,7 +653,6 @@ export interface FileRouteTypes {
     | '/api/v1/widgets/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/$username'
     | '/'
     | '/maintenance'
     | '/hello'
@@ -655,7 +664,6 @@ export interface FileRouteTypes {
     | '/sign-out'
     | '/sign-up'
     | '/analytics'
-    | '/playground'
     | '/profile'
     | '/theme-builder'
     | '/about'
@@ -679,6 +687,7 @@ export interface FileRouteTypes {
     | '/api/check-username'
     | '/api/health'
     | '/api/spotify-callback'
+    | '/$username'
     | '/support/tickets'
     | '/docs/analytics'
     | '/docs/api'
@@ -697,6 +706,7 @@ export interface FileRouteTypes {
     | '/api/v1/widgets'
     | '/api/webhooks/stripe'
     | '/admin'
+    | '/playground'
     | '/docs'
     | '/api/auth/callback/$platform'
     | '/api/v1/groups/$id'
@@ -719,7 +729,6 @@ export interface FileRouteTypes {
     | '/_auth/sign-out'
     | '/_auth/sign-up'
     | '/_protected/analytics'
-    | '/_protected/playground'
     | '/_protected/profile'
     | '/_protected/theme-builder'
     | '/_public/about'
@@ -743,6 +752,7 @@ export interface FileRouteTypes {
     | '/api/check-username'
     | '/api/health'
     | '/api/spotify-callback'
+    | '/$username/'
     | '/_public/'
     | '/_protected/support/tickets'
     | '/_public/docs/analytics'
@@ -762,6 +772,7 @@ export interface FileRouteTypes {
     | '/api/v1/widgets'
     | '/api/webhooks/stripe'
     | '/_protected/admin/'
+    | '/_protected/playground/'
     | '/_public/docs/'
     | '/api/auth/callback/$platform'
     | '/api/v1/groups/$id'
@@ -771,7 +782,7 @@ export interface FileRouteTypes {
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  UsernameRoute: typeof UsernameRoute
+  UsernameRoute: typeof UsernameRouteWithChildren
   AuthRoute: typeof AuthRouteWithChildren
   ProtectedRoute: typeof ProtectedRouteWithChildren
   PublicRoute: typeof PublicRouteWithChildren
@@ -835,6 +846,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof PublicIndexRouteImport
       parentRoute: typeof PublicRoute
+    }
+    '/$username/': {
+      id: '/$username/'
+      path: '/'
+      fullPath: '/$username/'
+      preLoaderRoute: typeof UsernameIndexRouteImport
+      parentRoute: typeof UsernameRoute
     }
     '/api/spotify-callback': {
       id: '/api/spotify-callback'
@@ -997,13 +1015,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedProfileRouteImport
       parentRoute: typeof ProtectedRoute
     }
-    '/_protected/playground': {
-      id: '/_protected/playground'
-      path: '/playground'
-      fullPath: '/playground'
-      preLoaderRoute: typeof ProtectedPlaygroundRouteImport
-      parentRoute: typeof ProtectedRoute
-    }
     '/_protected/analytics': {
       id: '/_protected/analytics'
       path: '/analytics'
@@ -1073,6 +1084,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/docs/'
       preLoaderRoute: typeof PublicDocsIndexRouteImport
       parentRoute: typeof PublicRoute
+    }
+    '/_protected/playground/': {
+      id: '/_protected/playground/'
+      path: '/playground'
+      fullPath: '/playground/'
+      preLoaderRoute: typeof ProtectedPlaygroundIndexRouteImport
+      parentRoute: typeof ProtectedRoute
     }
     '/_protected/admin/': {
       id: '/_protected/admin/'
@@ -1238,6 +1256,18 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface UsernameRouteChildren {
+  UsernameIndexRoute: typeof UsernameIndexRoute
+}
+
+const UsernameRouteChildren: UsernameRouteChildren = {
+  UsernameIndexRoute: UsernameIndexRoute,
+}
+
+const UsernameRouteWithChildren = UsernameRoute._addFileChildren(
+  UsernameRouteChildren,
+)
+
 interface AuthRouteChildren {
   AuthForgotPasswordRoute: typeof AuthForgotPasswordRoute
   AuthResetPasswordRoute: typeof AuthResetPasswordRoute
@@ -1258,20 +1288,20 @@ const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
 interface ProtectedRouteChildren {
   ProtectedAnalyticsRoute: typeof ProtectedAnalyticsRoute
-  ProtectedPlaygroundRoute: typeof ProtectedPlaygroundRoute
   ProtectedProfileRoute: typeof ProtectedProfileRoute
   ProtectedThemeBuilderRoute: typeof ProtectedThemeBuilderRoute
   ProtectedSupportTicketsRoute: typeof ProtectedSupportTicketsRoute
   ProtectedAdminIndexRoute: typeof ProtectedAdminIndexRoute
+  ProtectedPlaygroundIndexRoute: typeof ProtectedPlaygroundIndexRoute
 }
 
 const ProtectedRouteChildren: ProtectedRouteChildren = {
   ProtectedAnalyticsRoute: ProtectedAnalyticsRoute,
-  ProtectedPlaygroundRoute: ProtectedPlaygroundRoute,
   ProtectedProfileRoute: ProtectedProfileRoute,
   ProtectedThemeBuilderRoute: ProtectedThemeBuilderRoute,
   ProtectedSupportTicketsRoute: ProtectedSupportTicketsRoute,
   ProtectedAdminIndexRoute: ProtectedAdminIndexRoute,
+  ProtectedPlaygroundIndexRoute: ProtectedPlaygroundIndexRoute,
 }
 
 const ProtectedRouteWithChildren = ProtectedRoute._addFileChildren(
@@ -1384,7 +1414,7 @@ const ApiV1WidgetsRouteWithChildren = ApiV1WidgetsRoute._addFileChildren(
 )
 
 const rootRouteChildren: RootRouteChildren = {
-  UsernameRoute: UsernameRoute,
+  UsernameRoute: UsernameRouteWithChildren,
   AuthRoute: AuthRouteWithChildren,
   ProtectedRoute: ProtectedRouteWithChildren,
   PublicRoute: PublicRouteWithChildren,

@@ -120,6 +120,36 @@ export async function uploadImage(
 }
 
 /**
+ * Generate a signed upload signature for direct browser→Cloudinary uploads.
+ * The browser uses this to upload large files directly without routing through the server.
+ */
+export function generateUploadSignature(params: {
+  folder: string
+  publicId: string
+  resourceType?: string
+  tags?: string
+}): { signature: string; timestamp: number; apiKey: string; cloudName: string; folder: string; publicId: string } {
+  const timestamp = Math.round(Date.now() / 1000)
+  const paramsToSign: Record<string, string | number> = {
+    folder: params.folder,
+    public_id: params.publicId,
+    timestamp,
+  }
+  if (params.tags) paramsToSign.tags = params.tags
+
+  const signature = cloudinary.utils.api_sign_request(paramsToSign, process.env.CLOUDINARY_API_SECRET!)
+
+  return {
+    signature,
+    timestamp,
+    apiKey: process.env.CLOUDINARY_API_KEY!,
+    cloudName: process.env.CLOUDINARY_CLOUD_NAME!,
+    folder: params.folder,
+    publicId: params.publicId,
+  }
+}
+
+/**
  * Delete image from Cloudinary
  * @param publicId - Cloudinary public ID
  */

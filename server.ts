@@ -530,6 +530,7 @@ async function initializeServer() {
     port: SERVER_PORT,
     hostname: '::',
     idleTimeout: 0,
+    maxRequestBodySize: 100 * 1024 * 1024, // 100MB — covers base64-encoded uploads (avatar, banner, cursor)
     routes: {
       // Serve static assets (preloaded or on-demand)
       ...routes,

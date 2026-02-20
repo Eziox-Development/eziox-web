@@ -14,8 +14,8 @@ import {
   requestOtpFn,
   getPasskeyAuthOptionsFn,
   verifyPasskeyAuthFn,
+  getDiscordLoginUrlFn,
 } from '@/server/functions/auth'
-import { getOAuthUrlFn } from '@/server/functions/social-integrations'
 import { useServerFn } from '@tanstack/react-start'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -42,6 +42,7 @@ import { hexToRgb } from '@/lib/utils'
 
 const searchSchema = z.object({
   redirect: z.string().optional(),
+  error: z.string().optional(),
 })
 
 export const Route = createFileRoute('/_auth/sign-in')({
@@ -65,6 +66,17 @@ const signInSchema = z.object({
 type SignInFormData = z.infer<typeof signInSchema>
 type AuthStep = 'method' | 'password' | 'otp-email' | 'otp-code' | 'passkey'
 
+const DISCORD_ERROR_MESSAGES: Record<string, string> = {
+  discord_denied: 'Discord login was cancelled.',
+  discord_missing_params: 'Discord login failed. Please try again.',
+  discord_invalid_state: 'Discord login failed (invalid state). Please try again.',
+  discord_token_failed: 'Could not connect to Discord. Please try again.',
+  discord_user_failed: 'Could not fetch your Discord profile. Please try again.',
+  discord_callback_failed: 'Discord login failed. Please try again.',
+  account_suspended: 'Your account has been suspended.',
+  discord_not_configured: 'Discord login is not available right now.',
+}
+
 function SignInPage() {
   const { t } = useTranslation()
   const search = useSearch({ from: '/_auth/sign-in' })
@@ -85,7 +97,9 @@ function SignInPage() {
   const [focusedField, setFocusedField] = useState<string | null>(null)
   const [otpEmail, setOtpEmail] = useState('')
   const [otpCode, setOtpCode] = useState(['', '', '', '', '', ''])
-  const [error, setError] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(
+    search.error ? (DISCORD_ERROR_MESSAGES[search.error] ?? 'An error occurred. Please try again.') : null,
+  )
 
   const form = useForm<SignInFormData>({
     resolver: zodResolver(signInSchema),
@@ -136,12 +150,12 @@ function SignInPage() {
     },
   })
 
+  const getDiscordLoginUrl = useServerFn(getDiscordLoginUrlFn)
+
   // Discord OAuth
   const discordMutation = useMutation({
     mutationFn: async () => {
-      const result = await getOAuthUrlFn({ data: { platform: 'discord' } })
-      if ('error' in result) throw new Error(result.error)
-      return result
+      return await getDiscordLoginUrl({ data: { mode: 'login' } })
     },
     onSuccess: (data) => {
       if (data.url) window.location.href = data.url

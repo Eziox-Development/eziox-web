@@ -161,6 +161,41 @@ export interface ProfileMusicSettings {
   loop: boolean
 }
 
+export interface NameEffect {
+  style: 'none' | 'glow' | 'gradient' | 'rainbow' | 'neon' | 'glitch' | 'typing'
+  animation?: 'none' | 'typing' | 'bounce-in' | 'wave' | 'flicker' | 'pulse' | 'float'
+  gradientColors?: string[]
+  glowColor?: string
+  glowIntensity?: 'subtle' | 'medium' | 'strong'
+  neonFlicker?: boolean
+  letterSpacing?: number
+  textTransform?: 'none' | 'uppercase' | 'lowercase'
+}
+
+export interface StatusText {
+  enabled: boolean
+  text: string
+  emoji?: string
+  typewriter: boolean
+  typewriterSpeed?: number
+  coloredWords?: { word: string; color: string }[]
+}
+
+export interface CustomCursor {
+  enabled: boolean
+  type: 'pack' | 'browser' | 'custom'
+  packId?: string
+  browserPreset?: 'crosshair' | 'pointer' | 'cell' | 'none' | 'default'
+  customUrl?: string
+}
+
+export interface ProfileEffects {
+  enabled: boolean
+  effect: 'none' | 'sparkles' | 'snow' | 'rain' | 'confetti' | 'fireflies' | 'bubbles' | 'stars' | 'matrix'
+  intensity?: 'subtle' | 'normal' | 'intense'
+  color?: string
+}
+
 export interface OpenGraphSettings {
   title?: string
   description?: string
@@ -240,6 +275,10 @@ export const profiles = pgTable('profiles', {
   activeCustomThemeId: varchar('active_custom_theme_id', { length: 50 }),
   introGate: jsonb('intro_gate').$type<IntroGateSettings>(),
   profileMusic: jsonb('profile_music').$type<ProfileMusicSettings>(),
+  nameEffect: jsonb('name_effect').$type<NameEffect>(),
+  statusText: jsonb('status_text').$type<StatusText>(),
+  customCursor: jsonb('custom_cursor').$type<CustomCursor>(),
+  profileEffects: jsonb('profile_effects').$type<ProfileEffects>(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 })

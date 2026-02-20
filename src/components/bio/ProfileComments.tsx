@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { toast } from 'sonner'
 import { motion, AnimatePresence } from 'motion/react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useServerFn } from '@tanstack/react-start'
@@ -95,6 +96,9 @@ export function ProfileComments({
         queryKey: ['profileComments', profileUserId],
       })
     },
+    onError: (err: unknown) => {
+      toast.error(err instanceof Error ? err.message : 'Failed to post comment')
+    },
   })
 
   const deleteMutation = useMutation({
@@ -103,6 +107,9 @@ export function ProfileComments({
       void queryClient.invalidateQueries({
         queryKey: ['profileComments', profileUserId],
       })
+    },
+    onError: (err: unknown) => {
+      toast.error(err instanceof Error ? err.message : 'Failed to delete comment')
     },
   })
 
