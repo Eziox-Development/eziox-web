@@ -144,7 +144,7 @@ export function CTASection() {
                       />
                     </motion.button>
                   </Link>
-                  <Link to="/analytics">
+                  <Link to="/profile" search={{ tab: 'overview' }}>
                     <motion.button
                       className="flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl font-semibold min-w-[140px]"
                       style={{

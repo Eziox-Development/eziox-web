@@ -39,7 +39,6 @@ import { Route as PublicApiDocsRouteImport } from './routes/_public/api-docs'
 import { Route as PublicAboutRouteImport } from './routes/_public/about'
 import { Route as ProtectedThemeBuilderRouteImport } from './routes/_protected/theme-builder'
 import { Route as ProtectedProfileRouteImport } from './routes/_protected/profile'
-import { Route as ProtectedAnalyticsRouteImport } from './routes/_protected/analytics'
 import { Route as AuthSignUpRouteImport } from './routes/_auth/sign-up'
 import { Route as AuthSignOutRouteImport } from './routes/_auth/sign-out'
 import { Route as AuthSignInRouteImport } from './routes/_auth/sign-in'
@@ -47,7 +46,6 @@ import { Route as AuthResetPasswordRouteImport } from './routes/_auth/reset-pass
 import { Route as AuthForgotPasswordRouteImport } from './routes/_auth/forgot-password'
 import { Route as ApiSitemapRouteImport } from './routes/_api/sitemap'
 import { Route as ApiRssRouteImport } from './routes/_api/rss'
-import { Route as ApiHelloRouteImport } from './routes/_api/hello'
 import { Route as PublicDocsIndexRouteImport } from './routes/_public/docs/index'
 import { Route as ProtectedPlaygroundIndexRouteImport } from './routes/_protected/playground/index'
 import { Route as ProtectedAdminIndexRouteImport } from './routes/_protected/admin/index'
@@ -221,11 +219,6 @@ const ProtectedProfileRoute = ProtectedProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => ProtectedRoute,
 } as any)
-const ProtectedAnalyticsRoute = ProtectedAnalyticsRouteImport.update({
-  id: '/analytics',
-  path: '/analytics',
-  getParentRoute: () => ProtectedRoute,
-} as any)
 const AuthSignUpRoute = AuthSignUpRouteImport.update({
   id: '/sign-up',
   path: '/sign-up',
@@ -259,11 +252,6 @@ const ApiSitemapRoute = ApiSitemapRouteImport.update({
 const ApiRssRoute = ApiRssRouteImport.update({
   id: '/_api/rss',
   path: '/rss',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiHelloRoute = ApiHelloRouteImport.update({
-  id: '/_api/hello',
-  path: '/hello',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PublicDocsIndexRoute = PublicDocsIndexRouteImport.update({
@@ -399,7 +387,6 @@ export interface FileRoutesByFullPath {
   '/$username': typeof UsernameRouteWithChildren
   '/': typeof PublicIndexRoute
   '/maintenance': typeof MaintenanceRoute
-  '/hello': typeof ApiHelloRoute
   '/rss': typeof ApiRssRoute
   '/sitemap': typeof ApiSitemapRoute
   '/forgot-password': typeof AuthForgotPasswordRoute
@@ -407,7 +394,6 @@ export interface FileRoutesByFullPath {
   '/sign-in': typeof AuthSignInRoute
   '/sign-out': typeof AuthSignOutRoute
   '/sign-up': typeof AuthSignUpRoute
-  '/analytics': typeof ProtectedAnalyticsRoute
   '/profile': typeof ProtectedProfileRoute
   '/theme-builder': typeof ProtectedThemeBuilderRoute
   '/about': typeof PublicAboutRoute
@@ -461,7 +447,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof PublicIndexRoute
   '/maintenance': typeof MaintenanceRoute
-  '/hello': typeof ApiHelloRoute
   '/rss': typeof ApiRssRoute
   '/sitemap': typeof ApiSitemapRoute
   '/forgot-password': typeof AuthForgotPasswordRoute
@@ -469,7 +454,6 @@ export interface FileRoutesByTo {
   '/sign-in': typeof AuthSignInRoute
   '/sign-out': typeof AuthSignOutRoute
   '/sign-up': typeof AuthSignUpRoute
-  '/analytics': typeof ProtectedAnalyticsRoute
   '/profile': typeof ProtectedProfileRoute
   '/theme-builder': typeof ProtectedThemeBuilderRoute
   '/about': typeof PublicAboutRoute
@@ -527,7 +511,6 @@ export interface FileRoutesById {
   '/_protected': typeof ProtectedRouteWithChildren
   '/_public': typeof PublicRouteWithChildren
   '/maintenance': typeof MaintenanceRoute
-  '/_api/hello': typeof ApiHelloRoute
   '/_api/rss': typeof ApiRssRoute
   '/_api/sitemap': typeof ApiSitemapRoute
   '/_auth/forgot-password': typeof AuthForgotPasswordRoute
@@ -535,7 +518,6 @@ export interface FileRoutesById {
   '/_auth/sign-in': typeof AuthSignInRoute
   '/_auth/sign-out': typeof AuthSignOutRoute
   '/_auth/sign-up': typeof AuthSignUpRoute
-  '/_protected/analytics': typeof ProtectedAnalyticsRoute
   '/_protected/profile': typeof ProtectedProfileRoute
   '/_protected/theme-builder': typeof ProtectedThemeBuilderRoute
   '/_public/about': typeof PublicAboutRoute
@@ -593,7 +575,6 @@ export interface FileRouteTypes {
     | '/$username'
     | '/'
     | '/maintenance'
-    | '/hello'
     | '/rss'
     | '/sitemap'
     | '/forgot-password'
@@ -601,7 +582,6 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-out'
     | '/sign-up'
-    | '/analytics'
     | '/profile'
     | '/theme-builder'
     | '/about'
@@ -655,7 +635,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/maintenance'
-    | '/hello'
     | '/rss'
     | '/sitemap'
     | '/forgot-password'
@@ -663,7 +642,6 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-out'
     | '/sign-up'
-    | '/analytics'
     | '/profile'
     | '/theme-builder'
     | '/about'
@@ -720,7 +698,6 @@ export interface FileRouteTypes {
     | '/_protected'
     | '/_public'
     | '/maintenance'
-    | '/_api/hello'
     | '/_api/rss'
     | '/_api/sitemap'
     | '/_auth/forgot-password'
@@ -728,7 +705,6 @@ export interface FileRouteTypes {
     | '/_auth/sign-in'
     | '/_auth/sign-out'
     | '/_auth/sign-up'
-    | '/_protected/analytics'
     | '/_protected/profile'
     | '/_protected/theme-builder'
     | '/_public/about'
@@ -787,7 +763,6 @@ export interface RootRouteChildren {
   ProtectedRoute: typeof ProtectedRouteWithChildren
   PublicRoute: typeof PublicRouteWithChildren
   MaintenanceRoute: typeof MaintenanceRoute
-  ApiHelloRoute: typeof ApiHelloRoute
   ApiRssRoute: typeof ApiRssRoute
   ApiSitemapRoute: typeof ApiSitemapRoute
   ApiCheckUsernameRoute: typeof ApiCheckUsernameRoute
@@ -1015,13 +990,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedProfileRouteImport
       parentRoute: typeof ProtectedRoute
     }
-    '/_protected/analytics': {
-      id: '/_protected/analytics'
-      path: '/analytics'
-      fullPath: '/analytics'
-      preLoaderRoute: typeof ProtectedAnalyticsRouteImport
-      parentRoute: typeof ProtectedRoute
-    }
     '/_auth/sign-up': {
       id: '/_auth/sign-up'
       path: '/sign-up'
@@ -1069,13 +1037,6 @@ declare module '@tanstack/react-router' {
       path: '/rss'
       fullPath: '/rss'
       preLoaderRoute: typeof ApiRssRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_api/hello': {
-      id: '/_api/hello'
-      path: '/hello'
-      fullPath: '/hello'
-      preLoaderRoute: typeof ApiHelloRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_public/docs/': {
@@ -1287,7 +1248,6 @@ const AuthRouteChildren: AuthRouteChildren = {
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
 interface ProtectedRouteChildren {
-  ProtectedAnalyticsRoute: typeof ProtectedAnalyticsRoute
   ProtectedProfileRoute: typeof ProtectedProfileRoute
   ProtectedThemeBuilderRoute: typeof ProtectedThemeBuilderRoute
   ProtectedSupportTicketsRoute: typeof ProtectedSupportTicketsRoute
@@ -1296,7 +1256,6 @@ interface ProtectedRouteChildren {
 }
 
 const ProtectedRouteChildren: ProtectedRouteChildren = {
-  ProtectedAnalyticsRoute: ProtectedAnalyticsRoute,
   ProtectedProfileRoute: ProtectedProfileRoute,
   ProtectedThemeBuilderRoute: ProtectedThemeBuilderRoute,
   ProtectedSupportTicketsRoute: ProtectedSupportTicketsRoute,
@@ -1419,7 +1378,6 @@ const rootRouteChildren: RootRouteChildren = {
   ProtectedRoute: ProtectedRouteWithChildren,
   PublicRoute: PublicRouteWithChildren,
   MaintenanceRoute: MaintenanceRoute,
-  ApiHelloRoute: ApiHelloRoute,
   ApiRssRoute: ApiRssRoute,
   ApiSitemapRoute: ApiSitemapRoute,
   ApiCheckUsernameRoute: ApiCheckUsernameRoute,

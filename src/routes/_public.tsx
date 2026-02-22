@@ -1,6 +1,6 @@
 import { createFileRoute, Outlet } from '@tanstack/react-router'
 import { authMiddleware } from '@/server/functions/auth'
-import { Nav, Footer } from '@/components/layout'
+import { Nav, Footer, ScrollToTop } from '@/components/layout'
 
 export const Route = createFileRoute('/_public')({
   loader: async () => {
@@ -21,6 +21,7 @@ function PublicLayout() {
         <Outlet />
       </main>
       <Footer />
+      <ScrollToTop />
     </div>
   )
 }

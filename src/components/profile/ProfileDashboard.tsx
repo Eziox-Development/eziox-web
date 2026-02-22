@@ -44,6 +44,7 @@ import type {
   UserStats,
   UpdateFieldFn,
 } from './types'
+import { OverviewTab } from './tabs/OverviewTab'
 import { ProfileTab } from './tabs/ProfileTab'
 import { LinksTab } from './tabs/LinksTab'
 import { ShortenerTab } from './tabs/ShortenerTab'
@@ -458,6 +459,7 @@ function TabContent({
 }) {
   return (
     <AnimatePresence mode="wait">
+      {activeTab === 'overview' && <OverviewTab key="overview" />}
       {activeTab === 'profile' && (
         <ProfileTab
           key="profile"
@@ -513,7 +515,7 @@ export function ProfileDashboard({ currentUser, initialTab }: ProfileDashboardPr
   const getReferralStats = useServerFn(getReferralStatsFn)
 
   // ── State ──
-  const [activeTab, setActiveTab] = useState<TabType>(initialTab || 'profile')
+  const [activeTab, setActiveTab] = useState<TabType>(initialTab || 'overview')
   const [isSaving, setIsSaving] = useState(false)
   const [saveSuccess, setSaveSuccess] = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null)

@@ -509,7 +509,7 @@ async function sendWithdrawalConfirmationEmail(
       subtitle: `Hey @${username}, we've received your request`,
       content,
       buttonText: 'View Request Status',
-      buttonUrl: `${process.env.VITE_APP_URL || 'https://eziox.link'}/profile?tab=settings`,
+      buttonUrl: `${process.env.APP_URL || 'https://eziox.link'}/profile?tab=settings`,
       footer: 'This is an automated confirmation. Please keep this email for your records.',
     }),
   })
@@ -558,7 +558,7 @@ async function sendWithdrawalProcessedEmail(
       subtitle: `Hey @${username}, your withdrawal request has been reviewed`,
       content,
       buttonText: 'View Your Account',
-      buttonUrl: `${process.env.VITE_APP_URL || 'https://eziox.link'}/profile?tab=settings`,
+      buttonUrl: `${process.env.APP_URL || 'https://eziox.link'}/profile?tab=settings`,
     }),
   })
 }

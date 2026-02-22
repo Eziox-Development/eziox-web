@@ -321,7 +321,7 @@ async function notifyAdmins(params: CreateSecurityEventParams): Promise<void> {
       subtitle: 'Automatic notification from Security Monitoring',
       content: contentHtml,
       buttonText: 'View in Admin Panel',
-      buttonUrl: `${process.env.VITE_APP_URL || 'https://eziox.link'}/admin?tab=security`,
+      buttonUrl: `${process.env.APP_URL || 'https://eziox.link'}/admin?tab=security`,
       footer: 'This is an automated security notification. Please review immediately if severity is high or critical.',
     })
 

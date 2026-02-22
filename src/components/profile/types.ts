@@ -4,6 +4,7 @@ import type { IconType } from 'react-icons'
 // ─── Tab System ──────────────────────────────────────────────────────────────
 
 export type TabType =
+  | 'overview'
   | 'profile'
   | 'links'
   | 'shortener'

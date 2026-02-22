@@ -1,6 +1,6 @@
 import { createRouter } from '@tanstack/react-router'
 import { setupRouterSsrQueryIntegration } from '@tanstack/react-router-ssr-query'
-import * as TanstackQuery from './integrations/tanstack-query/root-provider'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import './lib/license-guard'
 import { ErrorComponent } from './components/error-component'
 import { NotFoundComponent } from './components/not-found-component'
@@ -16,13 +16,12 @@ import { routeTree } from './routeTree.gen'
  * - Global error boundary with custom error component
  */
 export const getRouter = () => {
-  // Get TanStack Query context for SSR and client-side data fetching
-  const rqContext = TanstackQuery.getContext()
+  const queryClient = new QueryClient()
 
   // Configure router with all necessary providers and settings
   const router = createRouter({
     routeTree,
-    context: { ...rqContext },
+    context: { queryClient },
 
     // Preload routes on hover/focus for instant navigation
     defaultPreload: 'intent',
@@ -41,9 +40,9 @@ export const getRouter = () => {
     // Wrap all routes with TanStack Query provider
     Wrap: (props: { children: React.ReactNode }) => {
       return (
-        <TanstackQuery.Provider {...rqContext}>
+        <QueryClientProvider client={queryClient}>
           {props.children}
-        </TanstackQuery.Provider>
+        </QueryClientProvider>
       )
     },
   })
@@ -51,7 +50,7 @@ export const getRouter = () => {
   // Setup SSR query integration for proper hydration
   setupRouterSsrQueryIntegration({
     router,
-    queryClient: rqContext.queryClient,
+    queryClient,
   })
 
   return router

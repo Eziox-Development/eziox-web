@@ -602,11 +602,11 @@ export const updateProfileFn = createServerFn({ method: 'POST' })
       throw { message: 'Not authenticated', status: 401 }
     }
 
-    // Rate limit profile updates (30 per minute per user)
+    // Rate limit profile updates (15 per minute per user)
     const rateLimitResult = checkRateLimit(
       `profile-update:${user.id}`,
-      RATE_LIMITS.API_SPOTIFY.maxRequests,
-      RATE_LIMITS.API_SPOTIFY.windowMs,
+      RATE_LIMITS.PROFILE_UPDATE.maxRequests,
+      RATE_LIMITS.PROFILE_UPDATE.windowMs,
     )
     if (!rateLimitResult.allowed) {
       setResponseStatus(429)
@@ -1010,6 +1010,17 @@ export const verifyTwoFactorFn = createServerFn({ method: 'POST' })
     z.object({ userId: z.string().uuid(), token: z.string().length(6) }),
   )
   .handler(async ({ data }) => {
+    const ip = getRequestIP() || 'unknown'
+    const rateLimit = checkRateLimit(
+      `2fa-verify:${ip}:${data.userId}`,
+      RATE_LIMITS.AUTH_LOGIN.maxRequests,
+      RATE_LIMITS.AUTH_LOGIN.windowMs,
+    )
+    if (!rateLimit.allowed) {
+      setResponseStatus(429)
+      throw { message: 'Too many verification attempts. Please try again later.', status: 429 }
+    }
+
     const valid = await verifyTwoFactorToken(data.userId, data.token)
     if (!valid) {
       setResponseStatus(400)
@@ -1071,6 +1082,17 @@ export const verifyRecoveryCodeFn = createServerFn({ method: 'POST' })
     z.object({ userId: z.string().uuid(), code: z.string().min(1) }),
   )
   .handler(async ({ data }) => {
+    const ip = getRequestIP() || 'unknown'
+    const rateLimit = checkRateLimit(
+      `recovery-verify:${ip}:${data.userId}`,
+      RATE_LIMITS.AUTH_LOGIN.maxRequests,
+      RATE_LIMITS.AUTH_LOGIN.windowMs,
+    )
+    if (!rateLimit.allowed) {
+      setResponseStatus(429)
+      throw { message: 'Too many verification attempts. Please try again later.', status: 429 }
+    }
+
     const valid = await verifyRecoveryCode(data.userId, data.code)
     if (!valid) {
       setResponseStatus(400)

@@ -857,7 +857,7 @@ async function sendTicketConfirmationEmail(
       subtitle: `Hey @${name}, we've received your request`,
       content,
       buttonText: 'View Ticket',
-      buttonUrl: `${process.env.VITE_APP_URL || 'https://eziox.link'}/support/tickets`,
+      buttonUrl: `${process.env.APP_URL || 'https://eziox.link'}/support/tickets`,
       footer: 'This is an automated confirmation. You can reply to this ticket from your account.',
     }),
   })

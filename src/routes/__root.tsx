@@ -4,7 +4,6 @@ import {
   Scripts,
   createRootRouteWithContext,
   redirect,
-  useRouteContext,
 } from '@tanstack/react-router'
 import appCss from '../styles.css?url'
 
@@ -12,7 +11,7 @@ import type { QueryClient } from '@tanstack/react-query'
 import { Analytics } from '@vercel/analytics/react'
 import { Toaster } from '@/components/ui/sonner'
 import { CookieConsent } from '@/components/CookieConsent'
-import { EmailVerificationBanner } from '@/components/EmailVerificationBanner'
+import { EmailVerificationBanner } from '@/components/auth/EmailVerificationBanner'
 import { ThemeProvider as PortfolioThemeProvider } from '@/components/layout/ThemeProvider'
 import { siteConfig } from '@/lib/site-config'
 import { authMiddleware } from '@/server/functions/auth'
@@ -206,17 +205,9 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 })
 
 function RootComponent() {
-  const { currentUser } = useRouteContext({ from: '__root__' })
-
-  // Show email verification banner for logged-in users with unverified email
-  const showVerificationBanner =
-    currentUser && !currentUser.emailVerified && currentUser.email
-
   return (
     <>
-      {showVerificationBanner && (
-        <EmailVerificationBanner email={currentUser.email} />
-      )}
+      <EmailVerificationBanner />
       <Outlet />
     </>
   )

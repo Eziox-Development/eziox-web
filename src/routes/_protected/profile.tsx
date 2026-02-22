@@ -4,6 +4,7 @@ import { ProfileDashboard, ProfileDashboardLoader } from '@/components/profile'
 import type { TabType } from '@/components/profile/types'
 
 const validTabs: TabType[] = [
+  'overview',
   'profile',
   'links',
   'shortener',

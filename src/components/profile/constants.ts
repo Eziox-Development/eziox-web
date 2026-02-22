@@ -40,6 +40,7 @@ import {
   Eye,
   MousePointerClick,
   Users,
+  BarChart3,
 } from 'lucide-react'
 import type {
   DashboardTab,
@@ -52,6 +53,13 @@ import type {
 // ─── Dashboard Tabs ──────────────────────────────────────────────────────────
 
 export const DASHBOARD_TABS: readonly DashboardTab[] = [
+  {
+    id: 'overview',
+    labelKey: 'dashboard.tabs.overview',
+    descKey: 'dashboard.tabs.overviewDesc',
+    icon: BarChart3,
+    category: 'main',
+  },
   {
     id: 'profile',
     labelKey: 'dashboard.tabs.profile',

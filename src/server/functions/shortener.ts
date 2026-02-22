@@ -40,9 +40,10 @@ const updateShortLinkSchema = z.object({
 
 function generateShortCode(length = 6): string {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789'
+  const bytes = crypto.getRandomValues(new Uint8Array(length))
   let code = ''
   for (let i = 0; i < length; i++) {
-    code += chars.charAt(Math.floor(Math.random() * chars.length))
+    code += chars.charAt(bytes[i]! % chars.length)
   }
   return code
 }

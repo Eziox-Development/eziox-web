@@ -2443,6 +2443,7 @@
       "ctr": "Click-through Rate",
       "viewsTrend": "Views Trend",
       "engagementScore": "Engagement Score",
+      "followers": "Followers",
       "period": "Period",
       "optimizeProfile": "Optimize Profile"
     },
@@ -2478,6 +2479,8 @@
       "bioLink": "Your Bio Link"
     },
     "tabs": {
+      "overview": "Overview",
+      "overviewDesc": "Analytics & insights",
       "profile": "Profile",
       "profileDesc": "Edit your profile info",
       "links": "Links",
@@ -2504,6 +2507,16 @@
       "privacyDesc": "Privacy controls",
       "security": "Security",
       "securityDesc": "Passkeys & login methods"
+    },
+    "overview": {
+      "title": "Analytics Overview",
+      "avgClicks": "Avg. Daily Clicks",
+      "avgClicksDesc": "Average link clicks per day",
+      "avgDailyViews": "Avg. Daily Views",
+      "avgDailyViewsDesc": "Average profile views per day",
+      "ctrDesc": "Click-through rate from views to clicks",
+      "viewsTrendDesc": "Views change vs. previous period",
+      "engagementDesc": "Combined engagement score"
     },
     "quickLinks": {
       "myBioPage": "My Bio Page",

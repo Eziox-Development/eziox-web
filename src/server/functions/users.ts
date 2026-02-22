@@ -161,7 +161,7 @@ export const getLeaderboardFn = createServerFn({ method: 'GET' })
 
     // Get total count
     const [countResult] = await db
-      .select({ count: sql<number>`COUNT(*)` })
+      .select({ count: sql<number>`COUNT(*)::int` })
       .from(users)
 
     return {
@@ -180,6 +180,10 @@ export const searchUsersFn = createServerFn({ method: 'GET' })
     }),
   )
   .handler(async ({ data }) => {
+    // Escape special ILIKE characters to prevent pattern injection
+    const escaped = data.query.replace(/[%_\\]/g, (c) => `\\${c}`)
+    const pattern = `%${escaped}%`
+
     const results = await db
       .select({
         user: {
@@ -196,7 +200,7 @@ export const searchUsersFn = createServerFn({ method: 'GET' })
       .from(users)
       .leftJoin(profiles, eq(profiles.userId, users.id))
       .where(
-        sql`${users.username} ILIKE ${`%${data.query}%`} OR ${users.name} ILIKE ${`%${data.query}%`}`,
+        sql`${users.username} ILIKE ${pattern} OR ${users.name} ILIKE ${pattern}`,
       )
       .limit(data.limit)
 

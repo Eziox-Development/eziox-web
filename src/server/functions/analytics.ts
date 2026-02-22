@@ -366,15 +366,22 @@ export async function recordDailyAnalytics(
   })
 
   if (existing) {
-    const updates: Record<string, unknown> = { updatedAt: new Date() }
-
-    if (type === 'view') {
-      updates.profileViews = (existing.profileViews || 0) + 1
-    } else if (type === 'click') {
-      updates.linkClicks = (existing.linkClicks || 0) + 1
-    } else if (type === 'follower') {
-      updates.newFollowers = (existing.newFollowers || 0) + 1
-    }
+    // Use SQL-level increments to avoid race conditions on counters
+    await db
+      .update(analyticsDaily)
+      .set({
+        profileViews: type === 'view'
+          ? sql`COALESCE(${analyticsDaily.profileViews}, 0) + 1`
+          : undefined,
+        linkClicks: type === 'click'
+          ? sql`COALESCE(${analyticsDaily.linkClicks}, 0) + 1`
+          : undefined,
+        newFollowers: type === 'follower'
+          ? sql`COALESCE(${analyticsDaily.newFollowers}, 0) + 1`
+          : undefined,
+        updatedAt: new Date(),
+      })
+      .where(eq(analyticsDaily.id, existing.id))
 
     if (referrer && type === 'view') {
       const currentReferrers =
@@ -385,26 +392,22 @@ export async function recordDailyAnalytics(
       } else {
         currentReferrers.push({ source: referrer, count: 1 })
       }
-      updates.referrers = currentReferrers
+      await db
+        .update(analyticsDaily)
+        .set({ referrers: currentReferrers })
+        .where(eq(analyticsDaily.id, existing.id))
     }
-
-    await db
-      .update(analyticsDaily)
-      .set(updates)
-      .where(eq(analyticsDaily.id, existing.id))
   } else {
-    const newRecord: Record<string, unknown> = {
-      userId,
-      date: today,
-      profileViews: type === 'view' ? 1 : 0,
-      linkClicks: type === 'click' ? 1 : 0,
-      newFollowers: type === 'follower' ? 1 : 0,
-      uniqueVisitors: type === 'view' ? 1 : 0,
-      referrers: referrer ? [{ source: referrer, count: 1 }] : [],
-    }
-
     await db
       .insert(analyticsDaily)
-      .values(newRecord as typeof analyticsDaily.$inferInsert)
+      .values({
+        userId,
+        date: today,
+        profileViews: type === 'view' ? 1 : 0,
+        linkClicks: type === 'click' ? 1 : 0,
+        newFollowers: type === 'follower' ? 1 : 0,
+        uniqueVisitors: type === 'view' ? 1 : 0,
+        referrers: referrer ? [{ source: referrer, count: 1 }] : [],
+      } as typeof analyticsDaily.$inferInsert)
   }
 }

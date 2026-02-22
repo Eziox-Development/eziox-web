@@ -2442,6 +2442,7 @@
       "ctr": "Klickrate",
       "viewsTrend": "Aufrufe-Trend",
       "engagementScore": "Engagement-Score",
+      "followers": "Follower",
       "period": "Zeitraum",
       "optimizeProfile": "Profil optimieren"
     },
@@ -2477,6 +2478,8 @@
       "bioLink": "Dein Bio-Link"
     },
     "tabs": {
+      "overview": "Übersicht",
+      "overviewDesc": "Analysen & Einblicke",
       "profile": "Profil",
       "profileDesc": "Bearbeite deine Profilinfos",
       "links": "Links",
@@ -2503,6 +2506,16 @@
       "privacyDesc": "Datenschutzkontrollen",
       "security": "Sicherheit",
       "securityDesc": "Passwort & Sicherheitsoptionen"
+    },
+    "overview": {
+      "title": "Analytics-Übersicht",
+      "avgClicks": "Ø Tägliche Klicks",
+      "avgClicksDesc": "Durchschnittliche Link-Klicks pro Tag",
+      "avgDailyViews": "Ø Tägliche Aufrufe",
+      "avgDailyViewsDesc": "Durchschnittliche Profilaufrufe pro Tag",
+      "ctrDesc": "Klickrate von Aufrufen zu Klicks",
+      "viewsTrendDesc": "Aufrufe-Änderung vs. vorherige Periode",
+      "engagementDesc": "Kombinierter Engagement-Score"
     },
     "quickLinks": {
       "myBioPage": "Meine Bio-Seite",

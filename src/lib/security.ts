@@ -414,6 +414,8 @@ export const RATE_LIMITS = {
   API_GENERAL: { maxRequests: 100, windowMs: 60 * 1000 },
   API_UPLOAD: { maxRequests: 10, windowMs: 60 * 1000 },
   API_SPOTIFY: { maxRequests: 30, windowMs: 60 * 1000 },
+  PROFILE_UPDATE: { maxRequests: 15, windowMs: 60 * 1000 },
+  LINK_CREATE: { maxRequests: 20, windowMs: 60 * 1000 },
   PROFILE_VIEW: { maxRequests: 1000, windowMs: 60 * 1000 },
 }
 

@@ -1,6 +1,6 @@
 import { createFileRoute, Outlet, redirect, useLocation } from '@tanstack/react-router'
 import { authMiddleware } from '@/server/functions/auth'
-import { Nav, Footer } from '@/components/layout'
+import { Nav, Footer, ScrollToTop } from '@/components/layout'
 
 export const Route = createFileRoute('/_protected')({
   loader: async ({ location }) => {
@@ -39,6 +39,7 @@ function ProtectedLayout() {
         <Outlet />
       </main>
       <Footer />
+      <ScrollToTop />
     </div>
   )
 }

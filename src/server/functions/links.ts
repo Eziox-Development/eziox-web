@@ -149,11 +149,11 @@ export const createLinkFn = createServerFn({ method: 'POST' })
       throw { message: 'Not authenticated', status: 401 }
     }
 
-    // Rate limit link creation (30 per minute per user)
+    // Rate limit link creation (20 per minute per user)
     const rateLimitResult = checkRateLimit(
       `link-create:${user.id}`,
-      RATE_LIMITS.API_SPOTIFY.maxRequests, // 30 per minute
-      RATE_LIMITS.API_SPOTIFY.windowMs,
+      RATE_LIMITS.LINK_CREATE.maxRequests,
+      RATE_LIMITS.LINK_CREATE.windowMs,
     )
     if (!rateLimitResult.allowed) {
       setResponseStatus(429)
